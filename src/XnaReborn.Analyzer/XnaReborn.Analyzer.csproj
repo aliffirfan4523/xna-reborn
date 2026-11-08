@@ -8,4 +8,12 @@
     <ProjectReference Include="..\XnaReborn.Core\XnaReborn.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Rules\RuleSchema.json" LogicalName="XnaReborn.Analyzer.Rules.RuleSchema.json" />
+  </ItemGroup>
+
 </Project>

@@ -25,11 +25,11 @@
   - [x] 4.4 Reader and version tests
   - _Requirements: R2, R3_
 
-- [ ] 5. Rule catalog and engine
-  - [ ] 5.1 Create `RuleSchema.json` as an embedded resource (draft is in `src/XnaReborn.Analyzer/Rules/`)
-  - [ ] 5.2 Implement `RuleCatalogLoader` with schema validation and extra checks
-  - [ ] 5.3 Implement `RuleEngine` and the project-level matchers: `reference`, `projectProperty`, `projectItem`, `filePattern`, `contentItem`
-  - [ ] 5.4 Catalog tests and a positive and negative test per matcher (`Category=Rules`)
+- [x] 5. Rule catalog and engine
+  - [x] 5.1 Create `RuleSchema.json` as an embedded resource (draft is in `src/XnaReborn.Analyzer/Rules/`)
+  - [x] 5.2 Implement `RuleCatalogLoader` with schema validation and extra checks
+  - [x] 5.3 Implement `RuleEngine` and the project-level matchers: `reference`, `projectProperty`, `projectItem`, `filePattern`, `contentItem`
+  - [x] 5.4 Catalog tests and a positive and negative test per matcher (`Category=Rules`)
   - _Requirements: R4, R6_
 
 - [ ] 6. Source scanning
