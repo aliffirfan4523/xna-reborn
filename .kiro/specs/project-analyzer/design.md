@@ -253,7 +253,7 @@ Written from scratch and committed under `tests/fixtures/<name>/`. Each has a `R
 
 | Fixture | Purpose |
 |---|---|
-| `xna40-basic` | Clean 4.0 game, one small deprecated call. High score. |
+| `xna40-basic` | Clean 4.0 game using only APIs MonoGame also has. Only project-level findings. High score. |
 | `xna31-legacy` | 3.1 project using 3.1-only APIs. |
 | `xna40-gamerservices` | References GamerServices and uses `Guide`. Blocker. |
 | `xna40-custom-content` | Content project with a custom processor, an `.xap`, and a name override. |
