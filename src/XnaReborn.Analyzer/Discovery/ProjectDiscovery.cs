@@ -59,7 +59,7 @@ public sealed partial class ProjectDiscovery
             root = full;
             var csprojs = new List<string>();
             var slns = new List<string>();
-            Walk(full, csprojs, slns, ct);
+            Walk(full, root, csprojs, slns, diagnostics, ct);
             foreach (var sln in slns)
             {
                 candidates.AddRange(ReadSolution(sln, root, diagnostics));
@@ -132,14 +132,29 @@ public sealed partial class ProjectDiscovery
             : "No .csproj files found.";
     }
 
-    private void Walk(string directory, List<string> csprojs, List<string> slns, CancellationToken ct)
+    private void Walk(string directory, string root, List<string> csprojs, List<string> slns, List<Diagnostic> diagnostics, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        slns.AddRange(_fileSystem.EnumerateFiles(directory, "*.sln")
-            .Where(f => Path.GetExtension(f).Equals(".sln", StringComparison.OrdinalIgnoreCase)));
-        csprojs.AddRange(_fileSystem.EnumerateFiles(directory, "*.csproj")
-            .Where(f => Path.GetExtension(f).Equals(".csproj", StringComparison.OrdinalIgnoreCase)));
-        foreach (var sub in _fileSystem.EnumerateDirectories(directory))
+        IReadOnlyList<string> solutionFiles;
+        IReadOnlyList<string> projectFiles;
+        IReadOnlyList<string> subdirectories;
+        try
+        {
+            solutionFiles = _fileSystem.EnumerateFiles(directory, "*.sln");
+            projectFiles = _fileSystem.EnumerateFiles(directory, "*.csproj");
+            subdirectories = _fileSystem.EnumerateDirectories(directory);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // An unreadable folder must not stop the search. Report it and move on.
+            var relative = Rel(root, directory);
+            diagnostics.Add(new Diagnostic("ANA007", $"Folder could not be read: {ex.Message}", relative == "." ? string.Empty : relative));
+            return;
+        }
+
+        slns.AddRange(solutionFiles.Where(f => Path.GetExtension(f).Equals(".sln", StringComparison.OrdinalIgnoreCase)));
+        csprojs.AddRange(projectFiles.Where(f => Path.GetExtension(f).Equals(".csproj", StringComparison.OrdinalIgnoreCase)));
+        foreach (var sub in subdirectories)
         {
             var name = Path.GetFileName(sub.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
             if (_skippedDirectories.Contains(name, StringComparer.OrdinalIgnoreCase))
@@ -147,7 +162,7 @@ public sealed partial class ProjectDiscovery
                 continue;
             }
 
-            Walk(sub, csprojs, slns, ct);
+            Walk(sub, root, csprojs, slns, diagnostics, ct);
         }
     }
 
