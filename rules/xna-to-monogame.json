@@ -1,0 +1,19 @@
+{
+  "$schema": "../src/XnaReborn.Analyzer/Rules/RuleSchema.json",
+  "version": 1,
+  "name": "xna-to-monogame",
+  "scoring": {
+    "severityWeights": {
+      "Info": 1,
+      "Warning": 3,
+      "Error": 8,
+      "Blocker": 20
+    },
+    "classificationFactors": {
+      "AutoFixable": 0.25,
+      "Manual": 1.0,
+      "Unsupported": 1.5
+    }
+  },
+  "rules": []
+}

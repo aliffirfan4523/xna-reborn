@@ -1,0 +1,8 @@
+PLACEHOLDER: no license has been chosen yet.
+
+Before submitting to Kiroween, replace this file with the full text of an
+OSI-approved license (for example MIT or Apache-2.0) and update README.md.
+
+Until then, all rights are reserved by the authors. Fixture projects under
+tests/fixtures/ are original, synthetic code and will be covered by the
+license chosen here.

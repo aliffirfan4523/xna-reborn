@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Format and warnings check",
+  "description": "Check formatting and warnings-as-errors build when C# files are saved.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/**/*.cs"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run `dotnet format --verify-no-changes` and `dotnet build -warnaserror`. Fix formatting issues and report any warnings. Also check that no code opens files in the source project with write access."
+  }
+}

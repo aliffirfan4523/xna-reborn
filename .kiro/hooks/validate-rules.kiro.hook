@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Validate migration rules",
+  "description": "When a rule catalog file is saved, validate it against the schema and run the rule tests.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["rules/*.json"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A migration rule catalog file was saved. Validate it against src/XnaReborn.Analyzer/Rules/RuleSchema.json, then run `dotnet test --filter Category=Rules`. Report any invalid rules, missing positive or negative fixtures, and failing tests."
+  }
+}

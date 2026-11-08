@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:xnareborn:rule-catalog:1",
+  "title": "XNA Reborn rule catalog",
+  "type": "object",
+  "required": ["version", "name", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1, "description": "Catalog schema version." },
+    "name": { "type": "string", "minLength": 1 },
+    "scoring": { "$ref": "#/$defs/scoring" },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rule" }
+    }
+  },
+  "$defs": {
+    "severity": { "enum": ["Info", "Warning", "Error", "Blocker"] },
+    "classification": { "enum": ["AutoFixable", "Manual", "Unsupported"] },
+    "xnaVersion": { "enum": ["3.0", "3.1", "4.0"] },
+    "namespaces": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$" }
+    },
+    "scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "severityWeights": {
+          "type": "object",
+          "required": ["Info", "Warning", "Error", "Blocker"],
+          "additionalProperties": false,
+          "properties": {
+            "Info": { "type": "number", "minimum": 0 },
+            "Warning": { "type": "number", "minimum": 0 },
+            "Error": { "type": "number", "minimum": 0 },
+            "Blocker": { "type": "number", "minimum": 0 }
+          }
+        },
+        "classificationFactors": {
+          "type": "object",
+          "required": ["AutoFixable", "Manual", "Unsupported"],
+          "additionalProperties": false,
+          "properties": {
+            "AutoFixable": { "type": "number", "minimum": 0 },
+            "Manual": { "type": "number", "minimum": 0 },
+            "Unsupported": { "type": "number", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["id", "title", "severity", "classification", "match", "explanation", "resolution"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^XNA[0-9]{3}$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "severity": { "$ref": "#/$defs/severity" },
+        "classification": { "$ref": "#/$defs/classification" },
+        "category": { "enum": ["Project", "Reference", "Api", "Content", "Platform"] },
+        "xnaVersions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/xnaVersion" },
+          "description": "Only run this rule on projects with one of these XNA versions. Omit to run on all."
+        },
+        "match": { "$ref": "#/$defs/match" },
+        "explanation": { "type": "string", "minLength": 1 },
+        "resolution": { "type": "string", "minLength": 1 },
+        "migratorTask": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+:[0-9]+(\\.[0-9]+)*$",
+          "description": "Spec task that implements the fix, for example project-migrator:6.2."
+        }
+      },
+      "if": {
+        "properties": { "classification": { "const": "AutoFixable" } },
+        "required": ["classification"]
+      },
+      "then": { "required": ["migratorTask"] }
+    },
+    "match": {
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        { "$ref": "#/$defs/matchReference" },
+        { "$ref": "#/$defs/matchNamespace" },
+        { "$ref": "#/$defs/matchType" },
+        { "$ref": "#/$defs/matchMember" },
+        { "$ref": "#/$defs/matchProjectProperty" },
+        { "$ref": "#/$defs/matchProjectItem" },
+        { "$ref": "#/$defs/matchFilePattern" },
+        { "$ref": "#/$defs/matchContentItem" }
+      ]
+    },
+    "matchReference": {
+      "description": "Assembly reference in a project file. Compares the assembly simple name, ignoring version, culture, and token. A trailing * is a wildcard.",
+      "type": "object",
+      "required": ["type", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "reference" },
+        "name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "matchNamespace": {
+      "description": "A using directive or qualified name that uses the namespace.",
+      "type": "object",
+      "required": ["type", "namespace"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "namespace" },
+        "namespace": { "type": "string", "minLength": 1 },
+        "includeChildren": { "type": "boolean", "default": true }
+      }
+    },
+    "matchType": {
+      "description": "A type name used in code. Matches when the file imports one of the namespaces or the name is qualified with one.",
+      "type": "object",
+      "required": ["type", "name", "namespaces"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "type" },
+        "name": { "type": "string", "minLength": 1 },
+        "namespaces": { "$ref": "#/$defs/namespaces" }
+      }
+    },
+    "matchMember": {
+      "description": "A member access or call. Syntax only. When 'receiver' is set, the identifier left of the dot must equal it.",
+      "type": "object",
+      "required": ["type", "name", "namespaces"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "member" },
+        "name": { "type": "string", "minLength": 1 },
+        "receiver": { "type": "string", "minLength": 1 },
+        "namespaces": { "$ref": "#/$defs/namespaces" },
+        "kind": { "enum": ["Invocation", "Access", "Any"], "default": "Any" },
+        "arguments": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min": { "type": "integer", "minimum": 0 },
+            "max": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "matchProjectProperty": {
+      "description": "An MSBuild property in a project file. With no 'equals' or 'matches', any value matches.",
+      "type": "object",
+      "required": ["type", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "projectProperty" },
+        "name": { "type": "string", "minLength": 1 },
+        "equals": { "type": "string" },
+        "matches": { "type": "string", "description": ".NET regular expression." }
+      }
+    },
+    "matchProjectItem": {
+      "description": "An item in a project file, such as Reference, Compile, NestedContentProject, or Import. For Import, 'include' is compared with the Project attribute. A * is a wildcard.",
+      "type": "object",
+      "required": ["type", "itemType"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "projectItem" },
+        "itemType": { "type": "string", "minLength": 1 },
+        "include": { "type": "string", "minLength": 1 }
+      }
+    },
+    "matchFilePattern": {
+      "description": "A file under the project folder that matches a glob (for example **/*.xap).",
+      "type": "object",
+      "required": ["type", "glob"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "filePattern" },
+        "glob": { "type": "string", "minLength": 1 }
+      }
+    },
+    "matchContentItem": {
+      "description": "An item in a content project. At least one of extension, importer, or processor is required. A trailing * is a wildcard.",
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["extension"] },
+        { "required": ["importer"] },
+        { "required": ["processor"] }
+      ],
+      "properties": {
+        "type": { "const": "contentItem" },
+        "extension": { "type": "string", "pattern": "^\\.[A-Za-z0-9]+$" },
+        "importer": { "type": "string", "minLength": 1 },
+        "processor": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

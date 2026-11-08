@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Run migrator tests on change",
+  "description": "Run migrator tests and the read-only safety test when migrator source changes.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/XnaReborn.Migrator/**/*.cs"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Migrator code changed. Run `dotnet test tests/XnaReborn.Tests --filter FullyQualifiedName~Migrator`. Confirm the source-folder-unchanged safety test still passes and that no code writes outside the output folder."
+  }
+}

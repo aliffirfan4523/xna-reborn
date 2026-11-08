@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Handle new fixture project",
+  "description": "When a fixture project is added, check its license and generate expected snapshots for review.",
+  "version": "1",
+  "when": {
+    "type": "fileCreated",
+    "patterns": ["tests/fixtures/**/*.csproj"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new fixture XNA project was added. Check that it has a LICENSE or attribution file allowing redistribution (ask me if not). Then run the analyzer on it and generate expected snapshot files, and show me the report so I can review before accepting."
+  }
+}

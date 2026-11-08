@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Run analyzer tests on change",
+  "description": "Run the analyzer test suite when analyzer source changes.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/XnaReborn.Analyzer/**/*.cs"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyzer code changed. Run `dotnet test tests/XnaReborn.Tests --filter FullyQualifiedName~Analyzer` and summarize failures. If snapshot tests changed, show the diff and ask before accepting new snapshots."
+  }
+}
