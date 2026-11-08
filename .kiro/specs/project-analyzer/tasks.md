@@ -18,11 +18,11 @@
   - [x] 3.4 Discovery tests for every fixture
   - _Requirements: R1, R9_
 
-- [ ] 4. Project reading
-  - [ ] 4.1 Implement `ProjectReader` (properties, references, compile items, imports)
-  - [ ] 4.2 Implement `ContentProjectReader` (items, importer, processor, parameters, nested projects)
-  - [ ] 4.3 Implement `XnaVersionDetector` with `ANA002` on conflict
-  - [ ] 4.4 Reader and version tests
+- [x] 4. Project reading
+  - [x] 4.1 Implement `ProjectReader` (properties, references, compile items, imports)
+  - [x] 4.2 Implement `ContentProjectReader` (items, importer, processor, parameters, nested projects)
+  - [x] 4.3 Implement `XnaVersionDetector` with `ANA002` on conflict
+  - [x] 4.4 Reader and version tests
   - _Requirements: R2, R3_
 
 - [ ] 5. Rule catalog and engine
