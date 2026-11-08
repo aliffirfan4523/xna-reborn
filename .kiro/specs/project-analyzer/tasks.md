@@ -39,9 +39,9 @@
   - [x] 6.4 Positive and negative tests per matcher
   - _Requirements: R5, R6_
 
-- [ ] 7. Scoring
-  - [ ] 7.1 Implement `Scorer` with defaults and catalog overrides
-  - [ ] 7.2 Score and projected score tests
+- [x] 7. Scoring
+  - [x] 7.1 Implement `Scorer` with defaults and catalog overrides
+  - [x] 7.2 Score and projected score tests
   - _Requirements: R7_
 
 - [ ] 8. Reports
