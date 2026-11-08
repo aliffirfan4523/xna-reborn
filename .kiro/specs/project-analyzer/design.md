@@ -244,6 +244,7 @@ If the catalog has no `scoring` section, these defaults apply. The score is per 
 | ANA003 | Compile item points to a missing file |
 | ANA004 | Source file has syntax errors |
 | ANA005 | Source file skipped because it is too large |
+| ANA006 | A `.sln` lists a project that does not exist on disk |
 
 Rule ids use `XNA###`. `XNA013` is reserved for the XNA-only font warning, which the content-conversion spec raises.
 
