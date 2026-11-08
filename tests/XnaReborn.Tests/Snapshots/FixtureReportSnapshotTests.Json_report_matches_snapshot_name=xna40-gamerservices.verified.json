@@ -1,0 +1,124 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "Xna40GamerServices.csproj",
+      "assemblyName": "Xna40GamerServices",
+      "isXna": true,
+      "xnaVersion": "4.0",
+      "platform": "Windows",
+      "profile": "HiDef",
+      "targetFramework": "v4.0",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "Microsoft.Xna.Framework.Graphics",
+        "Microsoft.Xna.Framework.GamerServices",
+        "Microsoft.Xna.Framework.Storage",
+        "System",
+        "System.Core",
+        "System.Xml"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA901",
+      "title": "GamerServices reference",
+      "severity": "Blocker",
+      "classification": "Unsupported",
+      "project": "Xna40GamerServices.csproj",
+      "location": null,
+      "snippet": "Microsoft.Xna.Framework.GamerServices"
+    },
+    {
+      "ruleId": "XNA909",
+      "title": "GamerServices namespace",
+      "severity": "Blocker",
+      "classification": "Unsupported",
+      "project": "Xna40GamerServices.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 3,
+        "column": 1
+      },
+      "snippet": "using Microsoft.Xna.Framework.GamerServices;"
+    },
+    {
+      "ruleId": "XNA902",
+      "title": "Storage reference",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "project": "Xna40GamerServices.csproj",
+      "location": null,
+      "snippet": "Microsoft.Xna.Framework.Storage"
+    },
+    {
+      "ruleId": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Xna40GamerServices.csproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v4.0\\Microsoft.Xna.GameStudio.targets"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA901",
+      "title": "GamerServices reference",
+      "explanation": "Xbox Live has no modern equivalent.",
+      "resolution": "Remove the dependency.",
+      "migratorTask": null
+    },
+    {
+      "id": "XNA902",
+      "title": "Storage reference",
+      "explanation": "StorageDevice depends on Xbox storage.",
+      "resolution": "Use plain file APIs.",
+      "migratorTask": null
+    },
+    {
+      "id": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "explanation": "The project imports the XNA build targets.",
+      "resolution": "The migrator writes an SDK-style project.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA909",
+      "title": "GamerServices namespace",
+      "explanation": "Code uses GamerServices.",
+      "resolution": "Remove the calls.",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 1,
+    "Error": 1,
+    "Blocker": 2
+  },
+  "countsByClassification": {
+    "AutoFixable": 1,
+    "Manual": 0,
+    "Unsupported": 3
+  },
+  "score": 27,
+  "projectedScore": 28,
+  "diagnostics": [],
+  "noProjectReason": null
+}

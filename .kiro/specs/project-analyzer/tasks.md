@@ -44,10 +44,10 @@
   - [x] 7.2 Score and projected score tests
   - _Requirements: R7_
 
-- [ ] 8. Reports
-  - [ ] 8.1 Implement `ProjectAnalyzer.AnalyzeAsync` with progress and cancellation
-  - [ ] 8.2 Implement JSON and Markdown writers
-  - [ ] 8.3 Verify snapshot tests for every fixture, and a determinism test
+- [x] 8. Reports
+  - [x] 8.1 Implement `ProjectAnalyzer.AnalyzeAsync` with progress and cancellation
+  - [x] 8.2 Implement JSON and Markdown writers
+  - [x] 8.3 Verify snapshot tests for every fixture, and a determinism test
   - _Requirements: R6, R8, R10_
 
 - [ ] 9. Safety test

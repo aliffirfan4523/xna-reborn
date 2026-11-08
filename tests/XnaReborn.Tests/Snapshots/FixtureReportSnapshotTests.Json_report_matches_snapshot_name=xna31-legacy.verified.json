@@ -1,0 +1,138 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "Xna31Legacy.csproj",
+      "assemblyName": "Xna31Legacy",
+      "isXna": true,
+      "xnaVersion": "3.1",
+      "platform": "Windows",
+      "profile": null,
+      "targetFramework": "v3.5",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "System",
+        "System.Core",
+        "System.Xml"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "Xna31Legacy.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 44,
+        "column": 31
+      },
+      "snippet": "spriteBatch.Begin(SpriteBlendMode.AlphaBlend);"
+    },
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "Xna31Legacy.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 49,
+        "column": 17
+      },
+      "snippet": "SpriteBlendMode.Additive,"
+    },
+    {
+      "ruleId": "XNA906",
+      "title": "ResolveBackBuffer",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "Xna31Legacy.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 55,
+        "column": 13
+      },
+      "snippet": "GraphicsDevice.ResolveBackBuffer(snapshot);"
+    },
+    {
+      "ruleId": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Xna31Legacy.csproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v3.1\\Microsoft.Xna.GameStudio.targets"
+    },
+    {
+      "ruleId": "XNA904",
+      "title": "XNA 3.1 project",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Xna31Legacy.csproj",
+      "location": null,
+      "snippet": "XnaFrameworkVersion=v3.1"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "explanation": "The project imports the XNA build targets.",
+      "resolution": "The migrator writes an SDK-style project.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA904",
+      "title": "XNA 3.1 project",
+      "explanation": "XNA 3.1 APIs differ from 4.0.",
+      "resolution": "The migrator applies 3.1 to 4.0 rewrites.",
+      "migratorTask": "project-migrator:6.2"
+    },
+    {
+      "id": "XNA905",
+      "title": "SpriteBlendMode",
+      "explanation": "SpriteBlendMode was replaced by BlendState.",
+      "resolution": "Use BlendState.AlphaBlend or Additive.",
+      "migratorTask": null
+    },
+    {
+      "id": "XNA906",
+      "title": "ResolveBackBuffer",
+      "explanation": "ResolveBackBuffer was removed.",
+      "resolution": "Render to a RenderTarget2D instead.",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 2,
+    "Error": 3,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 2,
+    "Manual": 3,
+    "Unsupported": 0
+  },
+  "score": 83,
+  "projectedScore": 84,
+  "diagnostics": [],
+  "noProjectReason": null
+}
