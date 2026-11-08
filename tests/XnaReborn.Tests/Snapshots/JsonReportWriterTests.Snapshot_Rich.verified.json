@@ -1,0 +1,144 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "sample",
+  "projects": [
+    {
+      "path": "Game/Game.csproj",
+      "assemblyName": "Game",
+      "isXna": true,
+      "xnaVersion": "3.1",
+      "platform": "Windows",
+      "profile": "HiDef",
+      "targetFramework": "v3.5",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs"
+      ],
+      "defineConstants": [
+        "WINDOWS",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    },
+    {
+      "path": "Lib|Core/Lib.csproj",
+      "assemblyName": "Lib",
+      "isXna": true,
+      "xnaVersion": "Unknown",
+      "platform": "Xbox360",
+      "profile": null,
+      "targetFramework": null,
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs"
+      ],
+      "defineConstants": [
+        "WINDOWS",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA901",
+      "title": "Xbox LIVE services",
+      "severity": "Blocker",
+      "classification": "Unsupported",
+      "project": "Game/Game.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 12,
+        "column": 9
+      },
+      "snippet": "Guide.ShowSignIn(1, false);"
+    },
+    {
+      "ruleId": "XNA902",
+      "title": "Storage device",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "Game/Game.csproj",
+      "location": {
+        "file": "Save/Store.cs",
+        "line": 40,
+        "column": 17
+      },
+      "snippet": "var s = \"`quoted`\"; // café"
+    },
+    {
+      "ruleId": "XNA903",
+      "title": "Legacy project import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Game/Game.csproj",
+      "location": null,
+      "snippet": null
+    },
+    {
+      "ruleId": "XNA910",
+      "title": "Sprite font asset",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Lib|Core/Lib.csproj",
+      "location": {
+        "file": "Content/Font.spritefont",
+        "line": 1,
+        "column": 1
+      },
+      "snippet": null
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA901",
+      "title": "Xbox LIVE services",
+      "explanation": "There is no Xbox LIVE in MonoGame.",
+      "resolution": "Remove the calls.",
+      "migratorTask": null
+    },
+    {
+      "id": "XNA903",
+      "title": "Legacy project import",
+      "explanation": "The project imports XNA targets.",
+      "resolution": "Switch to an SDK-style project.",
+      "migratorTask": "migrator-task-2"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 1,
+    "Warning": 1,
+    "Error": 1,
+    "Blocker": 1
+  },
+  "countsByClassification": {
+    "AutoFixable": 2,
+    "Manual": 1,
+    "Unsupported": 1
+  },
+  "score": 62,
+  "projectedScore": 80,
+  "diagnostics": [
+    {
+      "code": "ANA004",
+      "message": "Source file has syntax errors.",
+      "file": "Game/Broken.cs"
+    },
+    {
+      "code": "ANA006",
+      "message": "Solution lists a missing project.",
+      "file": null
+    }
+  ],
+  "noProjectReason": null
+}
