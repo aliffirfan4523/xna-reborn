@@ -1,21 +1,21 @@
 # Tasks: Project Analyzer
 
-- [ ] 1. Models
-  - [ ] 1.1 Add enums, `Finding`, `SourceLocation`, `Diagnostic`, `ContentItem`, `ProjectInfo`, `TriggeredRule`, `AnalysisReport`, `AnalysisProgress` to `XnaReborn.Core`
-  - [ ] 1.2 Add rule models: `Rule`, `RuleMatch` (one record per match type), `RuleCatalog`, `ScoringOptions`
-  - [ ] 1.3 XML docs on all public types; model and JSON serialization tests
+- [x] 1. Models
+  - [x] 1.1 Add enums, `Finding`, `SourceLocation`, `Diagnostic`, `ContentItem`, `ProjectInfo`, `TriggeredRule`, `AnalysisReport`, `AnalysisProgress` to `XnaReborn.Core`
+  - [x] 1.2 Add rule models: `Rule`, `RuleMatch` (one record per match type), `RuleCatalog`, `ScoringOptions`
+  - [x] 1.3 XML docs on all public types; model and JSON serialization tests
   - _Requirements: R6, R8_
 
-- [ ] 2. Fixtures
-  - [ ] 2.1 Write the synthetic fixtures listed in the design, each with a `README.md` stating it is original and under the repository license
-  - [ ] 2.2 Add a fixture-path helper to the test project
+- [x] 2. Fixtures
+  - [x] 2.1 Write the synthetic fixtures listed in the design, each with a `README.md` stating it is original and under the repository license
+  - [x] 2.2 Add a fixture-path helper to the test project
   - _Requirements: R1 to R7_
 
-- [ ] 3. Discovery
-  - [ ] 3.1 Implement `IReadOnlyFileSystem` and `ReadOnlyFileSystem`
-  - [ ] 3.2 Implement `ProjectDiscovery` for `.csproj`, `.sln`, and folders, with skip rules and stable order
-  - [ ] 3.3 XNA project identification and `NoProjectReason`
-  - [ ] 3.4 Discovery tests for every fixture
+- [x] 3. Discovery
+  - [x] 3.1 Implement `IReadOnlyFileSystem` and `ReadOnlyFileSystem`
+  - [x] 3.2 Implement `ProjectDiscovery` for `.csproj`, `.sln`, and folders, with skip rules and stable order
+  - [x] 3.3 XNA project identification and `NoProjectReason`
+  - [x] 3.4 Discovery tests for every fixture
   - _Requirements: R1, R9_
 
 - [ ] 4. Project reading
