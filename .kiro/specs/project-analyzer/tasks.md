@@ -32,11 +32,11 @@
   - [x] 5.4 Catalog tests and a positive and negative test per matcher (`Category=Rules`)
   - _Requirements: R4, R6_
 
-- [ ] 6. Source scanning
-  - [ ] 6.1 Implement `SourceScanner` with Roslyn, define constants, and parallel scanning
-  - [ ] 6.2 Implement source matchers: `namespace`, `type`, `member`
-  - [ ] 6.3 Locations, snippets, and diagnostics `ANA003`, `ANA004`, `ANA005`
-  - [ ] 6.4 Positive and negative tests per matcher
+- [x] 6. Source scanning
+  - [x] 6.1 Implement `SourceScanner` with Roslyn, define constants, and parallel scanning
+  - [x] 6.2 Implement source matchers: `namespace`, `type`, `member`
+  - [x] 6.3 Locations, snippets, and diagnostics `ANA003`, `ANA004`, `ANA005`
+  - [x] 6.4 Positive and negative tests per matcher
   - _Requirements: R5, R6_
 
 - [ ] 7. Scoring
