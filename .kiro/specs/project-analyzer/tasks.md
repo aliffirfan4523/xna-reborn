@@ -50,9 +50,9 @@
   - [x] 8.3 Verify snapshot tests for every fixture, and a determinism test
   - _Requirements: R6, R8, R10_
 
-- [ ] 9. Safety test
-  - [ ] 9.1 Hash-unchanged and no-new-files test over every fixture
-  - [ ] 9.2 Source scan test for write APIs in `XnaReborn.Analyzer`
+- [x] 9. Safety test
+  - [x] 9.1 Hash-unchanged and no-new-files test over every fixture
+  - [x] 9.2 Source scan test for write APIs in `XnaReborn.Analyzer`
   - _Requirements: R9_
 
 - [ ] 10. Checkpoint: analyzer reports
