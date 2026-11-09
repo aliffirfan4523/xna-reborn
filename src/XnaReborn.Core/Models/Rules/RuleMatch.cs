@@ -64,3 +64,7 @@ public sealed record ContentItemMatch(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Extension = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Importer = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Processor = null) : RuleMatch;
+
+/// <summary>A .spritefont file whose FontName is one of the listed font families. Looks in the project folder and in each nested content project folder.</summary>
+/// <param name="Families">Font family names, compared case-insensitively with the FontName element.</param>
+public sealed record SpriteFontFamilyMatch(IReadOnlyList<string> Families) : RuleMatch;

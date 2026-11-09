@@ -15,5 +15,522 @@
       "Unsupported": 1.5
     }
   },
-  "rules": []
+  "rules": [
+    {
+      "id": "XNA001",
+      "title": "XNA Game Studio build targets import",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectItem", "itemType": "Import", "include": "*Microsoft.Xna.GameStudio*" },
+      "explanation": "The project file imports the XNA Game Studio MSBuild targets. They exist only on machines with XNA Game Studio 4.0 and Visual Studio 2010 installed. Without them the build stops at once with MSB4019 (imported project not found), as it did for Pirate-Treasure-Hunter.",
+      "resolution": "The migrator writes an SDK-style project for .NET 8 that does not import the XNA targets.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA002",
+      "title": "XNA-specific project properties",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "XnaFrameworkVersion" },
+      "explanation": "The project sets XnaFrameworkVersion, a property that only the XNA Game Studio targets understand. The same project usually also sets ProjectTypeGuids (the XNA game GUID), XnaPlatform, XnaProfile, XnaOutputType, and XnaCrossPlatformGroupID. None has an MSBuild equivalent in MonoGame.",
+      "resolution": "The migrator drops XNA-specific properties and project type GUIDs when it generates the SDK-style project. The graphics profile is carried into Content.mgcb as /profile.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA003",
+      "title": "XNA assembly references",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "Microsoft.Xna.Framework*" },
+      "explanation": "The project references XNA assemblies (Microsoft.Xna.Framework and related) by strong name with Private=False. They do not resolve on a machine without XNA, so the project cannot build. MonoGame ships the same API under the same namespaces in its own package. This rule also fires for assemblies MonoGame does not provide (GamerServices, Net, Avatar, Storage, Xact, Video); those have their own rules for code that uses them.",
+      "resolution": "The migrator replaces the XNA references with the MonoGame DesktopGL or WindowsDX package.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA004",
+      "title": "Old .NET Framework target",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "TargetFrameworkVersion", "matches": "^v[1-4]\\." },
+      "explanation": "The project targets the .NET Framework (3.5 for XNA 3.x, 4.0 with the Client profile for XNA 4.0). That framework version is not available to an SDK-style build, and current MonoGame releases need modern .NET.",
+      "resolution": "The migrator sets the target framework of the generated project to net8.0.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA005",
+      "title": "Nested XNA content project",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "projectItem", "itemType": "NestedContentProject" },
+      "explanation": "Assets live in a nested .contentproj that imports the XNA content pipeline targets, which only XNA Game Studio can build. MonoGame builds content from a Content.mgcb file. Projects that reference the content project with a ProjectReference instead are covered by XNA049.",
+      "resolution": "The migrator generates Content.mgcb from the content project, copies the source assets, and lists anything it cannot convert as manual work.",
+      "migratorTask": "project-migrator:7.1"
+    },
+    {
+      "id": "XNA006",
+      "title": "XNA 3.x project",
+      "severity": "Info",
+      "classification": "Manual",
+      "category": "Project",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "projectProperty", "name": "XnaFrameworkVersion", "matches": "^v3\\.[01]$" },
+      "explanation": "The project targets XNA 3.0 or 3.1. XNA 4.0 broke much of the graphics, storage, and effect API, and MonoGame follows the 4.0 API. Premultiplied alpha is also the default from 4.0 on, so sprite blending can look different after the move. Each concrete break has its own rule.",
+      "resolution": "Fix the findings from the XNA 3.x rules, then compare the rendered result of the migrated game with the original, especially alpha-blended sprites."
+    },
+    {
+      "id": "XNA007",
+      "title": "Project targets Xbox 360, Zune, or Windows Phone",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "XnaPlatform", "matches": "^(Xbox ?360|Zune|Windows ?Phone)$" },
+      "explanation": "XnaPlatform names a device platform. Xbox 360 and Zune builds depend on device APIs, and neither platform can be a MonoGame DesktopGL target. Code in this project is likely to use platform-only APIs.",
+      "resolution": "Migrate the Windows project of the solution instead. Keep shared code files and remove the device-specific project and its #if branches by hand."
+    },
+    {
+      "id": "XNA008",
+      "title": "Content pipeline extension assembly reference",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "reference", "name": "Microsoft.Xna.Framework.Content.Pipeline" },
+      "explanation": "The project references the XNA content pipeline base assembly, so it is a custom importer, processor, or content type library. The XNA pipeline types cannot run in the MonoGame content builder.",
+      "resolution": "Recreate the library against the MonoGame content pipeline package, then reference it from Content.mgcb with /reference."
+    },
+    {
+      "id": "XNA009",
+      "title": "GamerServices (Xbox Live, Guide, gamer profiles)",
+      "severity": "Blocker",
+      "classification": "Unsupported",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Microsoft.Xna.Framework.GamerServices", "includeChildren": true },
+      "explanation": "Code uses GamerServices (Guide, SignedInGamer, achievements, leaderboards, trial mode). MonoGame removed this namespace and no replacement exists for the Xbox Live services behind it.",
+      "resolution": "Remove the calls or replace them with your own sign-in, saving, and leaderboard code. Remove GamerServicesComponent from the Game constructor."
+    },
+    {
+      "id": "XNA010",
+      "title": "Net (NetworkSession, system link, Live multiplayer)",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Microsoft.Xna.Framework.Net", "includeChildren": true },
+      "explanation": "Code uses the XNA Net namespace (NetworkSession, PacketReader, PacketWriter). MonoGame removed it, and it depended on Xbox Live matchmaking.",
+      "resolution": "Rewrite networking with System.Net.Sockets or a library such as Lidgren.Network."
+    },
+    {
+      "id": "XNA011",
+      "title": "Avatar API (Xbox 360 avatars)",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Microsoft.Xna.Framework.Avatar", "includeChildren": true },
+      "explanation": "Code uses the XNA Avatar API (AvatarRenderer, AvatarDescription, AvatarAnimation). It only worked on Xbox 360 with Xbox Live and MonoGame has no equivalent.",
+      "resolution": "Replace avatars with your own character models and remove the Avatar code."
+    },
+    {
+      "id": "XNA012",
+      "title": "Storage (StorageDevice, StorageContainer)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Microsoft.Xna.Framework.Storage", "includeChildren": true },
+      "explanation": "Code uses StorageDevice and StorageContainer for save games. MonoGame removed the Storage namespace because it did not port across platforms.",
+      "resolution": "Write saves with System.IO under Environment.SpecialFolder.ApplicationData and read packaged files with TitleContainer.OpenStream. The optional shim project (project-migrator:12.1) can stand in for the calls while you rewrite."
+    },
+    {
+      "id": "XNA013",
+      "title": "XNA-only SpriteFont family",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "spriteFontFamily", "families": ["Kootenay", "Lindsey", "Miramonte", "Pericles", "Pescadero", "Segoe UI Mono"] },
+      "explanation": "A .spritefont names a font that shipped with XNA Game Studio (Kootenay, Lindsey, Miramonte, Pericles, Pescadero) or is not installed with Windows (Segoe UI Mono). The MonoGame content builder looks the font up in the system font folders, so the content build fails with 'Could not find ... font file' for each such file (Pirate-Treasure-Hunter: Pescadero in three files, Segoe UI Mono in one).",
+      "resolution": "Change FontName to an installed or bundled font such as Arial or Consolas, or add a .ttf to the content folder and name it. Glyph widths differ from the original, so check the layout."
+    },
+    {
+      "id": "XNA014",
+      "title": "Video playback (VideoPlayer, Video)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "type", "name": "VideoPlayer", "namespaces": ["Microsoft.Xna.Framework.Media"] },
+      "explanation": "Code plays video with VideoPlayer. MonoGame has the class, but video support depends on the platform. The DesktopGL target has historically lacked working video playback and the WMV importer is Windows only.",
+      "resolution": "Test playback on the chosen target. If it fails, convert the video and use a video library such as a Theora or FFmpeg player."
+    },
+    {
+      "id": "XNA015",
+      "title": "XACT audio engine (AudioEngine, WaveBank, SoundBank, Cue)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "type", "name": "AudioEngine", "namespaces": ["Microsoft.Xna.Framework.Audio"] },
+      "explanation": "Code uses the XACT runtime. MonoGame can load compiled XACT files (.xgs, .xwb, .xsb) but the content builder cannot compile XACT projects, and some features such as ADPCM and streaming wave banks are limited.",
+      "resolution": "Ship the compiled XACT files unchanged and load them by path, or move sounds to SoundEffect and Song assets and drop XACT."
+    },
+    {
+      "id": "XNA016",
+      "title": "XACT project file (.xap)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "filePattern", "glob": "**/*.xap" },
+      "explanation": "The project contains an XACT authoring file. XACT is a Windows-only tool that is no longer updated, and the MonoGame content builder does not compile .xap files.",
+      "resolution": "Compile the project in XACT and copy the .xgs, .xwb, and .xsb outputs, or export the sounds as wav or ogg files and use SoundEffect and Song."
+    },
+    {
+      "id": "XNA017",
+      "title": "Effect file (.fx) needs shader review",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "contentItem", "extension": ".fx" },
+      "explanation": "XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently.",
+      "resolution": "Build the effect with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits."
+    },
+    {
+      "id": "XNA018",
+      "title": "Prebuilt .xnb files",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "filePattern", "glob": "**/*.xnb" },
+      "explanation": "The project folder holds compiled .xnb assets. They cannot be rebuilt for MonoGame without the source files, and an .xnb built for another platform or XNA version may fail to load.",
+      "resolution": "Find the original source assets and add them to the content project. If none exist, test loading each .xnb in the migrated game."
+    },
+    {
+      "id": "XNA019",
+      "title": "WMA audio",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "contentItem", "extension": ".wma" },
+      "explanation": "WMA audio is an old Windows format. MonoGame imports it but advises against it for cross-platform games.",
+      "resolution": "The migrator maps WMA to the MonoGame WMA importer and Song processor. Convert to ogg or mp3 later if the game must run beyond Windows.",
+      "migratorTask": "content-conversion:4.2"
+    },
+    {
+      "id": "XNA020",
+      "title": "WMV video content",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "contentItem", "extension": ".wmv" },
+      "explanation": "The content project builds a WMV video. MonoGame's WMV importer only works on Windows and video playback is not available on every target.",
+      "resolution": "Test the content build on the chosen target. Re-encode the video or use a video playback library if it fails."
+    },
+    {
+      "id": "XNA021",
+      "title": "Skinned model processor from the XNA sample",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "contentItem", "processor": "SkinnedModelProcessor" },
+      "explanation": "A model uses SkinnedModelProcessor, a custom processor from the XNA skinned model sample. It lives in a pipeline library built against XNA and has to be rebuilt for MonoGame.",
+      "resolution": "Port the SkinnedModel pipeline and runtime libraries to MonoGame packages and reference the pipeline library from Content.mgcb."
+    },
+    {
+      "id": "XNA022",
+      "title": "SpriteBlendMode (replaced by BlendState)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "type", "name": "SpriteBlendMode", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "SpriteBlendMode and the SpriteBatch.Begin overloads that take it were removed in XNA 4.0 and are not in MonoGame. Uses outside a Begin call cannot be rewritten safely.",
+      "resolution": "The migrator rewrites Begin(SpriteBlendMode.X) to Begin(SpriteSortMode.Deferred, BlendState.X) and marks other uses for manual work.",
+      "migratorTask": "project-migrator:10.1"
+    },
+    {
+      "id": "XNA023",
+      "title": "SaveStateMode (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "type", "name": "SaveStateMode", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "SaveStateMode, used in SpriteBatch.Begin and Effect.Begin, was removed in XNA 4.0 together with StateBlock. Graphics state is no longer saved and restored for you.",
+      "resolution": "Delete the argument and set the blend, depth, rasterizer, and sampler state explicitly before each draw."
+    },
+    {
+      "id": "XNA024",
+      "title": "GraphicsDevice.RenderState (replaced by state objects)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "RenderState", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 4.0 replaced RenderState with BlendState, DepthStencilState, and RasterizerState. A user type with a member named RenderState would also match.",
+      "resolution": "The migrator replaces known RenderState assignments with state objects and marks combinations it cannot map with confidence.",
+      "migratorTask": "project-migrator:10.2"
+    },
+    {
+      "id": "XNA025",
+      "title": "StateBlock (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "type", "name": "StateBlock", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "StateBlock saved and restored device state. It was removed in XNA 4.0 because it was very slow.",
+      "resolution": "Set every state you depend on before drawing, or keep the previous state objects in local variables and assign them back."
+    },
+    {
+      "id": "XNA026",
+      "title": "SamplerState MinFilter, MagFilter, MipFilter (merged into Filter)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "MagFilter", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 4.0 merged the three filter properties of a sampler into one Filter property and made sampler states immutable objects. The rule detects MagFilter only; code that sets MinFilter or MipFilter alone is missed.",
+      "resolution": "Pick a built-in SamplerState such as LinearClamp or PointWrap, or create a SamplerState with the Filter you need and assign it to GraphicsDevice.SamplerStates[n]."
+    },
+    {
+      "id": "XNA027",
+      "title": "ResolveTexture2D (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "type", "name": "ResolveTexture2D", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "ResolveTexture2D copied the back buffer into a texture. XNA 4.0 removed it, and MonoGame has no back buffer resolve.",
+      "resolution": "Draw the scene into a RenderTarget2D and use that render target as a texture."
+    },
+    {
+      "id": "XNA028",
+      "title": "GraphicsDevice.ResolveBackBuffer (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "ResolveBackBuffer", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation" },
+      "explanation": "ResolveBackBuffer was removed in XNA 4.0. Any method with the same name in a game class would also match.",
+      "resolution": "Call SetRenderTarget with a RenderTarget2D before drawing the scene, then SetRenderTarget(null) and draw the render target."
+    },
+    {
+      "id": "XNA029",
+      "title": "DepthStencilBuffer (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "type", "name": "DepthStencilBuffer", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "XNA 4.0 removed DepthStencilBuffer and GraphicsDevice.DepthStencilBuffer. The depth format is now part of each render target.",
+      "resolution": "Pass a DepthFormat to the RenderTarget2D constructor and delete the code that creates, sets, and restores depth buffers."
+    },
+    {
+      "id": "XNA030",
+      "title": "RenderTarget2D.GetTexture (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "GetTexture", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 0} },
+      "explanation": "RenderTarget2D now derives from Texture2D, so GetTexture was removed. Parameterless GetTexture methods on other types also match.",
+      "resolution": "Use the render target itself wherever a Texture2D is expected. Create a new render target per saved frame instead of reusing one."
+    },
+    {
+      "id": "XNA031",
+      "title": "SetRenderTarget(index, target)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "SetRenderTarget", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 2, "max": 2} },
+      "explanation": "XNA 4.0 sets all render targets in one call and has no index argument. The two-argument form still exists for cube map targets, so a valid call such as SetRenderTarget(cube, CubeMapFace.PositiveX) also matches.",
+      "resolution": "Use SetRenderTarget(target) for one target, SetRenderTarget(null) to return to the back buffer, and SetRenderTargets(a, b, c) for several."
+    },
+    {
+      "id": "XNA032",
+      "title": "PresentationParameters.MultiSampleType (replaced by MultiSampleCount)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "MultiSampleType", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "PresentationParameters.MultiSampleType and MultiSampleQuality were replaced by an integer MultiSampleCount in XNA 4.0. Render targets take the count in their constructor.",
+      "resolution": "Use MultiSampleCount (0 for none, 4 for 4x) and remove MultiSampleQuality."
+    },
+    {
+      "id": "XNA033",
+      "title": "PresentationParameters.AutoDepthStencilFormat (replaced by DepthStencilFormat)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "AutoDepthStencilFormat", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 4.0 removed EnableAutoDepthStencil and AutoDepthStencilFormat. PresentationParameters now has DepthStencilFormat, and DepthFormat.None disables the depth buffer.",
+      "resolution": "Set DepthStencilFormat, or GraphicsDeviceManager.PreferredDepthStencilFormat, and delete EnableAutoDepthStencil."
+    },
+    {
+      "id": "XNA034",
+      "title": "GraphicsDevice.VertexDeclaration (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "VertexDeclaration", "receiver": "GraphicsDevice", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 4.0 removed the device property because every vertex buffer now carries its declaration. Known limit: the receiver must be named GraphicsDevice, so code that uses another variable name is missed. The name is needed to avoid the valid static VertexDeclaration property of the 4.0 vertex types.",
+      "resolution": "Delete the assignment and create the VertexBuffer with a vertex type or a VertexDeclaration."
+    },
+    {
+      "id": "XNA035",
+      "title": "GraphicsDevice.Vertices[n].SetSource (replaced by SetVertexBuffer)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "SetSource", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 3, "max": 3} },
+      "explanation": "XNA 4.0 removed GraphicsDevice.Vertices. Vertex buffers are set with SetVertexBuffer, and buffer sizes are counted in vertices instead of bytes.",
+      "resolution": "Replace the call with GraphicsDevice.SetVertexBuffer(buffer). Use SetVertexBuffers for several streams. Change buffer sizes from bytes to vertex counts."
+    },
+    {
+      "id": "XNA036",
+      "title": "VertexElements on vertex types (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "VertexElements", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 3.x vertex structs exposed a VertexElements array. In 4.0 they expose a VertexDeclaration, and the VertexDeclaration constructor no longer takes a GraphicsDevice.",
+      "resolution": "Use VertexPositionColor.VertexDeclaration, or new VertexDeclaration(new VertexElement(...)) for custom vertex types, and implement IVertexType on custom structs."
+    },
+    {
+      "id": "XNA037",
+      "title": "ModelMeshPart.VertexStride (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "VertexStride", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 4.0 moved the vertex and index buffers from ModelMesh to ModelMeshPart and removed VertexStride, StreamOffset, and VertexDeclaration from the part. Custom model drawing code breaks.",
+      "resolution": "Set meshPart.VertexBuffer and meshPart.IndexBuffer on the device and read the layout from VertexBuffer.VertexDeclaration."
+    },
+    {
+      "id": "XNA038",
+      "title": "BufferUsage.Points and point sprites (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "Points", "receiver": "BufferUsage", "namespaces": ["Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "XNA 4.0 dropped point sprites. The point-size render states are gone with them, and MonoGame has no BufferUsage.Points. Known limit: the receiver is matched by the name BufferUsage, so an alias or a using static import is missed.",
+      "resolution": "Draw each point as a textured quad, or draw billboards with SpriteBatch or an instanced quad."
+    },
+    {
+      "id": "XNA039",
+      "title": "EffectPass.Begin and End (replaced by Apply)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "Begin", "receiver": "pass", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 0} },
+      "explanation": "XNA 4.0 replaced EffectPass.Begin and End with EffectPass.Apply. Known limit: the rule only sees calls on a variable named pass, which is the usual loop variable, so passes held in variables with other names are missed.",
+      "resolution": "The migrator rewrites the Begin/End pattern to pass.Apply() and marks patterns it cannot rewrite with confidence.",
+      "migratorTask": "project-migrator:10.3"
+    },
+    {
+      "id": "XNA040",
+      "title": "Effect.Begin and End (replaced by EffectPass.Apply)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "Begin", "receiver": "effect", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 1} },
+      "explanation": "XNA 4.0 removed Effect.Begin and End. Known limit: the rule only sees calls on a variable named effect, so effects held in other variables (basicEffect, shader, and so on) are missed.",
+      "resolution": "The migrator replaces the Begin/End pattern with a loop over CurrentTechnique.Passes that calls Apply, and marks patterns it cannot rewrite with confidence.",
+      "migratorTask": "project-migrator:10.3"
+    },
+    {
+      "id": "XNA041",
+      "title": "Effect.CommitChanges (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "CommitChanges", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 0} },
+      "explanation": "XNA 4.0 removed Effect.CommitChanges. Parameter values are sent to the device when EffectPass.Apply runs.",
+      "resolution": "Delete the call and make sure EffectPass.Apply runs after the last parameter change and before the draw call."
+    },
+    {
+      "id": "XNA042",
+      "title": "GameTime.TotalRealTime and ElapsedRealTime (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "member", "name": "TotalRealTime", "namespaces": ["Microsoft.Xna.Framework"], "kind": "Access" },
+      "explanation": "XNA 4.0 removed the real-time members of GameTime. Only game time remains. The rule detects TotalRealTime; ElapsedRealTime is missed.",
+      "resolution": "Use TotalGameTime and ElapsedGameTime. If wall-clock time is needed, use a Stopwatch."
+    },
+    {
+      "id": "XNA043",
+      "title": "ShaderProfile (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["3.0", "3.1"],
+      "match": { "type": "type", "name": "ShaderProfile", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "GraphicsDeviceManager.MinimumPixelShaderProfile and MinimumVertexShaderProfile were replaced in XNA 4.0 by GraphicsProfile (Reach or HiDef). MonoGame has no ShaderProfile.",
+      "resolution": "Delete the shader profile settings. Set GraphicsProfile to Reach or HiDef if the game needs to choose."
+    },
+    {
+      "id": "XNA045",
+      "title": "ClickOnce bootstrapper packages",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectItem", "itemType": "BootstrapperPackage" },
+      "explanation": "The project lists ClickOnce bootstrapper packages, which come from the Publish tab of Visual Studio 2010 (the XNA templates include the XNA Framework redistributable). The same settings usually bring a hard-coded PublishUrl, ManifestKeyFile, and manifest signing. Nothing in an SDK-style MonoGame build uses them. Known limit: only BootstrapperPackage items trigger the rule, not the publish properties alone.",
+      "resolution": "The migrator writes a new SDK-style project that carries none of the publish settings. Publish the MonoGame game with dotnet publish.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA046",
+      "title": "Properties/AssemblyInfo.cs duplicates SDK attributes",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "filePattern", "glob": "**/Properties/AssemblyInfo.cs" },
+      "explanation": "Properties/AssemblyInfo.cs declares assembly attributes (title, product, company, version). An SDK-style project generates the same attributes from project properties, and the build then fails with CS0579 duplicate attribute. Pirate-Treasure-Hunter got four errors from this one file.",
+      "resolution": "The migrator writes <GenerateAssemblyInfo>false</GenerateAssemblyInfo> in the generated project so the kept AssemblyInfo.cs does not clash.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA047",
+      "title": "NoStdLib breaks SDK-style builds",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "NoStdLib", "equals": "true" },
+      "explanation": "NoStdLib=true tells the compiler not to reference the standard library. The old XNA project templates set it. An SDK-style project supplies the references itself, so the compiler would miss System.Object and the build would fail.",
+      "resolution": "The migrator writes a new SDK-style project from a fixed property set that does not include NoStdLib.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA048",
+      "title": "Signing key (.pfx) in the project folder",
+      "severity": "Info",
+      "classification": "Manual",
+      "category": "Project",
+      "match": { "type": "filePattern", "glob": "**/*.pfx" },
+      "explanation": "A .pfx file sits in the project folder. XNA templates create a temporary key for ClickOnce manifest signing. A private key committed to source control is a leak risk, and nothing in a MonoGame build uses it.",
+      "resolution": "Do not carry the file into the new project. If the key was ever used for real signing, treat it as exposed and replace it, and remove it from the repository history if the repository is public."
+    },
+    {
+      "id": "XNA049",
+      "title": "Content project referenced with ProjectReference",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "projectItem", "itemType": "ProjectReference", "include": "*.contentproj" },
+      "explanation": "The game project references a .contentproj with a ProjectReference (XnaReferenceType Content), the form used when the content project is a sibling project. MonoGame cannot load that reference and builds content from Content.mgcb instead. The analyzer reads content items only from NestedContentProject items, so the content-item rules (XNA017, XNA019, XNA020, XNA021) do not see assets behind this form.",
+      "resolution": "Remove the reference, convert the content project to Content.mgcb, and move the asset folders into the game project. This stays manual until content-conversion:2.1 reads ProjectReference content projects."
+    }
+  ]
 }

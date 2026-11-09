@@ -33,7 +33,7 @@ public class RuleModelTests
 
         Assert.Equal(1, catalog.Version);
         Assert.Equal("xna-to-monogame", catalog.Name);
-        Assert.Empty(catalog.Rules);
+        Assert.NotEmpty(catalog.Rules);
         Assert.NotNull(catalog.Scoring);
         Assert.Equal(ScoringOptions.Default.SeverityWeights.OrderBy(p => p.Key), catalog.Scoring.SeverityWeights.OrderBy(p => p.Key));
         Assert.Equal(ScoringOptions.Default.ClassificationFactors.OrderBy(p => p.Key), catalog.Scoring.ClassificationFactors.OrderBy(p => p.Key));
@@ -96,6 +96,13 @@ public class RuleModelTests
         var m = Assert.IsType<ProjectItemMatch>(ParseRule("""{"include":"*.targets","itemType":"Import","type":"projectItem"}""").Match);
         Assert.Equal("Import", m.ItemType);
         Assert.Equal("*.targets", m.Include);
+    }
+
+    [Fact]
+    public void SpriteFontFamilyMatch()
+    {
+        var m = Assert.IsType<SpriteFontFamilyMatch>(ParseRule("""{"families":["Pericles","Pescadero"],"type":"spriteFontFamily"}""").Match);
+        Assert.Equal(["Pericles", "Pescadero"], m.Families);
     }
 
     [Fact]

@@ -64,6 +64,7 @@ public sealed class RuleCatalogLoaderTests
     [InlineData("""{"type":"projectItem","itemType":"Import","include":"*XNA Game Studio*"}""", typeof(ProjectItemMatch))]
     [InlineData("""{"type":"filePattern","glob":"**/*.xap"}""", typeof(FilePatternMatch))]
     [InlineData("""{"type":"contentItem","processor":"Outline*"}""", typeof(ContentItemMatch))]
+    [InlineData("""{"type":"spriteFontFamily","families":["Pericles","Pescadero"]}""", typeof(SpriteFontFamilyMatch))]
     public void Parse_EachMatchType_Loads(string match, Type expected)
     {
         var catalog = RuleCatalogLoader.Parse(Catalog(Rule("XNA010", match)));
@@ -106,6 +107,21 @@ public sealed class RuleCatalogLoaderTests
 
         Assert.Contains(exception.Errors, e => e.StartsWith(expectedPrefix, StringComparison.Ordinal));
         Assert.Equal($"Rule catalog is invalid: {exception.Errors.Count} problem(s).", exception.Message);
+    }
+
+    /// <summary>A spriteFontFamily match needs a non-empty, unique list of non-empty names and allows no other property.</summary>
+    /// <param name="match">The match object as JSON.</param>
+    [Theory]
+    [InlineData("""{"type":"spriteFontFamily"}""")]
+    [InlineData("""{"type":"spriteFontFamily","families":[]}""")]
+    [InlineData("""{"type":"spriteFontFamily","families":[""]}""")]
+    [InlineData("""{"type":"spriteFontFamily","families":["A","A"]}""")]
+    [InlineData("""{"type":"spriteFontFamily","families":["A"],"extra":1}""")]
+    public void Parse_InvalidSpriteFontFamily_Fails(string match)
+    {
+        var exception = Fails(Catalog(Rule("XNA010", match)));
+
+        Assert.Contains(exception.Errors, e => e.StartsWith("XNA010 /rules/0", StringComparison.Ordinal));
     }
 
     /// <summary>The message for a missing property says which property.</summary>

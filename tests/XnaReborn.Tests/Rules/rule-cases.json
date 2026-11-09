@@ -1,0 +1,290 @@
+[
+  {
+    "ruleId": "XNA001",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <Import Project=\"$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v4.0\\Microsoft.Xna.GameStudio.targets\" />\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n  <Import Project=\"$(MSBuildToolsPath)\\Microsoft.CSharp.targets\" />\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA002",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA003",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"System.Xml\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA004",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <TargetFramework>net8.0</TargetFramework>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA005",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <NestedContentProject Include=\"Content\\Content.contentproj\">\n      <Project>{5C1A7E20-3B44-4F8D-9A61-0E2B7D4C1A03}</Project>\n    </NestedContentProject>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Compile Include=\"Game1.cs\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA006",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v3.1</XnaFrameworkVersion>\n  </PropertyGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA007",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaPlatform>Zune</XnaPlatform>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaPlatform>Windows</XnaPlatform>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA008",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Reference Include=\"Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Reference Include=\"Microsoft.Xna.Framework.Content.Pipeline.TextureImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA009",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.GamerServices;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            bool visible = Guide.IsVisible;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework.Input;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            KeyboardState keys = Keyboard.GetState();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA010",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Net;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            NetworkSession session = null;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing System.Net.Sockets;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            TcpClient client = null;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA011",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Avatar;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            AvatarRenderer renderer = null;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework.Graphics;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SpriteBatch batch = null;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA012",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Storage;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            StorageDevice device = null;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing System.IO;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Stream stream = File.OpenRead(\"save.dat\");\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA013",
+    "kind": "font",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<XnaContent xmlns:Graphics=\"Microsoft.Xna.Framework.Content.Pipeline.Graphics\">\n  <Asset Type=\"Graphics:FontDescription\">\n    <FontName>Pescadero</FontName>\n    <Size>14</Size>\n    <Spacing>0</Spacing>\n    <UseKerning>true</UseKerning>\n    <Style>Regular</Style>\n    <CharacterRegions>\n      <CharacterRegion>\n        <Start>&#32;</Start>\n        <End>&#126;</End>\n      </CharacterRegion>\n    </CharacterRegions>\n  </Asset>\n</XnaContent>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<XnaContent xmlns:Graphics=\"Microsoft.Xna.Framework.Content.Pipeline.Graphics\">\n  <Asset Type=\"Graphics:FontDescription\">\n    <FontName>Segoe UI</FontName>\n    <Size>14</Size>\n    <Spacing>0</Spacing>\n    <UseKerning>true</UseKerning>\n    <Style>Regular</Style>\n    <CharacterRegions>\n      <CharacterRegion>\n        <Start>&#32;</Start>\n        <End>&#126;</End>\n      </CharacterRegion>\n    </CharacterRegions>\n  </Asset>\n</XnaContent>\n"
+  },
+  {
+    "ruleId": "XNA014",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Media;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VideoPlayer player = new VideoPlayer();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework.Media;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Song song = null;\n            MediaPlayer.Play(song);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA015",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Audio;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            AudioEngine engine = new AudioEngine(\"Content/Audio.xgs\");\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework.Audio;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SoundEffect effect = null;\n            effect.Play();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA016",
+    "kind": "file",
+    "positive": "Content/Audio/Sounds.xap",
+    "negative": "Content/Audio/hit.wav"
+  },
+  {
+    "ruleId": "XNA017",
+    "kind": "content",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Shaders\\Blur.fx\">\n      <Importer>EffectImporter</Importer>\n      <Processor>EffectProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Textures\\hero.png\">\n      <Importer>TextureImporter</Importer>\n      <Processor>TextureProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA018",
+    "kind": "file",
+    "positive": "Content/hero.xnb",
+    "negative": "Content/hero.png"
+  },
+  {
+    "ruleId": "XNA019",
+    "kind": "content",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Music\\theme.wma\">\n      <Importer>WmaImporter</Importer>\n      <Processor>SongProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Music\\theme.mp3\">\n      <Importer>Mp3Importer</Importer>\n      <Processor>SongProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA020",
+    "kind": "content",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Video\\intro.wmv\">\n      <Importer>WmvImporter</Importer>\n      <Processor>VideoProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Video\\intro.ogv\">\n      <Importer>OggImporter</Importer>\n      <Processor>VideoProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA021",
+    "kind": "content",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Models\\dude.fbx\">\n      <Importer>FbxImporter</Importer>\n      <Processor>SkinnedModelProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Models\\dude.fbx\">\n      <Importer>FbxImporter</Importer>\n      <Processor>ModelProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA022",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SpriteBatch spriteBatch = null;\n            spriteBatch.Begin(SpriteBlendMode.AlphaBlend);\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SpriteBatch spriteBatch = null;\n            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA023",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SaveStateMode mode = SaveStateMode.None;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            BlendState mode = BlendState.Opaque;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA024",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GraphicsDevice.RenderState.AlphaBlendEnable = true;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GraphicsDevice.BlendState = BlendState.AlphaBlend;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA025",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            StateBlock saved = new StateBlock(GraphicsDevice);\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            BlendState saved = GraphicsDevice.BlendState;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA026",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GraphicsDevice.SamplerStates[0].MagFilter = TextureFilter.Linear;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA027",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            ResolveTexture2D scene = null;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            RenderTarget2D scene = null;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA028",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Texture2D scene = null;\n            GraphicsDevice.ResolveBackBuffer(scene);\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GraphicsDevice.SetRenderTarget(null);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA029",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            DepthStencilBuffer depth = new DepthStencilBuffer(GraphicsDevice, 800, 600, DepthFormat.Depth24);\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            RenderTarget2D target = new RenderTarget2D(GraphicsDevice, 800, 600, false, SurfaceFormat.Color, DepthFormat.Depth24);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA030",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            RenderTarget2D rt = null;\n            Texture2D tex = rt.GetTexture();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            TextureAtlas atlas = null;\n            Texture2D tex = atlas.GetTexture(\"hero\");\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA031",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            RenderTarget2D rt = null;\n            GraphicsDevice.SetRenderTarget(0, rt);\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            RenderTarget2D rt = null;\n            GraphicsDevice.SetRenderTarget(rt);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA032",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PresentationParameters pp = new PresentationParameters();\n            pp.MultiSampleType = MultiSampleType.None;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PresentationParameters pp = new PresentationParameters();\n            pp.MultiSampleCount = 0;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA033",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PresentationParameters pp = new PresentationParameters();\n            pp.AutoDepthStencilFormat = DepthFormat.Depth24;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PresentationParameters pp = new PresentationParameters();\n            pp.DepthStencilFormat = DepthFormat.Depth24;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA034",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VertexDeclaration decl = null;\n            GraphicsDevice.VertexDeclaration = decl;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VertexDeclaration decl = VertexPositionColor.VertexDeclaration;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA035",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VertexBuffer vb = null;\n            int stride = 0;\n            GraphicsDevice.Vertices[0].SetSource(vb, 0, stride);\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VertexBuffer vb = null;\n            GraphicsDevice.SetVertexBuffer(vb);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA036",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VertexElement[] elements = VertexPositionColor.VertexElements;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            VertexDeclaration decl = VertexPositionColor.VertexDeclaration;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA037",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            ModelMeshPart part = null;\n            int stride = part.VertexStride;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            ModelMeshPart part = null;\n            GraphicsDevice.SetVertexBuffer(part.VertexBuffer);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA038",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            BufferUsage usage = BufferUsage.WriteOnly | BufferUsage.Points;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            BufferUsage usage = BufferUsage.WriteOnly;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA039",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            EffectPass pass = null;\n            pass.Begin();\n            pass.End();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SpriteBatch spriteBatch = null;\n            spriteBatch.Begin();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA040",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Effect effect = null;\n            effect.Begin();\n            effect.End();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            SpriteBatch spriteBatch = null;\n            spriteBatch.Begin();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA041",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Effect effect = null;\n            effect.CommitChanges();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Effect effect = null;\n            effect.CurrentTechnique.Passes[0].Apply();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA042",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GameTime gameTime = null;\n            double seconds = gameTime.TotalRealTime.TotalSeconds;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GameTime gameTime = null;\n            double seconds = gameTime.TotalGameTime.TotalSeconds;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA043",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            ShaderProfile profile = ShaderProfile.PS_2_0;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nusing Microsoft.Xna.Framework.Graphics;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GraphicsProfile profile = GraphicsProfile.HiDef;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA045",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <BootstrapperPackage Include=\"Microsoft.Xna.Framework.4.0\">\n      <Visible>False</Visible>\n      <ProductName>Microsoft XNA Framework Redistributable 4.0</ProductName>\n      <Install>true</Install>\n    </BootstrapperPackage>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <PublishUrl>publish\\</PublishUrl>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA046",
+    "kind": "file",
+    "positive": "Properties/AssemblyInfo.cs",
+    "negative": "AssemblyInfo.cs"
+  },
+  {
+    "ruleId": "XNA047",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <NoStdLib>true</NoStdLib>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <NoStdLib>false</NoStdLib>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA048",
+    "kind": "file",
+    "positive": "Keys/Game_TemporaryKey.pfx",
+    "negative": "Keys/Game_TemporaryKey.snk"
+  },
+  {
+    "ruleId": "XNA049",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <ProjectReference Include=\"..\\GameContent\\GameContent.contentproj\">\n      <Name>GameContent</Name>\n      <XnaReferenceType>Content</XnaReferenceType>\n    </ProjectReference>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <ProjectReference Include=\"..\\Library\\Library.csproj\" />\n  </ItemGroup>\n</Project>\n"
+  }
+]

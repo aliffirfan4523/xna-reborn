@@ -18,7 +18,7 @@ public class RepositoryLayoutTests
 
     [Fact]
     [Trait("Category", "Rules")]
-    public void Catalog_is_valid_json_with_version_1_and_no_rules()
+    public void Catalog_is_valid_json_with_version_1_and_rules()
     {
         var path = Path.Combine(RepoRoot(), "rules", "xna-to-monogame.json");
         using var doc = JsonDocument.Parse(File.ReadAllText(path));
@@ -27,7 +27,7 @@ public class RepositoryLayoutTests
         Assert.Equal(1, root.GetProperty("version").GetInt32());
         Assert.Equal("xna-to-monogame", root.GetProperty("name").GetString());
         Assert.Equal(JsonValueKind.Array, root.GetProperty("rules").ValueKind);
-        Assert.Equal(0, root.GetProperty("rules").GetArrayLength());
+        Assert.True(root.GetProperty("rules").GetArrayLength() > 0);
     }
 
     [Fact]
@@ -40,6 +40,6 @@ public class RepositoryLayoutTests
 
         Assert.True(defs.TryGetProperty("rule", out _));
         Assert.True(defs.TryGetProperty("match", out _));
-        Assert.Equal(8, defs.GetProperty("match").GetProperty("oneOf").GetArrayLength());
+        Assert.Equal(9, defs.GetProperty("match").GetProperty("oneOf").GetArrayLength());
     }
 }

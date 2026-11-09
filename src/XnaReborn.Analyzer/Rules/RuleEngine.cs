@@ -6,7 +6,7 @@ using XnaReborn.Core.Models.Rules;
 
 namespace XnaReborn.Analyzer.Rules;
 
-/// <summary>Evaluates the project-level rules of a catalog (reference, project property, project item, file pattern, content item).</summary>
+/// <summary>Evaluates the project-level rules of a catalog (reference, project property, project item, file pattern, content item, sprite font family).</summary>
 public sealed class RuleEngine
 {
     private const int _maxSnippetValues = 3;
@@ -66,6 +66,7 @@ public sealed class RuleEngine
         ProjectItemMatch m => ProjectItemMatcher.Match(m, project),
         FilePatternMatch m => FilePatternMatcher.Match(m, _fileSystem, projectDirectory, token),
         ContentItemMatch m => ContentItemMatcher.Match(m, project),
+        SpriteFontFamilyMatch m => SpriteFontMatcher.Match(m, project, _fileSystem, projectDirectory, token),
         _ => [],
     };
 
