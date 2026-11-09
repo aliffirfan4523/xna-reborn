@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\XnaReborn.Core\XnaReborn.Core.csproj" />
     <ProjectReference Include="..\..\src\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
