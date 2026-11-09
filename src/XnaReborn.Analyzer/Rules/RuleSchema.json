@@ -95,7 +95,8 @@
         { "$ref": "#/$defs/matchProjectProperty" },
         { "$ref": "#/$defs/matchProjectItem" },
         { "$ref": "#/$defs/matchFilePattern" },
-        { "$ref": "#/$defs/matchContentItem" }
+        { "$ref": "#/$defs/matchContentItem" },
+        { "$ref": "#/$defs/matchSpriteFontFamily" }
       ]
     },
     "matchReference": {
@@ -199,6 +200,21 @@
         "extension": { "type": "string", "pattern": "^\\.[A-Za-z0-9]+$" },
         "importer": { "type": "string", "minLength": 1 },
         "processor": { "type": "string", "minLength": 1 }
+      }
+    },
+    "matchSpriteFontFamily": {
+      "description": "A .spritefont file in the project folder or a nested content project folder whose FontName equals one of the families, ignoring case.",
+      "type": "object",
+      "required": ["type", "families"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "spriteFontFamily" },
+        "families": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
       }
     }
   }

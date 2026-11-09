@@ -55,6 +55,6 @@
   - [x] 9.2 Source scan test for write APIs in `XnaReborn.Analyzer`
   - _Requirements: R9_
 
-- [ ] 10. Checkpoint: analyzer reports
+- [x] 10. Checkpoint: analyzer reports
   - Full test suite, `dotnet format --verify-no-changes`, review of every report snapshot, add rules from the manual-migration list
   - _Requirements: R1 to R10_

@@ -53,7 +53,7 @@ Acceptance criteria:
 2. IF the catalog is invalid, THEN THE analyzer SHALL fail with a message that names the rule id and the problem, and SHALL NOT run a partial analysis.
 3. THE analyzer SHALL reject duplicate rule ids.
 4. THE analyzer SHALL require a `migratorTask` link on every `AutoFixable` rule.
-5. THE analyzer SHALL support these match types: `reference`, `namespace`, `type`, `member`, `projectProperty`, `projectItem`, `filePattern`, and `contentItem`.
+5. THE analyzer SHALL support these nine match types: `reference`, `namespace`, `type`, `member`, `projectProperty`, `projectItem`, `filePattern`, `contentItem`, and `spriteFontFamily`.
 6. THE analyzer SHALL work with an empty catalog and return a report with no findings.
 
 ### R5: Source scanning

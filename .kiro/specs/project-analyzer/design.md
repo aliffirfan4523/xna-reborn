@@ -5,40 +5,40 @@
 The analyzer is a pipeline: discover projects, read project files, load the rule catalog, run each rule against project data and source syntax, score, and build a report. Models live in `XnaReborn.Core`. The pipeline lives in `XnaReborn.Analyzer`. Nothing in the pipeline writes to disk.
 
 ```
-path ──► ProjectDiscovery ──► ProjectReader ──► RuleEngine ──► Scorer ──► AnalysisReport
-                               (csproj,           ▲   ▲
-                                contentproj)      │   └── SourceScanner (Roslyn)
-                                                  └────── RuleCatalogLoader (+ RuleSchema.json)
+path â”€â”€â–º ProjectDiscovery â”€â”€â–º ProjectReader â”€â”€â–º RuleEngine â”€â”€â–º Scorer â”€â”€â–º AnalysisReport
+                               (csproj,           â–²   â–²
+                                contentproj)      â”‚   â””â”€â”€ SourceScanner (Roslyn)
+                                                  â””â”€â”€â”€â”€â”€â”€ RuleCatalogLoader (+ RuleSchema.json)
 ```
 
 ## Layout
 
 ```
 src/XnaReborn.Core/
-├── Models/
-│   ├── Severity.cs, Classification.cs, XnaVersion.cs, XnaPlatform.cs
-│   ├── Finding.cs, SourceLocation.cs, Diagnostic.cs
-│   ├── ProjectInfo.cs, ContentItem.cs
-│   ├── AnalysisReport.cs, AnalysisProgress.cs
-│   └── Rules/ (Rule.cs, RuleMatch.cs, RuleCatalog.cs, ScoringOptions.cs)
+â”œâ”€â”€ Models/
+â”‚   â”œâ”€â”€ Severity.cs, Classification.cs, XnaVersion.cs, XnaPlatform.cs
+â”‚   â”œâ”€â”€ Finding.cs, SourceLocation.cs, Diagnostic.cs
+â”‚   â”œâ”€â”€ ProjectInfo.cs, ContentItem.cs
+â”‚   â”œâ”€â”€ AnalysisReport.cs, AnalysisProgress.cs
+â”‚   â””â”€â”€ Rules/ (Rule.cs, RuleMatch.cs, RuleCatalog.cs, ScoringOptions.cs)
 src/XnaReborn.Analyzer/
-├── ProjectAnalyzer.cs            # entry point
-├── Discovery/ProjectDiscovery.cs
-├── Reading/
-│   ├── ProjectReader.cs          # .csproj
-│   ├── ContentProjectReader.cs   # .contentproj (reused by the migrator)
-│   └── XnaVersionDetector.cs
-├── Rules/
-│   ├── RuleSchema.json           # embedded resource
-│   ├── RuleCatalogLoader.cs      # parse + validate
-│   ├── RuleEngine.cs
-│   └── Matchers/                 # one class per match type
-├── Source/SourceScanner.cs
-├── Scoring/Scorer.cs
-├── Reporting/ (JsonReportWriter.cs, MarkdownReportWriter.cs)
-└── IO/ReadOnlyFileSystem.cs      # the only way the analyzer touches disk
+â”œâ”€â”€ ProjectAnalyzer.cs            # entry point
+â”œâ”€â”€ Discovery/ProjectDiscovery.cs
+â”œâ”€â”€ Reading/
+â”‚   â”œâ”€â”€ ProjectReader.cs          # .csproj
+â”‚   â”œâ”€â”€ ContentProjectReader.cs   # .contentproj (reused by the migrator)
+â”‚   â””â”€â”€ XnaVersionDetector.cs
+â”œâ”€â”€ Rules/
+â”‚   â”œâ”€â”€ RuleSchema.json           # embedded resource
+â”‚   â”œâ”€â”€ RuleCatalogLoader.cs      # parse + validate
+â”‚   â”œâ”€â”€ RuleEngine.cs
+â”‚   â””â”€â”€ Matchers/                 # one class per match type
+â”œâ”€â”€ Source/SourceScanner.cs
+â”œâ”€â”€ Scoring/Scorer.cs
+â”œâ”€â”€ Reporting/ (JsonReportWriter.cs, MarkdownReportWriter.cs)
+â””â”€â”€ IO/ReadOnlyFileSystem.cs      # the only way the analyzer touches disk
 rules/
-└── xna-to-monogame.json
+â””â”€â”€ xna-to-monogame.json
 ```
 
 Models go in Core because the migrator, runner, and UI all use them. The loader and validator stay in the analyzer because only the analyzer needs schema validation.
@@ -174,6 +174,7 @@ Example rule (shape only, not part of the empty catalog):
 | `projectItem` | project | raw items (Reference, Compile, NestedContentProject, Import) |
 | `filePattern` | project | files on disk under the project folder (glob) |
 | `contentItem` | project | `ProjectInfo.ContentItems` |
+| `spriteFontFamily` | project | `FontName` in `.spritefont` files under the project folder and nested content project folders |
 | `namespace` | source | `using` directives and qualified names |
 | `type` | source | identifiers, gated by imported or qualified namespace |
 | `member` | source | member access and invocation syntax |
@@ -201,8 +202,8 @@ This trade-off is deliberate: it keeps the analyzer working on the user's machin
 ## Scoring
 
 ```
-penalty(rule)  = severityWeight[rule.severity] × classificationFactor[rule.classification]
-score          = clamp(round(100 − Σ penalty(r) for each distinct rule r that fired), 0, 100)
+penalty(rule)  = severityWeight[rule.severity] Ã— classificationFactor[rule.classification]
+score          = clamp(round(100 âˆ’ Î£ penalty(r) for each distinct rule r that fired), 0, 100)
 projectedScore = same sum, skipping rules whose classification is AutoFixable
 ```
 

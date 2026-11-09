@@ -20,6 +20,7 @@ public sealed class RuleMatchJsonConverter : JsonConverter<RuleMatch>
         ["projectItem"] = typeof(ProjectItemMatch),
         ["filePattern"] = typeof(FilePatternMatch),
         ["contentItem"] = typeof(ContentItemMatch),
+        ["spriteFontFamily"] = typeof(SpriteFontFamilyMatch),
     };
 
     private static readonly Dictionary<Type, string> _namesByType = _typesByName.ToDictionary(p => p.Value, p => p.Key);
