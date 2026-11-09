@@ -282,6 +282,8 @@ Expected results are Verify snapshots stored in `tests/XnaReborn.Tests/Snapshots
 
 ## Open questions
 
-1. **Shared importer map.** The content design keeps `importer-map.json` in the migrator, but "custom processor" detection in the analyzer needs the same list. Proposal: move it to `rules/` and load it from Core. The `contentItem` match can then gain a `nonStandardPair` flag (catalog schema version stays 1 if added as optional).
-2. **XNA013 font rule.** Fonts need the `.spritefont` family, which is not a content project field. Either add a `spriteFontFamily` match type or keep XNA013 as code-raised in the migrator. Decide in the content-conversion work.
+1. **Shared importer map. DECIDED.** The map lives in `rules/importer-map.json` and is loaded from Core. The analyzer and the migrator both use it. The `contentItem` match gains an optional `nonStandardPair` flag (catalog schema version stays 1). See follow-up task 11.2.
+2. **XNA013 font rule. DECIDED.** Added as the `spriteFontFamily` match type (task 10). The content-conversion `FontChecker` can reuse its font list.
 3. **Score formula.** The weights above are a starting point. Tune against the demo project so the before and after numbers tell the story honestly.
+4. **Content `ProjectReference` items. DECIDED.** The project reader follows a `ProjectReference` to a `.contentproj` like a `NestedContentProject`. See follow-up task 11.1.
+5. **Entry point inside `#if WINDOWS || XBOX`. DECIDED.** The migrator's `EntryPointRewriter` fixes it in source (see the project-migrator design). The analyzer has no check for it yet; a preprocessor check would be a new match type, added only if the demo needs it.

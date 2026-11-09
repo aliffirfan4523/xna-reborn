@@ -58,3 +58,8 @@
 - [x] 10. Checkpoint: analyzer reports
   - Full test suite, `dotnet format --verify-no-changes`, review of every report snapshot, add rules from the manual-migration list
   - _Requirements: R1 to R10_
+
+- [ ] 11. Follow-ups from the first rule catalog
+  - [ ] 11.1 `ProjectReader` follows a `ProjectReference` to a `.contentproj` like a `NestedContentProject`, so XNA017, XNA019, XNA020, XNA021 and the font rule see that content; XNA049 becomes AutoFixable under `project-migrator:7.1`
+  - [ ] 11.2 Move the importer and processor map to `rules/importer-map.json`, loaded from Core (shared with `content-conversion` task 4.1); add the optional `nonStandardPair` flag to the `contentItem` match and a rule for custom processors
+  - _Requirements: R2, R4_

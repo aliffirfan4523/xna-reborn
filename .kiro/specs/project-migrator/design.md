@@ -130,7 +130,7 @@ Each rewriter implements `ISourceRewriter { string RuleId; SyntaxNode Rewrite(Sy
 | `SpriteBatchBeginRewriter` | `Begin(SpriteBlendMode.AlphaBlend)` | `Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend)` |
 | `RenderStateRewriter` | `GraphicsDevice.RenderState.AlphaBlendEnable = true` | `GraphicsDevice.BlendState = BlendState.AlphaBlend` (with matching state objects) |
 | `EffectPassRewriter` | `effect.Begin(); pass.Begin(); ... pass.End(); effect.End();` | `foreach (var pass in effect.CurrentTechnique.Passes) { pass.Apply(); ... }` |
-| `EntryPointRewriter` | XNA-specific startup | MonoGame startup with `using var game = new Game1(); game.Run();` |
+| `EntryPointRewriter` | XNA-specific startup, including a `Program` class wrapped in `#if WINDOWS || XBOX` (the `WINDOWS` symbol no longer exists after the project is regenerated, so `Main` disappears with CS5001) | MonoGame startup with `using var game = new Game1(); game.Run();`, with the conditional wrapper removed so `Main` always compiles |
 | `MarkerInserter` | any unresolved case | adds `// XNAREBORN: <rule id>: <what to do>` above the statement |
 
 Rules for rewriters:

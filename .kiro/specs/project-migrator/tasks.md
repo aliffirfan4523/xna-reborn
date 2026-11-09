@@ -5,9 +5,9 @@
   - [x] 1.2 Define `MigrationOptions`, `PlanItem`, `FileChange`, `MigrationResult`, `Manifest`
   - _Requirements: R2, R8_
 
-- [ ] 2. Output safety
-  - [ ] 2.1 Implement `OutputGuard` (inside-source check, non-empty check, temp-then-move)
-  - [ ] 2.2 Tests for each guard case, including failure midway
+- [x] 2. Output safety
+  - [x] 2.1 Implement `OutputGuard` (inside-source check, non-empty check, temp-then-move)
+  - [x] 2.2 Tests for each guard case, including failure midway
   - _Requirements: R1_
 
 - [ ] 3. Planning
@@ -36,10 +36,10 @@
   - _Requirements: R5, R8_
 
 - [ ] 7. Content conversion
-  - [ ] 7.1 Implement `ImporterMap` and `MgcbGenerator`
-  - [ ] 7.2 Implement `AssetCopier`
-  - [ ] 7.3 Flag custom processors, XACT, `.fx`, and prebuilt-only `.xnb`
-  - [ ] 7.4 Snapshot tests
+  - The plan of record is the `content-conversion` spec (its tasks 1 to 10). The migrator only wires it in; it does not repeat that work. The shared importer map is `rules/importer-map.json`, loaded from Core.
+  - [ ] 7.1 Call `ContentConverter` from `ProjectMigrator` and turn its output into `FileChange` records
+  - [ ] 7.2 Add the `ContentReport` to the manifest
+  - [ ] 7.3 Snapshot test: migrate a fixture with content and check the generated `Content.mgcb`
   - _Requirements: R6_
 
 - [ ] 8. Manifest and writing

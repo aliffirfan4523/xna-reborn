@@ -16,7 +16,7 @@
   - _Requirements: R2_
 
 - [ ] 4. Mapping
-  - [ ] 4.1 Define `importer-map.json` and loader
+  - [ ] 4.1 Define `rules/importer-map.json` (shared with the analyzer, see `project-analyzer` task 11.2) and its loader in Core
   - [ ] 4.2 Implement `ImporterMap` and `ProcessorParamMapper`
   - [ ] 4.3 Classify items: Converted, ManualWork, Missing, Conflict, Prebuilt
   - [ ] 4.4 Mapping tests
