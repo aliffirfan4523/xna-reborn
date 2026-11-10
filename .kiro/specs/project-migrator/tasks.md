@@ -23,9 +23,9 @@
   - [x] 4.4 Snapshot tests per fixture
   - _Requirements: R3_
 
-- [ ] 5. Entry point
-  - [ ] 5.1 Implement `EntryPointRewriter`
-  - [ ] 5.2 Tests including already-modern entry points
+- [x] 5. Entry point
+  - [x] 5.1 Implement `EntryPointRewriter` (unwraps a platform-only `#if` around `Main`; text in, text out)
+  - [x] 5.2 Tests including already-modern entry points
   - _Requirements: R4_
 
 - [ ] 6. Source rewriting framework
