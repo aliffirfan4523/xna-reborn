@@ -484,3 +484,7 @@ $RECYCLE.BIN/
 # Verify snapshot output (accepted *.verified.* files are committed)
 *.received.*
 
+
+# Git worktrees for parallel workers
+.worktrees/
+
