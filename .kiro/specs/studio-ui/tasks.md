@@ -17,10 +17,12 @@
   - [x] 3.2 Grouped findings list with detail pane and snippet
   - [x] 3.3 Filters, search, and export
   - [x] 3.4 ViewModel tests
+  - [x] 3.5 "Start here" tip above the findings list (ordered steps, filter buttons, blocker line, collapsible)
   - _Requirements: R2_
 
-- [ ] 4. Checkpoint: analyze demo
+- [x] 4. Checkpoint: analyze demo
   - Open a fixture project and show the report on screen
+  - Covered by `CheckpointTests` (real analyzer and catalog, `xna31-legacy`, headless)
 
 - [x] 5. Migration setup
   - [x] 5.1 Output folder, target selection, shims toggle
@@ -41,8 +43,10 @@
   - [x] 7.4 Startup failure display
   - _Requirements: R5_
 
-- [ ] 8. Checkpoint: minimum winning demo
+- [x] 8. Checkpoint: minimum winning demo
   - Full flow on the demo project: open, analyze, migrate, build, run
+  - Headless test on a copy of `xna31-rewritable` (`CheckpointTests`): build needs `XNAREBORN_INTEGRATION=1`, run needs `XNAREBORN_LAUNCH=1`
+  - The owner also ran the full flow by hand on Pirate-Treasure-Hunter on 2026-11-11 and it works
   - _Requirements: R1 to R5_
 
 - [x] 9. Summary and polish
@@ -53,4 +57,5 @@
   - _Requirements: R6, R7, R8_
 
 - [ ] 10. Final checkpoint
-  - ViewModel and headless tests pass, demo rehearsal recorded
+  - [x] ViewModel and headless tests pass (both test projects, integration tests included)
+  - [ ] Demo rehearsal recorded (left for the owner)
