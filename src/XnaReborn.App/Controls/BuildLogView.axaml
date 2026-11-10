@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:XnaReborn.App.ViewModels"
+             x:Class="XnaReborn.App.Controls.BuildLogView"
+             AutomationProperties.Name="Build log">
+
+  <Border BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+    <ItemsControl x:Name="LogItems">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <VirtualizingStackPanel />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:BuildRunLogLine">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" Margin="6,0">
+            <TextBlock Text="{Binding Number}" Width="44" TextAlignment="Right" Opacity="0.6"
+                       FontFamily="Consolas,Menlo,monospace" />
+            <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource SeverityErrorBrush}" IsVisible="{Binding IsError}" />
+            <TextBlock Text="{Binding Text}" FontFamily="Consolas,Menlo,monospace" />
+          </StackPanel>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Border>
+</UserControl>

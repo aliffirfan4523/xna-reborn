@@ -1,10 +1,190 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:XnaReborn.App.ViewModels"
+             xmlns:controls="using:XnaReborn.App.Controls"
              x:Class="XnaReborn.App.Views.BuildRunView"
              x:DataType="vm:BuildRunViewModel">
-  <StackPanel Margin="{StaticResource PagePadding}">
-    <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+
+  <UserControl.Styles>
+    <!-- Severity cues: an icon, a text label and a color, so color is never the only cue (see Styles/Shared.axaml). -->
+    <Style Selector="TextBlock.icon.error">
+      <Setter Property="Text" Value="{DynamicResource SeverityErrorIcon}" />
+      <Setter Property="Foreground" Value="{DynamicResource SeverityErrorBrush}" />
+    </Style>
+    <Style Selector="TextBlock.icon.warning">
+      <Setter Property="Text" Value="{DynamicResource SeverityWarningIcon}" />
+      <Setter Property="Foreground" Value="{DynamicResource SeverityWarningBrush}" />
+    </Style>
+    <Style Selector="TextBlock.icon.info">
+      <Setter Property="Text" Value="{DynamicResource SeverityInfoIcon}" />
+      <Setter Property="Foreground" Value="{DynamicResource SeverityInfoBrush}" />
+    </Style>
+    <Style Selector="TextBlock.label.error">
+      <Setter Property="Text" Value="{DynamicResource SeverityErrorLabel}" />
+      <Setter Property="Foreground" Value="{DynamicResource SeverityErrorBrush}" />
+    </Style>
+    <Style Selector="TextBlock.label.warning">
+      <Setter Property="Text" Value="{DynamicResource SeverityWarningLabel}" />
+      <Setter Property="Foreground" Value="{DynamicResource SeverityWarningBrush}" />
+    </Style>
+    <Style Selector="TextBlock.label.info">
+      <Setter Property="Text" Value="{DynamicResource SeverityInfoLabel}" />
+      <Setter Property="Foreground" Value="{DynamicResource SeverityInfoBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid Margin="{StaticResource PagePadding}" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="8">
+
+    <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
                AutomationProperties.HeadingLevel="1" />
-  </StackPanel>
+
+    <Border Grid.Row="1" BorderThickness="1" CornerRadius="4" Padding="12"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            AutomationProperties.AutomationId="EnvironmentPanel"
+            AutomationProperties.Name="Environment status">
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Environment" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="{Binding NoMigrationMessage}" TextWrapping="Wrap"
+                   IsVisible="{Binding !HasMigration}"
+                   AutomationProperties.AutomationId="NoMigrationMessage" />
+        <TextBlock Text="{Binding SdkText}" AutomationProperties.AutomationId="SdkText" />
+        <TextBlock Text="{Binding TargetText}" AutomationProperties.AutomationId="TargetText" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" IsVisible="{Binding HasEnvironmentProblem}">
+          <TextBlock Classes="icon error" />
+          <TextBlock Classes="label error" FontWeight="Bold" />
+          <SelectableTextBlock Text="{Binding EnvironmentProblem}" TextWrapping="Wrap" MaxWidth="760"
+                               AutomationProperties.AutomationId="EnvironmentProblem" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+          <Button Content="Open download page" Click="OnOpenLink"
+                  IsVisible="{Binding HasEnvironmentLink}"
+                  AutomationProperties.AutomationId="OpenSdkLink"
+                  AutomationProperties.Name="Open the .NET SDK download page" />
+          <Button Content="Check again" Command="{Binding RefreshEnvironmentCommand}"
+                  AutomationProperties.AutomationId="RecheckButton"
+                  AutomationProperties.Name="Check the environment again" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+      <Button Content="Build" Command="{Binding BuildCommand}"
+              AutomationProperties.AutomationId="BuildButton"
+              AutomationProperties.Name="Build the migrated project" />
+      <Button Content="Build and Run" Command="{Binding BuildAndRunCommand}"
+              AutomationProperties.AutomationId="BuildAndRunButton"
+              AutomationProperties.Name="Build the migrated project and run the game" />
+      <Button Content="Cancel" Command="{Binding CancelCommand}"
+              AutomationProperties.AutomationId="CancelButton"
+              AutomationProperties.Name="Cancel the build" />
+      <Button Content="Stop" Command="{Binding StopCommand}"
+              AutomationProperties.AutomationId="StopButton"
+              AutomationProperties.Name="Stop the game" />
+      <Button Content="Go to Summary" Command="{Binding GoToSummaryCommand}"
+              AutomationProperties.AutomationId="SummaryButton"
+              AutomationProperties.Name="Go to the summary" />
+    </StackPanel>
+
+    <StackPanel Grid.Row="3" Spacing="{StaticResource SpacingSmall}">
+      <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" AutomationProperties.Name="Working" />
+      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+        <TextBlock Classes="icon error" IsVisible="{Binding IsStatusError}" />
+        <TextBlock Classes="label error" FontWeight="Bold" IsVisible="{Binding IsStatusError}" />
+        <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap"
+                   AutomationProperties.AutomationId="StatusText"
+                   AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
+    </StackPanel>
+
+    <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="16">
+
+      <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="4">
+        <TextBlock Text="Build log" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <controls:BuildLogView Grid.Row="1" Lines="{Binding LogLines}" AutomationProperties.AutomationId="BuildLog" />
+      </Grid>
+
+      <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{StaticResource SpacingMedium}">
+          <TextBlock Text="Problems and hints" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+          <TextBlock Text="{Binding DiagnosticsSummary}" IsVisible="{Binding HasGroups}"
+                     AutomationProperties.AutomationId="DiagnosticsSummary" />
+
+          <ItemsControl ItemsSource="{Binding Groups}" AutomationProperties.AutomationId="DiagnosticGroups"
+                        AutomationProperties.Name="Diagnostic groups">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:DiagnosticGroupViewModel">
+                <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                          AutomationProperties.Name="{Binding AutomationName}">
+                  <Expander.Header>
+                    <StackPanel Spacing="2">
+                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+                        <TextBlock Classes="icon" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
+                        <TextBlock Classes="label" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
+                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding CountText}" Opacity="0.7" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding Advice}" IsVisible="{Binding HasAdvice}" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding RuleText}" IsVisible="{Binding HasRuleId}" Opacity="0.7" />
+                    </StackPanel>
+                  </Expander.Header>
+                  <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:DiagnosticItemViewModel">
+                        <StackPanel Margin="0,4" Spacing="2">
+                          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+                            <TextBlock Classes="icon" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
+                            <TextBlock Classes="label" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
+                            <TextBlock Text="{Binding Code}" FontFamily="Consolas,Menlo,monospace" />
+                            <TextBlock Text="{Binding Location}" IsVisible="{Binding HasLocation}"
+                                       FontFamily="Consolas,Menlo,monospace" Opacity="0.8" />
+                          </StackPanel>
+                          <SelectableTextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </Expander>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <Border IsVisible="{Binding HasStartupFailure}" BorderThickness="1" CornerRadius="4" Padding="12"
+                  BorderBrush="{DynamicResource SeverityErrorBrush}"
+                  AutomationProperties.AutomationId="StartupFailurePanel"
+                  AutomationProperties.Name="Startup failure">
+            <StackPanel Spacing="{StaticResource SpacingMedium}">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+                <TextBlock Classes="icon error" />
+                <TextBlock Classes="label error" FontWeight="Bold" />
+                <TextBlock Text="Startup failure" FontWeight="SemiBold" />
+              </StackPanel>
+              <TextBlock Text="{Binding StartupFailureMessage}" TextWrapping="Wrap" />
+              <ItemsControl ItemsSource="{Binding RuntimeHints}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:DiagnosticHintViewModel">
+                    <StackPanel Margin="0,4" Spacing="2">
+                      <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding Advice}" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding RuleText}" IsVisible="{Binding HasRuleId}" Opacity="0.7" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <TextBlock Text="No known fix for this failure. Read the game output below." TextWrapping="Wrap"
+                         IsVisible="{Binding HasNoRuntimeHints}" />
+            </StackPanel>
+          </Border>
+
+          <StackPanel IsVisible="{Binding HasGameOutput}" Spacing="{StaticResource SpacingSmall}">
+            <TextBlock Text="Game output" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+            <TextBox Text="{Binding GameOutput, Mode=OneWay}" IsReadOnly="True" AcceptsReturn="True"
+                     TextWrapping="Wrap" MaxHeight="260" FontFamily="Consolas,Menlo,monospace"
+                     AutomationProperties.AutomationId="GameOutput"
+                     AutomationProperties.Name="Game output" />
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
 </UserControl>
