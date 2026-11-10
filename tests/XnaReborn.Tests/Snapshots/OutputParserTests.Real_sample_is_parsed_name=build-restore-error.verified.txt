@@ -1,0 +1,17 @@
+﻿{
+  MsBuild: [
+    {
+      Severity: Error,
+      Code: NU1101,
+      Message: Unable to find package XnaReborn.No.Such.Package. No packages exist with this id in source(s): nuget.org,
+      File: <root>\Game.csproj
+    },
+    {
+      Severity: Error,
+      Code: NU1101,
+      Message: Unable to find package XnaReborn.No.Such.Package. No packages exist with this id in source(s): nuget.org,
+      File: <root>\Game.csproj
+    }
+  ],
+  Mgcb: []
+}

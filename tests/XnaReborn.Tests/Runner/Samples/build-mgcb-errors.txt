@@ -1,0 +1,18 @@
+  Determining projects to restore...
+  Restored <root>\Xna40Basic.csproj (in 580 ms).
+  Tool 'dotnet-mgcb' (version '3.8.6.1') was restored. Available commands: mgcb
+  
+  Restore was successful.
+  I: <root>/Content/Fonts/Font.spritefont
+  I: 	Building Font C:\WINDOWS\Fonts\arial.ttf
+  I: <root>/Content/Textures/hero.png
+  TextureImporter failed to load '<root>/Content/Textures/hero.png': unknown image type
+<home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets(172,5): error MSB3073: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1. [<root>\Xna40Basic.csproj]
+
+Build FAILED.
+
+<home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets(172,5): error MSB3073: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1. [<root>\Xna40Basic.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:03.88

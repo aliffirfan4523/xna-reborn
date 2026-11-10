@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  Restored <root>\Xna31Legacy.csproj (in 330 ms).
+<root>\Game1.cs(14,17): error CS0246: The type or namespace name 'ResolveTexture2D' could not be found (are you missing a using directive or an assembly reference?) [<root>\Xna31Legacy.csproj]
+
+Build FAILED.
+
+<root>\Game1.cs(14,17): error CS0246: The type or namespace name 'ResolveTexture2D' could not be found (are you missing a using directive or an assembly reference?) [<root>\Xna31Legacy.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.52
