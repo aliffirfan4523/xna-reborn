@@ -35,19 +35,19 @@
   - [x] 6.4 Preserve trivia test on untouched code
   - _Requirements: R5, R8_
 
-- [ ] 7. Content conversion
+- [x] 7. Content conversion
   - The plan of record is the `content-conversion` spec (its tasks 1 to 10). The migrator only wires it in; it does not repeat that work. The shared importer map is `rules/importer-map.json`, loaded from Core.
-  - Until 7.1 is done, `ProjectMigrator` copies each content project's files unchanged as manual work and the generated project has no `Content.mgcb` reference, so code builds but assets are not built.
-  - [ ] 7.1 Call `ContentConverter` from `ProjectMigrator` and turn its output into `FileChange` records
-  - [ ] 7.2 Add the `ContentReport` to the manifest
-  - [ ] 7.3 Snapshot test: migrate a fixture with content and check the generated `Content.mgcb`
-  - [ ] 7.4 Emit `.config/dotnet-tools.json` (pinned `dotnet-mgcb`) when content is converted
+  - Content is converted for a project when its XNA005 or XNA049 plan item is included; when both are excluded, its files are copied unchanged as manual work. `MigrationOptions.SubstituteFonts` (off by default) swaps XNA-only fonts in the copy.
+  - [x] 7.1 Call `ContentConverter` from `ProjectMigrator` and turn its output into `FileChange` records
+  - [x] 7.2 Add the `ContentReport` to the manifest (`ManifestContent`: counts by status and by type)
+  - [x] 7.3 Snapshot test: migrate a fixture with content and check the generated `Content.mgcb`
+  - [x] 7.4 Emit `.config/dotnet-tools.json` (pinned `dotnet-mgcb`) when content is converted
   - _Requirements: R6_
 
 - [x] 8. Manifest and writing
   - [x] 8.1 Implement materialization of `FileChange` records (`OutputWriter`)
   - [x] 8.2 Implement JSON and Markdown manifest writers
-  - [ ] 8.3 Stop the migrated copy from inheriting a parent folder's `Directory.Build.props` and `Directory.Packages.props` (a copy written under a repo that uses central package management failed restore with NU1008)
+  - [x] 8.3 (`BuildIsolationGenerator`; a parent `NuGet.config` can still change package sources) Stop the migrated copy from inheriting a parent folder's `Directory.Build.props` and `Directory.Packages.props` (a copy written under a repo that uses central package management failed restore with NU1008)
   - _Requirements: R8_
 
 - [x] 9. Checkpoint: minimum winning demo
