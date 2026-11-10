@@ -8,7 +8,7 @@ namespace XnaReborn.Analyzer.Rules.Matchers;
 
 /// <summary>
 /// Matches <see cref="SpriteFontFamilyMatch"/> by reading the FontName of every .spritefont file in the project folder
-/// and in the folder of each NestedContentProject item.
+/// and in the folder of each NestedContentProject item and each ProjectReference to a .contentproj.
 /// </summary>
 internal static class SpriteFontMatcher
 {
@@ -29,7 +29,7 @@ internal static class SpriteFontMatcher
         var roots = new List<string> { baseDirectory };
         foreach (var item in project.Items)
         {
-            if (string.Equals(item.ItemType, "NestedContentProject", StringComparison.Ordinal) && !string.IsNullOrWhiteSpace(item.Include))
+            if (IsContentProjectItem(item))
             {
                 var include = item.Include.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
                 var directory = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(baseDirectory, include)));
@@ -60,6 +60,11 @@ internal static class SpriteFontMatcher
 
         return results.OrderBy(r => r.Path, StringComparer.Ordinal).Select(r => r.Text).ToList();
     }
+
+    private static bool IsContentProjectItem(ProjectItem item) =>
+        !string.IsNullOrWhiteSpace(item.Include)
+        && (string.Equals(item.ItemType, "NestedContentProject", StringComparison.Ordinal)
+            || (string.Equals(item.ItemType, "ProjectReference", StringComparison.Ordinal) && item.Include.Trim().EndsWith(".contentproj", StringComparison.OrdinalIgnoreCase)));
 
     private static void Collect(IReadOnlyFileSystem fs, string directory, HashSet<string> files, CancellationToken token)
     {

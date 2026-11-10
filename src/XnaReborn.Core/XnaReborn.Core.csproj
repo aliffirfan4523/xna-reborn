@@ -4,4 +4,8 @@
     <Description>Shared models and services for XNA Reborn.</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\rules\importer-map.json" LogicalName="XnaReborn.Core.Content.importer-map.json" />
+  </ItemGroup>
+
 </Project>

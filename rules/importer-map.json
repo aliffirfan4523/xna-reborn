@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "sources": [
+    "https://learn.microsoft.com/en-us/previous-versions/windows/xna/bb447762(v=xnagamestudio.40)",
+    "https://learn.microsoft.com/en-us/previous-versions/windows/xna/ff433775(v=xnagamestudio.41)",
+    "https://docs.monogame.net/articles/getting_to_know/whatis/content_pipeline/CP_StdImpsProcs",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Content.Pipeline.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Content.Pipeline.WavImporter.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Content.Pipeline.WmvImporter.html",
+    "https://github.com/MonoGame/MonoGame/issues/2661",
+    "https://github.com/MonoGame/MonoGame/issues/4376"
+  ],
+  "pairs": [
+    { "importer": "TextureImporter", "processor": "TextureProcessor" },
+    { "importer": "TextureImporter", "processor": "FontTextureProcessor", "note": "Bitmap fonts built from a marked .bmp." },
+    { "importer": "TextureImporter", "processor": "PassThroughProcessor" },
+    { "importer": "FontDescriptionImporter", "processor": "FontDescriptionProcessor" },
+    { "importer": "EffectImporter", "processor": "EffectProcessor", "note": "The shader source still has to compile for MonoGame (see the effect rules)." },
+    { "importer": "EffectImporter", "processor": "PassThroughProcessor" },
+    { "importer": "FbxImporter", "processor": "ModelProcessor" },
+    { "importer": "FbxImporter", "processor": "PassThroughProcessor" },
+    { "importer": "XImporter", "processor": "ModelProcessor" },
+    { "importer": "XImporter", "processor": "PassThroughProcessor" },
+    { "importer": "XmlImporter", "processor": "PassThroughProcessor", "note": "Needs the IntermediateSerializer types to be available to the MonoGame pipeline." },
+    { "importer": "WavImporter", "processor": "SoundEffectProcessor" },
+    { "importer": "Mp3Importer", "processor": "SongProcessor" },
+    { "importer": "Mp3Importer", "processor": "SoundEffectProcessor" },
+    { "importer": "WmaImporter", "processor": "SongProcessor" },
+    { "importer": "WmaImporter", "processor": "SoundEffectProcessor" },
+    { "importer": "WmvImporter", "processor": "VideoProcessor" }
+  ],
+  "stockUnsupported": [
+    { "importer": "XactImporter", "processor": "XactProcessor", "note": "XACT projects (.xap) have no MonoGame pipeline equivalent." }
+  ]
+}

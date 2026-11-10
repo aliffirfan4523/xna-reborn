@@ -40,6 +40,11 @@ public sealed class ProjectReader
     private static string? Prop(IReadOnlyDictionary<string, string> properties, string name) =>
         properties.TryGetValue(name, out var value) ? value : null;
 
+    /// <summary>A NestedContentProject item, or a ProjectReference to a .contentproj (the XnaReferenceType Content form).</summary>
+    private static bool IsContentProjectItem(ProjectItem item) =>
+        item.ItemType == "NestedContentProject"
+        || (item.ItemType == "ProjectReference" && item.Include.Trim().EndsWith(".contentproj", StringComparison.OrdinalIgnoreCase));
+
     private static string AssemblySimpleName(string include)
     {
         var comma = include.IndexOf(',', StringComparison.Ordinal);
@@ -92,10 +97,16 @@ public sealed class ProjectReader
         var contentProjects = new List<string>();
         var contentItems = new List<ContentItem>();
         var contentReader = new ContentProjectReader(_fileSystem);
-        foreach (var nested in items.Where(i => i.ItemType == "NestedContentProject"))
+        var seenContentProjects = new HashSet<string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+        foreach (var nested in items.Where(IsContentProjectItem))
         {
             ct.ThrowIfCancellationRequested();
             var full = Path.GetFullPath(Path.Combine(projectDirectory, ProjectXml.ToNative(nested.Include)));
+            if (!seenContentProjects.Add(full))
+            {
+                continue;
+            }
+
             contentProjects.Add(ProjectXml.Rel(root, full));
             var content = contentReader.Read(full, root);
             contentItems.AddRange(content.Items);

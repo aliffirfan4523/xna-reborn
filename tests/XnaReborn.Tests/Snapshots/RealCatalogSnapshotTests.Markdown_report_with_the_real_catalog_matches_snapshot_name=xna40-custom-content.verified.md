@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 77 / 100 |
-| Projected score after automatic fixes | 86 / 100 |
+| Compatibility score | 74 / 100 |
+| Projected score after automatic fixes | 83 / 100 |
 | Projects analyzed | 1 |
-| Findings | 9 |
+| Findings | 10 |
 
-Severity: Blocker 0, Error 5, Warning 3, Info 1
+Severity: Blocker 0, Error 5, Warning 4, Info 1
 
-Classification: AutoFixable 6, Manual 3, Unsupported 0
+Classification: AutoFixable 6, Manual 4, Unsupported 0
 
 ## Projects
 
@@ -55,6 +55,9 @@ Classification: AutoFixable 6, Manual 3, Unsupported 0
 - **[Warning] XNA017** Effect file (.fx) needs shader review
   - Project: `CustomContent.csproj`
   - Code: `Shaders/Glow.fx`
+- **[Warning] XNA050** Custom content importer or processor
+  - Project: `CustomContent.csproj`
+  - Code: `Textures/ship.png`
 
 ## Rules
 
@@ -123,3 +126,9 @@ Properties/AssemblyInfo.cs declares assembly attributes (title, product, company
 **Resolution:** The migrator writes <GenerateAssemblyInfo>false</GenerateAssemblyInfo> in the generated project so the kept AssemblyInfo.cs does not clash.
 
 Migrator task: project-migrator:4.1
+
+### XNA050 Custom content importer or processor
+
+A content item uses an importer or processor that is not part of stock XNA 4.0. It comes from a custom content pipeline assembly, which was built against the XNA pipeline and does not load in the MonoGame content builder as it is.
+
+**Resolution:** Port the pipeline project to MonoGame and reference the rebuilt assembly from Content.mgcb, or replace the asset with one that a stock importer and processor can build.
