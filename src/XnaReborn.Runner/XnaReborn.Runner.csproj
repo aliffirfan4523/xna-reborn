@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Hints\hints.json" LogicalName="XnaReborn.Runner.Hints.hints.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="XnaReborn.Tests" />
   </ItemGroup>
 
