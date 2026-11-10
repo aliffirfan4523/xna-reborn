@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Builds and launches migrated copies with the dotnet CLI. Never touches the original XNA project.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XnaReborn.Core\XnaReborn.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="XnaReborn.Tests" />
+  </ItemGroup>
+
+</Project>

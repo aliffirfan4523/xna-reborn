@@ -1,8 +1,8 @@
 # Tasks: Build and Run
 
-- [ ] 1. Setup
-  - [ ] 1.1 Create `XnaReborn.Runner` project
-  - [ ] 1.2 Define `EnvironmentInfo`, `Diagnostic`, `FixHint`, `DiagnosticGroup`, `BuildResult`, `RunSession`
+- [x] 1. Setup
+  - [x] 1.1 Create `XnaReborn.Runner` project (references Core only, so the migrator can reference the Runner later without a cycle), plus `tests/XnaReborn.TestGame`, a tiny stand-in game for launcher tests
+  - [x] 1.2 Define `EnvironmentInfo`, `Diagnostic` (named `BuildDiagnostic` to avoid a clash with the analyzer's `Diagnostic`), `FixHint`, `DiagnosticGroup`, `BuildResult`, `RunSession`, plus `IProcessRunner` with `ProcessRequest`, `ProcessResult` and `OutputLine`
   - _Requirements: R8_
 
 - [ ] 2. Safety guard
