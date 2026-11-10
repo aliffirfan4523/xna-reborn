@@ -28,11 +28,11 @@
   - [x] 5.2 Tests including already-modern entry points
   - _Requirements: R4_
 
-- [ ] 6. Source rewriting framework
-  - [ ] 6.1 Implement `RewriterRegistry` and the `ISourceRewriter` contract
-  - [ ] 6.2 Implement `MarkerInserter` for unresolved cases
-  - [ ] 6.3 Implement `DiffBuilder` with DiffPlex
-  - [ ] 6.4 Preserve trivia test on untouched code
+- [x] 6. Source rewriting framework
+  - [x] 6.1 Implement `RewriterRegistry` and the `ISourceRewriter` contract (text based; see the design), plus `SourceRewriteEngine` and the `EntryPointSourceRewriter` adapter
+  - [x] 6.2 Implement `MarkerInserter` for unresolved cases
+  - [x] 6.3 Implement `DiffBuilder` with DiffPlex
+  - [x] 6.4 Preserve trivia test on untouched code
   - _Requirements: R5, R8_
 
 - [ ] 7. Content conversion

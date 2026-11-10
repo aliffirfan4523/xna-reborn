@@ -1,0 +1,29 @@
+﻿Game/Program.cs +2 -0 ~1 marker=True
+  1 Unchanged| using System;
+  1 Unchanged| using System;
+  2 Unchanged| 
+  2 Unchanged| 
+  3 Unchanged| namespace Game
+  3 Unchanged| namespace Game
+  4 Unchanged| {
+  4 Unchanged| {
+  5 Unchanged|     class Program
+  5 Unchanged|     class Program
+  6 Unchanged|     {
+  6 Unchanged|     {
+  7 Modified |         static void Main()
+  7 Modified |         // XNAREBORN: R1: check this
+    Imaginary| 
+  8 Added    |         static void Main(string[] args)
+  8 Unchanged|         {
+  9 Unchanged|         {
+  9 Unchanged|             Console.WriteLine("hi");
+ 10 Unchanged|             Console.WriteLine("hi");
+    Imaginary| 
+ 11 Added    |             Run();
+ 10 Unchanged|         }
+ 12 Unchanged|         }
+ 11 Unchanged|     }
+ 13 Unchanged|     }
+ 12 Unchanged| }
+ 14 Unchanged| }

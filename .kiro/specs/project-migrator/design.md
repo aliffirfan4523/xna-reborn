@@ -123,7 +123,7 @@ Nullable and implicit usings are disabled so old code compiles unchanged. Packag
 
 ## Source rewriters
 
-Each rewriter implements `ISourceRewriter { string RuleId; SyntaxNode Rewrite(SyntaxNode root, SemanticModel? model, RewriteContext ctx); }` and is registered by rule ID.
+Each rewriter implements `ISourceRewriter { string RuleId; SourceRewriteResult Rewrite(SourceRewriteContext context); }` and is registered by rule ID. The contract is text based (`SourceRewriteContext(FilePath, Text, OriginalSymbols)` in, `SourceRewriteResult(Text, Notes)` out) instead of taking a `SyntaxNode`, because the entry point fix must see code inside inactive `#if` blocks and because every untouched byte of a file has to survive. Rewriters that need a syntax tree parse the text themselves; `SourceRewriteEngine` runs the enabled rewriters in rule ID order, isolates a rewriter that throws, and `MarkerInserter` adds `// XNAREBORN:` lines.
 
 | Rewriter | Before | After |
 |---|---|---|
