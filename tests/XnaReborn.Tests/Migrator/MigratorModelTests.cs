@@ -58,5 +58,6 @@ public class MigratorModelTests
         Assert.False(options.DryRun);
         Assert.False(options.EnableShims);
         Assert.Empty(options.ExcludedPlanItemIds);
+        Assert.False(options.SubstituteFonts);
     }
 }

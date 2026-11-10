@@ -1,0 +1,38 @@
+﻿{
+  "version": 1,
+  "migrator": "0.1.0",
+  "catalogName": "xna-to-monogame",
+  "completed": true,
+  "changes": [
+    {
+      "path": "Content/Content.mgcb",
+      "kind": "Created",
+      "rules": [
+        "XNA005"
+      ],
+      "reason": null
+    }
+  ],
+  "build": null,
+  "content": {
+    "countsByStatus": {
+      "Converted": 5,
+      "ManualWork": 2,
+      "Missing": 1,
+      "Conflict": 0,
+      "Prebuilt": 1
+    },
+    "countsByType": {
+      "Texture": 4,
+      "Font": 1,
+      "SoundEffect": 1,
+      "Song": 0,
+      "Model": 0,
+      "Effect": 1,
+      "Xact": 1,
+      "Xml": 0,
+      "Prebuilt": 1,
+      "Other": 0
+    }
+  }
+}

@@ -4,6 +4,7 @@ using XnaReborn.Analyzer.Discovery;
 using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Models;
+using XnaReborn.Migrator.Content;
 using XnaReborn.Migrator.Output;
 using XnaReborn.Migrator.Planning;
 using XnaReborn.Migrator.Projects;
@@ -29,11 +30,14 @@ public sealed class ProjectMigrator
     private const string _stageProjects = "Generating projects";
     private const string _stageSource = "Rewriting source";
     private const string _stageContent = "Collecting content";
+    private const string _stageConvert = "Converting content";
     private const string _stageWrite = "Writing files";
     private const string _stageDone = "Done";
 
     private const string _contentReason =
-        "Content conversion is not wired in yet; this asset was copied unchanged and is not built.";
+        "Content conversion is switched off for this project; this asset was copied unchanged and is not built.";
+
+    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049"];
 
     private static readonly UTF8Encoding _utf8 = new(encoderShouldEmitUTF8Identifier: false);
     private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
@@ -109,13 +113,10 @@ public sealed class ProjectMigrator
         var generator = new SdkCsprojGenerator();
         var projects = new List<ProjectWork>();
 
-        // Step 4: project files and the solution.
-        for (var i = 0; i < xnaProjects.Count; i++)
+        // Step 4: read the projects, convert their content, then write the project files and the solution.
+        foreach (var discovered in xnaProjects)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var discovered = xnaProjects[i];
-            progress?.Report(new MigrationProgress(_stageProjects, i, xnaProjects.Count, discovered.RelativePath));
-
             var read = await reader.ReadAsync(discovered.FullPath, root, cancellationToken).ConfigureAwait(false);
             var items = plan.Items.Where(p => string.Equals(p.Id, p.RuleId + ":" + discovered.RelativePath, StringComparison.Ordinal)).ToList();
             var enabled = items.Select(p => p.RuleId).Append(EntryPointSourceRewriter.Id).ToHashSet(StringComparer.Ordinal);
@@ -124,13 +125,49 @@ public sealed class ProjectMigrator
                 .Where(id => !_rewriters.TryGet(id, out _) && !contentRuleIds.Contains(id))
                 .Distinct(StringComparer.Ordinal)
                 .ToList();
+            var contentRules = items
+                .Select(p => p.RuleId)
+                .Where(id => _contentRuleIds.Contains(id, StringComparer.Ordinal))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
 
-            var withoutContent = read with { Info = read.Info with { ContentProjects = [], ContentItems = [] } };
-            var csproj = generator.Generate(withoutContent, options.Target);
-            state.Add(csproj, projectLevel);
+            projects.Add(new ProjectWork(discovered, read, enabled, projectLevel, contentRules));
+        }
 
-            projects.Add(new ProjectWork(discovered, read, enabled));
-            progress?.Report(new MigrationProgress(_stageProjects, i + 1, xnaProjects.Count, discovered.RelativePath));
+        var converting = projects.Where(p => p.ContentRules.Count > 0 && p.Read.Info.ContentProjects.Count > 0).ToList();
+        var converter = new ContentConverter(_fileSystem);
+        var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts);
+        for (var i = 0; i < converting.Count; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var project = converting[i];
+            progress?.Report(new MigrationProgress(_stageConvert, i, converting.Count, project.Discovered.RelativePath));
+            project.Content = await converter
+                .ConvertAsync(project.Read, root, project.GameDirectory, contentOptions, cancellationToken)
+                .ConfigureAwait(false);
+            progress?.Report(new MigrationProgress(_stageConvert, i + 1, converting.Count, project.Discovered.RelativePath));
+        }
+
+        for (var i = 0; i < projects.Count; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var project = projects[i];
+            progress?.Report(new MigrationProgress(_stageProjects, i, projects.Count, project.Discovered.RelativePath));
+
+            FileChange csproj;
+            if (project.Content?.MgcbRelativePath is { } mgcb)
+            {
+                var prefix = project.GameDirectory.Length == 0 ? string.Empty : project.GameDirectory + "/";
+                csproj = generator.Generate(project.Read, options.Target, mgcb.StartsWith(prefix, StringComparison.Ordinal) ? mgcb[prefix.Length..] : mgcb);
+            }
+            else
+            {
+                var withoutContent = project.Read with { Info = project.Read.Info with { ContentProjects = [], ContentItems = [] } };
+                csproj = generator.Generate(withoutContent, options.Target);
+            }
+
+            state.Add(csproj, project.ProjectLevelRules);
+            progress?.Report(new MigrationProgress(_stageProjects, i + 1, projects.Count, project.Discovered.RelativePath));
         }
 
         // Isolation files go first so they win a path clash with a same-named file copied from the source.
@@ -166,9 +203,24 @@ public sealed class ProjectMigrator
             CopyApplicationIcon(project, root, state);
         }
 
-        // Step 6: content placeholder.
+        // Step 6: converted content, then the unconverted copy for projects whose content rules were switched off.
+        foreach (var project in projects.Where(p => p.Content is not null))
+        {
+            AddConvertedContent(project, state);
+        }
+
+        if (projects.Any(p => p.Content is not null))
+        {
+            state.Add(new ToolManifestGenerator().Generate(PackageVersions.Default.DotnetMgcb), []);
+            state.Content = SumContent(projects.Where(p => p.Content is not null).Select(p => p.Content!.Report));
+        }
+
         var contentSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var contentJobs = projects.SelectMany(p => p.Read.Info.ContentProjects).Where(contentSeen.Add).ToList();
+        var contentJobs = projects
+            .Where(p => p.Content is null)
+            .SelectMany(p => p.Read.Info.ContentProjects)
+            .Where(contentSeen.Add)
+            .ToList();
         for (var i = 0; i < contentJobs.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -261,7 +313,7 @@ public sealed class ProjectMigrator
         IReadOnlyList<FileChange> changes,
         BuildState state,
         string version) =>
-        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version);
+        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content);
 
     private static async Task WriteManifestFilesAsync(
         string staging,
@@ -419,10 +471,66 @@ public sealed class ProjectMigrator
             copied++;
         }
 
-        state.Notes.Add($"{contentProject}: content conversion is not wired in yet; {copied} file(s) were copied unchanged and are not built.");
+        state.Notes.Add($"{contentProject}: content conversion is switched off for this project; {copied} file(s) were copied unchanged and are not built.");
     }
 
-    private sealed record ProjectWork(DiscoveredProject Discovered, ProjectReadResult Read, IReadOnlySet<string> Enabled);
+    private static void AddConvertedContent(ProjectWork project, BuildState state)
+    {
+        var result = project.Content!;
+        foreach (var change in result.Changes)
+        {
+            if (!state.Claim(change.RelativePath))
+            {
+                state.Notes.Add($"{change.RelativePath}: another output file already uses this path, so this content file was not copied.");
+                continue;
+            }
+
+            var ids = change.RelativePath == result.MgcbRelativePath ? project.ContentRules : [];
+            state.Add(change, ids, alreadyClaimed: true);
+        }
+
+        state.Notes.AddRange(result.ManualNotes);
+    }
+
+    private static ManifestContent SumContent(IEnumerable<ContentReport> reports)
+    {
+        var list = reports.ToList();
+        var byStatus = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var status in Enum.GetValues<AssetStatus>())
+        {
+            byStatus[status.ToString()] = list.Sum(r => r.CountsByStatus.GetValueOrDefault(status));
+        }
+
+        var byType = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var type in list.SelectMany(r => r.CountsByType.Keys).Distinct(StringComparer.Ordinal))
+        {
+            byType[type] = list.Sum(r => r.CountsByType.GetValueOrDefault(type));
+        }
+
+        return new ManifestContent(byStatus, byType);
+    }
+
+    private sealed record ProjectWork(
+        DiscoveredProject Discovered,
+        ProjectReadResult Read,
+        IReadOnlySet<string> Enabled,
+        IReadOnlyList<string> ProjectLevelRules,
+        IReadOnlyList<string> ContentRules)
+    {
+        /// <summary>The content conversion result, or null when the project has none or its content rules are switched off.</summary>
+        public ContentConversionResult? Content { get; set; }
+
+        /// <summary>The project folder relative to the output root, with '/' separators. Empty for the root.</summary>
+        public string GameDirectory
+        {
+            get
+            {
+                var path = Read.Info.Path.Replace('\\', '/');
+                var slash = path.LastIndexOf('/');
+                return slash < 0 ? string.Empty : path[..slash];
+            }
+        }
+    }
 
     private sealed record SourceFile(ProjectWork Project, string RelativePath, string FullPath);
 
@@ -433,6 +541,8 @@ public sealed class ProjectMigrator
         public List<FileChange> Changes { get; } = [];
 
         public List<string> Notes { get; } = [];
+
+        public ManifestContent? Content { get; set; }
 
         public Dictionary<string, IReadOnlyList<string>> RuleIdsByPath { get; } = new(StringComparer.Ordinal);
 

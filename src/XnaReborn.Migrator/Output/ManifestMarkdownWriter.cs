@@ -25,6 +25,11 @@ public static class ManifestMarkdownWriter
             CopiedAndSkippedBlock(manifest),
         };
 
+        if (manifest.Content is not null)
+        {
+            blocks.Add(ContentBlock(manifest.Content));
+        }
+
         if (manifest.Build is not null)
         {
             blocks.Add(BuildBlock(manifest.Build));
@@ -90,6 +95,23 @@ public static class ManifestMarkdownWriter
             {
                 sb.Append(": ").Append(s.Reason);
             }
+        }
+
+        return sb.ToString();
+    }
+
+    private static string ContentBlock(ManifestContent content)
+    {
+        var sb = new StringBuilder("## Content\n\n| Status | Assets |\n|---|---|");
+        foreach (var (status, count) in content.CountsByStatus)
+        {
+            sb.Append("\n| ").Append(Cell(status)).Append(" | ").Append(count).Append(" |");
+        }
+
+        sb.Append("\n\n| Type | Assets |\n|---|---|");
+        foreach (var (type, count) in content.CountsByType)
+        {
+            sb.Append("\n| ").Append(Cell(type)).Append(" | ").Append(count).Append(" |");
         }
 
         return sb.ToString();

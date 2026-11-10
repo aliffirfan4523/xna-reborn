@@ -7,13 +7,22 @@ namespace XnaReborn.Migrator.Output;
 /// <param name="Completed">False when the run stopped before the output was moved into place.</param>
 /// <param name="Changes">One entry per output file, sorted by path.</param>
 /// <param name="Build">Result of the optional post-migration build, or null when not attempted.</param>
+/// <param name="Content">Totals for the converted content, or null when no content was converted.</param>
 public sealed record Manifest(
     int Version,
     string Migrator,
     string CatalogName,
     bool Completed,
     IReadOnlyList<ManifestChange> Changes,
-    ManifestBuild? Build);
+    ManifestBuild? Build,
+    ManifestContent? Content = null);
+
+/// <summary>Content conversion totals, summed over all projects.</summary>
+/// <param name="CountsByStatus">Assets per status. Every status key is present, in enum order: Converted, ManualWork, Missing, Conflict, Prebuilt.</param>
+/// <param name="CountsByType">Assets per type. Every type key is present, in the order Texture, Font, SoundEffect, Song, Model, Effect, Xact, Xml, Prebuilt, Other.</param>
+public sealed record ManifestContent(
+    IReadOnlyDictionary<string, int> CountsByStatus,
+    IReadOnlyDictionary<string, int> CountsByType);
 
 /// <summary>One file entry in the manifest.</summary>
 /// <param name="Path">Relative path in the output, with '/' separators.</param>
