@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "hints": [
+    {
+      "id": "H001",
+      "match": { "code": "CS0234", "messageContains": "'GamerServices'" },
+      "title": "GamerServices no longer exists",
+      "advice": "MonoGame has no Microsoft.Xna.Framework.GamerServices. Remove the using and the Xbox Live code (Guide, SignedInGamer, achievements), and remove GamerServicesComponent from the Game constructor.",
+      "ruleId": "XNA009"
+    },
+    {
+      "id": "H002",
+      "match": { "messageRegex": "The (name|type or namespace name) '(Guide|SignedInGamer|GamerServicesComponent|GamerPrivilegeSetting|LeaderboardWriter|LeaderboardIdentity)'" },
+      "title": "GamerServices type is missing",
+      "advice": "Guide, SignedInGamer and the other Xbox Live types were removed with GamerServices. Delete the calls or replace them with your own sign-in, saving and leaderboard code.",
+      "ruleId": "XNA009"
+    },
+    {
+      "id": "H003",
+      "match": { "code": "CS0234", "messageContains": "'Net'" },
+      "title": "Net namespace no longer exists",
+      "advice": "MonoGame has no Microsoft.Xna.Framework.Net (NetworkSession, system link, Live multiplayer). Replace it with your own networking, for example System.Net.Sockets or a networking library.",
+      "ruleId": "XNA010"
+    },
+    {
+      "id": "H004",
+      "match": { "messageRegex": "The (name|type or namespace name) '(NetworkSession|NetworkGamer|LocalNetworkGamer|PacketReader|PacketWriter|NetworkSessionType|AvailableNetworkSession)'" },
+      "title": "Network session type is missing",
+      "advice": "NetworkSession and its related types were removed with the Net namespace. Replace the multiplayer code with your own networking.",
+      "ruleId": "XNA010"
+    },
+    {
+      "id": "H005",
+      "match": { "code": "CS0234", "messageContains": "'Storage'" },
+      "title": "Storage namespace no longer exists",
+      "advice": "MonoGame has no Microsoft.Xna.Framework.Storage. Save files with System.IO, for example under Environment.SpecialFolder.LocalApplicationData.",
+      "ruleId": "XNA012"
+    },
+    {
+      "id": "H006",
+      "match": { "messageRegex": "The (name|type or namespace name) '(StorageDevice|StorageContainer)'" },
+      "title": "StorageDevice or StorageContainer is missing",
+      "advice": "Replace StorageDevice and StorageContainer with System.IO file access in a per-user folder.",
+      "ruleId": "XNA012"
+    },
+    {
+      "id": "H007",
+      "match": { "messageContains": "'SpriteBlendMode'" },
+      "title": "SpriteBlendMode was replaced by BlendState",
+      "advice": "Use SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend) (or Additive, Opaque) instead of SpriteBlendMode.",
+      "ruleId": "XNA022"
+    },
+    {
+      "id": "H008",
+      "match": { "messageContains": "'SaveStateMode'" },
+      "title": "SaveStateMode was removed",
+      "advice": "Delete the SaveStateMode argument. SpriteBatch no longer restores device state after End(), so set the states you need afterwards.",
+      "ruleId": "XNA023"
+    },
+    {
+      "id": "H009",
+      "match": { "code": "CS1061", "messageContains": "RenderState" },
+      "title": "GraphicsDevice.RenderState was removed",
+      "advice": "Replace RenderState with BlendState, DepthStencilState, RasterizerState and SamplerState objects set on the GraphicsDevice.",
+      "ruleId": "XNA024"
+    },
+    {
+      "id": "H010",
+      "match": { "code": "CS0117", "messageContains": "RenderState" },
+      "title": "GraphicsDevice.RenderState was removed",
+      "advice": "Replace RenderState with BlendState, DepthStencilState, RasterizerState and SamplerState objects set on the GraphicsDevice.",
+      "ruleId": "XNA024"
+    },
+    {
+      "id": "H011",
+      "match": { "messageContains": "'ResolveTexture2D'" },
+      "title": "ResolveTexture2D was removed",
+      "advice": "Render to a RenderTarget2D with GraphicsDevice.SetRenderTarget and read it back as a texture instead of resolving the back buffer.",
+      "ruleId": "XNA027"
+    },
+    {
+      "id": "H012",
+      "match": { "code": "CS1061", "messageContains": "'ResolveBackBuffer'" },
+      "title": "GraphicsDevice.ResolveBackBuffer was removed",
+      "advice": "Draw into a RenderTarget2D, or call GraphicsDevice.GetBackBufferData to copy the back buffer into a Texture2D.",
+      "ruleId": "XNA028"
+    },
+    {
+      "id": "H013",
+      "match": { "code": "CS1061", "messageContains": "for 'VertexDeclaration'" },
+      "title": "GraphicsDevice.VertexDeclaration was removed",
+      "advice": "Delete the assignment. Create the VertexBuffer with a vertex type or a VertexDeclaration, which now carries the layout.",
+      "ruleId": "XNA034"
+    },
+    {
+      "id": "H014",
+      "match": { "code": "CS0117", "messageContains": "'VertexElements'" },
+      "title": "Static VertexElements was removed from the vertex types",
+      "advice": "Use the VertexDeclaration property of the vertex type instead of VertexElements.",
+      "ruleId": "XNA036"
+    },
+    {
+      "id": "H015",
+      "match": { "code": "CS1061", "messageContains": "for 'VertexElements'" },
+      "title": "VertexElements was removed from the vertex types",
+      "advice": "Use the VertexDeclaration property of the vertex type instead of VertexElements.",
+      "ruleId": "XNA036"
+    },
+    {
+      "id": "H016",
+      "match": { "messageRegex": "'\\w*Effect' does not contain a definition for '(Begin|End)'" },
+      "title": "Effect.Begin and Effect.End were removed",
+      "advice": "Delete effect.Begin() and effect.End(). Call pass.Apply() on each EffectPass before drawing.",
+      "ruleId": "XNA040"
+    },
+    {
+      "id": "H017",
+      "match": { "messageRegex": "'EffectPass' does not contain a definition for '(Begin|End)'" },
+      "title": "EffectPass.Begin and EffectPass.End were removed",
+      "advice": "Replace pass.Begin() with pass.Apply() before the draw call and delete pass.End().",
+      "ruleId": "XNA039"
+    },
+    {
+      "id": "H018",
+      "match": { "messageRegex": "could not find.*\\bfont\\b" },
+      "title": "Content build cannot find a font",
+      "advice": "The SpriteFont names a font that Windows does not ship (an XNA Redistributable Font Pack font). Change FontName to an installed font, or add a .ttf next to the .spritefont and name it.",
+      "ruleId": "XNA013"
+    },
+    {
+      "id": "H019",
+      "match": { "messageRegex": "The (name|type or namespace name) '(AudioEngine|WaveBank|SoundBank|Cue)'" },
+      "title": "XACT audio types were removed",
+      "advice": "MonoGame does not run XACT projects. Convert the sounds to .wav or .ogg files and play them with SoundEffect and Song.",
+      "ruleId": "XNA015"
+    },
+    {
+      "id": "H020",
+      "match": { "messageContains": ".xap" },
+      "title": "XACT project file cannot be built",
+      "advice": "The content builder cannot build .xap files. Export the sounds from the XACT project as .wav files and load them as SoundEffect.",
+      "ruleId": "XNA016"
+    },
+    {
+      "id": "H021",
+      "match": { "code": "NU1101" },
+      "title": "NuGet package not found",
+      "advice": "Check your internet connection and that nuget.org is reachable, then build again. If you use a private package source, check that it is configured."
+    },
+    {
+      "id": "H022",
+      "match": { "code": "MSB3073" },
+      "title": "The MonoGame content builder failed",
+      "advice": "Read the content errors printed above this one. Also check that .config/dotnet-tools.json lists the mgcb tool and that dotnet tool restore ran."
+    },
+    {
+      "id": "H023",
+      "match": { "code": "CS5001" },
+      "title": "No entry point",
+      "advice": "The project has no static Main method. Check that Program.cs was migrated and that its Main (or top-level code) is not inside a conditional compilation block that is off."
+    },
+    {
+      "id": "R001",
+      "match": { "runtimeRegex": "could not find (file|a part of the path)[^\\r\\n]*\\.xnb|content file was not found|ContentLoadException:[^\\r\\n]*not found" },
+      "title": "Compiled content (.xnb) was not found",
+      "advice": "The game could not find a content file. Check that the content project built, that Content.Load uses the asset name without extension, and that the Content folder sits next to the game executable."
+    },
+    {
+      "id": "R002",
+      "match": { "runtimeRegex": "Cannot find ContentTypeReader|ContentLoadException:[^\\r\\n]*(?-i:\\bType\\b)|InvalidCastException[\\s\\S]*?ContentManager\\." },
+      "title": "Content type does not match",
+      "advice": "The asset was loaded as a different type than it was built as. Check that the type in Content.Load<T> matches the importer and processor in the content project."
+    },
+    {
+      "id": "R003",
+      "match": { "runtimeRegex": "DllNotFoundException|Unable to load shared library|(SDL2|openal)[^\\r\\n]*(not found|cannot open|unable to load|could not load)" },
+      "title": "A native library is missing",
+      "advice": "SDL2 or OpenAL could not be loaded. Install them (on Linux, libsdl2 and libopenal1), or publish the game so the native libraries sit next to the executable."
+    },
+    {
+      "id": "R004",
+      "match": {
+        "runtimeContains": "NoSuitableGraphicsDeviceException",
+        "runtimeRegex": "Failed to create graphics device"
+      },
+      "title": "No suitable graphics device",
+      "advice": "The graphics device could not be created. Update the graphics driver, and if the game uses GraphicsProfile.HiDef, try GraphicsProfile.Reach."
+    },
+    {
+      "id": "R005",
+      "match": { "runtimeRegex": "NoAudioHardwareException|OpenAL[^\\r\\n]*(device|error|failed)" },
+      "title": "No audio device",
+      "advice": "The game could not open an audio device. Connect or enable an audio output and install OpenAL. The game may run without sound if it handles NoAudioHardwareException."
+    }
+  ]
+}
