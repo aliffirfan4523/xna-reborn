@@ -76,7 +76,7 @@ public sealed class EffectPassRewriter : ISourceRewriter
         var tree = string.Equals(current, text, StringComparison.Ordinal) ? root.SyntaxTree : Parse(current, context);
         foreach (var position in FindUnmatchedBegins(tree.GetRoot()).OrderByDescending(p => p))
         {
-            var marked = MarkerInserter.InsertMarker(markerText, position, _markerRuleId, _markerMessage);
+            var marked = MarkerInserter.InsertMarker(markerText, position, _markerRuleId, _markerMessage, context.OriginalSymbols);
             if (!string.Equals(marked, markerText, StringComparison.Ordinal))
             {
                 markerText = marked;

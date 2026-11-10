@@ -412,4 +412,19 @@ public class SpriteBatchBeginRewriterTests
     {
         Assert.Throws<ArgumentNullException>(() => _rewriter.Rewrite(null!));
     }
+
+    [Fact]
+    public void Unclear_begin_inside_if_windows_gets_a_marker_and_a_second_run_adds_nothing()
+    {
+        var text = File("#if WINDOWS\n        batch.Begin(mode, SpriteBlendMode.None);\n#endif\n");
+
+        var first = Run(text);
+        var second = Run(first.Text);
+
+        Assert.Contains("// XNAREBORN: ", first.Text);
+        Assert.NotEmpty(first.Notes);
+        Assert.All(first.Notes, n => Assert.True(n.NeedsManualWork));
+        Assert.Empty(second.Notes);
+        Assert.Equal(first.Text, second.Text);
+    }
 }

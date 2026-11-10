@@ -58,7 +58,7 @@ public sealed class RenderStateRewriter : ISourceRewriter
             }
 
             var site = analysis.Sites[index];
-            var marked = MarkerInserter.InsertMarker(text, site.Position, Id, MarkerMessage);
+            var marked = MarkerInserter.InsertMarker(text, site.Position, Id, MarkerMessage, context.OriginalSymbols);
             if (!string.Equals(marked, text, StringComparison.Ordinal))
             {
                 text = marked;
