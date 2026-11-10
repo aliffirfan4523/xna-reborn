@@ -10,16 +10,17 @@
   - [ ] 2.2 Reader tests
   - _Requirements: R1_
 
-- [ ] 3. Asset names
-  - [ ] 3.1 Implement `AssetNameResolver`
-  - [ ] 3.2 Conflict detection and tests
+- [x] 3. Asset names
+  - [x] 3.1 Implement `AssetNameResolver`
+  - [x] 3.2 Conflict detection and tests
   - _Requirements: R2_
 
-- [ ] 4. Mapping
-  - [ ] 4.1 Define `rules/importer-map.json` (shared with the analyzer, see `project-analyzer` task 11.2) and its loader in Core
-  - [ ] 4.2 Implement `ImporterMap` and `ProcessorParamMapper`
-  - [ ] 4.3 Classify items: Converted, ManualWork, Missing, Conflict, Prebuilt
-  - [ ] 4.4 Mapping tests
+- [x] 4. Mapping
+  - [x] 4.1 Define `rules/importer-map.json` (shared with the analyzer, see `project-analyzer` task 11.2) and its loader in Core
+  - [x] 4.2 Implement `ImporterMap` and `ProcessorParamMapper` (`FontDescriptionProcessor.DefaultCharacter` and `EffectProcessor.DefaultEffect` are dropped: MonoGame's processors do not have them)
+  - [x] 4.3 Classify items: Converted, ManualWork, Missing, Conflict, Prebuilt (`AssetClassifier`)
+  - [x] 4.4 Mapping tests
+  - Open points for task 5: `ConvertedAsset` has no output path, so `MgcbWriter` derives the `source;destination` line from `AssetName`; when no processor is set, `.mp3` and `.wma` are inferred as `SongProcessor` only
   - _Requirements: R3, R7_
 
 - [ ] 5. MGCB writer
