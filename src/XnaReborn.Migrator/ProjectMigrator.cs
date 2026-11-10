@@ -154,16 +154,17 @@ public sealed class ProjectMigrator
             var project = projects[i];
             progress?.Report(new MigrationProgress(_stageProjects, i, projects.Count, project.Discovered.RelativePath));
 
+            var missingItems = MissingCopiedItems(project, root);
             FileChange csproj;
             if (project.Content?.MgcbRelativePath is { } mgcb)
             {
                 var prefix = project.GameDirectory.Length == 0 ? string.Empty : project.GameDirectory + "/";
-                csproj = generator.Generate(project.Read, options.Target, mgcb.StartsWith(prefix, StringComparison.Ordinal) ? mgcb[prefix.Length..] : mgcb);
+                csproj = generator.Generate(project.Read, options.Target, mgcb.StartsWith(prefix, StringComparison.Ordinal) ? mgcb[prefix.Length..] : mgcb, missingItems);
             }
             else
             {
                 var withoutContent = project.Read with { Info = project.Read.Info with { ContentProjects = [], ContentItems = [] } };
-                csproj = generator.Generate(withoutContent, options.Target);
+                csproj = generator.Generate(withoutContent, options.Target, null, missingItems);
             }
 
             state.Add(csproj, project.ProjectLevelRules);
@@ -201,6 +202,7 @@ public sealed class ProjectMigrator
         foreach (var project in projects)
         {
             CopyApplicationIcon(project, root, state);
+            CopyOutputItems(project, root, state);
         }
 
         // Step 6: converted content, then the unconverted copy for projects whose content rules were switched off.
@@ -448,6 +450,54 @@ public sealed class ProjectMigrator
         state.Changes.Add(new FileChange(relative, ChangeKind.Copied, null, null, null, full));
     }
 
+    private HashSet<string> MissingCopiedItems(ProjectWork project, string root) =>
+        SdkCsprojGenerator.CopiedItems(project.Read)
+            .Where(i => i.Problem == CopiedItemProblem.None && !_fileSystem.FileExists(Path.GetFullPath(Path.Combine(root, ToNative(i.RootRelativePath)))))
+            .Select(i => i.Include)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    private void CopyOutputItems(ProjectWork project, string root, BuildState state)
+    {
+        var projectPath = project.Read.Info.Path;
+        foreach (var item in SdkCsprojGenerator.CopiedItems(project.Read))
+        {
+            var include = item.Include.Replace('\\', '/');
+            if (item.Problem == CopiedItemProblem.OutsideRoot)
+            {
+                state.Notes.Add($"{projectPath}: {include}: this item is copied to the output folder but lies outside the source folder, so it was not copied.");
+                continue;
+            }
+
+            if (item.Problem == CopiedItemProblem.Wildcard)
+            {
+                state.Notes.Add($"{projectPath}: {include}: wildcard items that are copied to the output folder are not expanded; add the files by hand.");
+                continue;
+            }
+
+            var full = Path.GetFullPath(Path.Combine(root, ToNative(item.RootRelativePath)));
+            if (IsOutside(Relative(root, full)) || !_fileSystem.FileExists(full))
+            {
+                state.Notes.Add($"{projectPath}: {include}: this item is copied to the output folder but the file does not exist, so it was not copied.");
+                continue;
+            }
+
+            if (!state.Claim(item.RootRelativePath))
+            {
+                continue;
+            }
+
+            if (item.RootRelativePath.EndsWith(".xnb", StringComparison.OrdinalIgnoreCase))
+            {
+                const string reason = "Prebuilt .xnb content cannot be rebuilt for MonoGame and may not load. It is copied to the output folder as is.";
+                state.Changes.Add(new FileChange(item.RootRelativePath, ChangeKind.ManualWork, null, null, reason, full));
+                state.Notes.Add($"{item.RootRelativePath}: {reason}");
+            }
+            else
+            {
+                state.Changes.Add(new FileChange(item.RootRelativePath, ChangeKind.Copied, null, null, null, full));
+            }
+        }
+    }
     private void CopyContentProject(string contentProject, string root, BuildState state, CancellationToken cancellationToken)
     {
         var projectFull = Path.GetFullPath(Path.Combine(root, ToNative(contentProject)));

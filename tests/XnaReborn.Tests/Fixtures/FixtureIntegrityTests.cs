@@ -73,7 +73,8 @@ public partial class FixtureIntegrityTests
         {
             var doc = XDocument.Load(project);
             var items = doc.Descendants()
-                .Where(e => e.Name.LocalName is "Compile" or "NestedContentProject" or "ProjectReference")
+                .Where(e => e.Name.LocalName is "Compile" or "NestedContentProject" or "ProjectReference"
+                    || (e.Name.LocalName is "Content" or "None" && e.Element(e.Name.Namespace + "CopyToOutputDirectory") is not null))
                 .Select(e => (string?)e.Attribute("Include"))
                 .OfType<string>();
 
@@ -109,6 +110,8 @@ public partial class FixtureIntegrityTests
 
     [Theory]
     [InlineData("xna40-basic", "v4.0")]
+    [InlineData("xna40-audio", "v4.0")]
+    [InlineData("xna40-prebuilt", "v4.0")]
     [InlineData("xna40-gamerservices", "v4.0")]
     [InlineData("xna40-custom-content", "v4.0")]
     [InlineData("xna31-legacy", "v3.1")]
