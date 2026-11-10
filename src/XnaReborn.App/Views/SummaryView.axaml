@@ -3,8 +3,75 @@
              xmlns:vm="using:XnaReborn.App.ViewModels"
              x:Class="XnaReborn.App.Views.SummaryView"
              x:DataType="vm:SummaryViewModel">
-  <StackPanel Margin="{StaticResource PagePadding}">
-    <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
-               AutomationProperties.HeadingLevel="1" />
-  </StackPanel>
+  <ScrollViewer>
+    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}">
+      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+                 AutomationProperties.HeadingLevel="1" />
+
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Compatibility score" FontWeight="SemiBold"
+                   AutomationProperties.HeadingLevel="2" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingLarge}">
+          <StackPanel>
+            <TextBlock Text="Before" />
+            <TextBlock Text="{Binding BeforeScore}" FontSize="40" FontWeight="Bold"
+                       AutomationProperties.AutomationId="BeforeScore"
+                       AutomationProperties.Name="Score before migration" />
+          </StackPanel>
+          <TextBlock Text="to" VerticalAlignment="Bottom" />
+          <StackPanel>
+            <TextBlock Text="After" />
+            <TextBlock Text="{Binding AfterScore}" FontSize="40" FontWeight="Bold"
+                       AutomationProperties.AutomationId="AfterScore"
+                       AutomationProperties.Name="Score after migration" />
+          </StackPanel>
+        </StackPanel>
+        <TextBlock Text="{Binding ScoreText}" AutomationProperties.AutomationId="ScoreText" />
+      </StackPanel>
+
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Build" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="{Binding BuildText}" TextWrapping="Wrap" AutomationProperties.AutomationId="BuildText" />
+      </StackPanel>
+
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Findings" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="{Binding AutoFixedCount, StringFormat='Fixed automatically: {0}'}"
+                   AutomationProperties.AutomationId="AutoFixedCount" />
+        <TextBlock Text="{Binding ManualCount, StringFormat='Need manual work: {0}'}"
+                   AutomationProperties.AutomationId="ManualCount" />
+        <TextBlock Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
+                   AutomationProperties.AutomationId="UnsupportedCount" />
+      </StackPanel>
+
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Manual work left" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="None." IsVisible="{Binding !HasManualItems}" />
+        <ItemsControl ItemsSource="{Binding ManualItems}"
+                      IsVisible="{Binding HasManualItems}"
+                      AutomationProperties.Name="Manual work left">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:SummaryManualItem">
+              <StackPanel Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+                  <TextBlock Text="{Binding Kind, StringFormat='[{0}]'}" FontWeight="SemiBold" />
+                  <TextBlock Text="{Binding Path}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+        <Button Content="Open output folder" Command="{Binding OpenOutputFolderCommand}"
+                AutomationProperties.AutomationId="OpenOutputFolder" />
+        <Button Content="Open manifest" Command="{Binding OpenManifestCommand}"
+                AutomationProperties.AutomationId="OpenManifest" />
+        <Button Content="Start over" Command="{Binding StartOverCommand}"
+                AutomationProperties.AutomationId="StartOver" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
 </UserControl>
