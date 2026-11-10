@@ -93,7 +93,7 @@ public sealed class OutputWriter
             return body;
         }
 
-        var preamble = Encoding._utf8.GetPreamble();
+        var preamble = Encoding.UTF8.GetPreamble();
         var result = new byte[preamble.Length + body.Length];
         preamble.CopyTo(result, 0);
         body.CopyTo(result, preamble.Length);
