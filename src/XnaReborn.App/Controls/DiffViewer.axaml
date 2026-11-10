@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ae="using:AvaloniaEdit"
+             x:Class="XnaReborn.App.Controls.DiffViewer">
+  <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,Auto,*">
+    <TextBlock Grid.Row="0" Grid.Column="0" Text="Original" FontWeight="SemiBold" Margin="4,2"
+               AutomationProperties.HeadingLevel="2" />
+    <TextBlock Grid.Row="0" Grid.Column="2" Text="Migrated" FontWeight="SemiBold" Margin="4,2"
+               AutomationProperties.HeadingLevel="2" />
+
+    <ae:TextEditor x:Name="OldEditor" Grid.Row="1" Grid.Column="0"
+                   IsReadOnly="True" ShowLineNumbers="False" WordWrap="False"
+                   FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="13"
+                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                   AutomationProperties.AutomationId="DiffOldEditor"
+                   AutomationProperties.Name="Original text" />
+    <GridSplitter Grid.Row="1" Grid.Column="1" Width="4" ResizeDirection="Columns"
+                  AutomationProperties.Name="Resize panes" />
+    <ae:TextEditor x:Name="NewEditor" Grid.Row="1" Grid.Column="2"
+                   IsReadOnly="True" ShowLineNumbers="False" WordWrap="False"
+                   FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="13"
+                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                   AutomationProperties.AutomationId="DiffNewEditor"
+                   AutomationProperties.Name="Migrated text" />
+  </Grid>
+</UserControl>

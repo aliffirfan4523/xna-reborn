@@ -3,8 +3,99 @@
              xmlns:vm="using:XnaReborn.App.ViewModels"
              x:Class="XnaReborn.App.Views.MigrationSetupView"
              x:DataType="vm:MigrationSetupViewModel">
-  <StackPanel Margin="{StaticResource PagePadding}">
-    <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
-               AutomationProperties.HeadingLevel="1" />
-  </StackPanel>
+  <ScrollViewer>
+    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}" MaxWidth="900"
+                HorizontalAlignment="Left">
+      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+                 AutomationProperties.HeadingLevel="1" />
+
+      <!-- Output folder -->
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Output folder" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="The migrated copy goes here. Your original project is never changed." TextWrapping="Wrap" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingMedium}">
+          <TextBox Grid.Column="0" Text="{Binding OutputFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                   PlaceholderText="Folder for the migrated copy"
+                   AutomationProperties.AutomationId="OutputFolderBox"
+                   AutomationProperties.Name="Output folder" />
+          <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseCommand}"
+                  AutomationProperties.AutomationId="BrowseButton" />
+        </Grid>
+        <!-- The text starts with OK, Warning or Problem, so color is never the only cue. -->
+        <TextBlock Text="{Binding OutputMessage}" TextWrapping="Wrap"
+                   AutomationProperties.AutomationId="OutputMessage"
+                   AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
+
+      <!-- Target -->
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="MonoGame target" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <RadioButton GroupName="Target" Content="DesktopGL (OpenGL, works on Windows, Linux and macOS)"
+                     IsChecked="{Binding IsDesktopGL, Mode=TwoWay}"
+                     AutomationProperties.AutomationId="TargetDesktopGL" />
+        <RadioButton GroupName="Target" Content="WindowsDX (DirectX, Windows only)"
+                     IsChecked="{Binding IsWindowsDx, Mode=TwoWay}"
+                     AutomationProperties.AutomationId="TargetWindowsDX" />
+      </StackPanel>
+
+      <!-- Options -->
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Options" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <CheckBox Content="Add compatibility shims" IsChecked="{Binding EnableShims, Mode=TwoWay}"
+                  AutomationProperties.AutomationId="ShimsToggle" />
+        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
+                   Text="Off by default. Adds small stand-in classes for XNA parts that MonoGame does not have, so more code compiles without edits." />
+        <CheckBox Content="Substitute fonts that only XNA installed" IsChecked="{Binding SubstituteFonts, Mode=TwoWay}"
+                  AutomationProperties.AutomationId="FontSubstitutionToggle" />
+        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
+                   Text="Off by default. When on, a .spritefont that names an XNA-only font gets a Windows font. When off, it is listed as manual work." />
+      </StackPanel>
+
+      <!-- Plan -->
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Migration plan" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="{Binding PlanSummary}" AutomationProperties.AutomationId="PlanSummary" />
+        <ItemsControl ItemsSource="{Binding PlanItems}" AutomationProperties.AutomationId="PlanList">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:PlanItemViewModel">
+              <Border Padding="8" Margin="0,0,0,4" BorderThickness="1"
+                      BorderBrush="#60808080" CornerRadius="4">
+                <CheckBox IsChecked="{Binding IsIncluded, Mode=TwoWay}" IsEnabled="{Binding CanExclude}"
+                          AutomationProperties.AutomationId="PlanItemCheck"
+                          AutomationProperties.Name="{Binding Description}">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
+                    <TextBlock Text="{Binding FilesText}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
+                  </StackPanel>
+                </CheckBox>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <!-- Actions -->
+      <StackPanel Spacing="{StaticResource SpacingMedium}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+          <Button Content="Preview" Command="{Binding PreviewCommand}"
+                  AutomationProperties.AutomationId="PreviewButton"
+                  ToolTip.Tip="Shows the changes without writing anything." />
+          <Button Content="Migrate" Classes="accent" Command="{Binding MigrateCommand}"
+                  AutomationProperties.AutomationId="MigrateButton"
+                  ToolTip.Tip="Writes the migrated copy to the output folder." />
+          <Button Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}"
+                  AutomationProperties.AutomationId="CancelButton" />
+        </StackPanel>
+        <StackPanel Spacing="{StaticResource SpacingSmall}" IsVisible="{Binding IsBusy}">
+          <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"
+                       IsIndeterminate="{Binding ProgressIsIndeterminate}"
+                       AutomationProperties.Name="Migration progress" />
+          <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+        </StackPanel>
+        <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   AutomationProperties.AutomationId="StatusMessage" AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
 </UserControl>
