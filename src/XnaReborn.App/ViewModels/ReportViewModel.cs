@@ -144,6 +144,22 @@ public sealed partial class ReportViewModel : PageViewModel
     /// <summary>True when the project has findings and none is selected, so the detail pane shows a hint.</summary>
     public bool ShowSelectionHint => HasProject && !HasSelection;
 
+    /// <summary>The "Start here" tip for the current report, or null when there is no project.</summary>
+    public StartHereTip? StartHere => StartHereTip.From(Report);
+
+    /// <summary>True when the tip is shown.</summary>
+    public bool HasStartHere => StartHere is not null;
+
+    /// <summary>True when the tip shows its lines. The choice lasts as long as the app runs, because this page is created once.</summary>
+    [ObservableProperty]
+    private bool _isStartHereExpanded = true;
+
+    /// <summary>Shows only the findings of one classification. Used by the tip's buttons.</summary>
+    /// <param name="classification">The classification to show.</param>
+    [RelayCommand]
+    public void ShowClassification(Classification classification) =>
+        SelectedClassification = ClassificationChoices.Single(c => c.Value == classification);
+
     /// <summary>Sets the filters and the search text back to "show everything".</summary>
     [RelayCommand(CanExecute = nameof(HasActiveFilter))]
     public void ClearFilters()
@@ -222,6 +238,7 @@ public sealed partial class ReportViewModel : PageViewModel
         {
             nameof(HasReport), nameof(HasProject), nameof(ShowNoProject), nameof(NoProjectReason), nameof(Score), nameof(ProjectedScore),
             nameof(AutoFixableCount), nameof(ManualCount), nameof(UnsupportedCount), nameof(Diagnostics), nameof(HasDiagnostics),
+            nameof(StartHere), nameof(HasStartHere),
         })
         {
             OnPropertyChanged(name);
