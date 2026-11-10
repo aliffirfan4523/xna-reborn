@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Projects\packages.json" LogicalName="XnaReborn.Migrator.Projects.packages.json" />
+    <EmbeddedResource Include="Content\data\xna-only-fonts.json" LogicalName="XnaReborn.Migrator.Content.xna-only-fonts.json" />
   </ItemGroup>
 
   <ItemGroup>
