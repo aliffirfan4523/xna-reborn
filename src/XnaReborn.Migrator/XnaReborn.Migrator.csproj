@@ -10,6 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Projects\packages.json" LogicalName="XnaReborn.Migrator.Projects.packages.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="XnaReborn.Tests" />
   </ItemGroup>
 

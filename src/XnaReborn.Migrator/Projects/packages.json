@@ -1,0 +1,15 @@
+{
+  "monoGame": "3.8.6.1",
+  "contentBuilder": "3.8.6.1",
+  "dotnetMgcb": "3.8.6.1",
+  "targetFramework": "net8.0",
+  "windowsTargetFramework": "net8.0-windows",
+  "sources": [
+    "https://www.nuget.org/packages/MonoGame.Framework.DesktopGL",
+    "https://www.nuget.org/packages/MonoGame.Framework.WindowsDX",
+    "https://www.nuget.org/packages/MonoGame.Content.Builder.Task",
+    "https://www.nuget.org/packages/dotnet-mgcb",
+    "https://github.com/MonoGame/MonoGame.Templates/blob/main/CSharp/content/MonoGame.Application.WindowsDX.CSharp/MGNamespace.csproj",
+    "https://docs.monogame.net/articles/migration/updating_versions.html"
+  ]
+}
