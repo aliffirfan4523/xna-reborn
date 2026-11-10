@@ -1,7 +1,7 @@
 # Tasks: Content Conversion
 
-- [ ] 1. Fixtures
-  - [ ] 1.1 Add content fixtures: standard (texture, font, wav, mp3), custom processor, XACT, name overrides, nested content project, xnb-only. Done: texture, font, custom processor, XACT, `.fx`, name override and nested content project (`xna40-basic`, `xna40-custom-content`, `multi-project-sln`). Open: wav and mp3 items, and an xnb-only project. Integration tests write real PNG and WAV bytes at test time so the repo stays text-only.
+- [x] 1. Fixtures
+  - [x] 1.1 Add content fixtures: standard (texture, font, wav, mp3), custom processor, XACT, name overrides, nested content project, xnb-only. Done: texture, font, custom processor, XACT, `.fx`, name override and nested content project (`xna40-basic`, `xna40-custom-content`, `multi-project-sln`). Added later: `xna40-audio` (wav, mp3 as song and as sound effect, wma, a `Quality` parameter) and `xna40-prebuilt` (prebuilt `.xnb` and data files listed in the game project; the migrator now copies them and keeps them in the new project). Integration tests write real PNG and WAV bytes at test time so the repo stays text-only.
   - [x] 1.2 Confirm licenses and add attribution (all fixtures are original and synthetic)
   - _Requirements: R1 to R8_
 
@@ -52,10 +52,10 @@
   - [x] 9.3 Detect and report prebuilt-only `.xnb` files (copied with `/copy:`)
   - _Requirements: R6, R7, R8_
 
-- [ ] 10. Report and integration
+- [x] 10. Report and integration
   - [x] 10.1 Implement `ContentReport` and counts by type
   - [x] 10.2 Add the report to the migration manifest and expose it to the UI
-  - [ ] 10.3 Attach content build errors with asset paths through the runner
+  - [x] 10.3 Attach content build errors with asset paths through the runner (`MgcbOutputParser` sets `AssetPath`; `BuildRunner` groups them with hints)
   - _Requirements: R9, R10_
 
 - [ ] 11. Final checkpoint
