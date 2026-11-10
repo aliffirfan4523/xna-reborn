@@ -1,0 +1,68 @@
+﻿#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:True
+
+#-------------------------------- References --------------------------------#
+
+/reference:Pipeline/My Pipeline.dll
+
+#---------------------------------- Content ---------------------------------#
+
+#begin Fonts/Arial.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/build:Fonts/Arial.spritefont
+
+#begin Levels/level1.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:Levels/level1.xml
+
+#begin Models/ship.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:Scale=2
+/processorParam:GenerateMipmaps=True
+/build:Models/ship.fbx;Models/player.fbx
+
+#begin Shaders/Glow.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/Glow.fx
+
+#begin Sounds/jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/build:Sounds/jump.wav
+
+#begin Sounds/Tropical paradise.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/Tropical paradise.mp3
+
+#begin Textures/hero.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/build:Textures/hero.png
+
+#begin Textures/hero sheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Textures/hero sheet.png;Textures/sheet.png
+
+#begin Audio/Music.xsb
+/copy:Audio/Music.xsb
+
+#begin Data/level one.dat
+/copy:Data/level one.dat
