@@ -132,6 +132,41 @@ public sealed class SpriteFontMatcherTests : IDisposable
     }
 
     [Fact]
+    public void ProjectReference_content_project_outside_the_game_folder_is_scanned()
+    {
+        var game = Path.Combine(_temp, "Game");
+        Directory.CreateDirectory(game);
+        Write(Path.Combine("SharedContent", "Fonts", "Hud.spritefont"), FontXml("Pescadero"));
+        var project = Project(new ProjectItem("ProjectReference", @"..\SharedContent\SharedContent.contentproj", _noMetadata));
+
+        Assert.Equal(["../SharedContent/Fonts/Hud.spritefont: Pescadero"], Run(game, project, default, "Pescadero"));
+    }
+
+    [Fact]
+    public void ProjectReference_to_a_normal_project_is_not_scanned()
+    {
+        var game = Path.Combine(_temp, "Game");
+        Directory.CreateDirectory(game);
+        Write(Path.Combine("Lib", "Hud.spritefont"), FontXml("Pescadero"));
+        var project = Project(new ProjectItem("ProjectReference", @"..\Lib\Lib.csproj", _noMetadata));
+
+        Assert.Empty(Run(game, project, default, "Pescadero"));
+    }
+
+    [Fact]
+    public void Both_reference_forms_to_the_same_content_folder_do_not_report_twice()
+    {
+        var game = Path.Combine(_temp, "Game");
+        Directory.CreateDirectory(game);
+        Write(Path.Combine("Content", "Hud.spritefont"), FontXml("Pescadero"));
+        var project = Project(
+            new ProjectItem("NestedContentProject", @"..\Content\Content.contentproj", _noMetadata),
+            new ProjectItem("ProjectReference", @"..\Content\Content.CONTENTPROJ", _noMetadata));
+
+        Assert.Equal(["../Content/Hud.spritefont: Pescadero"], Run(game, project, default, "Pescadero"));
+    }
+
+    [Fact]
     public void Bin_obj_git_and_vs_folders_are_skipped()
     {
         foreach (var folder in new[] { "bin", "obj", ".git", ".vs", "Sub/bin" })

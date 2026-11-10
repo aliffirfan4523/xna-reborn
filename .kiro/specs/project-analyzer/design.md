@@ -173,7 +173,7 @@ Example rule (shape only, not part of the empty catalog):
 | `projectProperty` | project | raw property map |
 | `projectItem` | project | raw items (Reference, Compile, NestedContentProject, Import) |
 | `filePattern` | project | files on disk under the project folder (glob) |
-| `contentItem` | project | `ProjectInfo.ContentItems` |
+| `contentItem` | project | `ProjectInfo.ContentItems`. Optional `nonStandardPair: true` keeps only items whose importer or processor is not in the stock list of `ImporterMap` (`rules/importer-map.json`, embedded in Core) |
 | `spriteFontFamily` | project | `FontName` in `.spritefont` files under the project folder and nested content project folders |
 | `namespace` | source | `using` directives and qualified names |
 | `type` | source | identifiers, gated by imported or qualified namespace |

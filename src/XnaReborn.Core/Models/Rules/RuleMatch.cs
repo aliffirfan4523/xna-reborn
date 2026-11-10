@@ -60,10 +60,12 @@ public sealed record FilePatternMatch(string Glob) : RuleMatch;
 /// <param name="Extension">File extension including the dot, or null.</param>
 /// <param name="Importer">Importer name, or null. A trailing * is a wildcard.</param>
 /// <param name="Processor">Processor name, or null. A trailing * is a wildcard.</param>
+/// <param name="NonStandardPair">When true, the item must use an importer or processor that is not part of stock XNA.</param>
 public sealed record ContentItemMatch(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Extension = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Importer = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Processor = null) : RuleMatch;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Processor = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool NonStandardPair = false) : RuleMatch;
 
 /// <summary>A .spritefont file whose FontName is one of the listed font families. Looks in the project folder and in each nested content project folder.</summary>
 /// <param name="Families">Font family names, compared case-insensitively with the FontName element.</param>

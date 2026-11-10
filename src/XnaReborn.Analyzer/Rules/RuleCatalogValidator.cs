@@ -75,7 +75,7 @@ internal static class RuleCatalogValidator
             case "if":
                 return null;
             case "anyOf":
-                return "at least one of extension, importer, or processor is required.";
+                return "at least one of extension, importer, processor, or nonStandardPair is required.";
             case "required" when evaluationPath.Contains("/anyOf/", StringComparison.Ordinal):
                 return null;
             default:

@@ -186,20 +186,22 @@
       }
     },
     "matchContentItem": {
-      "description": "An item in a content project. At least one of extension, importer, or processor is required. A trailing * is a wildcard.",
+      "description": "An item in a content project. At least one of extension, importer, processor, or nonStandardPair is required. A trailing * is a wildcard. nonStandardPair: true matches only items whose importer or processor is not part of stock XNA.",
       "type": "object",
       "required": ["type"],
       "additionalProperties": false,
       "anyOf": [
         { "required": ["extension"] },
         { "required": ["importer"] },
-        { "required": ["processor"] }
+        { "required": ["processor"] },
+        { "required": ["nonStandardPair"] }
       ],
       "properties": {
         "type": { "const": "contentItem" },
         "extension": { "type": "string", "pattern": "^\\.[A-Za-z0-9]+$" },
         "importer": { "type": "string", "minLength": 1 },
-        "processor": { "type": "string", "minLength": 1 }
+        "processor": { "type": "string", "minLength": 1 },
+        "nonStandardPair": { "type": "boolean" }
       }
     },
     "matchSpriteFontFamily": {

@@ -119,6 +119,18 @@ public class RuleModelTests
         Assert.Equal(".spritefont", m.Extension);
         Assert.Equal("I*", m.Importer);
         Assert.Equal("P", m.Processor);
+        Assert.False(m.NonStandardPair);
+    }
+
+    [Fact]
+    public void ContentItemMatch_NonStandardPair()
+    {
+        var m = Assert.IsType<ContentItemMatch>(ParseRule("""{"type":"contentItem","nonStandardPair":true}""").Match);
+        Assert.True(m.NonStandardPair);
+        Assert.Null(m.Extension);
+
+        Assert.DoesNotContain("nonStandardPair", JsonSerializer.Serialize<RuleMatch>(new ContentItemMatch(".x"), RuleCatalogJson.Options), StringComparison.Ordinal);
+        Assert.Contains("\"nonStandardPair\":true", JsonSerializer.Serialize<RuleMatch>(new ContentItemMatch(NonStandardPair: true), RuleCatalogJson.Options), StringComparison.Ordinal);
     }
 
     [Fact]

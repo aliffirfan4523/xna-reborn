@@ -526,11 +526,22 @@
       "id": "XNA049",
       "title": "Content project referenced with ProjectReference",
       "severity": "Error",
-      "classification": "Manual",
+      "classification": "AutoFixable",
       "category": "Content",
       "match": { "type": "projectItem", "itemType": "ProjectReference", "include": "*.contentproj" },
-      "explanation": "The game project references a .contentproj with a ProjectReference (XnaReferenceType Content), the form used when the content project is a sibling project. MonoGame cannot load that reference and builds content from Content.mgcb instead. The analyzer reads content items only from NestedContentProject items, so the content-item rules (XNA017, XNA019, XNA020, XNA021) do not see assets behind this form.",
-      "resolution": "Remove the reference, convert the content project to Content.mgcb, and move the asset folders into the game project. This stays manual until content-conversion:2.1 reads ProjectReference content projects."
+      "explanation": "The game project references a .contentproj with a ProjectReference (XnaReferenceType Content), the form used when the content project is a sibling project. MonoGame cannot load that reference and builds content from Content.mgcb instead. The analyzer reads this content project like a nested one, so the content-item rules (XNA017, XNA019, XNA020, XNA021) see the assets behind this form.",
+      "resolution": "The migrator removes the reference, generates Content.mgcb from the content project like it does for a nested content project (XNA005), copies the source assets into the game project, and lists anything it cannot convert as manual work.",
+      "migratorTask": "project-migrator:7.1"
+    },
+    {
+      "id": "XNA050",
+      "title": "Custom content importer or processor",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "contentItem", "nonStandardPair": true },
+      "explanation": "A content item uses an importer or processor that is not part of stock XNA 4.0. It comes from a custom content pipeline assembly, which was built against the XNA pipeline and does not load in the MonoGame content builder as it is.",
+      "resolution": "Port the pipeline project to MonoGame and reference the rebuilt assembly from Content.mgcb, or replace the asset with one that a stock importer and processor can build."
     }
   ]
 }
