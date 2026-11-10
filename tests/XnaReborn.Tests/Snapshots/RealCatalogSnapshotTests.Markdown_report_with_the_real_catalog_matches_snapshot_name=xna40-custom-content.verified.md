@@ -103,9 +103,9 @@ Migrator task: project-migrator:7.1
 
 ### XNA013 XNA-only SpriteFont family
 
-A .spritefont names a font that shipped with XNA Game Studio (Kootenay, Lindsey, Miramonte, Pericles, Pescadero) or is not installed with Windows (Segoe UI Mono). The MonoGame content builder looks the font up in the system font folders, so the content build fails with 'Could not find ... font file' for each such file (Pirate-Treasure-Hunter: Pescadero in three files, Segoe UI Mono in one).
+A .spritefont names a font from the XNA Redistributable Font Pack, which XNA Game Studio 4.0 installed and Windows does not ship (Andy, Jing Jing, Kootenay, Lindsey, Miramonte, Moire, Motorwerk, News Gothic, Pericles, Pescadero, Quartz MS, Segoe Keycaps, Segoe UI Mono, Wasco Sans). The MonoGame content builder looks the font up in the system font folders, so the content build fails with 'Could not find ... font file' for each such file (Pirate-Treasure-Hunter: Pescadero in three files, Segoe UI Mono in one). The list matches src/XnaReborn.Migrator/Content/data/xna-only-fonts.json.
 
-**Resolution:** Change FontName to an installed or bundled font such as Arial or Consolas, or add a .ttf to the content folder and name it. Glyph widths differ from the original, so check the layout.
+**Resolution:** Change FontName to an installed or bundled font, or add a .ttf to the content folder and name it. The migrator can substitute a close Windows font in the migrated copy when font substitution is turned on. Glyph widths differ from the original, so check the layout.
 
 ### XNA016 XACT project file (.xap)
 
