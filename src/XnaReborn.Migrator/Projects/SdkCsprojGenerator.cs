@@ -34,8 +34,15 @@ public sealed class SdkCsprojGenerator
     /// Path of <c>Content.mgcb</c> relative to the project folder, for the <c>MonoGameContentReference</c> item. Used only when the project
     /// has content. Defaults to <c>Content\Content.mgcb</c>. Either slash is accepted and the file gets backslashes.
     /// </param>
+    /// <param name="skippedCopiedItems">
+    /// <see cref="CopiedItem.Include"/> values of copy-to-output items to leave out, for example because the file does not exist.
+    /// </param>
     /// <returns>A Created change at the source project's relative path.</returns>
-    public FileChange Generate(ProjectReadResult source, MonoGameTarget target, string? contentReferencePath = null)
+    public FileChange Generate(
+        ProjectReadResult source,
+        MonoGameTarget target,
+        string? contentReferencePath = null,
+        IReadOnlySet<string>? skippedCopiedItems = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         var info = source.Info;
@@ -121,8 +128,106 @@ public sealed class SdkCsprojGenerator
             sb.Append("  </ItemGroup>\n");
         }
 
+        var copied = CopiedItems(source)
+            .Where(i => i.Problem == CopiedItemProblem.None && skippedCopiedItems?.Contains(i.Include) != true)
+            .ToList();
+        if (copied.Count > 0)
+        {
+            sb.Append("\n  <ItemGroup>\n");
+            foreach (var item in copied)
+            {
+                sb.Append("    <None Include=\"").Append(Escape(item.Include)).Append("\" CopyToOutputDirectory=\"").Append(Escape(item.CopyToOutputDirectory)).Append("\" />\n");
+            }
+
+            sb.Append("  </ItemGroup>\n");
+        }
+
         sb.Append("</Project>\n");
         return new FileChange(info.Path, ChangeKind.Created, null, sb.ToString(), null);
+    }
+
+    /// <summary>
+    /// Lists the <c>Content</c> and <c>None</c> items of a project that ask to be copied to the output folder
+    /// (<c>CopyToOutputDirectory</c> of <c>Always</c> or <c>PreserveNewest</c>), in document order, without repeats.
+    /// </summary>
+    /// <param name="source">The project as read by the analyzer.</param>
+    /// <returns>One entry per item. Entries with a problem are not emitted into the generated project.</returns>
+    public static IReadOnlyList<CopiedItem> CopiedItems(ProjectReadResult source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        var projectPath = source.Info.Path.Replace('\\', '/');
+        var slash = projectPath.LastIndexOf('/');
+        var projectDirectory = slash < 0 ? string.Empty : projectPath[..slash];
+
+        var result = new List<CopiedItem>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in source.Items)
+        {
+            if (item.ItemType is not ("Content" or "None")
+                || !item.Metadata.TryGetValue("CopyToOutputDirectory", out var copy)
+                || string.IsNullOrWhiteSpace(item.Include))
+            {
+                continue;
+            }
+
+            var mode = copy.Trim();
+            if (!string.Equals(mode, "Always", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(mode, "PreserveNewest", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var include = item.Include.Trim().Replace('/', '\\');
+            if (!seen.Add(include))
+            {
+                continue;
+            }
+
+            if (include.Contains('*', StringComparison.Ordinal) || include.Contains('?', StringComparison.Ordinal))
+            {
+                result.Add(new CopiedItem(include, mode, include, CopiedItemProblem.Wildcard));
+                continue;
+            }
+
+            var rootRelative = Normalize(projectDirectory, include);
+            result.Add(rootRelative is null
+                ? new CopiedItem(include, mode, include, CopiedItemProblem.OutsideRoot)
+                : new CopiedItem(include, mode, rootRelative, CopiedItemProblem.None));
+        }
+
+        return result;
+    }
+
+    private static string? Normalize(string projectDirectory, string include)
+    {
+        if (Path.IsPathRooted(include) || include.StartsWith('\\') || (include.Length > 1 && include[1] == ':'))
+        {
+            return null;
+        }
+
+        var parts = new List<string>();
+        foreach (var part in (projectDirectory + "/" + include.Replace('\\', '/')).Split('/', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (part == ".")
+            {
+                continue;
+            }
+
+            if (part == "..")
+            {
+                if (parts.Count == 0)
+                {
+                    return null;
+                }
+
+                parts.RemoveAt(parts.Count - 1);
+                continue;
+            }
+
+            parts.Add(part);
+        }
+
+        return parts.Count == 0 ? null : string.Join('/', parts);
     }
 
     private static string OutputType(IReadOnlyDictionary<string, string> properties)
@@ -182,3 +287,23 @@ public sealed class SdkCsprojGenerator
         .Replace(">", "&gt;", StringComparison.Ordinal)
         .Replace("\"", "&quot;", StringComparison.Ordinal);
 }
+
+/// <summary>Why a <see cref="CopiedItem"/> cannot be migrated.</summary>
+public enum CopiedItemProblem
+{
+    /// <summary>No problem. The item is copied and emitted.</summary>
+    None,
+
+    /// <summary>The path points outside the source folder.</summary>
+    OutsideRoot,
+
+    /// <summary>The path holds a wildcard, which is not expanded.</summary>
+    Wildcard,
+}
+
+/// <summary>A <c>Content</c> or <c>None</c> project item that is copied to the output folder.</summary>
+/// <param name="Include">The path as written in the project, relative to the project folder, with '\' separators.</param>
+/// <param name="CopyToOutputDirectory">The original value: <c>Always</c> or <c>PreserveNewest</c>.</param>
+/// <param name="RootRelativePath">Path relative to the source root with '/' separators. Equals <paramref name="Include"/> when there is a problem.</param>
+/// <param name="Problem">Whether the item can be migrated.</param>
+public sealed record CopiedItem(string Include, string CopyToOutputDirectory, string RootRelativePath, CopiedItemProblem Problem);

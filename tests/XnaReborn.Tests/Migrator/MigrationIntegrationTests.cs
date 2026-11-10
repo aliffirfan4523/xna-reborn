@@ -100,6 +100,22 @@ public sealed class MigrationIntegrationTests(ITestOutputHelper testOutput) : ID
         Assert.True(File.Exists(Path.Combine(built, "Content", "Fonts", "Font.xnb")), "Content/Fonts/Font.xnb is missing from " + built);
     }
 
+    [IntegrationFact]
+    public async Task Migrated_prebuilt_fixture_builds_and_ships_its_prebuilt_assets()
+    {
+        var output = Path.Combine(_temp, "migrated-prebuilt");
+        var result = await MigrationTestSupport.MigrateAsync(FixturePaths.Of("xna40-prebuilt"), MigrationTestSupport.Options(output));
+        Assert.True(result.Completed);
+
+        var (exitCode, text) = await RunBuildAsync(output);
+        testOutput.WriteLine(text);
+
+        Assert.True(exitCode == 0, $"dotnet build failed with exit code {exitCode}.{Environment.NewLine}{text}");
+        var built = Path.Combine(output, "bin", "Debug", "net8.0");
+        Assert.True(File.Exists(Path.Combine(built, "Content", "hero.xnb")), "Content/hero.xnb is missing from " + built);
+        Assert.True(File.Exists(Path.Combine(built, "Content", "sheet.xnb")), "Content/sheet.xnb is missing from " + built);
+        Assert.True(File.Exists(Path.Combine(built, "Data", "levels.txt")), "Data/levels.txt is missing from " + built);
+    }
     private static async Task<(int ExitCode, string Output)> RunBuildAsync(string folder)
     {
         var start = new ProcessStartInfo("dotnet", "build --nologo -v minimal")
