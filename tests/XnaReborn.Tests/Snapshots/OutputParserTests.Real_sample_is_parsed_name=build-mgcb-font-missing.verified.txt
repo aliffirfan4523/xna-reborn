@@ -1,0 +1,58 @@
+﻿{
+  MsBuild: [
+    {
+      Severity: Error,
+      Code: MSB3073,
+      Message: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1.,
+      File: <home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets,
+      Line: 172,
+      Column: 5,
+      Project: <root>\Xna40Basic.csproj
+    },
+    {
+      Severity: Error,
+      Code: MSB3073,
+      Message: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1.,
+      File: <home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets,
+      Line: 172,
+      Column: 5,
+      Project: <root>\Xna40Basic.csproj
+    }
+  ],
+  Mgcb: [
+    {
+      Severity: Error,
+      Code: MGCB,
+      Message: Processor 'FontDescriptionProcessor' had unexpected failure!. System.IO.FileNotFoundException: Could not find "NoSuchFontXyz" font file at "C:\WINDOWS\Fonts\NoSuchFontXyz.otf".,
+      File: <root>/Content/Fonts/Font.spritefont,
+      Project: <root>\Xna40Basic.csproj,
+      AssetPath: <root>/Content/Fonts/Font.spritefont
+    },
+    {
+      Severity: Error,
+      Code: MSB3073,
+      Message: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1.,
+      File: <home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets,
+      Line: 172,
+      Column: 5,
+      Project: <root>\Xna40Basic.csproj
+    },
+    {
+      Severity: Error,
+      Code: MGCB,
+      Message: Processor 'FontDescriptionProcessor' had unexpected failure!. System.IO.FileNotFoundException: Could not find "NoSuchFontXyz" font file at "C:\WINDOWS\Fonts\NoSuchFontXyz.otf".,
+      File: <root>/Content/Fonts/Font.spritefont,
+      Project: <root>\Xna40Basic.csproj,
+      AssetPath: <root>/Content/Fonts/Font.spritefont
+    },
+    {
+      Severity: Error,
+      Code: MSB3073,
+      Message: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1.,
+      File: <home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets,
+      Line: 172,
+      Column: 5,
+      Project: <root>\Xna40Basic.csproj
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+﻿{
+  MsBuild: [
+    {
+      Severity: Error,
+      Code: CS0246,
+      Message: The type or namespace name 'ResolveTexture2D' could not be found (are you missing a using directive or an assembly reference?),
+      File: <root>\Game1.cs,
+      Line: 14,
+      Column: 17,
+      Project: <root>\Xna31Legacy.csproj
+    },
+    {
+      Severity: Error,
+      Code: CS0246,
+      Message: The type or namespace name 'ResolveTexture2D' could not be found (are you missing a using directive or an assembly reference?),
+      File: <root>\Game1.cs,
+      Line: 14,
+      Column: 17,
+      Project: <root>\Xna31Legacy.csproj
+    }
+  ],
+  Mgcb: []
+}

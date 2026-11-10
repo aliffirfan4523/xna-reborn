@@ -1,0 +1,21 @@
+  Determining projects to restore...
+  Restored <root>\Xna40Basic.csproj (in 295 ms).
+  Tool 'dotnet-mgcb' (version '3.8.6.1') was restored. Available commands: mgcb
+  
+  Restore was successful.
+  I: <root>/Content/Fonts/Font.spritefont
+<root>/Content/Fonts/Font.spritefont : error : Processor 'FontDescriptionProcessor' had unexpected failure!. System.IO.FileNotFoundException: Could not find "NoSuchFontXyz" font file at "C:\WINDOWS\Fonts\NoSuchFontXyz.otf". [<root>\Xna40Basic.csproj]
+     at Microsoft.Xna.Framework.Content.Pipeline.Processors.FontDescriptionProcessor.Process(FontDescription input, ContentProcessorContext context) in /home/runner/work/MonoGame/MonoGame/MonoGame.Framework.Content.Pipeline/Processors/FontDescriptionProcessor.cs:line 65
+     at Microsoft.Xna.Framework.Content.Pipeline.ContentProcessor`2.Microsoft.Xna.Framework.Content.Pipeline.IContentProcessor.Process(Object input, ContentProcessorContext context) in /home/runner/work/MonoGame/MonoGame/MonoGame.Framework.Content.Pipeline/ContentProcessor.cs:line 55
+     at MonoGame.Framework.Content.Pipeline.Builder.PipelineManager.ProcessContent(PipelineBuildEvent pipelineEvent) in /home/runner/work/MonoGame/MonoGame/MonoGame.Framework.Content.Pipeline/PipelineBuilder/PipelineManager.cs:line 886
+  I: <root>/Content/Textures/hero.png
+<home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets(172,5): error MSB3073: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1. [<root>\Xna40Basic.csproj]
+
+Build FAILED.
+
+<root>/Content/Fonts/Font.spritefont : error : Processor 'FontDescriptionProcessor' had unexpected failure!. System.IO.FileNotFoundException: Could not find "NoSuchFontXyz" font file at "C:\WINDOWS\Fonts\NoSuchFontXyz.otf". [<root>\Xna40Basic.csproj]
+<home>\.nuget\packages\monogame.content.builder.task\3.8.6.1\build\MonoGame.Content.Builder.Task.targets(172,5): error MSB3073: The command ""dotnet" "mgcb" /quiet /@:"<root>\Content\Content.mgcb" /platform:DesktopGL /outputDir:"<root>/Content/bin/DesktopGL/Content" /intermediateDir:"<root>/Content/obj/DesktopGL/net8.0/Content" /workingDir:"<root>/Content/"" exited with code 1. [<root>\Xna40Basic.csproj]
+    0 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:02.21

@@ -1,0 +1,11 @@
+  Determining projects to restore...
+<root>\Game.csproj : error NU1101: Unable to find package XnaReborn.No.Such.Package. No packages exist with this id in source(s): nuget.org
+  Failed to restore <root>\Game.csproj (in 804 ms).
+
+Build FAILED.
+
+<root>\Game.csproj : error NU1101: Unable to find package XnaReborn.No.Such.Package. No packages exist with this id in source(s): nuget.org
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.59
