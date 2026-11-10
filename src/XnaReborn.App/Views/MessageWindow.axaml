@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="XnaReborn.App.Views.MessageWindow"
+        Width="480"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}">
+    <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+    <Expander x:Name="DetailsExpander" Header="Details">
+      <TextBox x:Name="DetailsText" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="200"
+               AutomationProperties.Name="Error details" />
+    </Expander>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{StaticResource SpacingMedium}">
+      <Button x:Name="CancelButton" IsCancel="True" Click="OnCancel" />
+      <Button x:Name="ConfirmButton" IsDefault="True" Click="OnConfirm" />
+    </StackPanel>
+  </StackPanel>
+</Window>
