@@ -184,6 +184,28 @@ public class SdkCsprojGeneratorTests
     }
 
     [Fact]
+    public void A_content_reference_path_replaces_the_default_and_gets_backslashes()
+    {
+        var source = Build(contentProjects: ["Content/Content.contentproj"]);
+
+        var text = _generator.Generate(source, MonoGameTarget.DesktopGL, "Data/Art/Content.mgcb").NewText!;
+
+        Assert.Contains("<MonoGameContentReference Include=\"Data\\Art\\Content.mgcb\" />", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"Content\\Content.mgcb\"", text, StringComparison.Ordinal);
+        Assert.Equal(Text(source), _generator.Generate(source, MonoGameTarget.DesktopGL, null).NewText);
+        Assert.Equal(Text(source), _generator.Generate(source, MonoGameTarget.DesktopGL, " ").NewText);
+    }
+
+    [Fact]
+    public void A_content_reference_path_is_ignored_without_content_and_escaped_with_it()
+    {
+        var withoutContent = _generator.Generate(Build(), MonoGameTarget.DesktopGL, "Data/Content.mgcb").NewText!;
+        var escaped = _generator.Generate(Build(contentProjects: ["C.contentproj"]), MonoGameTarget.DesktopGL, "A&B/Content.mgcb").NewText!;
+
+        Assert.DoesNotContain("MonoGameContentReference", withoutContent, StringComparison.Ordinal);
+        Assert.Contains("Include=\"A&amp;B\\Content.mgcb\"", escaped, StringComparison.Ordinal);
+    }
+    [Fact]
     public void Windows_target_changes_package_and_target_framework()
     {
         var text = _generator.Generate(Build(), MonoGameTarget.WindowsDX).NewText!;

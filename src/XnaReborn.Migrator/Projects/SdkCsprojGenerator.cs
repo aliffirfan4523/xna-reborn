@@ -30,8 +30,12 @@ public sealed class SdkCsprojGenerator
     /// <summary>Generates the SDK-style project for one source project.</summary>
     /// <param name="source">The project as read by the analyzer.</param>
     /// <param name="target">The MonoGame platform to target.</param>
+    /// <param name="contentReferencePath">
+    /// Path of <c>Content.mgcb</c> relative to the project folder, for the <c>MonoGameContentReference</c> item. Used only when the project
+    /// has content. Defaults to <c>Content\Content.mgcb</c>. Either slash is accepted and the file gets backslashes.
+    /// </param>
     /// <returns>A Created change at the source project's relative path.</returns>
-    public FileChange Generate(ProjectReadResult source, MonoGameTarget target)
+    public FileChange Generate(ProjectReadResult source, MonoGameTarget target, string? contentReferencePath = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         var info = source.Info;
@@ -77,7 +81,10 @@ public sealed class SdkCsprojGenerator
         if (hasContent)
         {
             sb.Append("\n  <ItemGroup>\n");
-            sb.Append("    <MonoGameContentReference Include=\"Content\\Content.mgcb\" />\n");
+            var reference = string.IsNullOrWhiteSpace(contentReferencePath)
+                ? "Content\\Content.mgcb"
+                : contentReferencePath.Trim().Replace('/', '\\');
+            sb.Append("    <MonoGameContentReference Include=\"").Append(Escape(reference)).Append("\" />\n");
             sb.Append("  </ItemGroup>\n");
         }
 

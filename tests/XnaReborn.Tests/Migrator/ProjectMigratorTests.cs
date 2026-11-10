@@ -180,45 +180,56 @@ public sealed class ProjectMigratorTests : IDisposable
     }
 
     [Fact]
-    public async Task Multi_project_solution_gets_two_projects_a_solution_sources_and_manual_content()
+    public async Task Multi_project_solution_gets_two_projects_a_solution_sources_and_converted_content()
     {
         var output = Out();
         var result = await MigrationTestSupport.MigrateAsync(Fixture("multi-project-sln"), MigrationTestSupport.Options(output));
 
         var created = result.Changes.Where(c => c.Kind == ChangeKind.Created).Select(c => c.RelativePath).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(["Directory.Build.props", "Directory.Build.targets", "Directory.Packages.props", "Game/Game.csproj", "Library/Library.csproj", "multi-project-sln.sln"], created);
+        Assert.Equal(
+            [".config/dotnet-tools.json", "Directory.Build.props", "Directory.Build.targets", "Directory.Packages.props", "Game/Content/Content.mgcb", "Game/Game.csproj", "Library/Library.csproj", "multi-project-sln.sln"],
+            created);
         Assert.Contains(result.Changes, c => c.RelativePath == "Library/Helpers.cs");
         Assert.Contains(result.Changes, c => c.RelativePath == "Game/Game1.cs");
 
-        var icon = Single(result, "GameContent/Textures/icon.png");
-        Assert.Equal(ChangeKind.ManualWork, icon.Kind);
+        var icon = Single(result, "Game/Content/Textures/icon.png");
+        Assert.Equal(ChangeKind.Copied, icon.Kind);
         Assert.Equal(Path.Combine(Fixture("multi-project-sln"), "GameContent", "Textures", "icon.png"), icon.SourcePath);
-        Assert.DoesNotContain("Content.mgcb", Single(result, "Game/Game.csproj").NewText);
+        Assert.DoesNotContain(result.Changes, c => c.RelativePath.StartsWith("GameContent/", StringComparison.Ordinal));
+        var csproj = Single(result, "Game/Game.csproj").NewText!;
+        Assert.Contains("<MonoGameContentReference Include=\"Content\\Content.mgcb\" />", csproj, StringComparison.Ordinal);
+        Assert.Contains("MonoGame.Content.Builder.Task", csproj, StringComparison.Ordinal);
+        Assert.DoesNotContain("MonoGame.Content.Builder", Single(result, "Library/Library.csproj").NewText, StringComparison.Ordinal);
 
-        Assert.True(File.Exists(Path.Combine(output, "GameContent", "Textures", "icon.png")));
+        Assert.True(File.Exists(Path.Combine(output, "Game", "Content", "Textures", "icon.png")));
+        Assert.True(File.Exists(Path.Combine(output, "Game", "Content", "Content.mgcb")));
+        Assert.True(File.Exists(Path.Combine(output, ".config", "dotnet-tools.json")));
         var markdown = File.ReadAllText(Path.Combine(output, "xnareborn-manifest.md"));
-        Assert.Contains("GameContent/GameContent.contentproj: content conversion is not wired in yet", markdown, StringComparison.Ordinal);
+        Assert.Contains("## Content", markdown, StringComparison.Ordinal);
+        Assert.DoesNotContain("not wired in yet", markdown, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task Custom_content_fixture_copies_assets_as_manual_work_without_a_content_reference()
+    public async Task Custom_content_fixture_converts_what_it_can_and_lists_the_rest_as_manual_work()
     {
         var result = await MigrationTestSupport.MigrateAsync(Fixture("xna40-custom-content"), MigrationTestSupport.Options(Out(), dryRun: true));
 
         var content = result.Changes.Where(c => c.RelativePath.StartsWith("Content/", StringComparison.Ordinal)).ToList();
-        Assert.NotEmpty(content);
-        Assert.All(content, c =>
-        {
-            Assert.Equal(ChangeKind.ManualWork, c.Kind);
-            Assert.NotNull(c.SourcePath);
-            Assert.Contains("not wired in yet", c.Reason, StringComparison.Ordinal);
-        });
-        Assert.Contains(content, c => c.RelativePath == "Content/Shaders/Glow.fx");
+        Assert.Equal(
+            ["Content/Audio/Sounds.xap", "Content/Content.mgcb", "Content/Fonts/Hud.spritefont", "Content/Shaders/Glow.fx", "Content/Textures/hero.png", "Content/Textures/ship.png"],
+            content.Select(c => c.RelativePath));
+        Assert.Equal(ChangeKind.ManualWork, Single(result, "Content/Audio/Sounds.xap").Kind);
+        Assert.Equal(ChangeKind.ManualWork, Single(result, "Content/Textures/ship.png").Kind);
+        Assert.Equal(ChangeKind.ManualWork, Single(result, "Content/Fonts/Hud.spritefont").Kind);
+        Assert.Equal(ChangeKind.Copied, Single(result, "Content/Textures/hero.png").Kind);
+        Assert.Equal(ChangeKind.Copied, Single(result, "Content/Shaders/Glow.fx").Kind);
+        Assert.DoesNotContain(content, c => c.Reason?.Contains("not wired in yet", StringComparison.Ordinal) == true);
 
         var csproj = Single(result, "CustomContent.csproj").NewText!;
-        Assert.DoesNotContain("Content.mgcb", csproj);
-        Assert.DoesNotContain("MonoGameContentReference", csproj);
-        Assert.DoesNotContain("MonoGame.Content.Builder", csproj);
+        Assert.Contains("<MonoGameContentReference Include=\"Content\\Content.mgcb\" />", csproj, StringComparison.Ordinal);
+        Assert.Contains("MonoGame.Content.Builder.Task", csproj, StringComparison.Ordinal);
+        Assert.Equal(2, result.Manifest.Content!.CountsByStatus["Converted"]);
+        Assert.Equal(3, result.Manifest.Content.CountsByStatus["ManualWork"]);
     }
 
     [Fact]
@@ -379,6 +390,185 @@ public sealed class ProjectMigratorTests : IDisposable
         Assert.Equal(["Discovering projects", "Planning", "Generating projects", "Rewriting source", "Done"], distinct);
     }
 
+    [Fact]
+    public async Task Basic_fixture_content_is_converted_with_the_builder_package_tool_manifest_and_counts()
+    {
+        var output = Out();
+        var result = await MigrationTestSupport.MigrateAsync(Fixture("xna40-basic"), MigrationTestSupport.Options(output));
+
+        Assert.True(result.Completed);
+        var csproj = Single(result, "Xna40Basic.csproj").NewText!;
+        Assert.Contains("<PackageReference Include=\"MonoGame.Content.Builder.Task\" Version=\"3.8.6.1\" />", csproj, StringComparison.Ordinal);
+        Assert.Contains("<MonoGameContentReference Include=\"Content\\Content.mgcb\" />", csproj, StringComparison.Ordinal);
+
+        var mgcb = Single(result, "Content/Content.mgcb");
+        Assert.Equal(ChangeKind.Created, mgcb.Kind);
+        Assert.Equal(_expectedBasicMgcb, mgcb.NewText);
+        Assert.Equal(_expectedBasicMgcb, File.ReadAllText(Path.Combine(output, "Content", "Content.mgcb")));
+        Assert.Equal(ChangeKind.Copied, Single(result, "Content/Textures/hero.png").Kind);
+        Assert.Equal(ChangeKind.Copied, Single(result, "Content/Fonts/Font.spritefont").Kind);
+        Assert.DoesNotContain(result.Changes, c => c.RelativePath.EndsWith(".contentproj", StringComparison.Ordinal));
+
+        var tools = Single(result, ".config/dotnet-tools.json");
+        Assert.Equal(ChangeKind.Created, tools.Kind);
+        Assert.Contains("\"dotnet-mgcb\"", tools.NewText, StringComparison.Ordinal);
+        Assert.Contains("\"3.8.6.1\"", tools.NewText, StringComparison.Ordinal);
+        Assert.True(File.Exists(Path.Combine(output, ".config", "dotnet-tools.json")));
+        Assert.True(File.Exists(Path.Combine(output, "Content", "Textures", "hero.png")));
+
+        Assert.Equal(2, result.Manifest.Content!.CountsByStatus["Converted"]);
+        Assert.Equal(0, result.Manifest.Content.CountsByStatus["ManualWork"]);
+        Assert.Equal(["Converted", "ManualWork", "Missing", "Conflict", "Prebuilt"], result.Manifest.Content.CountsByStatus.Keys);
+        Assert.Equal(
+            ["Texture", "Font", "SoundEffect", "Song", "Model", "Effect", "Xact", "Xml", "Prebuilt", "Other"],
+            result.Manifest.Content.CountsByType.Keys);
+        Assert.Equal(1, result.Manifest.Content.CountsByType["Texture"]);
+        Assert.Equal(1, result.Manifest.Content.CountsByType["Font"]);
+
+        Assert.Contains("XNA005", Rules(result, "Content/Content.mgcb"));
+        Assert.Contains("XNA005", Rules(result, "Xna40Basic.csproj"));
+        using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(output, "xnareborn-manifest.json")));
+        Assert.Equal(2, json.RootElement.GetProperty("content").GetProperty("countsByStatus").GetProperty("Converted").GetInt32());
+        Assert.Contains("## Content", File.ReadAllText(Path.Combine(output, "xnareborn-manifest.md")), StringComparison.Ordinal);
+    }
+
+    private const string _expectedBasicMgcb = """
+        #----------------------------- Global Properties ----------------------------#
+
+        /outputDir:bin/$(Platform)
+        /intermediateDir:obj/$(Platform)
+        /platform:DesktopGL
+        /config:
+        /profile:HiDef
+        /compress:False
+
+        #-------------------------------- References --------------------------------#
+
+
+        #---------------------------------- Content ---------------------------------#
+
+        #begin Fonts/Font.spritefont
+        /importer:FontDescriptionImporter
+        /processor:FontDescriptionProcessor
+        /build:Fonts/Font.spritefont
+
+        #begin Textures/hero.png
+        /importer:TextureImporter
+        /processor:TextureProcessor
+        /processorParam:PremultiplyAlpha=True
+        /build:Textures/hero.png
+
+        """;
+
+    [Fact]
+    [Trait("Category", "Safety")]
+    public async Task Content_conversion_leaves_the_source_untouched_and_a_dry_run_writes_nothing()
+    {
+        var source = Path.Combine(_temp, "src");
+        MigrationTestSupport.CopyFolder(Fixture("xna40-custom-content"), source);
+        var before = FolderState.Capture(source);
+
+        var dry = await MigrationTestSupport.MigrateAsync(source, MigrationTestSupport.Options(Out("dry"), dryRun: true));
+        var real = await MigrationTestSupport.MigrateAsync(source, MigrationTestSupport.Options(Out("real")));
+
+        Assert.False(dry.Completed);
+        Assert.NotNull(dry.Manifest.Content);
+        Assert.False(Directory.Exists(Out("dry")));
+        Assert.True(real.Completed);
+        Assert.Equal(before, FolderState.Capture(source));
+        Assert.Equal(dry.Changes, real.Changes);
+    }
+
+    [Fact]
+    public async Task Excluding_the_content_rule_keeps_the_placeholder_copy_without_a_content_reference()
+    {
+        var result = await MigrationTestSupport.MigrateAsync(
+            Fixture("xna40-basic"),
+            MigrationTestSupport.Options(Out(), dryRun: true, "XNA005:Xna40Basic.csproj"));
+
+        var content = result.Changes.Where(c => c.RelativePath.StartsWith("Content/", StringComparison.Ordinal)).ToList();
+        Assert.NotEmpty(content);
+        Assert.All(content, c =>
+        {
+            Assert.Equal(ChangeKind.ManualWork, c.Kind);
+            Assert.NotNull(c.SourcePath);
+        });
+        Assert.Contains(content, c => c.RelativePath == "Content/Content.contentproj");
+        Assert.DoesNotContain(result.Changes, c => c.RelativePath is "Content/Content.mgcb" or ".config/dotnet-tools.json");
+
+        var csproj = Single(result, "Xna40Basic.csproj").NewText!;
+        Assert.DoesNotContain("MonoGameContentReference", csproj, StringComparison.Ordinal);
+        Assert.DoesNotContain("MonoGame.Content.Builder", csproj, StringComparison.Ordinal);
+        Assert.Null(result.Manifest.Content);
+        Assert.DoesNotContain(result.Plan.Items, i => i.RuleId == "XNA005");
+    }
+
+    [Fact]
+    public async Task Font_substitution_option_gives_the_xna_only_font_a_modified_copy()
+    {
+        var plain = await MigrationTestSupport.MigrateAsync(Fixture("xna40-custom-content"), MigrationTestSupport.Options(Out("plain"), dryRun: true));
+        var options = MigrationTestSupport.Options(Out("sub"), dryRun: true) with { SubstituteFonts = true };
+        var substituted = await MigrationTestSupport.MigrateAsync(Fixture("xna40-custom-content"), options);
+
+        Assert.Equal(ChangeKind.ManualWork, Single(plain, "Content/Fonts/Hud.spritefont").Kind);
+        var hud = Single(substituted, "Content/Fonts/Hud.spritefont");
+        Assert.Equal(ChangeKind.Modified, hud.Kind);
+        Assert.Contains("<FontName>Georgia</FontName>", hud.NewText, StringComparison.Ordinal);
+        Assert.Equal(3, substituted.Manifest.Content!.CountsByStatus["Converted"]);
+        Assert.Equal(2, substituted.Manifest.Content.CountsByStatus["ManualWork"]);
+    }
+
+    [Fact]
+    public async Task A_content_root_other_than_Content_moves_the_mgcb_and_its_reference()
+    {
+        var source = Path.Combine(_temp, "src");
+        MigrationTestSupport.CopyFolder(Fixture("xna40-basic"), source);
+        var contentProject = Path.Combine(source, "Content", "Content.contentproj");
+        File.WriteAllText(contentProject, File.ReadAllText(contentProject).Replace(
+            "<ContentRootDirectory>Content</ContentRootDirectory>",
+            "<ContentRootDirectory>Data/Art</ContentRootDirectory>",
+            StringComparison.Ordinal));
+
+        var result = await MigrationTestSupport.MigrateAsync(source, MigrationTestSupport.Options(Out(), dryRun: true));
+
+        Assert.Equal(ChangeKind.Created, Single(result, "Data/Art/Content.mgcb").Kind);
+        Assert.Equal(ChangeKind.Copied, Single(result, "Data/Art/Textures/hero.png").Kind);
+        Assert.Contains(
+            "<MonoGameContentReference Include=\"Data\\Art\\Content.mgcb\" />",
+            Single(result, "Xna40Basic.csproj").NewText,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Progress_reports_a_converting_content_stage_before_the_project_files()
+    {
+        var stages = new List<string>();
+        var progress = new InlineProgress(p => stages.Add(p.Stage));
+
+        await MigrationTestSupport.MigrateAsync(Fixture("xna40-basic"), MigrationTestSupport.Options(Out(), dryRun: true), progress: progress);
+
+        Assert.Equal(["Discovering projects", "Planning", "Converting content", "Generating projects", "Rewriting source", "Done"], stages.Distinct());
+    }
+
+    [Fact]
+    [Trait("Category", "Safety")]
+    public async Task Cancelling_while_converting_content_throws_and_never_creates_the_output()
+    {
+        using var cts = new CancellationTokenSource();
+        var progress = new InlineProgress(p =>
+        {
+            if (p.Stage == "Converting content" && p.Completed == 0)
+            {
+                cts.Cancel();
+            }
+        });
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => MigrationTestSupport.MigrateAsync(
+            Fixture("xna40-basic"), MigrationTestSupport.Options(Out()), progress: progress, cancellationToken: cts.Token));
+
+        Assert.False(Directory.Exists(Out()));
+        Assert.Empty(Directory.GetFileSystemEntries(_temp));
+    }
     private sealed class InlineProgress(Action<MigrationProgress> onReport) : IProgress<MigrationProgress>
     {
         public void Report(MigrationProgress value) => onReport(value);

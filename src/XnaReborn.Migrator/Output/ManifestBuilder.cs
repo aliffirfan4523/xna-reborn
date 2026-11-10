@@ -12,6 +12,7 @@ public static class ManifestBuilder
     /// <param name="ruleIdsByPath">Rule ids that changed each output file, keyed by relative path.</param>
     /// <param name="build">Result of the optional post-migration build, or null.</param>
     /// <param name="migratorVersion">Version of the migrator writing the manifest.</param>
+    /// <param name="content">Content conversion totals, or null when no content was converted.</param>
     /// <returns>The manifest.</returns>
     public static Manifest Build(
         string catalogName,
@@ -19,7 +20,8 @@ public static class ManifestBuilder
         IReadOnlyList<FileChange> changes,
         IReadOnlyDictionary<string, IReadOnlyList<string>> ruleIdsByPath,
         ManifestBuild? build,
-        string migratorVersion)
+        string migratorVersion,
+        ManifestContent? content = null)
     {
         ArgumentNullException.ThrowIfNull(catalogName);
         ArgumentNullException.ThrowIfNull(changes);
@@ -37,7 +39,7 @@ public static class ManifestBuilder
             .OrderBy(e => e.Path, StringComparer.Ordinal)
             .ToList();
 
-        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build));
+        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content);
     }
 
     private static ManifestBuild? SortedBuild(ManifestBuild? build) =>
