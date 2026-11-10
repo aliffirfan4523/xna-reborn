@@ -133,6 +133,12 @@ public sealed class ProjectMigrator
             progress?.Report(new MigrationProgress(_stageProjects, i + 1, xnaProjects.Count, discovered.RelativePath));
         }
 
+        // Isolation files go first so they win a path clash with a same-named file copied from the source.
+        foreach (var isolation in new BuildIsolationGenerator().Generate())
+        {
+            state.Add(isolation, []);
+        }
+
         var isSolutionInput = string.Equals(Path.GetExtension(sourcePath), ".sln", StringComparison.OrdinalIgnoreCase);
         if (projects.Count >= 2 || isSolutionInput)
         {
