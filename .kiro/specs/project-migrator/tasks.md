@@ -10,10 +10,10 @@
   - [x] 2.2 Tests for each guard case, including failure midway
   - _Requirements: R1_
 
-- [ ] 3. Planning
-  - [ ] 3.1 Implement `MigrationPlanner` from analyzer findings
-  - [ ] 3.2 Support exclusions and dry-run
-  - [ ] 3.3 Tests
+- [x] 3. Planning
+  - [x] 3.1 Implement `MigrationPlanner` from analyzer findings
+  - [x] 3.2 Support exclusions and dry-run (the planner is a pure function with no file access, so a dry run and the UI preview use the same call)
+  - [x] 3.3 Tests
   - _Requirements: R2_
 
 - [ ] 4. Project file generation
