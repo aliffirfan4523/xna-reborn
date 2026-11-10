@@ -44,6 +44,28 @@ public sealed class MigrationIntegrationTests(ITestOutputHelper testOutput) : ID
         Assert.True(exitCode == 0, $"dotnet build failed with exit code {exitCode}.{Environment.NewLine}{text}");
     }
 
+    [IntegrationFact]
+    public async Task Migrated_copy_builds_inside_a_folder_with_central_package_management_and_strict_build_props()
+    {
+        var parent = Path.Combine(_temp, "parent");
+        Directory.CreateDirectory(parent);
+        File.WriteAllText(
+            Path.Combine(parent, "Directory.Packages.props"),
+            "<Project><PropertyGroup><ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally></PropertyGroup></Project>\n");
+        File.WriteAllText(
+            Path.Combine(parent, "Directory.Build.props"),
+            "<Project><PropertyGroup><TreatWarningsAsErrors>true</TreatWarningsAsErrors><Nullable>enable</Nullable></PropertyGroup></Project>\n");
+
+        var output = Path.Combine(parent, "child");
+        var result = await MigrationTestSupport.MigrateAsync(FixturePaths.Of("xna31-rewritable"), MigrationTestSupport.Options(output));
+        Assert.True(result.Completed);
+
+        var (exitCode, text) = await RunBuildAsync(output);
+        testOutput.WriteLine(text);
+
+        Assert.True(exitCode == 0, $"dotnet build failed with exit code {exitCode}.{Environment.NewLine}{text}");
+    }
+
     private static async Task<(int ExitCode, string Output)> RunBuildAsync(string folder)
     {
         var start = new ProcessStartInfo("dotnet", "build --nologo -v minimal")

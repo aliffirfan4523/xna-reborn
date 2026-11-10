@@ -186,7 +186,7 @@ public sealed class ProjectMigratorTests : IDisposable
         var result = await MigrationTestSupport.MigrateAsync(Fixture("multi-project-sln"), MigrationTestSupport.Options(output));
 
         var created = result.Changes.Where(c => c.Kind == ChangeKind.Created).Select(c => c.RelativePath).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(["Game/Game.csproj", "Library/Library.csproj", "multi-project-sln.sln"], created);
+        Assert.Equal(["Directory.Build.props", "Directory.Build.targets", "Directory.Packages.props", "Game/Game.csproj", "Library/Library.csproj", "multi-project-sln.sln"], created);
         Assert.Contains(result.Changes, c => c.RelativePath == "Library/Helpers.cs");
         Assert.Contains(result.Changes, c => c.RelativePath == "Game/Game1.cs");
 
