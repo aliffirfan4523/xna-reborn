@@ -61,3 +61,12 @@
 
 - [ ] 11. Final checkpoint
   - Full test suite, `dotnet format --verify-no-changes`, demo rehearsal: failing project to running game (the launch test needs `XNAREBORN_INTEGRATION=1` and `XNAREBORN_LAUNCH=1` and opens a game window, so it runs only when the owner asks)
+
+- [x] 12. One-file publish
+  - [x] 12.1 `ProjectPublisher`: `dotnet publish -c Release -r <rid> --self-contained true -p:PublishSingleFile=true` into `<migrated copy>-publish/<rid>`, next to the copy and never inside the original
+  - [x] 12.2 Guards: completed migrated copy only, exact RID match (`win-x64`, `linux-x64`, `osx-x64`, `osx-arm64`), non-Windows RIDs need a DesktopGL copy, an output folder with content waits for confirmation (safety rule 3)
+  - [x] 12.3 Output lines streamed, cancel and 15 minute timeout stop the process tree, a folder the run created is removed when the publish fails or is cancelled
+  - [x] 12.4 Unit tests with a fake process runner; integration tests (`XNAREBORN_INTEGRATION=1`) publish a migrated fixture for `win-x64`, `linux-x64`, `osx-x64` and `osx-arm64` and check the files exist
+  - Shortcut: native libraries stay next to the program (not self-extracted), because MonoGame looks for them there
+  - Not checked from Windows: starting the Linux or macOS program, a macOS `.app` bundle, signing; the Windows single file was not launched either
+  - _Requirements: R2, R7_

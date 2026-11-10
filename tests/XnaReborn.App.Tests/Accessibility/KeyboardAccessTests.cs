@@ -61,7 +61,7 @@ public sealed class KeyboardAccessTests
         await t.OpenPageAsync(WorkflowStep.MigrationSetup);
 
         Assert.Equal(
-            ["OutputFolderBox", "BrowseButton", "TargetDesktopGL", "TargetWindowsDX", "ShimsToggle", "FontSubstitutionToggle", "PlanItemCheck", "PreviewButton", "MigrateButton"],
+            ["OutputFolderBox", "BrowseButton", "TargetDesktopGL", "TargetWindowsDX", "ShimsToggle", "FontSubstitutionToggle", "ResizeToggle", "FullscreenToggle", "HighDpiToggle", "PlanItemCheck", "PreviewButton", "MigrateButton"],
             PageStops(window));
         AssertAllNamed(window);
     }
@@ -130,7 +130,7 @@ public sealed class KeyboardAccessTests
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(
-            ["RecheckButton", "BuildButton", "BuildAndRunButton", "SummaryButton", "Build log lines", "GamerServices no longer exists, 1 error", "SelectableTextBlock"],
+            ["RecheckButton", "BuildButton", "BuildAndRunButton", "SummaryButton", "PublishPlatform", "PublishButton", "Build log lines", "GamerServices no longer exists, 1 error", "SelectableTextBlock"],
             PageStops(window));
         AssertAllNamed(window);
     }

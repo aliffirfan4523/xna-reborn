@@ -18,6 +18,13 @@ public sealed record GameTarget(string ProjectPath, string AssemblyName, string 
 /// <param name="Problem">What is wrong, or null when a game was found.</param>
 public sealed record GameLocatorResult(GameTarget? Target, string? Problem);
 
+/// <summary>The game project of a migrated copy, found without building.</summary>
+/// <param name="ProjectPath">Full path of the game's project file.</param>
+/// <param name="AssemblyName">Assembly name from the project, or the project file name.</param>
+/// <param name="TargetFramework">Target framework folder name, such as net8.0.</param>
+/// <param name="Problem">What is wrong, or null when a game project was found.</param>
+public sealed record GameProjectResult(string? ProjectPath, string? AssemblyName, string? TargetFramework, string? Problem);
+
 /// <summary>Finds the executable project of a migrated copy and the file it builds. Read-only.</summary>
 public static class GameLocator
 {
@@ -32,9 +39,33 @@ public static class GameLocator
     /// <returns>The game, or a problem text. Never throws for a bad folder.</returns>
     public static GameLocatorResult Find(string migratedFolder, string configuration = "Debug")
     {
+        var found = FindProject(migratedFolder);
+        if (found.ProjectPath is null)
+        {
+            return Fail(found.Problem!);
+        }
+
+        var game = new ProjectInfo(found.ProjectPath, found.AssemblyName!, found.TargetFramework!, true, false, []);
+        var outputDir = Path.Combine(Path.GetDirectoryName(game.Path)!, "bin", configuration, game.TargetFramework);
+        var exe = Path.Combine(outputDir, game.AssemblyName + ".exe");
+        var dll = Path.Combine(outputDir, game.AssemblyName + ".dll");
+        var built = OperatingSystem.IsWindows() && File.Exists(exe) ? exe : File.Exists(dll) ? dll : null;
+        if (built is null)
+        {
+            return Fail($"The game has not been built: {dll} does not exist. Build the project first.");
+        }
+
+        return new GameLocatorResult(new GameTarget(game.Path, game.AssemblyName, game.TargetFramework, built), null);
+    }
+
+    /// <summary>Picks the game project by the same rules as <see cref="Find"/>, without looking for a built file.</summary>
+    /// <param name="migratedFolder">The migrated copy.</param>
+    /// <returns>The project, or a problem text. Never throws for a bad folder.</returns>
+    public static GameProjectResult FindProject(string migratedFolder)
+    {
         if (string.IsNullOrWhiteSpace(migratedFolder) || !Directory.Exists(migratedFolder))
         {
-            return Fail("The migrated folder does not exist.");
+            return new GameProjectResult(null, null, null, "The migrated folder does not exist.");
         }
 
         var files = new List<string>();
@@ -60,25 +91,16 @@ public static class GameLocator
         if (exes.Count == 0)
         {
             var extra = unreadable.Count == 0 ? string.Empty : " These project files could not be read: " + string.Join(", ", unreadable) + ".";
-            return Fail("No game project was found: none of the projects has OutputType WinExe or Exe." + extra);
+            return Problem("No game project was found: none of the projects has OutputType WinExe or Exe." + extra);
         }
 
         var game = exes.Count == 1 ? exes[0] : Choose(exes, projects);
         if (game is null)
         {
-            return Fail("Several projects produce a program and none is clearly the game: " + string.Join(", ", exes.Select(e => e.Path)) + ". Build and run the one you want by hand.");
+            return Problem("Several projects produce a program and none is clearly the game: " + string.Join(", ", exes.Select(e => e.Path)) + ". Build and run the one you want by hand.");
         }
 
-        var outputDir = Path.Combine(Path.GetDirectoryName(game.Path)!, "bin", configuration, game.TargetFramework);
-        var exe = Path.Combine(outputDir, game.AssemblyName + ".exe");
-        var dll = Path.Combine(outputDir, game.AssemblyName + ".dll");
-        var built = OperatingSystem.IsWindows() && File.Exists(exe) ? exe : File.Exists(dll) ? dll : null;
-        if (built is null)
-        {
-            return Fail($"The game has not been built: {dll} does not exist. Build the project first.");
-        }
-
-        return new GameLocatorResult(new GameTarget(game.Path, game.AssemblyName, game.TargetFramework, built), null);
+        return new GameProjectResult(game.Path, game.AssemblyName, game.TargetFramework, null);
     }
 
     private static ProjectInfo? Choose(List<ProjectInfo> exes, List<ProjectInfo> all)
@@ -155,6 +177,8 @@ public static class GameLocator
     }
 
     private static GameLocatorResult Fail(string problem) => new(null, problem);
+
+    private static GameProjectResult Problem(string problem) => new(null, null, null, problem);
 
     private sealed record ProjectInfo(
         string Path,

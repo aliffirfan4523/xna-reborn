@@ -2,6 +2,7 @@ using XnaReborn.Migrator;
 using XnaReborn.Runner;
 using XnaReborn.Runner.Environment;
 using XnaReborn.Runner.Processes;
+using XnaReborn.Runner.Publish;
 using XnaReborn.Runner.Run;
 
 namespace XnaReborn.App.Services;
@@ -24,6 +25,19 @@ public interface IRunService
         Func<LaunchConfirmation, Task<bool>> confirm,
         IProgress<RunnerProgress>? progress,
         IProgress<OutputLine>? buildOutput,
+        CancellationToken cancellationToken);
+
+    /// <summary>Publishes a migrated copy as one self-contained program for a platform. Problems come back in the result, not as exceptions.</summary>
+    /// <param name="migratedFolder">The completed migrated copy.</param>
+    /// <param name="rid">A runtime identifier from <see cref="PublishTarget.All"/>.</param>
+    /// <param name="overwriteConfirmed">True when the user agreed to use a result folder that already has content.</param>
+    /// <param name="output">Receives the publish output lines as they arrive, or null.</param>
+    /// <param name="cancellationToken">Cancels the publish.</param>
+    Task<PublishResult> PublishAsync(
+        string migratedFolder,
+        string rid,
+        bool overwriteConfirmed,
+        IProgress<OutputLine>? output,
         CancellationToken cancellationToken);
 
     /// <summary>Reports the dotnet SDK, the operating system and whether the target can run here.</summary>

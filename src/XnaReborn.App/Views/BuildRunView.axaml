@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:XnaReborn.App.ViewModels"
              xmlns:controls="using:XnaReborn.App.Controls"
+             xmlns:rp="using:XnaReborn.Runner.Publish"
              x:Class="XnaReborn.App.Views.BuildRunView"
              x:DataType="vm:BuildRunViewModel">
 
@@ -33,7 +34,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid Margin="{StaticResource PagePadding}" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="8">
+  <Grid Margin="{StaticResource PagePadding}" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="8">
 
     <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
                AutomationProperties.HeadingLevel="1" />
@@ -96,7 +97,49 @@
       </StackPanel>
     </StackPanel>
 
-    <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="16">
+    <!-- Publish: one self-contained program per platform. No publish logic lives in this view. -->
+    <Border Grid.Row="4" BorderThickness="1" CornerRadius="4" Padding="12"
+            DataContext="{Binding Publish}" x:DataType="vm:PublishPanelViewModel"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            AutomationProperties.AutomationId="PublishPanel"
+            AutomationProperties.Name="Publish">
+      <StackPanel Spacing="{StaticResource SpacingSmall}">
+        <TextBlock Text="Publish" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" AutomationProperties.AutomationId="PublishNotice" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+          <TextBlock Text="Platform" VerticalAlignment="Center" />
+          <ComboBox ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+                    IsEnabled="{Binding !IsPublishing}"
+                    AutomationProperties.AutomationId="PublishPlatform"
+                    AutomationProperties.Name="Platform to publish for">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="rp:PublishTarget">
+                <TextBlock Text="{Binding DisplayName}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <Button Content="Publish" Command="{Binding PublishCommand}"
+                  AutomationProperties.AutomationId="PublishButton"
+                  AutomationProperties.Name="Publish the migrated project as one program" />
+          <Button Content="Cancel publish" Command="{Binding CancelCommand}"
+                  AutomationProperties.AutomationId="CancelPublishButton"
+                  AutomationProperties.Name="Cancel the running publish" />
+          <Button Content="Open folder" Command="{Binding OpenFolderCommand}"
+                  AutomationProperties.AutomationId="OpenPublishFolderButton"
+                  AutomationProperties.Name="Open the folder of the published program" />
+        </StackPanel>
+        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsPublishing}" AutomationProperties.Name="Publishing" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+          <TextBlock Classes="icon error" IsVisible="{Binding IsStatusError}" />
+          <TextBlock Classes="label error" FontWeight="Bold" IsVisible="{Binding IsStatusError}" />
+          <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="PublishStatus"
+                     AutomationProperties.LiveSetting="Polite" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <Grid Grid.Row="5" ColumnDefinitions="*,*" ColumnSpacing="16">
 
       <Grid Grid.Column="0" RowDefinitions="Auto,*" RowSpacing="4">
         <TextBlock Text="Build log" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />

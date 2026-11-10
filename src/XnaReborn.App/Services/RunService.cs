@@ -1,6 +1,7 @@
 using XnaReborn.Runner;
 using XnaReborn.Runner.Environment;
 using XnaReborn.Runner.Processes;
+using XnaReborn.Runner.Publish;
 using XnaReborn.Runner.Run;
 
 namespace XnaReborn.App.Services;
@@ -10,6 +11,7 @@ public sealed class RunService : IRunService
 {
     private readonly ProjectRunner _runner = new();
     private readonly DotnetLocator _locator = new(new ProcessRunner());
+    private readonly ProjectPublisher _publisher = new();
 
     /// <inheritdoc />
     public Task<RunnerResult> BuildAndRunAsync(
@@ -21,6 +23,15 @@ public sealed class RunService : IRunService
         IProgress<OutputLine>? buildOutput,
         CancellationToken cancellationToken) =>
         _runner.BuildAndRunAsync(migratedFolder, new RunnerOptions(target, launch), confirm, progress, buildOutput, cancellationToken);
+
+    /// <inheritdoc />
+    public Task<PublishResult> PublishAsync(
+        string migratedFolder,
+        string rid,
+        bool overwriteConfirmed,
+        IProgress<OutputLine>? output,
+        CancellationToken cancellationToken) =>
+        _publisher.PublishAsync(migratedFolder, rid, overwriteConfirmed, output, null, cancellationToken);
 
     /// <inheritdoc />
     public Task<EnvironmentInfo> CheckEnvironmentAsync(MonoGameTargetKind target, CancellationToken cancellationToken) =>

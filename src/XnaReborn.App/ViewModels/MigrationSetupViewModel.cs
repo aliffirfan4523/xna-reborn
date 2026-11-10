@@ -55,6 +55,15 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
     private bool _substituteFonts;
 
     [ObservableProperty]
+    private bool _allowWindowResize;
+
+    [ObservableProperty]
+    private bool _fullscreenToggle;
+
+    [ObservableProperty]
+    private bool _highDpi;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(OutputIsOk), nameof(OutputNeedsConfirmation), nameof(OutputIsRefused))]
     private OutputCheckState _outputState = OutputCheckState.Unknown;
 
@@ -141,6 +150,9 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
             IsWindowsDx = false;
             EnableShims = false;
             SubstituteFonts = false;
+            AllowWindowResize = false;
+            FullscreenToggle = false;
+            HighDpi = false;
             StatusMessage = null;
             ProgressText = string.Empty;
             OutputFolder = DefaultOutputFolder(source);
@@ -230,7 +242,9 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
         }
 
         var excluded = PlanItems.Where(i => !i.IsIncluded).Select(i => i.Id).ToHashSet(StringComparer.Ordinal);
-        var choices = new MigrationOptions(folder, Target, EnableShims, DryRun: false, excluded, SubstituteFonts);
+        var choices = new MigrationOptions(
+            folder, Target, EnableShims, DryRun: false, excluded, SubstituteFonts,
+            AllowWindowResize, FullscreenToggle, HighDpi);
 
         IsBusy = true;
         ProgressText = dryRun ? "Preparing the preview..." : "Starting the migration...";

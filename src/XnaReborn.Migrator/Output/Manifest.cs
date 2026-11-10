@@ -11,6 +11,7 @@ namespace XnaReborn.Migrator.Output;
 /// <param name="Build">Result of the optional post-migration build, or null when not attempted.</param>
 /// <param name="Content">Totals for the converted content, or null when no content was converted.</param>
 /// <param name="Shims">The shim library and every use of it, or null when shims were off. Left out of the JSON when null.</param>
+/// <param name="Modern">The opt-in window extras and where they were hooked in, or null when all were off. Left out of the JSON when null.</param>
 public sealed record Manifest(
     int Version,
     string Migrator,
@@ -19,7 +20,8 @@ public sealed record Manifest(
     IReadOnlyList<ManifestChange> Changes,
     ManifestBuild? Build,
     ManifestContent? Content = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestShims? Shims = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestShims? Shims = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestModern? Modern = null);
 
 /// <summary>Shims added to the migrated copy: offline stand-ins for dead XNA APIs, not real XNA services.</summary>
 /// <param name="Project">Path of the shim project file, relative to the output, with '/' separators.</param>
@@ -31,6 +33,17 @@ public sealed record ManifestShims(
     IReadOnlyList<string> Files,
     IReadOnlyList<string> ReferencedBy,
     IReadOnlyList<ManifestShimUse> Uses);
+
+/// <summary>Opt-in window extras added to the migrated copy.</summary>
+/// <param name="Features">The extras that are on: AllowWindowResize, FullscreenToggle, HighDpi.</param>
+/// <param name="Files">Paths of the generated helper files, sorted, with '/' separators.</param>
+/// <param name="HookedFiles">Game source files that got the one-line hook, sorted. Empty when no entry point could take it.</param>
+/// <param name="Limits">Plain statements of what the extras do not do.</param>
+public sealed record ManifestModern(
+    IReadOnlyList<string> Features,
+    IReadOnlyList<string> Files,
+    IReadOnlyList<string> HookedFiles,
+    IReadOnlyList<string> Limits);
 
 /// <summary>One source file that uses a shimmed namespace.</summary>
 /// <param name="File">Relative path of the game source file, with '/' separators.</param>

@@ -2,6 +2,7 @@ using XnaReborn.App.Services;
 using XnaReborn.Runner;
 using XnaReborn.Runner.Environment;
 using XnaReborn.Runner.Processes;
+using XnaReborn.Runner.Publish;
 using XnaReborn.Runner.Run;
 
 namespace XnaReborn.App.Tests.BuildRun;
@@ -26,6 +27,14 @@ internal sealed class ScriptedRunService : IRunService
     public int EnvironmentChecks { get; private set; }
 
     public List<(string Folder, MonoGameTargetKind Target, bool Launch)> Calls { get; } = [];
+
+    public Task<PublishResult> PublishAsync(
+        string migratedFolder,
+        string rid,
+        bool overwriteConfirmed,
+        IProgress<OutputLine>? output,
+        CancellationToken cancellationToken) =>
+        throw new InvalidOperationException("Publish is not scripted here.");
 
     public Task<RunnerResult> BuildAndRunAsync(
         string migratedFolder,
