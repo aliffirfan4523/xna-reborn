@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "sources": [
+    "https://web.archive.org/web/20131211011039/http://xbox.create.msdn.com:80/en-US/education/catalog/utility/font_pack",
+    "https://web.archive.org/web/20131211011039im_/http://xbox.create.msdn.com/assets/cms/images/samples/redistfonts.png",
+    "https://github.com/SimonDarksideJ/XNAGameStudio/wiki/Redistributable-Font-Pack",
+    "https://github.com/MonoGame/MonoGame.Samples/issues/32",
+    "https://github.com/rbwhitaker/MonoGameSamples/discussions/2",
+    "https://learn.microsoft.com/en-us/typography/font-list/ocr-a-extended",
+    "https://learn.microsoft.com/en-us/typography/font-list/segoe-print"
+  ],
+  "fonts": [
+    { "family": "Andy", "substitute": "Comic Sans MS", "note": "Informal, slightly irregular humanist face like Andy Bold; Comic Sans MS has a similar casual weight and ships with Windows." },
+    { "family": "Jing Jing", "substitute": "Segoe Print", "note": "Brush-style display face; Segoe Print is the closest hand-drawn face that ships with Windows 10 and 11." },
+    { "family": "Kootenay", "substitute": "Trebuchet MS", "note": "Light humanist sans; Trebuchet MS has similar proportions and a friendly shape." },
+    { "family": "Lindsey", "substitute": "Segoe Script", "note": "Thin handwriting script; Segoe Script is a connected hand and ships with Windows." },
+    { "family": "Miramonte", "substitute": "Segoe UI", "note": "Humanist sans from the same Ascender family style as Segoe UI; widths are close." },
+    { "family": "Moire", "substitute": "Arial", "note": "Wide geometric sans in several weights; Arial gives similar widths in Regular and Bold." },
+    { "family": "Motorwerk", "substitute": "Arial", "note": "Wide, technical italic display face; use Arial with the Italic style for a similar look." },
+    { "family": "News Gothic", "substitute": "Arial", "note": "Grotesque sans in the Franklin and Helvetica tradition; Arial is the nearest face on every Windows install." },
+    { "family": "Pericles", "substitute": "Georgia", "note": "Small-capital Roman display serif; Georgia is a serif with open, readable forms. Pericles draws lowercase as small capitals, so text will look different." },
+    { "family": "Pescadero", "substitute": "Georgia", "note": "Old-style serif; Georgia is a close match in color and proportion." },
+    { "family": "Quartz MS", "substitute": "Consolas", "note": "Segmented digital-clock face; Consolas is monospaced and keeps digit widths even." },
+    { "family": "Segoe Keycaps", "substitute": "Segoe UI", "note": "Draws each letter inside a keycap box; no Windows font does this, so Segoe UI keeps the glyph set but loses the boxes." },
+    { "family": "Segoe UI Mono", "substitute": "Consolas", "note": "Monospaced Segoe design; Consolas is monospaced and ships with Windows. Segoe UI is not monospaced and would change column layouts." },
+    { "family": "Wasco Sans", "substitute": "Trebuchet MS", "note": "Geometric humanist sans; Trebuchet MS has similar widths and letter shapes." }
+  ]
+}
