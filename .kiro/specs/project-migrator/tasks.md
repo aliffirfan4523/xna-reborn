@@ -37,32 +37,36 @@
 
 - [ ] 7. Content conversion
   - The plan of record is the `content-conversion` spec (its tasks 1 to 10). The migrator only wires it in; it does not repeat that work. The shared importer map is `rules/importer-map.json`, loaded from Core.
+  - Until 7.1 is done, `ProjectMigrator` copies each content project's files unchanged as manual work and the generated project has no `Content.mgcb` reference, so code builds but assets are not built.
   - [ ] 7.1 Call `ContentConverter` from `ProjectMigrator` and turn its output into `FileChange` records
   - [ ] 7.2 Add the `ContentReport` to the manifest
   - [ ] 7.3 Snapshot test: migrate a fixture with content and check the generated `Content.mgcb`
+  - [ ] 7.4 Emit `.config/dotnet-tools.json` (pinned `dotnet-mgcb`) when content is converted
   - _Requirements: R6_
 
-- [ ] 8. Manifest and writing
-  - [ ] 8.1 Implement materialization of `FileChange` records
-  - [ ] 8.2 Implement JSON and Markdown manifest writers
+- [x] 8. Manifest and writing
+  - [x] 8.1 Implement materialization of `FileChange` records (`OutputWriter`)
+  - [x] 8.2 Implement JSON and Markdown manifest writers
+  - [ ] 8.3 Stop the migrated copy from inheriting a parent folder's `Directory.Build.props` and `Directory.Packages.props` (a copy written under a repo that uses central package management failed restore with NU1008)
   - _Requirements: R8_
 
-- [ ] 9. Checkpoint: minimum winning demo
-  - Migrate the simplest fixture end to end and run `dotnet build` on the result
+- [x] 9. Checkpoint: minimum winning demo
+  - Migrate the simplest fixture end to end and run `dotnet build` on the result (`MigrationIntegrationTests`, run with `XNAREBORN_INTEGRATION=1`, on `tests/fixtures/xna31-rewritable`)
   - Verify the source folder hash is unchanged
+  - Also checked by hand on Pirate-Treasure-Hunter: the original fails with MSB4019, the migrated copy builds with 0 warnings and 0 errors (content not yet built, see task 7)
   - _Requirements: R1, R3, R4, R6_
 
-- [ ] 10. XNA 3.1 to 4.0 rewriters
-  - [ ] 10.1 `SpriteBatchBeginRewriter`
-  - [ ] 10.2 `RenderStateRewriter`
-  - [ ] 10.3 `EffectPassRewriter`
-  - [ ] 10.4 Before/after fixtures including ambiguous cases
+- [x] 10. XNA 3.1 to 4.0 rewriters
+  - [x] 10.1 `SpriteBatchBeginRewriter`
+  - [x] 10.2 `RenderStateRewriter`
+  - [x] 10.3 `EffectPassRewriter`
+  - [x] 10.4 Before/after fixtures including ambiguous cases
   - _Requirements: R5_
 
 - [ ] 11. Determinism and verification
-  - [ ] 11.1 Byte-identical output test across two runs
+  - [x] 11.1 Byte-identical output test across two runs
   - [ ] 11.2 Integrate the Runner for optional post-migration build
-  - [ ] 11.3 Progress events and cancellation
+  - [x] 11.3 Progress events and cancellation
   - _Requirements: R9, R10_
 
 - [ ] 12. Dead API shims (stretch)
