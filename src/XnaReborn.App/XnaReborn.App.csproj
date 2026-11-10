@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <Description>Avalonia desktop studio for XNA Reborn. Contains no migration logic.</Description>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XnaReborn.Core\XnaReborn.Core.csproj" />
+    <ProjectReference Include="..\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
+    <ProjectReference Include="..\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
+    <ProjectReference Include="..\XnaReborn.Runner\XnaReborn.Runner.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The rule catalog is read at run time. AnalysisService looks next to the app first. -->
+    <Content Include="..\..\rules\xna-to-monogame.json" Link="rules\xna-to-monogame.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="XnaReborn.App.Tests" />
+  </ItemGroup>
+
+</Project>

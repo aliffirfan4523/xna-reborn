@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:XnaReborn.App.ViewModels"
+        x:Class="XnaReborn.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="XNA Reborn"
+        Width="1100"
+        Height="720"
+        MinWidth="720"
+        MinHeight="480">
+
+  <Window.Styles>
+    <Style Selector="Button.step">
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="BorderThickness" Value="0,0,0,3" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.step.current">
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
+    </Style>
+  </Window.Styles>
+
+  <DockPanel>
+
+    <ItemsControl DockPanel.Dock="Top"
+                  ItemsSource="{Binding Steps}"
+                  Margin="{StaticResource PagePadding}"
+                  AutomationProperties.Name="Workflow steps">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:StepItem">
+          <Button Classes="step"
+                  Classes.current="{Binding IsCurrent}"
+                  Command="{Binding GoCommand}"
+                  IsEnabled="{Binding IsEnabled}"
+                  AutomationProperties.AutomationId="{Binding AutomationId}"
+                  AutomationProperties.Name="{Binding AutomationName}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+              <TextBlock Text="{Binding Marker}" />
+              <TextBlock Text="{Binding Label}" />
+            </StackPanel>
+          </Button>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <Border DockPanel.Dock="Top"
+            IsVisible="{Binding HasError}"
+            Margin="16,0,16,8"
+            Padding="12"
+            BorderThickness="1"
+            CornerRadius="4"
+            Background="{DynamicResource ErrorBannerBackgroundBrush}"
+            BorderBrush="{DynamicResource ErrorBannerBorderBrush}"
+            AutomationProperties.AutomationId="ErrorBanner"
+            AutomationProperties.Name="Error">
+      <StackPanel Spacing="{StaticResource SpacingMedium}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+          <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource SeverityErrorBrush}" />
+          <TextBlock Text="Error:" FontWeight="Bold" Foreground="{DynamicResource SeverityErrorBrush}" />
+          <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+        </StackPanel>
+        <Expander Header="Details"
+                  IsVisible="{Binding HasErrorDetails}"
+                  IsExpanded="{Binding IsDetailsExpanded}">
+          <TextBox Text="{Binding ErrorDetails, Mode=OneWay}"
+                   IsReadOnly="True"
+                   AcceptsReturn="True"
+                   TextWrapping="Wrap"
+                   MaxHeight="180"
+                   AutomationProperties.Name="Error details" />
+        </Expander>
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+          <Button Content="Copy" Command="{Binding CopyDetailsCommand}"
+                  AutomationProperties.AutomationId="ErrorCopy"
+                  AutomationProperties.Name="Copy error details" />
+          <Button Content="Dismiss" Command="{Binding DismissCommand}"
+                  AutomationProperties.AutomationId="ErrorDismiss"
+                  AutomationProperties.Name="Dismiss error" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <ContentControl Content="{Binding CurrentPage}" />
+
+  </DockPanel>
+</Window>

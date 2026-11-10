@@ -1,0 +1,10 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:XnaReborn.App.ViewModels"
+             x:Class="XnaReborn.App.Views.BuildRunView"
+             x:DataType="vm:BuildRunViewModel">
+  <StackPanel Margin="{StaticResource PagePadding}">
+    <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+               AutomationProperties.HeadingLevel="1" />
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,42 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Spacing. Use these instead of literal numbers so pages stay consistent. -->
+  <x:Double x:Key="SpacingSmall">4</x:Double>
+  <x:Double x:Key="SpacingMedium">8</x:Double>
+  <x:Double x:Key="SpacingLarge">16</x:Double>
+  <Thickness x:Key="PagePadding">16</Thickness>
+
+  <!--
+    Severity cues (R8.3): every severity has a color, a distinct shape and a text label, so color is never the only cue.
+    Show a severity as: [SeverityXIcon] [SeverityXLabel] in the SeverityXBrush color.
+  -->
+  <x:String x:Key="SeverityInfoIcon">●</x:String>
+  <x:String x:Key="SeverityWarningIcon">▲</x:String>
+  <x:String x:Key="SeverityErrorIcon">■</x:String>
+  <x:String x:Key="SeverityBlockerIcon">◆</x:String>
+  <x:String x:Key="SeverityInfoLabel">Info</x:String>
+  <x:String x:Key="SeverityWarningLabel">Warning</x:String>
+  <x:String x:Key="SeverityErrorLabel">Error</x:String>
+  <x:String x:Key="SeverityBlockerLabel">Blocker</x:String>
+
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="SeverityInfoBrush" Color="#1B5E9E" />
+      <SolidColorBrush x:Key="SeverityWarningBrush" Color="#8A5A00" />
+      <SolidColorBrush x:Key="SeverityErrorBrush" Color="#B3261E" />
+      <SolidColorBrush x:Key="SeverityBlockerBrush" Color="#7A0F2E" />
+      <SolidColorBrush x:Key="ErrorBannerBackgroundBrush" Color="#FDECEA" />
+      <SolidColorBrush x:Key="ErrorBannerBorderBrush" Color="#B3261E" />
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="SeverityInfoBrush" Color="#7FB5E8" />
+      <SolidColorBrush x:Key="SeverityWarningBrush" Color="#E6B450" />
+      <SolidColorBrush x:Key="SeverityErrorBrush" Color="#F2857D" />
+      <SolidColorBrush x:Key="SeverityBlockerBrush" Color="#FF9DB8" />
+      <SolidColorBrush x:Key="ErrorBannerBackgroundBrush" Color="#3B1C1A" />
+      <SolidColorBrush x:Key="ErrorBannerBorderBrush" Color="#F2857D" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+</ResourceDictionary>
