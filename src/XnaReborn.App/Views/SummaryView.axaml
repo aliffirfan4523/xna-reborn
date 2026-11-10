@@ -66,11 +66,14 @@
 
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
         <Button Content="Open output folder" Command="{Binding OpenOutputFolderCommand}"
-                AutomationProperties.AutomationId="OpenOutputFolder" />
+                AutomationProperties.AutomationId="OpenOutputFolder"
+                AutomationProperties.Name="Open the output folder" />
         <Button Content="Open manifest" Command="{Binding OpenManifestCommand}"
-                AutomationProperties.AutomationId="OpenManifest" />
+                AutomationProperties.AutomationId="OpenManifest"
+                AutomationProperties.Name="Open the migration manifest" />
         <Button Content="Start over" Command="{Binding StartOverCommand}"
-                AutomationProperties.AutomationId="StartOver" />
+                AutomationProperties.AutomationId="StartOver"
+                AutomationProperties.Name="Start over with another project" />
       </StackPanel>
     </StackPanel>
   </ScrollViewer>

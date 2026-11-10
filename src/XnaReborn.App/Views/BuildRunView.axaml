@@ -74,9 +74,9 @@
       <Button Content="Build and Run" Command="{Binding BuildAndRunCommand}"
               AutomationProperties.AutomationId="BuildAndRunButton"
               AutomationProperties.Name="Build the migrated project and run the game" />
-      <Button Content="Cancel" Command="{Binding CancelCommand}"
+      <Button Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True"
               AutomationProperties.AutomationId="CancelButton"
-              AutomationProperties.Name="Cancel the build" />
+              AutomationProperties.Name="Cancel the running check or build" />
       <Button Content="Stop" Command="{Binding StopCommand}"
               AutomationProperties.AutomationId="StopButton"
               AutomationProperties.Name="Stop the game" />

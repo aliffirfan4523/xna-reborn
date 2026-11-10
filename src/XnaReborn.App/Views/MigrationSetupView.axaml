@@ -19,7 +19,8 @@
                    AutomationProperties.AutomationId="OutputFolderBox"
                    AutomationProperties.Name="Output folder" />
           <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseCommand}"
-                  AutomationProperties.AutomationId="BrowseButton" />
+                  AutomationProperties.AutomationId="BrowseButton"
+                  AutomationProperties.Name="Browse for the output folder" />
         </Grid>
         <!-- The text starts with OK, Warning or Problem, so color is never the only cue. -->
         <TextBlock Text="{Binding OutputMessage}" TextWrapping="Wrap"
@@ -32,21 +33,25 @@
         <TextBlock Text="MonoGame target" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
         <RadioButton GroupName="Target" Content="DesktopGL (OpenGL, works on Windows, Linux and macOS)"
                      IsChecked="{Binding IsDesktopGL, Mode=TwoWay}"
-                     AutomationProperties.AutomationId="TargetDesktopGL" />
+                     AutomationProperties.AutomationId="TargetDesktopGL"
+                     AutomationProperties.Name="Target DesktopGL" />
         <RadioButton GroupName="Target" Content="WindowsDX (DirectX, Windows only)"
                      IsChecked="{Binding IsWindowsDx, Mode=TwoWay}"
-                     AutomationProperties.AutomationId="TargetWindowsDX" />
+                     AutomationProperties.AutomationId="TargetWindowsDX"
+                     AutomationProperties.Name="Target WindowsDX" />
       </StackPanel>
 
       <!-- Options -->
       <StackPanel Spacing="{StaticResource SpacingSmall}">
         <TextBlock Text="Options" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
         <CheckBox Content="Add compatibility shims" IsChecked="{Binding EnableShims, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="ShimsToggle" />
+                  AutomationProperties.AutomationId="ShimsToggle"
+                  AutomationProperties.Name="Add compatibility shims" />
         <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
                    Text="Off by default. Adds small stand-in classes for XNA parts that MonoGame does not have, so more code compiles without edits." />
         <CheckBox Content="Substitute fonts that only XNA installed" IsChecked="{Binding SubstituteFonts, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="FontSubstitutionToggle" />
+                  AutomationProperties.AutomationId="FontSubstitutionToggle"
+                  AutomationProperties.Name="Substitute fonts that only XNA installed" />
         <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
                    Text="Off by default. When on, a .spritefont that names an XNA-only font gets a Windows font. When off, it is listed as manual work." />
       </StackPanel>
@@ -80,12 +85,15 @@
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
           <Button Content="Preview" Command="{Binding PreviewCommand}"
                   AutomationProperties.AutomationId="PreviewButton"
+                  AutomationProperties.Name="Preview the changes without writing anything"
                   ToolTip.Tip="Shows the changes without writing anything." />
           <Button Content="Migrate" Classes="accent" Command="{Binding MigrateCommand}"
                   AutomationProperties.AutomationId="MigrateButton"
+                  AutomationProperties.Name="Migrate and write the copy to the output folder"
                   ToolTip.Tip="Writes the migrated copy to the output folder." />
-          <Button Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}"
-                  AutomationProperties.AutomationId="CancelButton" />
+          <Button Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}" IsCancel="True"
+                  AutomationProperties.AutomationId="CancelButton"
+                  AutomationProperties.Name="Cancel the running preview or migration" />
         </StackPanel>
         <StackPanel Spacing="{StaticResource SpacingSmall}" IsVisible="{Binding IsBusy}">
           <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"

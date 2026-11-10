@@ -121,6 +121,13 @@ public sealed partial class OpenProjectViewModel : PageViewModel
         }
     }
 
+    /// <inheritdoc />
+    public override Task ShutdownAsync()
+    {
+        _cts?.Cancel();
+        return Task.CompletedTask;
+    }
+
     [RelayCommand]
     private async Task BrowseFolderAsync()
     {

@@ -1,3 +1,4 @@
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -26,8 +27,10 @@ public sealed partial class MessageWindow : Window
         DetailsExpander.IsVisible = !string.IsNullOrWhiteSpace(details);
         DetailsText.Text = details;
         ConfirmButton.Content = confirmText;
+        AutomationProperties.SetName(ConfirmButton, confirmText);
         CancelButton.IsVisible = cancelText is not null;
         CancelButton.Content = cancelText;
+        AutomationProperties.SetName(CancelButton, cancelText);
     }
 
     private void OnConfirm(object? sender, RoutedEventArgs e) => Close(true);

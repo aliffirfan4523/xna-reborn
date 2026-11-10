@@ -171,6 +171,13 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
     [RelayCommand(CanExecute = nameof(CanRun))]
     private Task MigrateAsync() => RunAsync(dryRun: false);
 
+    /// <inheritdoc />
+    public override Task ShutdownAsync()
+    {
+        _runCancellation?.Cancel();
+        return Task.CompletedTask;
+    }
+
     [RelayCommand]
     private void CancelRun() => _runCancellation?.Cancel();
 
@@ -236,7 +243,12 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
             var progress = new Progress<MigrationProgress>(OnProgress);
             var result = await _migration.MigrateAsync(source, report, choices with { DryRun = dryRun }, confirmed, progress, cancellation.Token);
 
-            Session.MigrationOptions = choices;
+            // A preview must not replace the options of an earlier real migration: Build and run reads the output folder from them.
+            if (!dryRun || Session.MigrationResult is null)
+            {
+                Session.MigrationOptions = choices;
+            }
+
             if (dryRun)
             {
                 Session.DryRunResult = result;
@@ -255,7 +267,7 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = dryRun ? "The preview was cancelled." : "The migration was cancelled. Nothing was added to the output folder.";
+            StatusMessage = dryRun ? "The preview was cancelled." : "The migration was cancelled. The output folder was not changed. A partly written copy stays in a separate folder that holds INCOMPLETE.txt and can be deleted.";
         }
         catch (OutputGuardException e)
         {

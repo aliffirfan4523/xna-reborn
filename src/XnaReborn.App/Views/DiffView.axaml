@@ -15,7 +15,8 @@
       <DockPanel LastChildFill="False">
         <Button DockPanel.Dock="Right" Content="Back to Migration setup to run it for real"
                 Command="{Binding BackToSetupCommand}"
-                AutomationProperties.AutomationId="DiffBackToSetup" />
+                AutomationProperties.AutomationId="DiffBackToSetup"
+                AutomationProperties.Name="Back to Migration setup to run it for real" />
         <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock Text="{Binding PreviewBanner}" FontWeight="SemiBold" Foreground="{DynamicResource SeverityWarningBrush}" />
           <TextBlock Text="These are the changes a migration would make. No file has been written yet." TextWrapping="Wrap" />
@@ -29,9 +30,11 @@
         <TextBlock Text="{Binding MarkerStatus}" VerticalAlignment="Center"
                    AutomationProperties.AutomationId="MarkerStatus" />
         <Button Content="Previous marker" Command="{Binding PreviousMarkerCommand}"
-                AutomationProperties.AutomationId="PreviousMarker" />
+                AutomationProperties.AutomationId="PreviousMarker"
+                AutomationProperties.Name="Go to the previous manual-work marker" />
         <Button Content="Next marker" Command="{Binding NextMarkerCommand}"
-                AutomationProperties.AutomationId="NextMarker" />
+                AutomationProperties.AutomationId="NextMarker"
+                AutomationProperties.Name="Go to the next manual-work marker" />
       </StackPanel>
       <ItemsControl ItemsSource="{Binding KindCounts}" VerticalAlignment="Center"
                     AutomationProperties.AutomationId="KindCounts" AutomationProperties.Name="Files per kind">
@@ -88,9 +91,11 @@
 
     <DockPanel Grid.Row="4" LastChildFill="False">
       <Button DockPanel.Dock="Left" Content="Back to Migration setup" Command="{Binding BackToSetupCommand}"
-              IsVisible="{Binding !IsDryRun}" AutomationProperties.AutomationId="DiffBack" />
+              IsVisible="{Binding !IsDryRun}" AutomationProperties.AutomationId="DiffBack"
+              AutomationProperties.Name="Back to Migration setup" />
       <Button DockPanel.Dock="Right" Content="Continue to Build and run" Command="{Binding ContinueCommand}"
-              AutomationProperties.AutomationId="DiffContinue" />
+              AutomationProperties.AutomationId="DiffContinue"
+              AutomationProperties.Name="Continue to Build and run" />
       <TextBlock DockPanel.Dock="Right" Margin="0,0,12,0" VerticalAlignment="Center" IsVisible="{Binding IsDryRun}"
                  Text="Run the migration for real to continue." />
     </DockPanel>

@@ -4,8 +4,16 @@
              x:Class="XnaReborn.App.Controls.BuildLogView"
              AutomationProperties.Name="Build log">
 
-  <Border BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
-    <ItemsControl x:Name="LogItems">
+  <UserControl.Styles>
+    <!-- The log is a tab stop so a keyboard user can scroll it; the frame shows where the focus is. -->
+    <Style Selector="Border.log:focus-within">
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+  </UserControl.Styles>
+
+  <Border Classes="log" BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+    <ItemsControl x:Name="LogItems" Focusable="True" AutomationProperties.Name="Build log lines">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <VirtualizingStackPanel />
