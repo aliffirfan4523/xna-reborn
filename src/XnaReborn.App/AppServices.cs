@@ -24,6 +24,7 @@ public static class AppServices
         services.AddSingleton<IDialogService>(p => new DialogService(p.GetRequiredService<Func<TopLevel?>>()));
         services.AddSingleton<IClipboardService>(p => new ClipboardService(p.GetRequiredService<Func<TopLevel?>>()));
         services.AddSingleton<IRecentProjectsStore>(_ => new RecentProjectsStore());
+        services.AddSingleton<IShellService, ShellService>();
         AddViewModels(services);
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
