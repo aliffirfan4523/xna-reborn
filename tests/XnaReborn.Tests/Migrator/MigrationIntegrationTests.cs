@@ -116,6 +116,30 @@ public sealed class MigrationIntegrationTests(ITestOutputHelper testOutput) : ID
         Assert.True(File.Exists(Path.Combine(built, "Content", "sheet.xnb")), "Content/sheet.xnb is missing from " + built);
         Assert.True(File.Exists(Path.Combine(built, "Data", "levels.txt")), "Data/levels.txt is missing from " + built);
     }
+
+    [IntegrationFact]
+    public async Task Migrated_gamerservices_fixture_builds_with_shims_and_leaves_the_original_untouched()
+    {
+        var original = FixturePaths.Of("xna40-gamerservices");
+        var hashesBefore = MigrationTestSupport.Tree(original);
+        var source = Path.Combine(_temp, "source-gamerservices");
+        MigrationTestSupport.CopyFolder(original, source);
+        var copyBefore = MigrationTestSupport.Tree(source);
+        var output = Path.Combine(_temp, "migrated-shims");
+        var options = MigrationTestSupport.Options(output) with { EnableShims = true };
+
+        var result = await MigrationTestSupport.MigrateAsync(source, options);
+        Assert.True(result.Completed);
+
+        var (exitCode, text) = await RunBuildAsync(output);
+        testOutput.WriteLine(text);
+
+        Assert.True(exitCode == 0, $"dotnet build failed with exit code {exitCode}.{Environment.NewLine}{text}");
+        Assert.True(File.Exists(Path.Combine(output, "bin", "Debug", "net8.0", "XnaReborn.Compat.dll")), "XnaReborn.Compat.dll is missing from the build output.");
+        Assert.Equal(hashesBefore, MigrationTestSupport.Tree(original));
+        Assert.Equal(copyBefore, MigrationTestSupport.Tree(source));
+    }
+
     private static async Task<(int ExitCode, string Output)> RunBuildAsync(string folder)
     {
         var start = new ProcessStartInfo("dotnet", "build --nologo -v minimal")

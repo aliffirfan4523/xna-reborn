@@ -8,6 +8,7 @@ using XnaReborn.Migrator.Content;
 using XnaReborn.Migrator.Output;
 using XnaReborn.Migrator.Planning;
 using XnaReborn.Migrator.Projects;
+using XnaReborn.Migrator.Shims;
 using XnaReborn.Migrator.Source;
 
 namespace XnaReborn.Migrator;
@@ -108,7 +109,7 @@ public sealed class ProjectMigrator
             .ToHashSet(StringComparer.Ordinal);
         progress?.Report(new MigrationProgress(_stagePlan, 1, 1, null));
 
-        var state = new BuildState();
+        var state = new BuildState { Shims = options.EnableShims ? new ShimProjectGenerator(new PackageSelector()) : null };
         var reader = new ProjectReader(_fileSystem);
         var generator = new SdkCsprojGenerator();
         var projects = new List<ProjectWork>();
@@ -177,13 +178,22 @@ public sealed class ProjectMigrator
             state.Add(isolation, []);
         }
 
+        // Shim library files go in early so they win a path clash with a same-named file from the source.
+        if (state.Shims is not null)
+        {
+            foreach (var shim in state.Shims.Generate(options.Target))
+            {
+                state.Add(shim, []);
+            }
+        }
+
         var isSolutionInput = string.Equals(Path.GetExtension(sourcePath), ".sln", StringComparison.OrdinalIgnoreCase);
         if (projects.Count >= 2 || isSolutionInput)
         {
             state.Add(
                 new SolutionGenerator().Generate(
                     SolutionName(sourcePath, root, isSolutionInput),
-                    projects.Select(p => p.Read.Info.Path).ToList()),
+                    projects.Select(p => p.Read.Info.Path).Concat(state.Shims is null ? [] : [ShimProjectGenerator.ProjectPath]).ToList()),
                 []);
         }
 
@@ -197,6 +207,11 @@ public sealed class ProjectMigrator
             progress?.Report(new MigrationProgress(_stageSource, i, files.Count, file.RelativePath));
             await RewriteFileAsync(engine, file, state, cancellationToken).ConfigureAwait(false);
             progress?.Report(new MigrationProgress(_stageSource, i + 1, files.Count, file.RelativePath));
+        }
+
+        if (state.Shims is not null)
+        {
+            AddShimReferences(projects, state);
         }
 
         foreach (var project in projects)
@@ -315,7 +330,7 @@ public sealed class ProjectMigrator
         IReadOnlyList<FileChange> changes,
         BuildState state,
         string version) =>
-        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content);
+        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content, state.ShimManifest(changes));
 
     private static async Task WriteManifestFilesAsync(
         string staging,
@@ -395,6 +410,14 @@ public sealed class ProjectMigrator
             bytes = buffer.ToArray();
         }
 
+        if (state.Shims is not null)
+        {
+            foreach (var use in ShimProjectGenerator.Scan(_utf8.GetString(bytes)))
+            {
+                state.ShimUses.Add((file.Project.Read.Info.Path, new ManifestShimUse(file.RelativePath, use.Namespace, use.Types)));
+            }
+        }
+
         var hasBom = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF;
         string text;
         try
@@ -429,6 +452,28 @@ public sealed class ProjectMigrator
         else
         {
             state.Changes.Add(new FileChange(file.RelativePath, ChangeKind.Copied, null, null, null, file.FullPath));
+        }
+    }
+
+    // Adds the shim library to each game project: always keeps the library out of the project's own compile list,
+    // and references it from projects whose source uses a shimmed namespace.
+    private static void AddShimReferences(List<ProjectWork> projects, BuildState state)
+    {
+        foreach (var project in projects)
+        {
+            var path = project.Read.Info.Path;
+            var index = state.Changes.FindIndex(c => string.Equals(c.RelativePath, path, StringComparison.Ordinal));
+            if (index < 0)
+            {
+                continue;
+            }
+
+            var uses = state.ShimUses.Any(u => string.Equals(u.Project, path, StringComparison.Ordinal));
+            state.Changes[index] = ShimProjectGenerator.AddToProject(state.Changes[index], project.GameDirectory, uses);
+            if (uses)
+            {
+                state.ShimReferencedBy.Add(path.Replace('\\', '/'));
+            }
         }
     }
 
@@ -593,6 +638,23 @@ public sealed class ProjectMigrator
         public List<string> Notes { get; } = [];
 
         public ManifestContent? Content { get; set; }
+
+        /// <summary>The shim generator, or null when shims are off.</summary>
+        public ShimProjectGenerator? Shims { get; init; }
+
+        public List<(string Project, ManifestShimUse Use)> ShimUses { get; } = [];
+
+        public SortedSet<string> ShimReferencedBy { get; } = new(StringComparer.Ordinal);
+
+        /// <summary>The manifest block for the shims, or null when shims are off.</summary>
+        public ManifestShims? ShimManifest(IReadOnlyList<FileChange> changes) =>
+            Shims is null
+                ? null
+                : new ManifestShims(
+                    ShimProjectGenerator.ProjectPath,
+                    changes.Where(c => c.RelativePath.StartsWith(ShimProjectGenerator.ProjectName + "/", StringComparison.Ordinal)).Select(c => c.RelativePath).Order(StringComparer.Ordinal).ToList(),
+                    ShimReferencedBy.ToList(),
+                    ShimUses.Select(u => u.Use).OrderBy(u => u.File, StringComparer.Ordinal).ThenBy(u => u.Namespace, StringComparer.Ordinal).ToList());
 
         public Dictionary<string, IReadOnlyList<string>> RuleIdsByPath { get; } = new(StringComparer.Ordinal);
 

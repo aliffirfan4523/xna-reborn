@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace XnaReborn.Migrator.Output;
 
 /// <summary>The record of a migration: what changed, what was skipped, and what needs a person.</summary>
@@ -8,6 +10,7 @@ namespace XnaReborn.Migrator.Output;
 /// <param name="Changes">One entry per output file, sorted by path.</param>
 /// <param name="Build">Result of the optional post-migration build, or null when not attempted.</param>
 /// <param name="Content">Totals for the converted content, or null when no content was converted.</param>
+/// <param name="Shims">The shim library and every use of it, or null when shims were off. Left out of the JSON when null.</param>
 public sealed record Manifest(
     int Version,
     string Migrator,
@@ -15,7 +18,25 @@ public sealed record Manifest(
     bool Completed,
     IReadOnlyList<ManifestChange> Changes,
     ManifestBuild? Build,
-    ManifestContent? Content = null);
+    ManifestContent? Content = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestShims? Shims = null);
+
+/// <summary>Shims added to the migrated copy: offline stand-ins for dead XNA APIs, not real XNA services.</summary>
+/// <param name="Project">Path of the shim project file, relative to the output, with '/' separators.</param>
+/// <param name="Files">Paths of the generated shim files, sorted.</param>
+/// <param name="ReferencedBy">Game projects that reference the shim project, sorted.</param>
+/// <param name="Uses">Every shim use in the game source, sorted by file and namespace.</param>
+public sealed record ManifestShims(
+    string Project,
+    IReadOnlyList<string> Files,
+    IReadOnlyList<string> ReferencedBy,
+    IReadOnlyList<ManifestShimUse> Uses);
+
+/// <summary>One source file that uses a shimmed namespace.</summary>
+/// <param name="File">Relative path of the game source file, with '/' separators.</param>
+/// <param name="Namespace">The XNA namespace whose shim the file uses.</param>
+/// <param name="Types">Shimmed type names the file mentions, sorted.</param>
+public sealed record ManifestShimUse(string File, string Namespace, IReadOnlyList<string> Types);
 
 /// <summary>Content conversion totals, summed over all projects.</summary>
 /// <param name="CountsByStatus">Assets per status. Every status key is present, in enum order: Converted, ManualWork, Missing, Conflict, Prebuilt.</param>
