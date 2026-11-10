@@ -10,6 +10,7 @@ public static class FixturePaths
         "multi-project-sln",
         "not-xna",
         "xna31-legacy",
+        "xna31-rewritable",
         "xna40-basic",
         "xna40-custom-content",
         "xna40-gamerservices",
