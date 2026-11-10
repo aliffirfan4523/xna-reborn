@@ -1,7 +1,9 @@
 using System.Collections.Specialized;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using XnaReborn.App.ViewModels;
 
 namespace XnaReborn.App.Controls;
@@ -19,6 +21,7 @@ public sealed partial class BuildLogView : UserControl
     public BuildLogView()
     {
         InitializeComponent();
+        LogItems.KeyDown += OnLogKeyDown;
     }
 
     /// <summary>The lines to show.</summary>
@@ -49,6 +52,41 @@ public sealed partial class BuildLogView : UserControl
 
         LogItems.ItemsSource = Lines;
         ScrollToNewest();
+    }
+
+    private void OnLogKeyDown(object? sender, KeyEventArgs e)
+    {
+        // The scroll viewer sits inside the list control, so arrow keys on the list have to be passed on to it.
+        if (LogItems.FindDescendantOfType<ScrollViewer>() is not { } scroll)
+        {
+            return;
+        }
+
+        switch (e.Key)
+        {
+            case Key.Up:
+                scroll.LineUp();
+                break;
+            case Key.Down:
+                scroll.LineDown();
+                break;
+            case Key.PageUp:
+                scroll.PageUp();
+                break;
+            case Key.PageDown:
+                scroll.PageDown();
+                break;
+            case Key.Home:
+                scroll.ScrollToHome();
+                break;
+            case Key.End:
+                scroll.ScrollToEnd();
+                break;
+            default:
+                return;
+        }
+
+        e.Handled = true;
     }
 
     private void OnLinesChanged(object? sender, NotifyCollectionChangedEventArgs e) => ScrollToNewest();

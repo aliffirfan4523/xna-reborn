@@ -35,7 +35,7 @@
         <TextBlock Text="{Binding ProgressText}" AutomationProperties.Name="Analysis progress" />
         <ProgressBar IsIndeterminate="{Binding !IsProgressKnown}" Value="{Binding ProgressPercent}" Minimum="0" Maximum="100"
                      AutomationProperties.Name="Analysis progress bar" />
-        <Button Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Left"
+        <Button Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Left" IsCancel="True"
                 AutomationProperties.AutomationId="CancelOpen"
                 AutomationProperties.Name="Cancel the analysis" />
       </StackPanel>

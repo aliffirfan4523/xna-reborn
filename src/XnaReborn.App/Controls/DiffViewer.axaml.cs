@@ -1,6 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using AvaloniaEdit;
 using AvaloniaEdit.Document;
 using XnaReborn.Migrator.Source;
@@ -38,6 +41,9 @@ public sealed partial class DiffViewer : UserControl
         Attach(NewEditor, _newBackground, _newGutter);
         OldEditor.TextArea.TextView.ScrollOffsetChanged += (_, _) => SyncScroll(OldEditor, NewEditor);
         NewEditor.TextArea.TextView.ScrollOffsetChanged += (_, _) => SyncScroll(NewEditor, OldEditor);
+
+        // The panes are read-only but their text area still swallows Tab, which would trap a keyboard user inside.
+        AddHandler(KeyDownEvent, OnPaneKeyDown, RoutingStrategies.Tunnel);
     }
 
     /// <summary>The diff to show, or null to show empty panes.</summary>
@@ -88,6 +94,48 @@ public sealed partial class DiffViewer : UserControl
         {
             ApplyReveal();
         }
+    }
+
+    private void OnPaneKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Tab
+            || (e.KeyModifiers & (KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Meta)) != 0
+            || e.Source is not Visual source
+            || !(OldEditor.IsVisualAncestorOf(source) || NewEditor.IsVisualAncestorOf(source)))
+        {
+            return;
+        }
+
+        var focus = TopLevel.GetTopLevel(this)?.FocusManager;
+        var target = (e.KeyModifiers & KeyModifiers.Shift) != 0
+            ? PreviousTabStop(source)
+            : focus?.FindNextElement(NavigationDirection.Next);
+        if (focus is not null && target is not null && !ReferenceEquals(target, source))
+        {
+            focus.Focus(target, NavigationMethod.Tab, e.KeyModifiers);
+            e.Handled = true;
+        }
+    }
+
+    // shortcut: the text area turns off Avalonia's own backwards search, so this scans the window in visual order and
+    // ignores TabIndex. Fine while no page sets TabIndex; use FocusManager.FindNextElement again if that stops holding.
+    private static InputElement? PreviousTabStop(Visual from)
+    {
+        InputElement? previous = null;
+        foreach (var candidate in (TopLevel.GetTopLevel(from) as Visual ?? from).GetSelfAndVisualDescendants().OfType<InputElement>())
+        {
+            if (ReferenceEquals(candidate, from))
+            {
+                return previous;
+            }
+
+            if (candidate.Focusable && candidate.IsTabStop && candidate.IsEffectivelyVisible && candidate.IsEffectivelyEnabled)
+            {
+                previous = candidate;
+            }
+        }
+
+        return null;
     }
 
     private static void Attach(TextEditor editor, DiffViewerBackground background, DiffViewerGutter gutter)

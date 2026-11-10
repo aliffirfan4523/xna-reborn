@@ -20,6 +20,9 @@ internal sealed class ScriptedRunService : IRunService
 
     public EnvironmentInfo Environment { get; set; } = new("8.0.100", ["8.0.100"], true, "Windows 11", true, null);
 
+    /// <summary>When set, replaces the environment check, so a test can hold it open and cancel it.</summary>
+    public Func<CancellationToken, Task<EnvironmentInfo>>? OnCheckEnvironment { get; set; }
+
     public int EnvironmentChecks { get; private set; }
 
     public List<(string Folder, MonoGameTargetKind Target, bool Launch)> Calls { get; } = [];
@@ -40,6 +43,6 @@ internal sealed class ScriptedRunService : IRunService
     public Task<EnvironmentInfo> CheckEnvironmentAsync(MonoGameTargetKind target, CancellationToken cancellationToken)
     {
         EnvironmentChecks++;
-        return Task.FromResult(Environment);
+        return OnCheckEnvironment is { } script ? script(cancellationToken) : Task.FromResult(Environment);
     }
 }

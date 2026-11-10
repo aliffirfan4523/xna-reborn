@@ -32,4 +32,10 @@ public abstract class PageViewModel : ViewModelBase
 
     /// <summary>Called every time this page becomes the current page. Refresh from <see cref="Session"/> here.</summary>
     public virtual Task OnNavigatedToAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// Called when the app window is closing. Cancel work that is running and stop anything this page started.
+    /// Return a completed task when there is nothing to wait for, so the window can close at once.
+    /// </summary>
+    public virtual Task ShutdownAsync() => Task.CompletedTask;
 }

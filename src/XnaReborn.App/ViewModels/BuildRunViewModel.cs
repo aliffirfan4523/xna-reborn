@@ -19,6 +19,8 @@ namespace XnaReborn.App.ViewModels;
 /// </summary>
 public sealed partial class BuildRunViewModel : PageViewModel
 {
+    private static readonly TimeSpan _shutdownWait = TimeSpan.FromSeconds(5);
+
     private static readonly Regex _link = new(@"https://\S+", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private readonly IRunService _runner;
@@ -27,6 +29,8 @@ public sealed partial class BuildRunViewModel : PageViewModel
     private RunHandle? _game;
     private int _lineNumber;
     private bool _declined;
+    private bool _closing;
+    private TaskCompletionSource? _idle;
 
     /// <summary>True while a build, a start or an environment check is running.</summary>
     [ObservableProperty]
@@ -166,7 +170,19 @@ public sealed partial class BuildRunViewModel : PageViewModel
         await RefreshEnvironmentAsync().ConfigureAwait(true);
     }
 
-    partial void OnIsBusyChanged(bool value) => RefreshState();
+    partial void OnIsBusyChanged(bool value)
+    {
+        if (value)
+        {
+            _idle = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+        else
+        {
+            _idle?.TrySetResult();
+        }
+
+        RefreshState();
+    }
 
     partial void OnIsGameRunningChanged(bool value) => RefreshState();
 
@@ -196,6 +212,33 @@ public sealed partial class BuildRunViewModel : PageViewModel
         StopCommand.NotifyCanExecuteChanged();
         GoToSummaryCommand.NotifyCanExecuteChanged();
         RefreshEnvironmentCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Cancels a running check or build, waits (up to <see cref="_shutdownWait"/>) until it has stopped its processes, and stops
+    /// a running game. A game that was about to be returned by a cancelled run is stopped too.
+    /// </summary>
+    public override async Task ShutdownAsync()
+    {
+        _closing = true;
+        _cts?.Cancel();
+        if (_idle is { Task.IsCompleted: false } idle)
+        {
+            await Task.WhenAny(idle.Task, Task.Delay(_shutdownWait)).ConfigureAwait(true);
+        }
+
+        if (_game is { } game)
+        {
+            try
+            {
+                await game.StopAsync().ConfigureAwait(true);
+                EndGame(game, await game.Completion.ConfigureAwait(true));
+            }
+            catch (Exception)
+            {
+                // The window is closing, so there is nowhere left to show a failure to stop.
+            }
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanBuild))]
@@ -324,9 +367,9 @@ public sealed partial class BuildRunViewModel : PageViewModel
 
     private async Task ShowResultAsync(RunnerResult result, bool launch)
     {
-        // Safety net: a game that was not asked for (or was declined) must not stay running.
+        // Safety net: a game that was not asked for, was declined, or finished starting while the window closes must not stay running.
         var game = result.RunningGame;
-        if (game is not null && (!launch || _declined))
+        if (game is not null && (!launch || _declined || _closing))
         {
             await game.StopAsync().ConfigureAwait(true);
             game = null;

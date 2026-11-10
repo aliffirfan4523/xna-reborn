@@ -208,7 +208,8 @@
     <Expander Grid.Row="3" Header="Analysis notes" IsExpanded="True"
               IsVisible="{Binding HasDiagnostics}"
               HorizontalAlignment="Stretch"
-              AutomationProperties.AutomationId="DiagnosticsPanel">
+              AutomationProperties.AutomationId="DiagnosticsPanel"
+              AutomationProperties.Name="Analysis notes">
       <ScrollViewer MaxHeight="120">
         <ItemsControl ItemsSource="{Binding Diagnostics}">
           <ItemsControl.ItemTemplate>

@@ -117,6 +117,12 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
         }
     }
 
+    /// <summary>
+    /// Cancels running operations and stops a game started from the Build and run page. Call it when the window closes.
+    /// The returned task is already completed when nothing is running.
+    /// </summary>
+    public Task ShutdownAsync() => Task.WhenAll(_pages.Values.Select(p => p.ShutdownAsync()));
+
     [RelayCommand]
     private void Dismiss() => Session.ClearError();
 
