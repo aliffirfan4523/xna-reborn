@@ -17,8 +17,7 @@ src/XnaReborn.Migrator/Content/
 ├── AssetCopier.cs
 ├── ContentReport.cs
 └── data/
-    ├── importer-map.json
-    └── xna-only-fonts.json
+    └── xna-only-fonts.json       # the importer map is shared: rules/importer-map.json, loaded from Core
 ```
 
 ## XNA content project shape
