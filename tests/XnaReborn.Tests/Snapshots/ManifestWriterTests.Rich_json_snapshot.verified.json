@@ -1,0 +1,51 @@
+﻿{
+  "version": 1,
+  "migrator": "0.1.0",
+  "catalogName": "xna-to-monogame",
+  "completed": true,
+  "changes": [
+    {
+      "path": "App.csproj",
+      "kind": "Created",
+      "rules": [
+        "XNA001"
+      ],
+      "reason": "SDK project"
+    },
+    {
+      "path": "Content/a|b.png",
+      "kind": "Copied",
+      "rules": [],
+      "reason": null
+    },
+    {
+      "path": "Game1.cs",
+      "kind": "Modified",
+      "rules": [
+        "XNA022",
+        "XNA024"
+      ],
+      "reason": null
+    },
+    {
+      "path": "Old.sln",
+      "kind": "Skipped",
+      "rules": [],
+      "reason": "Replaced by new solution"
+    },
+    {
+      "path": "Sound.xap",
+      "kind": "ManualWork",
+      "rules": [],
+      "reason": "XACT not supported"
+    }
+  ],
+  "build": {
+    "attempted": true,
+    "succeeded": false,
+    "errors": [
+      "Game1.cs(1): error CS0246",
+      "Game1.cs(3): error CS0103"
+    ]
+  }
+}
