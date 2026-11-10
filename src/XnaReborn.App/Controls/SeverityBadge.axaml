@@ -1,0 +1,9 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XnaReborn.App.Controls.SeverityBadge">
+  <!-- Icon shape + text label + color (R8.3). The text and icon come from the severity resources in Styles/Shared.axaml. -->
+  <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingSmall}">
+    <TextBlock x:Name="IconText" FontWeight="Bold" VerticalAlignment="Center" />
+    <TextBlock x:Name="LabelText" FontWeight="SemiBold" VerticalAlignment="Center" />
+  </StackPanel>
+</UserControl>
