@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DiffPlex" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="XnaReborn.Tests" />
   </ItemGroup>
 

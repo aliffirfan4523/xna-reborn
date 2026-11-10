@@ -1,0 +1,15 @@
+﻿--- a/Game/Program.cs
++++ b/Game/Program.cs
+@@ -4,9 +4,11 @@
+ {
+     class Program
+     {
+-        static void Main()
++        // XNAREBORN: R1: check this
++        static void Main(string[] args)
+         {
+             Console.WriteLine("hi");
++            Run();
+         }
+     }
+ }
