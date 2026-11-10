@@ -18,6 +18,7 @@ public class SdkCsprojGeneratorTests
     [
         ["xna40-basic", "xna40-basic"],
         ["xna31-legacy", "xna31-legacy"],
+        ["xna31-rewritable", "xna31-rewritable"],
         ["xna40-gamerservices", "xna40-gamerservices"],
         ["xna40-custom-content", "xna40-custom-content"],
         ["multi-project-sln", "multi-project-sln/Game/Game.csproj"],
