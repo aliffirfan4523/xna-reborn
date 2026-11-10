@@ -14,6 +14,7 @@ public static class ManifestBuilder
     /// <param name="migratorVersion">Version of the migrator writing the manifest.</param>
     /// <param name="content">Content conversion totals, or null when no content was converted.</param>
     /// <param name="shims">The shim library and its uses, or null when shims were off.</param>
+    /// <param name="modern">The opt-in window extras, or null when all were off.</param>
     /// <returns>The manifest.</returns>
     public static Manifest Build(
         string catalogName,
@@ -23,7 +24,8 @@ public static class ManifestBuilder
         ManifestBuild? build,
         string migratorVersion,
         ManifestContent? content = null,
-        ManifestShims? shims = null)
+        ManifestShims? shims = null,
+        ManifestModern? modern = null)
     {
         ArgumentNullException.ThrowIfNull(catalogName);
         ArgumentNullException.ThrowIfNull(changes);
@@ -41,7 +43,7 @@ public static class ManifestBuilder
             .OrderBy(e => e.Path, StringComparer.Ordinal)
             .ToList();
 
-        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content, shims);
+        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content, shims, modern);
     }
 
     private static ManifestBuild? SortedBuild(ManifestBuild? build) =>

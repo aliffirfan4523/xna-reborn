@@ -105,11 +105,16 @@ public sealed partial class BuildRunViewModel : PageViewModel
     /// <param name="navigator">Moves to other pages.</param>
     /// <param name="dialogs">File pickers and message dialogs.</param>
     /// <param name="runner">Builds and launches the migrated copy.</param>
-    public BuildRunViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IRunService runner)
+    /// <param name="shell">Opens the folder of a published game.</param>
+    public BuildRunViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IRunService runner, IShellService shell)
         : base("Build and run", session, navigator, dialogs)
     {
         _runner = runner;
+        Publish = new PublishPanelViewModel(session, dialogs, runner, shell, () => Target()?.Folder, () => IsBusy || IsGameRunning, RefreshState);
     }
+
+    /// <summary>The Publish section: platform picker, Publish, progress, Cancel and Open folder.</summary>
+    public PublishPanelViewModel Publish { get; }
 
     /// <summary>The build output so far, in arrival order.</summary>
     // shortcut: the log is never trimmed, fine for a build of a small game, add a cap if logs reach 100k lines.
@@ -141,6 +146,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
         HasMigration
         && !IsBusy
         && !IsGameRunning
+        && !Publish.IsPublishing
         && EnvironmentStatus is { SdkCompatible: true, TargetSupported: true };
 
     /// <summary>True while a build can be cancelled.</summary>
@@ -165,6 +171,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
         {
             // The session was reset (a new project or migration), so the old log and diagnostics no longer apply.
             ResetResults();
+            Publish.Reset();
         }
 
         await RefreshEnvironmentAsync().ConfigureAwait(true);
@@ -212,6 +219,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
         StopCommand.NotifyCanExecuteChanged();
         GoToSummaryCommand.NotifyCanExecuteChanged();
         RefreshEnvironmentCommand.NotifyCanExecuteChanged();
+        Publish?.Refresh();
     }
 
     /// <summary>
@@ -222,6 +230,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
     {
         _closing = true;
         _cts?.Cancel();
+        await Publish.ShutdownAsync().ConfigureAwait(true);
         if (_idle is { Task.IsCompleted: false } idle)
         {
             await Task.WhenAny(idle.Task, Task.Delay(_shutdownWait)).ConfigureAwait(true);

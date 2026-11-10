@@ -35,6 +35,11 @@ public static class ManifestMarkdownWriter
             blocks.Add(ShimsBlock(manifest.Shims));
         }
 
+        if (manifest.Modern is not null)
+        {
+            blocks.Add(ModernBlock(manifest.Modern));
+        }
+
         if (manifest.Build is not null)
         {
             blocks.Add(BuildBlock(manifest.Build));
@@ -145,6 +150,37 @@ public static class ManifestMarkdownWriter
         {
             sb.Append("\n| ").Append(Cell(use.File)).Append(" | ").Append(Cell(use.Namespace))
                 .Append(" | ").Append(Cell(use.Types.Count == 0 ? null : string.Join(", ", use.Types))).Append(" |");
+        }
+
+        return sb.ToString();
+    }
+
+    private static string ModernBlock(ManifestModern modern)
+    {
+        var sb = new StringBuilder("## Modern extras\n\n");
+        sb.Append("Opt-in window extras: ").Append(string.Join(", ", modern.Features)).Append(".\n\nHelper files:");
+        foreach (var file in modern.Files)
+        {
+            sb.Append("\n- `").Append(file).Append('`');
+        }
+
+        sb.Append("\n\nHook added to:");
+        if (modern.HookedFiles.Count == 0)
+        {
+            sb.Append(" no file. No entry point could take the one-line hook, so the extras do nothing.");
+        }
+        else
+        {
+            foreach (var file in modern.HookedFiles)
+            {
+                sb.Append("\n- `").Append(file).Append('`');
+            }
+        }
+
+        sb.Append("\n\nLimits:");
+        foreach (var limit in modern.Limits)
+        {
+            sb.Append("\n- ").Append(limit);
         }
 
         return sb.ToString();

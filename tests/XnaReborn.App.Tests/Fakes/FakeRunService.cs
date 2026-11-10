@@ -2,6 +2,7 @@ using XnaReborn.App.Services;
 using XnaReborn.Runner;
 using XnaReborn.Runner.Environment;
 using XnaReborn.Runner.Processes;
+using XnaReborn.Runner.Publish;
 using XnaReborn.Runner.Run;
 
 namespace XnaReborn.App.Tests.Fakes;
@@ -51,6 +52,35 @@ public sealed class FakeRunService : IRunService
         }
 
         return Result;
+    }
+
+    /// <summary>What <see cref="PublishAsync"/> returns, one result per call; the last one repeats.</summary>
+    public List<PublishResult> PublishResults { get; } = [];
+
+    /// <summary>When set, replaces the result, so a test can hold the publish open and cancel it.</summary>
+    public Func<IProgress<OutputLine>?, CancellationToken, Task<PublishResult>>? OnPublish { get; set; }
+
+    /// <summary>The calls to <see cref="PublishAsync"/>, in order.</summary>
+    public List<(string Folder, string Rid, bool Confirmed)> PublishCalls { get; } = [];
+
+    public Task<PublishResult> PublishAsync(
+        string migratedFolder,
+        string rid,
+        bool overwriteConfirmed,
+        IProgress<OutputLine>? output,
+        CancellationToken cancellationToken)
+    {
+        PublishCalls.Add((migratedFolder, rid, overwriteConfirmed));
+        cancellationToken.ThrowIfCancellationRequested();
+        if (OnPublish is not null)
+        {
+            return OnPublish(output, cancellationToken);
+        }
+
+        var index = Math.Min(PublishCalls.Count - 1, PublishResults.Count - 1);
+        return Task.FromResult(index >= 0
+            ? PublishResults[index]
+            : new PublishResult(PublishStatus.Published, "Published.", migratedFolder + "-publish", rid, null, [], TimeSpan.Zero));
     }
 
     public Task<EnvironmentInfo> CheckEnvironmentAsync(MonoGameTargetKind target, CancellationToken cancellationToken) =>

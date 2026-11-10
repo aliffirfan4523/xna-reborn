@@ -77,3 +77,13 @@
 
 - [ ] 13. Final checkpoint
   - Full test suite, `dotnet format --verify-no-changes`, review of all manifests and diffs
+
+- [x] 14. Modern window extras (opt-in, off by default)
+  - [x] 14.1 `AllowWindowResize`, `FullscreenToggle` and `HighDpi` in `MigrationOptions`, all false by default
+  - [x] 14.2 `ModernExtrasGenerator` writes `XnaReborn.Modern.cs` next to each game project that gets the hook (resize, Alt+Enter borderless fullscreen, per-monitor DPI; the game keeps its own back buffer size and the frame is scaled)
+  - [x] 14.3 `ModernExtrasHook` adds one `XnaReborn.Modern.ModernExtras.Attach(game);` line above `game.Run();` in `Main`, with a `// XNAREBORN: MODERN:` marker; no gameplay file changes
+  - [x] 14.4 Manifest `modern` block (JSON and Markdown): features, helper files, hooked files, limits
+  - [x] 14.5 Linux and macOS: DesktopGL copies need no project change to publish for `linux-x64`, `osx-x64` and `osx-arm64` (checked by the integration test); a WindowsDX copy is refused for those RIDs by the Runner
+  - Not checked from Windows: running the game on Linux or macOS, a macOS `.app` bundle, code signing and notarization, how the extras look on a real display
+  - Known limits (also in the manifest): mouse and touch positions are not remapped, the resolution is read from the first frame, a game that keeps its own render target bound shows that frame unscaled
+  - _Requirements: R3, R4, R8_

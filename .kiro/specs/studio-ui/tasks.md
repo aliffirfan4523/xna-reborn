@@ -59,3 +59,9 @@
 - [ ] 10. Final checkpoint
   - [x] ViewModel and headless tests pass (both test projects, integration tests included)
   - [ ] Demo rehearsal recorded (left for the owner)
+
+- [x] 11. Modern targets in the UI
+  - [x] 11.1 Migration setup: toggles for window resize, Alt+Enter fullscreen and high-DPI, off by default, passed to `MigrationOptions`
+  - [x] 11.2 Build and run: Publish section with a platform picker, Publish, progress, Cancel and Open folder; asks before an existing result folder is used; no publish logic in the view (`PublishPanelViewModel` calls `IRunService.PublishAsync`)
+  - [x] 11.3 View model tests with fakes, keyboard tab order updated
+  - _Requirements: R3, R5_

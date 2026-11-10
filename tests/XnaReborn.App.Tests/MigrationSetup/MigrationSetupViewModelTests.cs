@@ -59,8 +59,45 @@ public sealed class MigrationSetupViewModelTests
         Assert.True(vm.IsDesktopGL);
         Assert.False(vm.EnableShims);
         Assert.False(vm.SubstituteFonts);
+        Assert.False(vm.AllowWindowResize);
+        Assert.False(vm.FullscreenToggle);
+        Assert.False(vm.HighDpi);
         Assert.True(vm.OutputIsOk);
         Assert.True(vm.PreviewCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task Migrating_without_touching_the_extras_sends_them_all_off()
+    {
+        using var s = new Setup();
+        var vm = await s.OpenAsync();
+
+        await vm.MigrateCommand.ExecuteAsync(null);
+
+        var (options, _) = Assert.Single(s.Service.Calls);
+        Assert.False(options.AllowWindowResize);
+        Assert.False(options.FullscreenToggle);
+        Assert.False(options.HighDpi);
+    }
+
+    [Theory]
+    [InlineData(true, false, false)]
+    [InlineData(false, true, false)]
+    [InlineData(false, false, true)]
+    [InlineData(true, true, true)]
+    public async Task Each_extras_toggle_reaches_only_its_own_migration_option(bool resize, bool fullscreen, bool dpi)
+    {
+        using var s = new Setup();
+        var vm = await s.OpenAsync();
+        vm.AllowWindowResize = resize;
+        vm.FullscreenToggle = fullscreen;
+        vm.HighDpi = dpi;
+
+        await vm.MigrateCommand.ExecuteAsync(null);
+
+        var (options, _) = Assert.Single(s.Service.Calls);
+        Assert.Equal((resize, fullscreen, dpi), (options.AllowWindowResize, options.FullscreenToggle, options.HighDpi));
+        Assert.Equal((resize, fullscreen, dpi), (s.Session.MigrationOptions!.AllowWindowResize, s.Session.MigrationOptions.FullscreenToggle, s.Session.MigrationOptions.HighDpi));
     }
 
     [Fact]

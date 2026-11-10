@@ -54,6 +54,21 @@
                   AutomationProperties.Name="Substitute fonts that only XNA installed" />
         <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
                    Text="Off by default. When on, a .spritefont that names an XNA-only font gets a Windows font. When off, it is listed as manual work." />
+        <CheckBox Content="Let the window be resized" IsChecked="{Binding AllowWindowResize, Mode=TwoWay}"
+                  AutomationProperties.AutomationId="ResizeToggle"
+                  AutomationProperties.Name="Let the window be resized" />
+        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
+                   Text="Off by default. The game keeps its own resolution and is scaled to the window with black bars. Mouse positions are not remapped." />
+        <CheckBox Content="Alt+Enter toggles fullscreen" IsChecked="{Binding FullscreenToggle, Mode=TwoWay}"
+                  AutomationProperties.AutomationId="FullscreenToggle"
+                  AutomationProperties.Name="Alt plus Enter toggles fullscreen" />
+        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
+                   Text="Off by default. Switches between a window and borderless fullscreen. The game keeps its own resolution and is scaled." />
+        <CheckBox Content="High-DPI awareness (Windows)" IsChecked="{Binding HighDpi, Mode=TwoWay}"
+                  AutomationProperties.AutomationId="HighDpiToggle"
+                  AutomationProperties.Name="High DPI awareness" />
+        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
+                   Text="Off by default. The window is not blurred by Windows scaling, but it looks smaller on a high-DPI screen. Best with resizing or fullscreen." />
       </StackPanel>
 
       <!-- Plan -->

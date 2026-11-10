@@ -5,6 +5,7 @@ using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Models;
 using XnaReborn.Migrator.Content;
+using XnaReborn.Migrator.Modern;
 using XnaReborn.Migrator.Output;
 using XnaReborn.Migrator.Planning;
 using XnaReborn.Migrator.Projects;
@@ -109,7 +110,12 @@ public sealed class ProjectMigrator
             .ToHashSet(StringComparer.Ordinal);
         progress?.Report(new MigrationProgress(_stagePlan, 1, 1, null));
 
-        var state = new BuildState { Shims = options.EnableShims ? new ShimProjectGenerator(new PackageSelector()) : null };
+        var modern = ModernExtrasChoice.From(options);
+        var state = new BuildState
+        {
+            Shims = options.EnableShims ? new ShimProjectGenerator(new PackageSelector()) : null,
+            Modern = modern.Any ? modern : null,
+        };
         var reader = new ProjectReader(_fileSystem);
         var generator = new SdkCsprojGenerator();
         var projects = new List<ProjectWork>();
@@ -212,6 +218,11 @@ public sealed class ProjectMigrator
         if (state.Shims is not null)
         {
             AddShimReferences(projects, state);
+        }
+
+        if (state.Modern is not null)
+        {
+            AddModernHelpers(projects, state);
         }
 
         foreach (var project in projects)
@@ -330,7 +341,7 @@ public sealed class ProjectMigrator
         IReadOnlyList<FileChange> changes,
         BuildState state,
         string version) =>
-        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content, state.ShimManifest(changes));
+        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content, state.ShimManifest(changes), state.ModernManifest(changes));
 
     private static async Task WriteManifestFilesAsync(
         string staging,
@@ -432,6 +443,21 @@ public sealed class ProjectMigrator
         }
 
         var result = engine.Rewrite(file.RelativePath, text, file.Project.Read.Info.DefineConstants, file.Project.Enabled);
+        if (state.Modern is not null)
+        {
+            var hook = ModernExtrasHook.Apply(result.Text, file.Project.Read.Info.DefineConstants);
+            if (hook.Note is not null)
+            {
+                state.Notes.Add($"{file.RelativePath}: {ModernExtrasHook.Id}: {hook.Note}");
+            }
+
+            if (hook.Applied)
+            {
+                result = result with { Text = hook.Text, Changed = true, AppliedRuleIds = [.. result.AppliedRuleIds, ModernExtrasHook.Id] };
+                state.ModernHooks[file.Project.Read.Info.Path] = file.RelativePath;
+            }
+        }
+
         foreach (var note in result.Notes.Where(n => n.NeedsManualWork))
         {
             state.Notes.Add($"{file.RelativePath}: {note.RuleId}: {note.Message}");
@@ -474,6 +500,23 @@ public sealed class ProjectMigrator
             {
                 state.ShimReferencedBy.Add(path.Replace('\\', '/'));
             }
+        }
+    }
+
+    // Writes the helper next to each game project whose entry point got the hook. Says so when no project did.
+    private static void AddModernHelpers(List<ProjectWork> projects, BuildState state)
+    {
+        foreach (var project in projects)
+        {
+            if (state.ModernHooks.ContainsKey(project.Read.Info.Path))
+            {
+                state.Add(ModernExtrasGenerator.Generate(project.GameDirectory, state.Modern!), []);
+            }
+        }
+
+        if (state.ModernHooks.Count == 0)
+        {
+            state.Notes.Add($"{ModernExtrasHook.Id}: the window extras are on, but no 'game.Run();' call was found in a Main method, so they do nothing. Add {ModernExtrasGenerator.AttachCall}(game); before Run by hand.");
         }
     }
 
@@ -642,6 +685,12 @@ public sealed class ProjectMigrator
         /// <summary>The shim generator, or null when shims are off.</summary>
         public ShimProjectGenerator? Shims { get; init; }
 
+        /// <summary>The window extras that are on, or null when all are off.</summary>
+        public ModernExtrasChoice? Modern { get; init; }
+
+        /// <summary>Project path to the source file that got the extras hook.</summary>
+        public Dictionary<string, string> ModernHooks { get; } = new(StringComparer.Ordinal);
+
         public List<(string Project, ManifestShimUse Use)> ShimUses { get; } = [];
 
         public SortedSet<string> ShimReferencedBy { get; } = new(StringComparer.Ordinal);
@@ -655,6 +704,16 @@ public sealed class ProjectMigrator
                     changes.Where(c => c.RelativePath.StartsWith(ShimProjectGenerator.ProjectName + "/", StringComparison.Ordinal)).Select(c => c.RelativePath).Order(StringComparer.Ordinal).ToList(),
                     ShimReferencedBy.ToList(),
                     ShimUses.Select(u => u.Use).OrderBy(u => u.File, StringComparer.Ordinal).ThenBy(u => u.Namespace, StringComparer.Ordinal).ToList());
+
+        /// <summary>The manifest block for the window extras, or null when all are off.</summary>
+        public ManifestModern? ModernManifest(IReadOnlyList<FileChange> changes) =>
+            Modern is null
+                ? null
+                : new ManifestModern(
+                    Modern.FeatureNames(),
+                    changes.Where(c => c.RelativePath.EndsWith(ModernExtrasGenerator.FileName, StringComparison.Ordinal)).Select(c => c.RelativePath).Order(StringComparer.Ordinal).ToList(),
+                    ModernHooks.Values.Order(StringComparer.Ordinal).ToList(),
+                    ModernExtrasGenerator.Limits(Modern));
 
         public Dictionary<string, IReadOnlyList<string>> RuleIdsByPath { get; } = new(StringComparer.Ordinal);
 
