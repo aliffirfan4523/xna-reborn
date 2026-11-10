@@ -1,0 +1,14 @@
+{"repo":"Chapter-Master-Restoration","projects":0,"score":100,"projected":100,"findings":0,"rules":0,"diagnostics":0,"noProject":"Found 1 project(s), but none use XNA."}
+{"repo":"EvoNet","projects":1,"score":87,"projected":97,"findings":8,"rules":8,"diagnostics":0,"noProject":null}
+{"repo":"Grey-Infection","projects":1,"score":37,"projected":47,"findings":71,"rules":12,"diagnostics":1,"noProject":null}
+{"repo":"Isometric-RTS","projects":2,"score":90,"projected":100,"findings":14,"rules":8,"diagnostics":0,"noProject":null}
+{"repo":"MagicalLife","projects":0,"score":100,"projected":100,"findings":0,"rules":0,"diagnostics":0,"noProject":"Found 9 project(s), but none use XNA."}
+{"repo":"opengta2","projects":0,"score":100,"projected":100,"findings":0,"rules":0,"diagnostics":0,"noProject":"Found 6 project(s), but none use XNA."}
+{"repo":"Space-Shooter-Game","projects":1,"score":57,"projected":67,"findings":16,"rules":10,"diagnostics":0,"noProject":null}
+{"repo":"Spike3D","projects":1,"score":19,"projected":33,"findings":63,"rules":16,"diagnostics":0,"noProject":null}
+{"repo":"TouchAndPlay","projects":1,"score":60,"projected":70,"findings":10,"rules":9,"diagnostics":0,"noProject":null}
+{"repo":"XNA-GPUDust","projects":1,"score":57,"projected":67,"findings":10,"rules":10,"diagnostics":0,"noProject":null}
+{"repo":"XNAMiner","projects":6,"score":38,"projected":50,"findings":57,"rules":12,"diagnostics":1,"noProject":null}
+{"repo":"xnamugen","projects":0,"score":100,"projected":100,"findings":0,"rules":0,"diagnostics":0,"noProject":"Found 1 project(s), but none use XNA."}
+{"repo":"XNAWindowsLeapMotion","projects":2,"score":52,"projected":62,"findings":17,"rules":10,"diagnostics":0,"noProject":null}
+{"repo":"ZombieSmashersXNA4","projects":3,"score":31,"projected":41,"findings":57,"rules":14,"diagnostics":0,"noProject":null}
