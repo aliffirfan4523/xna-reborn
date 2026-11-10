@@ -123,7 +123,7 @@ public sealed class SpriteBatchBeginRewriter : ISourceRewriter
         foreach (var marker in markers.OrderBy(m => m.Position))
         {
             var position = marker.Position + edits.Where(e => e.Start < marker.Position).Sum(e => e.NewText.Length - e.Length) + shift;
-            var next = MarkerInserter.InsertMarker(current, position, marker.RuleId, marker.Message);
+            var next = MarkerInserter.InsertMarker(current, position, marker.RuleId, marker.Message, context.OriginalSymbols);
             if (string.Equals(next, current, StringComparison.Ordinal))
             {
                 continue;

@@ -282,7 +282,7 @@ public class RenderStateRewriterTests
     }
 
     [Fact]
-    public void Ambiguous_use_in_a_conditional_block_that_cannot_hold_a_marker_still_reports_a_note()
+    public void Ambiguous_use_in_an_active_conditional_block_gets_a_marker()
     {
         var text = Wrap(
             "#if WINDOWS\n" +
@@ -291,7 +291,9 @@ public class RenderStateRewriterTests
 
         var result = _rewriter.Rewrite(Context(text));
 
-        Assert.Equal(text, result.Text);
+        Assert.Equal(
+            Wrap("#if WINDOWS\n        " + _marker + "\n        var rs = GraphicsDevice.RenderState;\n#endif\n"),
+            result.Text);
         var note = Assert.Single(result.Notes);
         Assert.True(note.NeedsManualWork);
     }
@@ -382,5 +384,19 @@ public class RenderStateRewriterTests
         Assert.Equal(original.Replace(before, after, StringComparison.Ordinal), result.Text);
         var note = Assert.Single(result.Notes);
         Assert.False(note.NeedsManualWork);
+    }
+
+    [Fact]
+    public void Ambiguous_use_inside_if_windows_gets_a_marker_and_a_second_run_adds_nothing()
+    {
+        var text = Wrap("#if WINDOWS\n        GraphicsDevice.RenderState.CullMode = mode;\n#endif\n");
+
+        var first = _rewriter.Rewrite(Context(text));
+        var second = _rewriter.Rewrite(Context(first.Text));
+
+        Assert.Contains(_marker + "\n        GraphicsDevice.RenderState.CullMode = mode;", first.Text);
+        Assert.Single(first.Notes);
+        Assert.Empty(second.Notes);
+        Assert.Equal(first.Text, second.Text);
     }
 }

@@ -213,4 +213,35 @@ public class MarkerInserterTests
 
         Assert.Equal(text.Replace("        var s", "        // XNAREBORN: R: m\r\n        var s"), newRoot.ToFullString());
     }
+
+    private const string _conditional =
+        "class G\n" +
+        "{\n" +
+        "    void M()\n" +
+        "    {\n" +
+        "#if WINDOWS\n" +
+        "        Call();\n" +
+        "#endif\n" +
+        "    }\n" +
+        "}\n";
+
+    [Fact]
+    public void Marker_inside_active_if_block_is_inserted_when_the_symbol_is_defined()
+    {
+        var position = _conditional.IndexOf("Call", StringComparison.Ordinal);
+
+        var result = MarkerInserter.InsertMarker(_conditional, position, "R", "m", ["WINDOWS"]);
+
+        Assert.Equal(_conditional.Replace("        Call();", "        // XNAREBORN: R: m\n        Call();"), result);
+        Assert.Equal(result, MarkerInserter.InsertMarker(result, position + 24, "R", "m", ["WINDOWS"]));
+    }
+
+    [Fact]
+    public void Marker_inside_inactive_if_block_is_not_inserted_without_the_symbol()
+    {
+        var position = _conditional.IndexOf("Call", StringComparison.Ordinal);
+
+        Assert.Equal(_conditional, MarkerInserter.InsertMarker(_conditional, position, "R", "m"));
+        Assert.Equal(_conditional, MarkerInserter.InsertMarker(_conditional, position, "R", "m", ["DEBUG"]));
+    }
 }

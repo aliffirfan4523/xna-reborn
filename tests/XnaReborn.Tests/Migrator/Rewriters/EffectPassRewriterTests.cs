@@ -531,4 +531,18 @@ public class EffectPassRewriterTests
             text.Split('\n', StringSplitOptions.None)
                 .Where(line => !line.TrimStart().StartsWith("// XNAREBORN:", StringComparison.Ordinal))
                 .Select((line, index) => (index == 0 ? string.Empty : "\n") + line));
+
+    [Fact]
+    public void Unmatched_begin_inside_if_windows_gets_a_marker_and_a_second_run_adds_nothing()
+    {
+        var text = Wrap("#if WINDOWS\n        effect.Begin();\n#endif\n");
+
+        var first = _rewriter.Rewrite(Context(text));
+        var second = _rewriter.Rewrite(Context(first.Text));
+
+        Assert.Contains(_marker + "\n        effect.Begin();", first.Text);
+        Assert.Single(first.Notes);
+        Assert.Empty(second.Notes);
+        Assert.Equal(first.Text, second.Text);
+    }
 }

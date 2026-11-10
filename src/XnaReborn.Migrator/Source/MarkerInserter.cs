@@ -19,6 +19,7 @@ public static partial class MarkerInserter
     /// <param name="position">Character offset into <paramref name="text"/>.</param>
     /// <param name="ruleId">The rule that needs attention.</param>
     /// <param name="message">What the person has to do. Line breaks become spaces.</param>
+    /// <param name="preprocessorSymbols">Symbols defined when parsing, such as WINDOWS. Null means none.</param>
     /// <returns>
     /// The new text. The input text is returned when the same marker is already there, or when
     /// <paramref name="position"/> is inside a comment, a string or inactive <c>#if</c> code.
@@ -27,7 +28,7 @@ public static partial class MarkerInserter
     /// </returns>
     /// <exception cref="ArgumentNullException">An argument is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is outside the text.</exception>
-    public static string InsertMarker(string text, int position, string ruleId, string message)
+    public static string InsertMarker(string text, int position, string ruleId, string message, IReadOnlyCollection<string>? preprocessorSymbols = null)
     {
         ArgumentNullException.ThrowIfNull(text);
         ArgumentNullException.ThrowIfNull(ruleId);
@@ -36,7 +37,7 @@ public static partial class MarkerInserter
         ArgumentOutOfRangeException.ThrowIfGreaterThan(position, text.Length);
 
         var marker = MarkerLine(ruleId, message);
-        var root = CSharpSyntaxTree.ParseText(text).GetRoot();
+        var root = CSharpSyntaxTree.ParseText(text, new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: preprocessorSymbols)).GetRoot();
         var probe = Math.Min(position, Math.Max(0, text.Length - 1));
         if (text.Length == 0 || IsInsideCommentOrString(root, probe))
         {
