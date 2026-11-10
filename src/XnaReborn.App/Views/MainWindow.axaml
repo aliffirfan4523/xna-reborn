@@ -67,7 +67,9 @@
         </StackPanel>
         <Expander Header="Details"
                   IsVisible="{Binding HasErrorDetails}"
-                  IsExpanded="{Binding IsDetailsExpanded}">
+                  IsExpanded="{Binding IsDetailsExpanded}"
+                  AutomationProperties.AutomationId="ErrorDetailsExpander"
+                  AutomationProperties.Name="Error details section">
           <TextBox Text="{Binding ErrorDetails, Mode=OneWay}"
                    IsReadOnly="True"
                    AcceptsReturn="True"
