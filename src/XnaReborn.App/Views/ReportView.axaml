@@ -80,6 +80,42 @@
 
         <DockPanel Grid.Column="1">
           <StackPanel DockPanel.Dock="Top" Spacing="{StaticResource SpacingMedium}" Margin="0,0,0,8">
+            <!-- Start here tip. Built by the view model; this only shows it. -->
+            <Expander Header="Start here" IsExpanded="{Binding IsStartHereExpanded}"
+                      IsVisible="{Binding HasStartHere}"
+                      HorizontalAlignment="Stretch"
+                      AutomationProperties.AutomationId="StartHerePanel"
+                      AutomationProperties.Name="Start here">
+              <StackPanel Spacing="{StaticResource SpacingSmall}" DataContext="{Binding StartHere}" x:DataType="vm:StartHereTip">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpacingMedium}" IsVisible="{Binding HasBlocker}"
+                      AutomationProperties.AutomationId="StartHereBlocker">
+                  <TextBlock Text="{DynamicResource SeverityBlockerIcon}" Foreground="{DynamicResource SeverityBlockerBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding BlockerLine}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                </Grid>
+                <TextBlock Text="{Binding CleanLine}" TextWrapping="Wrap" IsVisible="{Binding IsClean}"
+                           AutomationProperties.AutomationId="StartHereClean" />
+                <ItemsControl ItemsSource="{Binding Steps}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StartHereStep">
+                      <Panel>
+                        <TextBlock Text="{Binding NumberedText}" TextWrapping="Wrap" IsVisible="{Binding IsText}" Margin="0,2" />
+                        <Button Content="{Binding NumberedText}" IsVisible="{Binding IsButton}"
+                                Command="{Binding $parent[UserControl].((vm:ReportViewModel)DataContext).ShowClassificationCommand}"
+                                CommandParameter="{Binding FilterTo}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                AutomationProperties.Name="{Binding AutomationName}">
+                          <Button.ContentTemplate>
+                            <DataTemplate x:DataType="x:String">
+                              <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                            </DataTemplate>
+                          </Button.ContentTemplate>
+                        </Button>
+                      </Panel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Expander>
             <TextBox Text="{Binding SearchText}"
                      PlaceholderText="Search rule, title, file or code"
                      AutomationProperties.AutomationId="SearchBox"
@@ -159,7 +195,7 @@
                   Margin="0,8,0,0" HorizontalAlignment="Left"
                   AutomationProperties.AutomationId="CopyFinding"
                   AutomationProperties.Name="Copy the selected finding" />
-          <ScrollViewer>
+          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <Panel>
               <TextBlock IsVisible="{Binding ShowSelectionHint}" TextWrapping="Wrap"
                          Text="Select a finding to see why it matters, how to fix it, and where it is."

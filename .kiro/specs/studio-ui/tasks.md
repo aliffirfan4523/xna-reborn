@@ -17,6 +17,7 @@
   - [x] 3.2 Grouped findings list with detail pane and snippet
   - [x] 3.3 Filters, search, and export
   - [x] 3.4 ViewModel tests
+  - [x] 3.5 "Start here" tip above the findings list (ordered steps, filter buttons, blocker line, collapsible)
   - _Requirements: R2_
 
 - [x] 4. Checkpoint: analyze demo
