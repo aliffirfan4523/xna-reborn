@@ -1,10 +1,98 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:XnaReborn.App.ViewModels"
+             xmlns:c="using:XnaReborn.App.Controls"
              x:Class="XnaReborn.App.Views.DiffView"
              x:DataType="vm:DiffViewModel">
-  <StackPanel Margin="{StaticResource PagePadding}">
-    <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+  <Grid Margin="{StaticResource PagePadding}" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="8">
+    <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
                AutomationProperties.HeadingLevel="1" />
-  </StackPanel>
+
+    <!-- Dry run: nothing is written yet. -->
+    <Border Grid.Row="1" IsVisible="{Binding IsDryRun}" Padding="12,8"
+            BorderThickness="2" BorderBrush="{DynamicResource SeverityWarningBrush}" CornerRadius="4"
+            AutomationProperties.AutomationId="DryRunBanner" AutomationProperties.Name="Preview, nothing written yet">
+      <DockPanel LastChildFill="False">
+        <Button DockPanel.Dock="Right" Content="Back to Migration setup to run it for real"
+                Command="{Binding BackToSetupCommand}"
+                AutomationProperties.AutomationId="DiffBackToSetup" />
+        <StackPanel Spacing="2" VerticalAlignment="Center">
+          <TextBlock Text="{Binding PreviewBanner}" FontWeight="SemiBold" Foreground="{DynamicResource SeverityWarningBrush}" />
+          <TextBlock Text="These are the changes a migration would make. No file has been written yet." TextWrapping="Wrap" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- Counts per kind and marker navigation. -->
+    <DockPanel Grid.Row="2" LastChildFill="False">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <TextBlock Text="{Binding MarkerStatus}" VerticalAlignment="Center"
+                   AutomationProperties.AutomationId="MarkerStatus" />
+        <Button Content="Previous marker" Command="{Binding PreviousMarkerCommand}"
+                AutomationProperties.AutomationId="PreviousMarker" />
+        <Button Content="Next marker" Command="{Binding NextMarkerCommand}"
+                AutomationProperties.AutomationId="NextMarker" />
+      </StackPanel>
+      <ItemsControl ItemsSource="{Binding KindCounts}" VerticalAlignment="Center"
+                    AutomationProperties.AutomationId="KindCounts" AutomationProperties.Name="Files per kind">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="16" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:DiffKindCount">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <TextBlock Text="{Binding Glyph}" FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontWeight="Bold" />
+              <TextBlock Text="{Binding Text}" />
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </DockPanel>
+
+    <Grid Grid.Row="3" ColumnDefinitions="300,Auto,*">
+      <DockPanel Grid.Column="0">
+        <TextBlock DockPanel.Dock="Top" Text="{Binding FilesSummary}" FontWeight="SemiBold" Margin="0,0,0,4"
+                   AutomationProperties.HeadingLevel="2" />
+        <ListBox ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile}"
+                 AutomationProperties.AutomationId="DiffFiles" AutomationProperties.Name="Changed files">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:DiffFileItem">
+              <StackPanel Spacing="1" AutomationProperties.Name="{Binding AccessibleName}">
+                <TextBlock Text="{Binding Path}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Path}" />
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock Text="{Binding KindGlyph}" FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontWeight="Bold" />
+                  <TextBlock Text="{Binding KindLabel}" FontSize="12" Opacity="0.8" />
+                  <TextBlock Text="{Binding MarkerText}" IsVisible="{Binding HasMarkers}" FontSize="12" FontWeight="SemiBold"
+                             Foreground="{DynamicResource SeverityWarningBrush}" />
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+
+      <GridSplitter Grid.Column="1" Width="4" ResizeDirection="Columns" AutomationProperties.Name="Resize file list" />
+
+      <Panel Grid.Column="2">
+        <c:DiffViewer Diff="{Binding CurrentDiff}" Reveal="{Binding Reveal}"
+                      IsVisible="{Binding HasDiff}" AutomationProperties.AutomationId="DiffViewer" />
+        <Border IsVisible="{Binding HasPlaceholder}" Padding="16" BorderThickness="1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                AutomationProperties.AutomationId="DiffPlaceholder">
+          <TextBlock Text="{Binding Placeholder}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Border>
+      </Panel>
+    </Grid>
+
+    <DockPanel Grid.Row="4" LastChildFill="False">
+      <Button DockPanel.Dock="Left" Content="Back to Migration setup" Command="{Binding BackToSetupCommand}"
+              IsVisible="{Binding !IsDryRun}" AutomationProperties.AutomationId="DiffBack" />
+      <Button DockPanel.Dock="Right" Content="Continue to Build and run" Command="{Binding ContinueCommand}"
+              AutomationProperties.AutomationId="DiffContinue" />
+      <TextBlock DockPanel.Dock="Right" Margin="0,0,12,0" VerticalAlignment="Center" IsVisible="{Binding IsDryRun}"
+                 Text="Run the migration for real to continue." />
+    </DockPanel>
+  </Grid>
 </UserControl>
