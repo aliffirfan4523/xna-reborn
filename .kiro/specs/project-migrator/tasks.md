@@ -16,11 +16,11 @@
   - [x] 3.3 Tests
   - _Requirements: R2_
 
-- [ ] 4. Project file generation
-  - [ ] 4.1 Implement `SdkCsprojGenerator` and `PackageSelector` (DesktopGL and WindowsDX). The generator writes a fresh SDK-style project: it drops the XNA targets import, XNA-only properties and project type GUIDs, `NoStdLib`, x86-only settings and ClickOnce settings, and it sets `GenerateAssemblyInfo=false` when a kept `Properties/AssemblyInfo.cs` exists (rules XNA001 to XNA004, XNA045 to XNA047)
-  - [ ] 4.2 Implement `SolutionGenerator`
-  - [ ] 4.3 Pin package versions in one config file and confirm against current MonoGame releases
-  - [ ] 4.4 Snapshot tests per fixture
+- [x] 4. Project file generation
+  - [x] 4.1 Implement `SdkCsprojGenerator` and `PackageSelector` (DesktopGL and WindowsDX). The generator writes a fresh SDK-style project: it drops the XNA targets import, XNA-only properties and project type GUIDs, `NoStdLib`, x86-only settings and ClickOnce settings, and it sets `GenerateAssemblyInfo=false` when a kept `Properties/AssemblyInfo.cs` exists (rules XNA001 to XNA004, XNA045 to XNA047)
+  - [x] 4.2 Implement `SolutionGenerator` (and `ToolManifestGenerator` for `.config/dotnet-tools.json`, which the content builder needs)
+  - [x] 4.3 Pin package versions in one config file and confirm against current MonoGame releases (`Projects/packages.json`, 3.8.6.1 confirmed on nuget.org)
+  - [x] 4.4 Snapshot tests per fixture
   - _Requirements: R3_
 
 - [ ] 5. Entry point
