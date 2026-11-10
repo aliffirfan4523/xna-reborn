@@ -70,8 +70,8 @@
   - _Requirements: R9, R10_
 
 - [ ] 12. Dead API shims (stretch)
-  - [ ] 12.1 Generate `XnaReborn.Compat` with storage and profile stand-ins
-  - [ ] 12.2 Rewrite references and record shim use in the manifest
+  - [x] 12.1 Generate `XnaReborn.Compat` with storage and profile stand-ins
+  - [x] 12.2 Rewrite references and record shim use in the manifest
   - [ ] 12.3 Fallback markers when shims are disabled
   - _Requirements: R7_
 

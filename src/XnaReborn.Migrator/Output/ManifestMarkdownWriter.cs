@@ -30,6 +30,11 @@ public static class ManifestMarkdownWriter
             blocks.Add(ContentBlock(manifest.Content));
         }
 
+        if (manifest.Shims is not null)
+        {
+            blocks.Add(ShimsBlock(manifest.Shims));
+        }
+
         if (manifest.Build is not null)
         {
             blocks.Add(BuildBlock(manifest.Build));
@@ -112,6 +117,34 @@ public static class ManifestMarkdownWriter
         foreach (var (type, count) in content.CountsByType)
         {
             sb.Append("\n| ").Append(Cell(type)).Append(" | ").Append(count).Append(" |");
+        }
+
+        return sb.ToString();
+    }
+
+    private static string ShimsBlock(ManifestShims shims)
+    {
+        var sb = new StringBuilder("## Shims\n\n");
+        sb.Append("SHIM: these XNA APIs are dead. The library `").Append(shims.Project)
+            .Append("` gives them offline stand-ins (local files, one offline player). They are not the real XNA services.");
+        sb.Append("\n\nShim files:");
+        foreach (var file in shims.Files)
+        {
+            sb.Append("\n- `").Append(file).Append('`');
+        }
+
+        sb.Append("\n\nReferenced by: ").Append(shims.ReferencedBy.Count == 0 ? "no project." : string.Join(", ", shims.ReferencedBy.Select(p => $"`{p}`")));
+        sb.Append("\n\nShim use in game source:");
+        if (shims.Uses.Count == 0)
+        {
+            return sb.Append(" none.").ToString();
+        }
+
+        sb.Append("\n\n| File | Shimmed namespace | Types |\n|---|---|---|");
+        foreach (var use in shims.Uses)
+        {
+            sb.Append("\n| ").Append(Cell(use.File)).Append(" | ").Append(Cell(use.Namespace))
+                .Append(" | ").Append(Cell(use.Types.Count == 0 ? null : string.Join(", ", use.Types))).Append(" |");
         }
 
         return sb.ToString();

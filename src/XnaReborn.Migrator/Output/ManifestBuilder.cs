@@ -13,6 +13,7 @@ public static class ManifestBuilder
     /// <param name="build">Result of the optional post-migration build, or null.</param>
     /// <param name="migratorVersion">Version of the migrator writing the manifest.</param>
     /// <param name="content">Content conversion totals, or null when no content was converted.</param>
+    /// <param name="shims">The shim library and its uses, or null when shims were off.</param>
     /// <returns>The manifest.</returns>
     public static Manifest Build(
         string catalogName,
@@ -21,7 +22,8 @@ public static class ManifestBuilder
         IReadOnlyDictionary<string, IReadOnlyList<string>> ruleIdsByPath,
         ManifestBuild? build,
         string migratorVersion,
-        ManifestContent? content = null)
+        ManifestContent? content = null,
+        ManifestShims? shims = null)
     {
         ArgumentNullException.ThrowIfNull(catalogName);
         ArgumentNullException.ThrowIfNull(changes);
@@ -39,7 +41,7 @@ public static class ManifestBuilder
             .OrderBy(e => e.Path, StringComparer.Ordinal)
             .ToList();
 
-        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content);
+        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content, shims);
     }
 
     private static ManifestBuild? SortedBuild(ManifestBuild? build) =>
