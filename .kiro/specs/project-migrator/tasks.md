@@ -1,8 +1,8 @@
 # Tasks: Project Migrator
 
-- [ ] 1. Setup
-  - [ ] 1.1 Create `XnaReborn.Migrator` project and test project references
-  - [ ] 1.2 Define `MigrationOptions`, `PlanItem`, `FileChange`, `MigrationResult`, `Manifest`
+- [x] 1. Setup
+  - [x] 1.1 Create `XnaReborn.Migrator` project and test project references
+  - [x] 1.2 Define `MigrationOptions`, `PlanItem`, `FileChange`, `MigrationResult`, `Manifest`
   - _Requirements: R2, R8_
 
 - [ ] 2. Output safety
