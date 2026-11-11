@@ -24,6 +24,6 @@ public sealed class SummaryViewTests
         Assert.Contains(texts, x => AutomationProperties.GetAutomationId(x) == "BeforeScore" && x.Text == "40");
         Assert.Contains(texts, x => AutomationProperties.GetAutomationId(x) == "AfterScore" && x.Text == "90");
         var buttons = view.GetVisualDescendants().OfType<Button>().Select(b => b.Content).ToList();
-        Assert.Equal(["Open output folder", "Open manifest", "Start over"], buttons);
+        Assert.Equal(["Run game", "Open output folder", "Open manifest", "Start over"], buttons.Where(b => b is not "Back to Build and run" and not "See changes in Diff" and not "Back to Report"));
     }
 }

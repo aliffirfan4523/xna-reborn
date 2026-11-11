@@ -130,6 +130,48 @@ public sealed class SummaryViewModelTests
         Assert.Equal(WorkflowStep.Open, t.Main.CurrentStep);
     }
 
+    [Fact]
+    public async Task Tiles_headline_and_failure_flag_follow_the_build_and_the_manifest()
+    {
+        using var t = TestServices.Create();
+        SeedMigration(t);
+        await t.OpenPageAsync(WorkflowStep.Summary);
+        var vm = t.Get<SummaryViewModel>();
+
+        Assert.Equal(1, vm.FontsSwappedCount);
+        Assert.Equal("+50 points", vm.GainText);
+        Assert.False(vm.BuildFailed);
+        Assert.Equal("Migration finished", vm.HeadlineText);
+
+        var build = new BuildResult(true, TimeSpan.Zero, [], string.Empty, 0, false, false);
+        t.Session.RunnerResult = SampleData.Runner() with { Build = build };
+        await t.Main.GoToAsync(WorkflowStep.Summary);
+        Assert.True(vm.BuildSucceeded);
+        Assert.Equal("Your project is migrated", vm.HeadlineText);
+
+        t.Session.RunnerResult = SampleData.Runner() with { Build = build with { Succeeded = false } };
+        await t.Main.GoToAsync(WorkflowStep.Summary);
+        Assert.True(vm.BuildFailed);
+        Assert.False(vm.BuildSucceeded);
+        Assert.Equal("The build did not succeed", vm.HeadlineText);
+    }
+
+    [Fact]
+    public async Task Run_game_and_the_to_do_links_move_to_the_right_pages()
+    {
+        using var t = TestServices.Create();
+        SeedMigration(t);
+        await t.OpenPageAsync(WorkflowStep.Summary);
+        var vm = t.Get<SummaryViewModel>();
+
+        vm.GoToDiffCommand.Execute(null);
+        Assert.Equal(WorkflowStep.Diff, t.Main.CurrentStep);
+        vm.GoToReportCommand.Execute(null);
+        Assert.Equal(WorkflowStep.Report, t.Main.CurrentStep);
+        vm.RunGameCommand.Execute(null);
+        Assert.Equal(WorkflowStep.BuildRun, t.Main.CurrentStep);
+    }
+
     private static void SeedMigration(TestServices t)
     {
         Finding F(string rule, Classification c) => new(rule, rule, Severity.Warning, c, "a.csproj", null, null);
