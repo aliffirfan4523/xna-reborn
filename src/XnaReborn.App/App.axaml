@@ -11,14 +11,23 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://XnaReborn.App/Styles/Tokens.axaml" />
+        <ResourceInclude Source="avares://XnaReborn.App/Styles/Icons.axaml" />
         <ResourceInclude Source="avares://XnaReborn.App/Styles/Shared.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
 
   <Application.Styles>
-    <FluentTheme />
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <!-- Brand accent (violet), not the default blue. Keep in step with AccentBrush in Styles/Tokens.axaml. -->
+        <ColorPaletteResources x:Key="Light" Accent="#5B2EB8" />
+        <ColorPaletteResources x:Key="Dark" Accent="#B9A1FF" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+    <StyleInclude Source="avares://XnaReborn.App/Styles/Controls.axaml" />
   </Application.Styles>
 
 </Application>

@@ -44,6 +44,9 @@ public sealed class StepItem : ObservableObject
     /// <summary>True for a screen before the current one.</summary>
     public bool IsDone => _isDone;
 
+    /// <summary>True when the step circle shows the step number (not a check mark or a lock).</summary>
+    public bool ShowNumber => !_isDone && _isEnabled;
+
     /// <summary>Stable id for UI tests, such as "Step_Report".</summary>
     public string AutomationId => "Step_" + Step;
 

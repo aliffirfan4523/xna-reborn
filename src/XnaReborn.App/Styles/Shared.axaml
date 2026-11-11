@@ -20,23 +20,5 @@
   <x:String x:Key="SeverityErrorLabel">Error</x:String>
   <x:String x:Key="SeverityBlockerLabel">Blocker</x:String>
 
-  <ResourceDictionary.ThemeDictionaries>
-    <ResourceDictionary x:Key="Light">
-      <SolidColorBrush x:Key="SeverityInfoBrush" Color="#1B5E9E" />
-      <SolidColorBrush x:Key="SeverityWarningBrush" Color="#8A5A00" />
-      <SolidColorBrush x:Key="SeverityErrorBrush" Color="#B3261E" />
-      <SolidColorBrush x:Key="SeverityBlockerBrush" Color="#7A0F2E" />
-      <SolidColorBrush x:Key="ErrorBannerBackgroundBrush" Color="#FDECEA" />
-      <SolidColorBrush x:Key="ErrorBannerBorderBrush" Color="#B3261E" />
-    </ResourceDictionary>
-    <ResourceDictionary x:Key="Dark">
-      <SolidColorBrush x:Key="SeverityInfoBrush" Color="#7FB5E8" />
-      <SolidColorBrush x:Key="SeverityWarningBrush" Color="#E6B450" />
-      <SolidColorBrush x:Key="SeverityErrorBrush" Color="#F2857D" />
-      <SolidColorBrush x:Key="SeverityBlockerBrush" Color="#FF9DB8" />
-      <SolidColorBrush x:Key="ErrorBannerBackgroundBrush" Color="#3B1C1A" />
-      <SolidColorBrush x:Key="ErrorBannerBorderBrush" Color="#F2857D" />
-    </ResourceDictionary>
-  </ResourceDictionary.ThemeDictionaries>
-
+  <!-- Severity brushes (SeverityXBrush) now live in Tokens.axaml, because they differ per theme. -->
 </ResourceDictionary>

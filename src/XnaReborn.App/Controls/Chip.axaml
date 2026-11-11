@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XnaReborn.App.Controls.Chip"
+             Focusable="False">
+  <!-- Icon + text on a tinted pill. The kind picks the tint, the icon and the text always show too. -->
+  <Border x:Name="Root" Classes="chip">
+    <StackPanel Orientation="Horizontal" Spacing="6">
+      <PathIcon x:Name="IconView" Width="14" Height="14" VerticalAlignment="Center" />
+      <TextBlock x:Name="TextView" Classes="caption" FontWeight="SemiBold" VerticalAlignment="Center" />
+    </StackPanel>
+  </Border>
+</UserControl>

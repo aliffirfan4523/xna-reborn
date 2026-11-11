@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XnaReborn.App.Controls.StatTile"
+             Focusable="False">
+  <!-- A card with one big number or word, a label and an icon. -->
+  <Border Classes="card">
+    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+      <Border x:Name="IconHost" Classes="tile-icon" VerticalAlignment="Top">
+        <PathIcon x:Name="IconView" Width="20" Height="20" />
+      </Border>
+      <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+        <TextBlock x:Name="ValueView" Classes="headline" TextTrimming="CharacterEllipsis" />
+        <TextBlock x:Name="LabelView" Classes="caption muted" TextWrapping="Wrap" />
+      </StackPanel>
+    </Grid>
+  </Border>
+</UserControl>

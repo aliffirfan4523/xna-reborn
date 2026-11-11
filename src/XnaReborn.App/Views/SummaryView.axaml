@@ -5,7 +5,7 @@
              x:DataType="vm:SummaryViewModel">
   <ScrollViewer>
     <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}">
-      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+      <TextBlock Text="{Binding Title}" Classes="headline"
                  AutomationProperties.HeadingLevel="1" />
 
       <StackPanel Spacing="{StaticResource SpacingSmall}">
@@ -79,7 +79,7 @@
                 <ItemsControl ItemsSource="{Binding Links}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:FlashMarkerLink">
-                      <Button Content="{Binding Text}"
+                      <Button Classes="secondary" Content="{Binding Text}"
                               Command="{Binding $parent[UserControl].((vm:SummaryViewModel)DataContext).OpenMarkerCommand}"
                               CommandParameter="{Binding}"
                               AutomationProperties.Name="{Binding AutomationName}" />
@@ -106,13 +106,13 @@
       </StackPanel>
 
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-        <Button Content="Open output folder" Command="{Binding OpenOutputFolderCommand}"
+        <Button Classes="secondary" Content="Open output folder" Command="{Binding OpenOutputFolderCommand}"
                 AutomationProperties.AutomationId="OpenOutputFolder"
                 AutomationProperties.Name="Open the output folder" />
-        <Button Content="Open manifest" Command="{Binding OpenManifestCommand}"
+        <Button Classes="secondary" Content="Open manifest" Command="{Binding OpenManifestCommand}"
                 AutomationProperties.AutomationId="OpenManifest"
                 AutomationProperties.Name="Open the migration manifest" />
-        <Button Content="Start over" Command="{Binding StartOverCommand}"
+        <Button Classes="secondary" Content="Start over" Command="{Binding StartOverCommand}"
                 AutomationProperties.AutomationId="StartOver"
                 AutomationProperties.Name="Start over with another project" />
       </StackPanel>

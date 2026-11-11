@@ -1,94 +1,193 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:XnaReborn.App.ViewModels"
+        xmlns:controls="using:XnaReborn.App.Controls"
         x:Class="XnaReborn.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="XNA Reborn"
-        Width="1100"
-        Height="720"
-        MinWidth="720"
-        MinHeight="480">
+        Width="1180"
+        Height="760"
+        MinWidth="760"
+        MinHeight="520"
+        Background="{DynamicResource BackgroundBrush}">
 
-  <Window.Styles>
-    <Style Selector="Button.step">
-      <Setter Property="Padding" Value="12,6" />
-      <Setter Property="BorderThickness" Value="0,0,0,3" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-    </Style>
-    <Style Selector="Button.step.current">
-      <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
-    </Style>
-  </Window.Styles>
+  <Window.KeyBindings>
+    <!-- Ctrl+1..6 jump to a step (locked steps ignore it). -->
+    <KeyBinding Gesture="Ctrl+1" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Open}" />
+    <KeyBinding Gesture="Ctrl+2" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Report}" />
+    <KeyBinding Gesture="Ctrl+3" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.MigrationSetup}" />
+    <KeyBinding Gesture="Ctrl+4" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Diff}" />
+    <KeyBinding Gesture="Ctrl+5" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.BuildRun}" />
+    <KeyBinding Gesture="Ctrl+6" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Summary}" />
+  </Window.KeyBindings>
 
-  <DockPanel>
+  <Grid ColumnDefinitions="264,*">
 
-    <ItemsControl DockPanel.Dock="Top"
-                  ItemsSource="{Binding Steps}"
-                  Margin="{StaticResource PagePadding}"
-                  AutomationProperties.Name="Workflow steps">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-      <ItemsControl.ItemTemplate>
-        <DataTemplate x:DataType="vm:StepItem">
-          <Button Classes="step"
-                  Classes.current="{Binding IsCurrent}"
-                  Command="{Binding GoCommand}"
-                  IsEnabled="{Binding IsEnabled}"
-                  AutomationProperties.AutomationId="{Binding AutomationId}"
-                  AutomationProperties.Name="{Binding AutomationName}">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-              <TextBlock Text="{Binding Marker}" />
-              <TextBlock Text="{Binding Label}" />
-            </StackPanel>
-          </Button>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <!-- Navigation rail: brand, the six steps with their state, theme toggle. -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource RailBrush}"
+            BorderBrush="{DynamicResource BorderBrushSubtle}"
+            BorderThickness="0,0,1,0">
+      <DockPanel Margin="16,20,16,16">
 
-    <Border DockPanel.Dock="Top"
-            IsVisible="{Binding HasError}"
-            Margin="16,0,16,8"
-            Padding="12"
-            BorderThickness="1"
-            CornerRadius="4"
-            Background="{DynamicResource ErrorBannerBackgroundBrush}"
-            BorderBrush="{DynamicResource ErrorBannerBorderBrush}"
-            AutomationProperties.AutomationId="ErrorBanner"
-            AutomationProperties.Name="Error">
-      <StackPanel Spacing="{StaticResource SpacingMedium}">
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-          <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource SeverityErrorBrush}" />
-          <TextBlock Text="Error:" FontWeight="Bold" Foreground="{DynamicResource SeverityErrorBrush}" />
-          <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="4,0,0,24">
+          <Border Width="36" Height="36" CornerRadius="10" Background="{DynamicResource AccentBrush}">
+            <PathIcon Data="{StaticResource IconPlay}" Width="18" Height="18" Foreground="{DynamicResource OnAccentBrush}" />
+          </Border>
+          <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="XNA Reborn" Classes="subtitle" />
+            <TextBlock Text="Migration studio" Classes="caption muted" />
+          </StackPanel>
         </StackPanel>
-        <Expander Header="Details"
-                  IsVisible="{Binding HasErrorDetails}"
-                  IsExpanded="{Binding IsDetailsExpanded}"
-                  AutomationProperties.AutomationId="ErrorDetailsExpander"
-                  AutomationProperties.Name="Error details section">
-          <TextBox Text="{Binding ErrorDetails, Mode=OneWay}"
-                   IsReadOnly="True"
-                   AcceptsReturn="True"
-                   TextWrapping="Wrap"
-                   MaxHeight="180"
-                   AutomationProperties.Name="Error details" />
-        </Expander>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-          <Button Content="Copy" Command="{Binding CopyDetailsCommand}"
-                  AutomationProperties.AutomationId="ErrorCopy"
-                  AutomationProperties.Name="Copy error details" />
-          <Button Content="Dismiss" Command="{Binding DismissCommand}"
-                  AutomationProperties.AutomationId="ErrorDismiss"
-                  AutomationProperties.Name="Dismiss error" />
-        </StackPanel>
-      </StackPanel>
+
+        <Button x:Name="ThemeToggle"
+                DockPanel.Dock="Bottom"
+                Classes="subtle"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
+                AutomationProperties.AutomationId="ThemeToggle"
+                AutomationProperties.Name="Switch color theme">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <PathIcon Data="{StaticResource IconTheme}" Width="18" Height="18" />
+            <TextBlock x:Name="ThemeToggleText" Text="Theme: System" />
+          </StackPanel>
+        </Button>
+
+        <ItemsControl ItemsSource="{Binding Steps}" AutomationProperties.Name="Workflow steps">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="4" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:StepItem">
+              <Button Classes="nav-item"
+                      Classes.current="{Binding IsCurrent}"
+                      Command="{Binding GoCommand}"
+                      IsEnabled="{Binding IsEnabled}"
+                      AutomationProperties.AutomationId="{Binding AutomationId}"
+                      AutomationProperties.Name="{Binding AutomationName}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                  <Border Classes="step-dot"
+                          Classes.current="{Binding IsCurrent}"
+                          Classes.done="{Binding IsDone}"
+                          VerticalAlignment="Center">
+                    <Panel>
+                      <PathIcon Data="{StaticResource IconCheck}" Width="14" Height="14" IsVisible="{Binding IsDone}"
+                                Foreground="{DynamicResource SuccessTextBrush}" />
+                      <PathIcon Data="{StaticResource IconLock}" Width="13" Height="13" IsVisible="{Binding !IsEnabled}"
+                                Foreground="{DynamicResource TextMutedBrush}" />
+                      <TextBlock Text="{Binding Number}" IsVisible="{Binding ShowNumber}" FontWeight="SemiBold"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Panel>
+                  </Border>
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="Current" Classes="caption" IsVisible="{Binding IsCurrent}"
+                               Foreground="{DynamicResource AccentTextBrush}" />
+                    <TextBlock Text="Done" Classes="caption" IsVisible="{Binding IsDone}"
+                               Foreground="{DynamicResource SuccessTextBrush}" />
+                    <TextBlock Text="Locked" Classes="caption" IsVisible="{Binding !IsEnabled}" />
+                  </StackPanel>
+                </Grid>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </DockPanel>
     </Border>
 
-    <ContentControl Content="{Binding CurrentPage}" />
+    <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*,Auto">
 
-  </DockPanel>
+      <!-- Header: project name and score. -->
+      <Border Grid.Row="0"
+              Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrushSubtle}"
+              BorderThickness="0,0,0,1"
+              Padding="24,0"
+              MinHeight="64">
+        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <PathIcon Data="{StaticResource IconFolderOpen}" Width="20" Height="20"
+                      Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Text="{Binding ProjectName}" Classes="title" IsVisible="{Binding HasProject}"
+                       TextTrimming="CharacterEllipsis"
+                       AutomationProperties.AutomationId="HeaderProjectName" />
+            <TextBlock Text="No project open" Classes="title muted" IsVisible="{Binding !HasProject}" />
+          </StackPanel>
+          <controls:Chip Grid.Column="1"
+                         Kind="Accent"
+                         Icon="{StaticResource IconChart}"
+                         Text="{Binding ScoreText}"
+                         IsVisible="{Binding HasScore}"
+                         VerticalAlignment="Center"
+                         AutomationProperties.AutomationId="HeaderScore" />
+        </Grid>
+      </Border>
+
+      <!-- Error banner. Same Border and automation ids as before so tests and screen readers find it. -->
+      <Border Grid.Row="1"
+              IsVisible="{Binding HasError}"
+              Margin="24,16,24,0"
+              MaxWidth="1080"
+              Padding="14,12"
+              BorderThickness="1"
+              CornerRadius="{DynamicResource RadiusMedium}"
+              Background="{DynamicResource ErrorBannerBackgroundBrush}"
+              BorderBrush="{DynamicResource ErrorBannerBorderBrush}"
+              AutomationProperties.AutomationId="ErrorBanner"
+              AutomationProperties.Name="Error">
+        <StackPanel Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <PathIcon Data="{StaticResource IconError}" Width="18" Height="18" VerticalAlignment="Center"
+                      Foreground="{DynamicResource SeverityErrorBrush}" />
+            <TextBlock Text="Error:" FontWeight="Bold" Foreground="{DynamicResource SeverityErrorBrush}" />
+            <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+          </StackPanel>
+          <Expander Header="Details"
+                    IsVisible="{Binding HasErrorDetails}"
+                    IsExpanded="{Binding IsDetailsExpanded}"
+                    AutomationProperties.AutomationId="ErrorDetailsExpander"
+                    AutomationProperties.Name="Error details section">
+            <TextBox Text="{Binding ErrorDetails, Mode=OneWay}"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     MaxHeight="180"
+                     AutomationProperties.Name="Error details" />
+          </Expander>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Copy" Classes="secondary" Command="{Binding CopyDetailsCommand}"
+                    AutomationProperties.AutomationId="ErrorCopy"
+                    AutomationProperties.Name="Copy error details" />
+            <Button Content="Dismiss" Classes="secondary" Command="{Binding DismissCommand}"
+                    AutomationProperties.AutomationId="ErrorDismiss"
+                    AutomationProperties.Name="Dismiss error" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Page area: centered, with a maximum width. The fade between pages is run from MainWindow.axaml.cs. -->
+      <Border Grid.Row="2" MaxWidth="1080" HorizontalAlignment="Stretch">
+        <ContentControl x:Name="PageHost" Content="{Binding CurrentPage}" />
+      </Border>
+
+      <!-- Status bar. -->
+      <Border Grid.Row="3"
+              Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrushSubtle}"
+              BorderThickness="0,1,0,0"
+              Padding="24,0"
+              MinHeight="32">
+        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+          <TextBlock Text="{Binding StatusText}" Classes="caption muted"
+                     AutomationProperties.AutomationId="StatusText" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+            <PathIcon Data="{StaticResource IconLock}" Width="12" Height="12" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Text="Your original project is never changed" Classes="caption muted" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
 </Window>
