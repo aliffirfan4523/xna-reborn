@@ -116,12 +116,12 @@ Suggested waves (parallel inside a wave):
   - _Requirements: R5 to R10, R12.4_
 
 - [ ] 15. Runner hints (MVP)
-  - [ ] 15.1 Add Flash hints to `hints.json`, each linked to an FL rule: missing asset, `dynamic` binder error, missing Flixel member, `AsFunction` conversion, `ffmpeg` missing (if task 12.3 says so). Matching tests, including "no known fix". (L)
+  - [x] 15.1 Add Flash hints to `hints.json`, each linked to an FL rule: missing asset, `dynamic` binder error, missing Flixel member, `AsFunction` conversion, `ffmpeg` missing (if task 12.3 says so). Matching tests, including "no known fix". (L)
   - [ ] 15.2 Source map comment or `#line` support in emitted C# so diagnostics point at the `.as` file; test with a broken fixture. (H)
   - _Requirements: R10_
 
 - [ ] 16. UI flow (MVP)
-  - [ ] 16.1 Project-kind switch in `OpenProjectViewModel` and the services (`IAnalysisService`, `IMigrationService`, `IRunService`) using the detector; conflict prompt when both kinds match. No conversion logic in view models. (H)
+  - [x] 16.1 Project-kind switch in `OpenProjectViewModel` and the services (`IAnalysisService`, `IMigrationService`, `IRunService`) using the detector; conflict prompt when both kinds match. No conversion logic in view models. (H)
   - [ ] 16.2 Report screen: show FL findings, entry class, Flixel version; swf-only explanation. (L)
   - [ ] 16.3 Summary screen: marker counts by rule id with links; the list of approximated behaviors. (L)
   - [ ] 16.4 Headless UI tests for the Flash path using the fixtures. (L)
@@ -139,7 +139,7 @@ Suggested waves (parallel inside a wave):
   - _Requirements: R7.3_
 
 - [ ] 18. Docs and final checks
-  - [ ] 18.1 `THIRD-PARTY-NOTICES.md` (Flixel MIT, reference projects with licenses); README section "Flixel 2.x source projects" with the scope and limits; update `.kiro/README.md` index. (L)
+  - [x] 18.1 `THIRD-PARTY-NOTICES.md` (Flixel MIT, reference projects with licenses); README section "Flixel 2.x source projects" with the scope and limits; update `.kiro/README.md` index. (L)
   - [ ] 18.2 Demo script for the Flash path (open, analyze, migrate, run, show markers). (L)
   - [ ] 18.3 Final checkpoint: full build, tests, format on master; confirm no test uses the network; confirm the XNA flow tests are unchanged and green. (L)
   - _Requirements: R12, R13_

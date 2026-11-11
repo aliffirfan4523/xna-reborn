@@ -12,7 +12,9 @@ public sealed class MigrationService : IMigrationService
 
     /// <inheritdoc />
     public MigrationPlan CreatePlan(AnalysisReport report, IReadOnlySet<string> excluded) =>
-        new MigrationPlanner().CreatePlan(report, excluded);
+        report.CatalogName == FlashServiceAdapter.CatalogName
+            ? FlashServiceAdapter.CreatePlan(report, excluded)
+            : new MigrationPlanner().CreatePlan(report, excluded);
 
     /// <inheritdoc />
     public GuardResult CheckOutput(string sourceRoot, string outputFolder, bool confirmedNonEmpty) =>
@@ -26,7 +28,9 @@ public sealed class MigrationService : IMigrationService
         bool confirmedNonEmpty,
         IProgress<MigrationProgress>? progress,
         CancellationToken cancellationToken) =>
-        _migrator.MigrateAsync(sourcePath, report, options, confirmedNonEmpty, progress, cancellationToken);
+        report.CatalogName == FlashServiceAdapter.CatalogName
+            ? FlashServiceAdapter.MigrateAsync(sourcePath, report, options, confirmedNonEmpty, progress, cancellationToken)
+            : _migrator.MigrateAsync(sourcePath, report, options, confirmedNonEmpty, progress, cancellationToken);
 
     /// <inheritdoc />
     public string SourceRootOf(string sourcePath)
