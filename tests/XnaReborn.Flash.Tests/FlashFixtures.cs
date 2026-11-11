@@ -17,6 +17,10 @@ public static class FlashFixtures
     /// <summary>Theory data: one row per fixture.</summary>
     public static IEnumerable<object[]> NameRows() => Names.Select(n => new object[] { n });
 
+    /// <summary>Theory data: one row per fixture that has an expected.json.</summary>
+    public static IEnumerable<object[]> ExpectedRows() =>
+        Names.Where(n => File.Exists(Path.Combine(Root, n, "expected.json"))).Select(n => new object[] { n });
+
     /// <summary>Every .as file in every fixture.</summary>
     public static IEnumerable<object[]> AsFileRows() =>
         Directory.EnumerateFiles(Root, "*.as", SearchOption.AllDirectories)

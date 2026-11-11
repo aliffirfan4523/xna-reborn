@@ -1,0 +1,642 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "flash-to-monogame",
+  "kind": "Flash",
+  "projectFile": null,
+  "sourceFileCount": 13,
+  "entryClass": null,
+  "flixelVersion": null,
+  "findings": [
+    {
+      "ruleId": "FL020",
+      "title": "\u0027with\u0027 statement",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapWith.as",
+        "line": 7,
+        "column": 4
+      },
+      "snippet": "with (o)"
+    },
+    {
+      "ruleId": "FL021",
+      "title": "E4X XML expressions",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapXml.as",
+        "line": 7,
+        "column": 19
+      },
+      "snippet": "var data:XML = \u003Citems\u003E\u003Citem id=\u00221\u0022/\u003E\u003C/items\u003E;"
+    },
+    {
+      "ruleId": "FL021",
+      "title": "E4X XML expressions",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapXml.as",
+        "line": 8,
+        "column": 24
+      },
+      "snippet": "var first:XMLList = data.item.(@id == 1);"
+    },
+    {
+      "ruleId": "FL025",
+      "title": "Namespace declaration or \u0027use namespace\u0027",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapNamespace.as",
+        "line": 5,
+        "column": 3
+      },
+      "snippet": "namespace special;"
+    },
+    {
+      "ruleId": "FL025",
+      "title": "Namespace declaration or \u0027use namespace\u0027",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapNamespace.as",
+        "line": 9,
+        "column": 4
+      },
+      "snippet": "use namespace special;"
+    },
+    {
+      "ruleId": "FL031",
+      "title": "Reflection by name",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapReflection.as",
+        "line": 9,
+        "column": 18
+      },
+      "snippet": "var c:Class = getDefinitionByName(name) as Class;"
+    },
+    {
+      "ruleId": "FL040",
+      "title": "flash.display used outside Flixel",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapImports.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import flash.display.Sprite;"
+    },
+    {
+      "ruleId": "FL043",
+      "title": "flash.net used directly",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapImports.as",
+        "line": 7,
+        "column": 2
+      },
+      "snippet": "import flash.net.URLLoader;"
+    },
+    {
+      "ruleId": "FL044",
+      "title": "flash.external or Security",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "project": ".",
+      "location": {
+        "file": "src/GapImports.as",
+        "line": 5,
+        "column": 2
+      },
+      "snippet": "import flash.external.ExternalInterface;"
+    },
+    {
+      "ruleId": "FL045",
+      "title": "Filters and blend modes",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 12,
+        "column": 4
+      },
+      "snippet": "s.blendMode = \u0022add\u0022;"
+    },
+    {
+      "ruleId": "FL052",
+      "title": "Flixel stage access",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 14,
+        "column": 4
+      },
+      "snippet": "FlxG.stage.focus = null;"
+    },
+    {
+      "ruleId": "FL060",
+      "title": "No or several FlxGame entry classes",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": ".",
+      "location": null,
+      "snippet": null
+    },
+    {
+      "ruleId": "FL022",
+      "title": "\u0027arguments\u0027 object",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapArguments.as",
+        "line": 7,
+        "column": 11
+      },
+      "snippet": "return arguments.length;"
+    },
+    {
+      "ruleId": "FL023",
+      "title": "Untyped variable or \u0027*\u0027 type",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapUntyped.as",
+        "line": 5,
+        "column": 3
+      },
+      "snippet": "public var anything:*;"
+    },
+    {
+      "ruleId": "FL023",
+      "title": "Untyped variable or \u0027*\u0027 type",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapUntyped.as",
+        "line": 7,
+        "column": 23
+      },
+      "snippet": "public function run(value):void"
+    },
+    {
+      "ruleId": "FL023",
+      "title": "Untyped variable or \u0027*\u0027 type",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapUntyped.as",
+        "line": 9,
+        "column": 8
+      },
+      "snippet": "var other = value;"
+    },
+    {
+      "ruleId": "FL024",
+      "title": "Dynamic class",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapDynamic.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "public dynamic class GapDynamic"
+    },
+    {
+      "ruleId": "FL029",
+      "title": "\u0027Object\u0027 used as a property bag",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapObject.as",
+        "line": 7,
+        "column": 8
+      },
+      "snippet": "var bag:Object = {name: \u0022x\u0022, count: 2};"
+    },
+    {
+      "ruleId": "FL029",
+      "title": "\u0027Object\u0027 used as a property bag",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapObject.as",
+        "line": 7,
+        "column": 21
+      },
+      "snippet": "var bag:Object = {name: \u0022x\u0022, count: 2};"
+    },
+    {
+      "ruleId": "FL029",
+      "title": "\u0027Object\u0027 used as a property bag",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapObject.as",
+        "line": 8,
+        "column": 4
+      },
+      "snippet": "bag[\u0022other\u0022] = 5;"
+    },
+    {
+      "ruleId": "FL029",
+      "title": "\u0027Object\u0027 used as a property bag",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapWith.as",
+        "line": 5,
+        "column": 23
+      },
+      "snippet": "public function run(o:Object):void"
+    },
+    {
+      "ruleId": "FL030",
+      "title": "Regular expression literal",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapRegex.as",
+        "line": 7,
+        "column": 11
+      },
+      "snippet": "return /^[a-z]\u002B$/i.test(s);"
+    },
+    {
+      "ruleId": "FL041",
+      "title": "flash.events custom events",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapImports.as",
+        "line": 4,
+        "column": 2
+      },
+      "snippet": "import flash.events.Event;"
+    },
+    {
+      "ruleId": "FL042",
+      "title": "flash.media used directly",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapImports.as",
+        "line": 6,
+        "column": 2
+      },
+      "snippet": "import flash.media.Sound;"
+    },
+    {
+      "ruleId": "FL046",
+      "title": "Ad, sponsor or score SDK",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapImports.as",
+        "line": 8,
+        "column": 2
+      },
+      "snippet": "import mochi.as3.MochiServices;"
+    },
+    {
+      "ruleId": "FL051",
+      "title": "Flixel pixel access",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 13,
+        "column": 18
+      },
+      "snippet": "var px:uint = s.getPixel(1, 1);"
+    },
+    {
+      "ruleId": "FL053",
+      "title": "Flixel plugins or replay",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 4,
+        "column": 2
+      },
+      "snippet": "import org.flixel.plugin.TimerManager;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 4,
+        "column": 2
+      },
+      "snippet": "import org.flixel.plugin.TimerManager;"
+    },
+    {
+      "ruleId": "FL026",
+      "title": "Function values and closures",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapClosure.as",
+        "line": 8,
+        "column": 11
+      },
+      "snippet": "return function(v:int):int"
+    },
+    {
+      "ruleId": "FL027",
+      "title": "Integer division changes meaning",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapNumbers.as",
+        "line": 9,
+        "column": 11
+      },
+      "snippet": "return total / parts;"
+    },
+    {
+      "ruleId": "FL028",
+      "title": "Number default is NaN",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapNumbers.as",
+        "line": 5,
+        "column": 3
+      },
+      "snippet": "public var speed:Number;"
+    },
+    {
+      "ruleId": "FL047",
+      "title": "Preloader",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 6,
+        "column": 2
+      },
+      "snippet": "[Frame(factoryClass=\u0022Preloader\u0022)]"
+    },
+    {
+      "ruleId": "FL050",
+      "title": "Flixel debugger settings",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapFlixelApi.as",
+        "line": 15,
+        "column": 4
+      },
+      "snippet": "FlxG.debug = true;"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "FL001",
+      "title": "Flixel 2.x library in use",
+      "explanation": "The project uses the Flixel library. The converter maps org.flixel to a C# port of Flixel 2.x that is added to the migrated copy.",
+      "resolution": "No action. The runtime project XnaReborn.Flixel is generated next to the game.",
+      "migratorTask": "flash-to-monogame 13.2"
+    },
+    {
+      "id": "FL020",
+      "title": "\u0027with\u0027 statement",
+      "explanation": "C# has no \u0027with\u0027 statement. The converter leaves a marker and the original text.",
+      "resolution": "Rewrite the block with explicit member access.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL021",
+      "title": "E4X XML expressions",
+      "explanation": "XML literals and E4X operators (.@, .., .( )) are not converted.",
+      "resolution": "Rewrite with System.Xml.Linq.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL022",
+      "title": "\u0027arguments\u0027 object",
+      "explanation": "The arguments object has no C# counterpart.",
+      "resolution": "Use a rest parameter (params object[]).",
+      "migratorTask": null
+    },
+    {
+      "id": "FL023",
+      "title": "Untyped variable or \u0027*\u0027 type",
+      "explanation": "Untyped values become \u0027dynamic\u0027 in C#, which is slower and defers errors to run time.",
+      "resolution": "Add a type annotation in the ActionScript, or accept \u0027dynamic\u0027.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL024",
+      "title": "Dynamic class",
+      "explanation": "A dynamic class can gain properties at run time. C# classes cannot.",
+      "resolution": "Move the extra data into a dictionary or declared fields.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL025",
+      "title": "Namespace declaration or \u0027use namespace\u0027",
+      "explanation": "AS3 namespaces and the :: operator have no direct C# form.",
+      "resolution": "Replace with access modifiers or plain names.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL026",
+      "title": "Function values and closures",
+      "explanation": "Function expressions and function-typed values become AsFunction.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL027",
+      "title": "Integer division changes meaning",
+      "explanation": "In AS3, dividing two ints gives a Number. In C# it gives an int. The converter casts the left operand to double.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL028",
+      "title": "Number default is NaN",
+      "explanation": "An AS3 Number without an initializer starts as NaN. C# doubles start as 0. The converter writes double.NaN.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.1"
+    },
+    {
+      "id": "FL029",
+      "title": "\u0027Object\u0027 used as a property bag",
+      "explanation": "Object literals and indexed Object access become AsObject, a string keyed dictionary.",
+      "resolution": "Check that no code relies on prototype features.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL030",
+      "title": "Regular expression literal",
+      "explanation": "Regular expression literals are not converted in the first slice.",
+      "resolution": "Rewrite with System.Text.RegularExpressions.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL031",
+      "title": "Reflection by name",
+      "explanation": "getDefinitionByName and ApplicationDomain look up classes by name at run time.",
+      "resolution": "Replace with a table of class references.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL040",
+      "title": "flash.display used outside Flixel",
+      "explanation": "Display list classes (Sprite, Bitmap, Stage) have no counterpart in the Flixel runtime.",
+      "resolution": "Move the drawing into Flixel sprites.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL041",
+      "title": "flash.events custom events",
+      "explanation": "Game-defined events need the event dispatcher classes.",
+      "resolution": "Stretch task: AsEventDispatcher.",
+      "migratorTask": "flash-to-monogame 17.7"
+    },
+    {
+      "id": "FL042",
+      "title": "flash.media used directly",
+      "explanation": "Direct use of Sound and SoundChannel is not mapped.",
+      "resolution": "Use FlxSound or FlxG.play.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL043",
+      "title": "flash.net used directly",
+      "explanation": "Network, URL loading and SharedObject use is not converted.",
+      "resolution": "Use FlxSave for saved data and remove network calls.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL044",
+      "title": "flash.external or Security",
+      "explanation": "These talk to the browser page or the Flash security sandbox.",
+      "resolution": "Remove the calls.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL045",
+      "title": "Filters and blend modes",
+      "explanation": "Display filters and blend modes are not part of the Flixel runtime.",
+      "resolution": "Remove the effect or draw it in a shader by hand.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL046",
+      "title": "Ad, sponsor or score SDK",
+      "explanation": "Web portal SDKs talk to online services that need the Flash player.",
+      "resolution": "Remove the calls.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL047",
+      "title": "Preloader",
+      "explanation": "The [Frame(factoryClass)] preloader is dropped. A desktop game loads from disk.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 13.1"
+    },
+    {
+      "id": "FL050",
+      "title": "Flixel debugger settings",
+      "explanation": "The Flixel debugger overlay does not exist in the runtime.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL051",
+      "title": "Flixel pixel access",
+      "explanation": "Reading or writing sprite pixels needs a CPU bitmap, which the first slice does not have.",
+      "resolution": "Stretch task: AsBitmapData.",
+      "migratorTask": "flash-to-monogame 17.4"
+    },
+    {
+      "id": "FL052",
+      "title": "Flixel stage access",
+      "explanation": "FlxG.stage exposes the Flash stage, which does not exist.",
+      "resolution": "Use FlxG.width, FlxG.height and the game window instead.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL053",
+      "title": "Flixel plugins or replay",
+      "explanation": "Flixel plugins and input replay are not part of the runtime.",
+      "resolution": "Remove the plugin or port it by hand.",
+      "migratorTask": null
+    },
+    {
+      "id": "FL060",
+      "title": "No or several FlxGame entry classes",
+      "explanation": "The converter needs exactly one class that extends FlxGame.",
+      "resolution": "Keep one entry class, or remove the unused ones from the project.",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Blocker": 0,
+    "Error": 12,
+    "Warning": 15,
+    "Info": 7
+  },
+  "score": 0,
+  "projectedScore": 0,
+  "diagnostics": []
+}

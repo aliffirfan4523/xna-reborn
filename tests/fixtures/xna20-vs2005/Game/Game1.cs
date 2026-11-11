@@ -21,7 +21,7 @@ namespace Xna20Game
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             hero = Content.Load<Texture2D>("Textures\\hero");
-            effect = new BasicEffect(GraphicsDevice, null);
+            effect = new BasicEffect(GraphicsDevice);
         }
 
         protected override void Draw(GameTime gameTime)

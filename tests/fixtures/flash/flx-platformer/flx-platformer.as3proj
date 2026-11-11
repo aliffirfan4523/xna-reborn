@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <output>
+    <movie path="bin/platformer.swf" />
+    <movie fps="60" />
+    <movie width="640" />
+    <movie height="480" />
+  </output>
+  <classpaths>
+    <class path="src" />
+  </classpaths>
+  <compileTargets>
+    <compile path="src/PlatformerGame.as" />
+  </compileTargets>
+</project>
