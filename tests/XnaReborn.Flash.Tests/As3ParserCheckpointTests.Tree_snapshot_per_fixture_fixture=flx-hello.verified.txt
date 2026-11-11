@@ -1,0 +1,75 @@
+﻿== src/HelloGame.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="HelloGame" Modifiers=Public
+      BaseType:
+        As3TypeRef @6:33 Name="FlxGame"
+      Members[]:
+        As3Method @8:3 Kind=Constructor Name="HelloGame" Modifiers=Public
+          Body:
+            As3Block @9:3
+              Statements[]:
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Call @10:4
+                      Target:
+                        As3Identifier @10:4 Name="super"
+                      Arguments[]:
+                        As3Literal @10:10 Kind=Number Text="320"
+                        As3Literal @10:15 Kind=Number Text="240"
+                        As3Identifier @10:20 Name="HelloState"
+                        As3Literal @10:32 Kind=Number Text="2"
+      Metadata[]:
+        As3Metadata @5:2 Name="SWF"
+          Arguments[]:
+            As3MetadataArgument @5:7 Key="width" Value="640"
+            As3MetadataArgument @5:20 Key="height" Value="480"
+            As3MetadataArgument @5:34 Key="backgroundColor" Value="#000000"
+
+== src/HelloState.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="HelloState" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:34 Name="FlxState"
+      Members[]:
+        As3Method @7:3 Kind=Normal Name="create" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @7:37 Name="void"
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3VarStatement @9:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @9:8 Name="text"
+                      Type:
+                        As3TypeRef @9:13 Name="FlxText"
+                      Initializer:
+                        As3New @9:23
+                          Target:
+                            As3Identifier @9:27 Name="FlxText"
+                          Arguments[]:
+                            As3Literal @9:35 Kind=Number Text="0"
+                            As3Literal @9:38 Kind=Number Text="100"
+                            As3Literal @9:43 Kind=Number Text="320"
+                            As3Literal @9:48 Kind=String Text=""HELLO FLIXEL""
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Assignment @10:4 Operator="="
+                      Target:
+                        As3MemberAccess @10:4 Name="alignment"
+                          Target:
+                            As3Identifier @10:4 Name="text"
+                      Value:
+                        As3Literal @10:21 Kind=String Text=""center""
+                As3ExpressionStatement @11:4
+                  Expression:
+                    As3Call @11:4
+                      Target:
+                        As3Identifier @11:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @11:8 Name="text"

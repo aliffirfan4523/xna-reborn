@@ -40,7 +40,7 @@ Suggested waves (parallel inside a wave):
   - [x] 4.2 Parse declarations: package, imports, classes, interfaces, fields, methods, getters and setters, constructors, modifiers, metadata (`[Embed(...)]`, `[SWF(...)]`), `const`, `static`, `override`, rest and default parameters, `include` as unsupported. (H)
   - [x] 4.3 Parse statements and expressions: all control flow including `for each`, `for in`, `switch`, `try`; precedence climbing; `as`, `is`, `new`, `delete`, `typeof`, `in`; object, array and function literals; `Vector.<T>`. (H)
   - [x] 4.4 Automatic semicolon insertion, error recovery at statement and member boundaries, E4X and `with` and namespace forms as unsupported nodes. (H)
-  - [ ] 4.5 Tests and checkpoint: Verify snapshots of the tree for every fixture; negative tests per recovery path; if `XNAREBORN_FLASH_SAMPLES` is set, parse every `.as` file of Mode, FlxCollisions and Revenge with zero diagnostics (skipped when unset). (L)
+  - [x] 4.5 Tests and checkpoint: Verify snapshots of the tree for every fixture; negative tests per recovery path; if `XNAREBORN_FLASH_SAMPLES` is set, parse every `.as` file of Mode, FlxCollisions and Revenge with zero diagnostics (skipped when unset). (L)
   - _Requirements: R3_
 
 - [x] 5. Project detection and reading (MVP)
@@ -51,12 +51,18 @@ Suggested waves (parallel inside a wave):
   - _Requirements: R1_
 
 - [ ] 6. Rules and analyzer (MVP)
-  - [ ] 6.1 Add the four match types (`as3Import`, `as3Syntax`, `as3Metadata`, `as3Api`) to the Core rule model, the JSON converter and the rule schema. Existing XNA catalog tests stay green. (H)
+  - [x] 6.1 Add the four match types (`as3Import`, `as3Syntax`, `as3Metadata`, `as3Api`) to the Core rule model, the JSON converter and the rule schema. Existing XNA catalog tests stay green. (H)
   - [x] 6.2 Implement the four matchers over the syntax tree. (H)
   - [x] 6.3 Write `rules/flash-to-monogame.json` with the rules in design.md (FL001 to FL060). Each AutoFixable rule links its converter task (see 11 to 13). (H)
   - [x] 6.4 Positive and negative fixture test for every rule id; Verify snapshots of the reports. Review the snapshot diff in the PR. (L)
   - [x] 6.5 `FlashProjectAnalyzer` facade: progress, cancellation, deterministic JSON and markdown report, score. Hash-unchanged test on every fixture. (H)
-  - [ ] 6.6 Checkpoint: analyze the three candidate games locally (when `XNAREBORN_FLASH_SAMPLES` is set) and record scores and the top findings in the task notes. (L)
+  - [x] 6.6 Checkpoint: analyze the three candidate games locally (when `XNAREBORN_FLASH_SAMPLES` is set) and record scores and the top findings in the task notes. (L)
+  - Task 6.1 notes: `As3ImportMatch`, `As3SyntaxMatch`, `As3MetadataMatch` and `As3ApiMatch` are Core records with converter entries and schema branches (appended at the end of the `match` oneOf, so the existing validator index logic is unchanged). The schema also accepts `FL###` ids and `appliesTo: "flash"`. The Flash analyzer still reads its own catalog format (`FlashRule`); the Core records exist so a Core-format catalog can carry the same rules. `RuleEngine` ignores these types.
+  - Task 6.6 notes (local checkouts of Mode, FlxCollisions, Revenge via `XNAREBORN_FLASH_SAMPLES`; run on 2026-11-11, Flixel version reads "unknown" because none bundles `org/flixel`):
+    - Mode: score 87, projected 89. Findings: FL011 x21, FL010 x16, FL027 x14, FL028 x11, FL001 x11, FL012 x2, FL043 (flash.net in MenuState, Error), FL053 (plugins or replay, Warning), FL047, FL050.
+    - FlxCollisions: score 99, projected 100. FL010 x16, FL001 x7, FL027 x5, FL047, FL050.
+    - Revenge: score 91, projected 92. FL005 (a .swc library, Error), FL026 x10, FL010 x10, FL001 x4.
+    - Top blockers for a full conversion: Mode needs `flash.net` and plugin handling by hand; Revenge needs its .swc replaced by source.
   - _Requirements: R2, R4_
 
 - [ ] 7. AS3 runtime support (MVP)
@@ -84,7 +90,7 @@ Suggested waves (parallel inside a wave):
   - _Requirements: R7.2, R7.5, R7.7_
 
 - [ ] 10. Type resolver and API map (MVP)
-  - [ ] 10.1 Roslyn-based generator that builds `flixel-api.json` (member names, parameter and return types, static flags) from the runtime sources, and a test that fails when the checked-in file is out of date. (H)
+  - [x] 10.1 Roslyn-based generator that builds `flixel-api.json` (member names, parameter and return types, static flags) from the runtime sources, and a test that fails when the checked-in file is out of date. (H)
   - [x] 10.2 `TypeResolver`: declared types, literals, member access on project classes and runtime types, `unknown` fallback. (H)
   - [x] 10.3 Tests: table of expressions with expected types, including int/int, Number to int, `Vector` element types, `unknown` cases. (L)
   - _Requirements: R5.4 to R5.6_

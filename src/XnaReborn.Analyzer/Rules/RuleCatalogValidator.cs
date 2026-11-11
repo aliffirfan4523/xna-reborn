@@ -11,7 +11,7 @@ internal static class RuleCatalogValidator
     private static readonly Lazy<JsonSchema> _schema = new(LoadSchema);
 
     private static readonly string[] _matchTypes =
-        ["reference", "namespace", "type", "member", "methodDeclaration", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "mgcbSetting", "fileContent"];
+        ["reference", "namespace", "type", "member", "methodDeclaration", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "mgcbSetting", "fileContent", "as3Import", "as3Syntax", "as3Metadata", "as3Api"];
 
     /// <summary>Returns every problem found in <paramref name="root"/>, in a stable order.</summary>
     /// <param name="root">The parsed catalog.</param>
@@ -113,7 +113,7 @@ internal static class RuleCatalogValidator
             && rules[index].ValueKind == JsonValueKind.Object
             && rules[index].TryGetProperty("id", out var id)
             && id.ValueKind == JsonValueKind.String
-            && System.Text.RegularExpressions.Regex.IsMatch(id.GetString()!, "^(XNA|MG|SDX)[0-9]{3}$"))
+            && System.Text.RegularExpressions.Regex.IsMatch(id.GetString()!, "^(XNA|MG|SDX|FL)[0-9]{3}$"))
         {
             return id.GetString()!;
         }
@@ -236,6 +236,12 @@ internal static class RuleCatalogValidator
             && match.TryGetProperty("name", out _) == match.TryGetProperty("names", out _))
         {
             add($"{label} /rules/{index}/match: a member match needs exactly one of name or names.");
+        }
+
+        if (match.TryGetProperty("type", out var apiType) && apiType.ValueKind == JsonValueKind.String && apiType.GetString() == "as3Api"
+            && match.TryGetProperty("names", out _) == match.TryGetProperty("qualified", out _))
+        {
+            add($"{label} /rules/{index}/match: an as3Api match needs exactly one of names or qualified.");
         }
 
         if (match.TryGetProperty("matches", out var pattern) && pattern.ValueKind == JsonValueKind.String)

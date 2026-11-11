@@ -7,7 +7,7 @@ namespace XnaReborn.Core.Models.Rules;
 /// <param name="Name">Catalog name.</param>
 /// <param name="Scoring">Scoring weights, or null to use <see cref="ScoringOptions.Default"/>.</param>
 /// <param name="Rules">The rules.</param>
-/// <param name="AppliesTo">Project family the catalog runs against: "xna" (also when null), "monogame" or "SharpDxToolkit". Omitted from JSON when null.</param>
+/// <param name="AppliesTo">Project family the catalog runs against: "xna" (also when null), "monogame", "SharpDxToolkit" or "flash". Omitted from JSON when null.</param>
 public sealed record RuleCatalog(
     int Version,
     string Name,

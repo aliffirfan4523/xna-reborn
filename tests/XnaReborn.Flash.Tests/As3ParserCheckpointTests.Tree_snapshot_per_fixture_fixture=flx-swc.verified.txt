@@ -1,0 +1,10 @@
+﻿== src/Plain.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="Plain" Modifiers=Public
+      Members[]:
+        As3Field @5:3 IsConst=False Name="value" Modifiers=Public
+          Type:
+            As3TypeRef @5:20 Name="int"
+          Initializer:
+            As3Literal @5:26 Kind=Number Text="1"

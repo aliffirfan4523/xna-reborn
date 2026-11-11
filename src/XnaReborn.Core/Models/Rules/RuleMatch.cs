@@ -136,3 +136,25 @@ public sealed record MgcbSettingMatch(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Importer = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Processor = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool NonStandardPair = false) : RuleMatch;
+
+/// <summary>An ActionScript 3 import of a package, used by Flash catalogs.</summary>
+/// <param name="Pattern">Package pattern such as flash.display.*. A trailing .* matches the package and the packages below it.</param>
+public sealed record As3ImportMatch(string Pattern) : RuleMatch;
+
+/// <summary>A named ActionScript 3 language construct, used by Flash catalogs.</summary>
+/// <param name="Construct">The construct name, for example with, e4x, arguments, closure or regex.</param>
+public sealed record As3SyntaxMatch(string Construct) : RuleMatch;
+
+/// <summary>An ActionScript 3 metadata tag, used by Flash catalogs.</summary>
+/// <param name="Tag">The tag name such as Embed or SWF.</param>
+/// <param name="EmbedKind">With Embed: image, audio, data, font, symbol or missing. Null for any.</param>
+public sealed record As3MetadataMatch(
+    string Tag,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? EmbedKind = null) : RuleMatch;
+
+/// <summary>A member or identifier used in ActionScript 3 code, used by Flash catalogs. Exactly one of <paramref name="Names"/> or <paramref name="Qualified"/> is set.</summary>
+/// <param name="Names">Member or identifier names that match anywhere, or null.</param>
+/// <param name="Qualified">A qualified member such as FlxG.stage, or null.</param>
+public sealed record As3ApiMatch(
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? Names = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Qualified = null) : RuleMatch;

@@ -1,0 +1,2965 @@
+{
+  "schemaVersion": 1,
+  "types": [
+    {
+      "name": "AsArray",
+      "base": "AsList",
+      "members": []
+    },
+    {
+      "name": "AsCast",
+      "members": [
+        {
+          "name": "To",
+          "kind": "method",
+          "type": "T",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsClass",
+      "members": [
+        {
+          "name": "Asset",
+          "kind": "property",
+          "type": "AssetRef",
+          "static": false
+        },
+        {
+          "name": "Equals",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "obj",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "FromAsset",
+          "kind": "method",
+          "type": "Class",
+          "static": true,
+          "parameters": [
+            {
+              "name": "name",
+              "type": "String"
+            },
+            {
+              "name": "kind",
+              "type": "AssetKind"
+            }
+          ]
+        },
+        {
+          "name": "GetHashCode",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "New",
+          "kind": "method",
+          "type": "Object",
+          "static": false,
+          "parameters": [
+            {
+              "name": "args",
+              "type": "Array"
+            }
+          ]
+        },
+        {
+          "name": "Of",
+          "kind": "method",
+          "type": "Class",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "Of",
+          "kind": "method",
+          "type": "Class",
+          "static": true,
+          "parameters": [
+            {
+              "name": "type",
+              "type": "Type"
+            }
+          ]
+        },
+        {
+          "name": "Type",
+          "kind": "property",
+          "type": "Type",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "AsDictionary",
+      "members": [
+        {
+          "name": "Keys",
+          "kind": "property",
+          "type": "IEnumerable",
+          "static": false
+        },
+        {
+          "name": "delete",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "key",
+              "type": "Object"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsError",
+      "base": "Exception",
+      "members": [
+        {
+          "name": "Value",
+          "kind": "property",
+          "type": "Object",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "AsFunction",
+      "members": [
+        {
+          "name": "Arity",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "Call",
+          "kind": "method",
+          "type": "Object",
+          "static": false,
+          "parameters": [
+            {
+              "name": "args",
+              "type": "Array"
+            }
+          ]
+        },
+        {
+          "name": "From",
+          "kind": "method",
+          "type": "Function",
+          "static": true,
+          "parameters": [
+            {
+              "name": "target",
+              "type": "Delegate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsGlobals",
+      "members": [
+        {
+          "name": "TraceOutput",
+          "kind": "property",
+          "type": "Function",
+          "static": true
+        },
+        {
+          "name": "getTimer",
+          "kind": "method",
+          "type": "int",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "isNaN",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "parseFloat",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "text",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "parseInt",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "radix",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "trace",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "values",
+              "type": "Array"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsList",
+      "members": [
+        {
+          "name": "GetEnumerator",
+          "kind": "method",
+          "type": "IEnumerator",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "ToString",
+          "kind": "method",
+          "type": "String",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "concat",
+          "kind": "method",
+          "type": "TSelf",
+          "static": false,
+          "parameters": [
+            {
+              "name": "other",
+              "type": "TSelf"
+            }
+          ]
+        },
+        {
+          "name": "every",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "filter",
+          "kind": "method",
+          "type": "TSelf",
+          "static": false,
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "forEach",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "indexOf",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": [
+            {
+              "name": "item",
+              "type": "T"
+            },
+            {
+              "name": "fromIndex",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "join",
+          "kind": "method",
+          "type": "String",
+          "static": false,
+          "parameters": [
+            {
+              "name": "sep",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "lastIndexOf",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": [
+            {
+              "name": "item",
+              "type": "T"
+            }
+          ]
+        },
+        {
+          "name": "length",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "pop",
+          "kind": "method",
+          "type": "T",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "push",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": [
+            {
+              "name": "values",
+              "type": "Array"
+            }
+          ]
+        },
+        {
+          "name": "reverse",
+          "kind": "method",
+          "type": "TSelf",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "shift",
+          "kind": "method",
+          "type": "T",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "slice",
+          "kind": "method",
+          "type": "TSelf",
+          "static": false,
+          "parameters": [
+            {
+              "name": "startIndex",
+              "type": "int"
+            },
+            {
+              "name": "endIndex",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "some",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "sort",
+          "kind": "method",
+          "type": "TSelf",
+          "static": false,
+          "parameters": [
+            {
+              "name": "compare",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "splice",
+          "kind": "method",
+          "type": "TSelf",
+          "static": false,
+          "parameters": [
+            {
+              "name": "startIndex",
+              "type": "int"
+            },
+            {
+              "name": "deleteCount",
+              "type": "int"
+            },
+            {
+              "name": "values",
+              "type": "Array"
+            }
+          ]
+        },
+        {
+          "name": "unshift",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": [
+            {
+              "name": "values",
+              "type": "Array"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsObject",
+      "members": [
+        {
+          "name": "GetEnumerator",
+          "kind": "method",
+          "type": "IEnumerator",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "Keys",
+          "kind": "property",
+          "type": "IEnumerable",
+          "static": false
+        },
+        {
+          "name": "delete",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "key",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "hasOwnProperty",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "key",
+              "type": "String"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsOps",
+      "members": [
+        {
+          "name": "In",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "key",
+              "type": "Object"
+            },
+            {
+              "name": "container",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "KeysOf",
+          "kind": "method",
+          "type": "IEnumerable",
+          "static": true,
+          "parameters": [
+            {
+              "name": "container",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "LooseEquals",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "a",
+              "type": "Object"
+            },
+            {
+              "name": "b",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "Random",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "Round",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "ToAsString",
+          "kind": "method",
+          "type": "String",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "ToBoolean",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "ToException",
+          "kind": "method",
+          "type": "Exception",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "ToInt",
+          "kind": "method",
+          "type": "int",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "ToNumber",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "ToUInt",
+          "kind": "method",
+          "type": "uint",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "TypeOf",
+          "kind": "method",
+          "type": "String",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Object"
+            }
+          ]
+        },
+        {
+          "name": "UnsignedShiftRight",
+          "kind": "method",
+          "type": "uint",
+          "static": true,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "Number"
+            },
+            {
+              "name": "count",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "ValuesOf",
+          "kind": "method",
+          "type": "IEnumerable",
+          "static": true,
+          "parameters": [
+            {
+              "name": "container",
+              "type": "Object"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AsVector",
+      "base": "AsList",
+      "members": []
+    },
+    {
+      "name": "AssetKind",
+      "members": [
+        {
+          "name": "Data",
+          "kind": "field",
+          "type": "AssetKind",
+          "static": true
+        },
+        {
+          "name": "Song",
+          "kind": "field",
+          "type": "AssetKind",
+          "static": true
+        },
+        {
+          "name": "Sound",
+          "kind": "field",
+          "type": "AssetKind",
+          "static": true
+        },
+        {
+          "name": "Texture",
+          "kind": "field",
+          "type": "AssetKind",
+          "static": true
+        }
+      ]
+    },
+    {
+      "name": "AssetRef",
+      "members": []
+    },
+    {
+      "name": "FlxBasic",
+      "members": [
+        {
+          "name": "ID",
+          "kind": "field",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "ToString",
+          "kind": "method",
+          "type": "String",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "active",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "alive",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "destroy",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "draw",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "exists",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "kill",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "postUpdate",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "preUpdate",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "revive",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "visible",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxCamera",
+      "members": [
+        {
+          "name": "SHAKE_BOTH_AXES",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "SHAKE_HORIZONTAL_ONLY",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "SHAKE_VERTICAL_ONLY",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "STYLE_LOCKON",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "STYLE_PLATFORMER",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "STYLE_TOPDOWN",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "STYLE_TOPDOWN_TIGHT",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "bgColor",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "bounds",
+          "kind": "field",
+          "type": "FlxRect",
+          "static": false
+        },
+        {
+          "name": "fade",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Color",
+              "type": "uint"
+            },
+            {
+              "name": "Duration",
+              "type": "Number"
+            },
+            {
+              "name": "OnComplete",
+              "type": "Function"
+            },
+            {
+              "name": "Force",
+              "type": "Boolean"
+            },
+            {
+              "name": "FadeIn",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "flash",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Color",
+              "type": "uint"
+            },
+            {
+              "name": "Duration",
+              "type": "Number"
+            },
+            {
+              "name": "OnComplete",
+              "type": "Function"
+            },
+            {
+              "name": "Force",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "follow",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Target",
+              "type": "FlxObject"
+            },
+            {
+              "name": "Style",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "height",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "scroll",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "setBounds",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            },
+            {
+              "name": "Width",
+              "type": "Number"
+            },
+            {
+              "name": "Height",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "shake",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Intensity",
+              "type": "Number"
+            },
+            {
+              "name": "Duration",
+              "type": "Number"
+            },
+            {
+              "name": "OnComplete",
+              "type": "Function"
+            },
+            {
+              "name": "Force",
+              "type": "Boolean"
+            },
+            {
+              "name": "Direction",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "shakeOffset",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "stopFX",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "target",
+          "kind": "field",
+          "type": "FlxObject",
+          "static": false
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "width",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxG",
+      "members": [
+        {
+          "name": "assets",
+          "kind": "property",
+          "type": "IFlxAssets",
+          "static": true
+        },
+        {
+          "name": "bgColor",
+          "kind": "property",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "camera",
+          "kind": "property",
+          "type": "FlxCamera",
+          "static": true
+        },
+        {
+          "name": "collide",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "ObjectOrGroup1",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "ObjectOrGroup2",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "NotifyCallback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "drawFrame",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "elapsed",
+          "kind": "field",
+          "type": "Number",
+          "static": true
+        },
+        {
+          "name": "getRandom",
+          "kind": "method",
+          "type": "Object",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Objects",
+              "type": "Array"
+            },
+            {
+              "name": "StartIndex",
+              "type": "int"
+            },
+            {
+              "name": "Length",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "globalSeed",
+          "kind": "field",
+          "type": "Number",
+          "static": true
+        },
+        {
+          "name": "height",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "init",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Width",
+              "type": "int"
+            },
+            {
+              "name": "Height",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "keys",
+          "kind": "field",
+          "type": "FlxKeyboard",
+          "static": true
+        },
+        {
+          "name": "overlap",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "ObjectOrGroup1",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "ObjectOrGroup2",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "NotifyCallback",
+              "type": "Function"
+            },
+            {
+              "name": "ProcessCallback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "play",
+          "kind": "method",
+          "type": "FlxSound",
+          "static": true,
+          "parameters": [
+            {
+              "name": "EmbeddedSound",
+              "type": "Class"
+            },
+            {
+              "name": "Volume",
+              "type": "Number"
+            },
+            {
+              "name": "Looped",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "random",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "renderer",
+          "kind": "property",
+          "type": "IFlxRenderer",
+          "static": true
+        },
+        {
+          "name": "resetState",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "state",
+          "kind": "property",
+          "type": "FlxState",
+          "static": true
+        },
+        {
+          "name": "step",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Elapsed",
+              "type": "Number"
+            },
+            {
+              "name": "keyState",
+              "type": "IFlxKeyState"
+            }
+          ]
+        },
+        {
+          "name": "switchState",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "State",
+              "type": "FlxState"
+            }
+          ]
+        },
+        {
+          "name": "width",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        }
+      ]
+    },
+    {
+      "name": "FlxGame",
+      "base": "Game",
+      "members": []
+    },
+    {
+      "name": "FlxGroup",
+      "base": "FlxBasic",
+      "members": [
+        {
+          "name": "add",
+          "kind": "method",
+          "type": "FlxBasic",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Object",
+              "type": "FlxBasic"
+            }
+          ]
+        },
+        {
+          "name": "callAll",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Function",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "countDead",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "countLiving",
+          "kind": "method",
+          "type": "int",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "destroy",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "draw",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "getFirstAlive",
+          "kind": "method",
+          "type": "FlxBasic",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "getFirstAvailable",
+          "kind": "method",
+          "type": "FlxBasic",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ObjectClass",
+              "type": "Class"
+            }
+          ]
+        },
+        {
+          "name": "getFirstDead",
+          "kind": "method",
+          "type": "FlxBasic",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "kill",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "length",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "members",
+          "kind": "field",
+          "type": "List",
+          "static": false
+        },
+        {
+          "name": "postUpdate",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "recycle",
+          "kind": "method",
+          "type": "FlxBasic",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ObjectClass",
+              "type": "Class"
+            }
+          ]
+        },
+        {
+          "name": "remove",
+          "kind": "method",
+          "type": "FlxBasic",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Object",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "Splice",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "name": "FlxKeyboard",
+      "members": [
+        {
+          "name": "A",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "C",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "D",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "DOWN",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "ENTER",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "ESCAPE",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "LEFT",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "RIGHT",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "S",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "SHIFT",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "SPACE",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "UP",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "W",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "X",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "Z",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "justPressed",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "KeyName",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "justReleased",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "KeyName",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "pressed",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "KeyName",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "state",
+              "type": "IFlxKeyState"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FlxObject",
+      "base": "FlxBasic",
+      "members": [
+        {
+          "name": "ANY",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "CEILING",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "DOWN",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "FLOOR",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "LEFT",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "NONE",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "OVERLAP_BIAS",
+          "kind": "field",
+          "type": "Number",
+          "static": true
+        },
+        {
+          "name": "RIGHT",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "UP",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "WALL",
+          "kind": "field",
+          "type": "uint",
+          "static": true
+        },
+        {
+          "name": "acceleration",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "allowCollisions",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "drag",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "elasticity",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "flicker",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Duration",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "flickering",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "health",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "height",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "hurt",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Damage",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "immovable",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "isTouching",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Direction",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "justTouched",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Direction",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "last",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "mass",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "maxVelocity",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "moves",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "onScreen",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "overlaps",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Object",
+              "type": "FlxObject"
+            }
+          ]
+        },
+        {
+          "name": "postUpdate",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "preUpdate",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "reset",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "scrollFactor",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "separate",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Object1",
+              "type": "FlxObject"
+            },
+            {
+              "name": "Object2",
+              "type": "FlxObject"
+            }
+          ]
+        },
+        {
+          "name": "separateX",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Object1",
+              "type": "FlxObject"
+            },
+            {
+              "name": "Object2",
+              "type": "FlxObject"
+            }
+          ]
+        },
+        {
+          "name": "separateY",
+          "kind": "method",
+          "type": "Boolean",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Object1",
+              "type": "FlxObject"
+            },
+            {
+              "name": "Object2",
+              "type": "FlxObject"
+            }
+          ]
+        },
+        {
+          "name": "touching",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "velocity",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "wasTouching",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "width",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "x",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "y",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxPath",
+      "members": [
+        {
+          "name": "add",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "addAt",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            },
+            {
+              "name": "Index",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "addPoint",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Node",
+              "type": "FlxPoint"
+            }
+          ]
+        },
+        {
+          "name": "debugColor",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "destroy",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "head",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "nodes",
+          "kind": "field",
+          "type": "List",
+          "static": false
+        },
+        {
+          "name": "remove",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Node",
+              "type": "FlxPoint"
+            }
+          ]
+        },
+        {
+          "name": "removeAt",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Index",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "tail",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "name": "FlxPoint",
+      "members": [
+        {
+          "name": "copyFrom",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": [
+            {
+              "name": "point",
+              "type": "FlxPoint"
+            }
+          ]
+        },
+        {
+          "name": "copyTo",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": [
+            {
+              "name": "point",
+              "type": "FlxPoint"
+            }
+          ]
+        },
+        {
+          "name": "make",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": false,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "x",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "y",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxRect",
+      "members": [
+        {
+          "name": "bottom",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "copyFrom",
+          "kind": "method",
+          "type": "FlxRect",
+          "static": false,
+          "parameters": [
+            {
+              "name": "rect",
+              "type": "FlxRect"
+            }
+          ]
+        },
+        {
+          "name": "copyTo",
+          "kind": "method",
+          "type": "FlxRect",
+          "static": false,
+          "parameters": [
+            {
+              "name": "rect",
+              "type": "FlxRect"
+            }
+          ]
+        },
+        {
+          "name": "height",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "left",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "make",
+          "kind": "method",
+          "type": "FlxRect",
+          "static": false,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            },
+            {
+              "name": "Width",
+              "type": "Number"
+            },
+            {
+              "name": "Height",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "overlaps",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "rect",
+              "type": "FlxRect"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "top",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "width",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "x",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "y",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxSound",
+      "members": [
+        {
+          "name": "asset",
+          "kind": "field",
+          "type": "AssetRef",
+          "static": false
+        },
+        {
+          "name": "looped",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "volume",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxSprite",
+      "base": "FlxObject",
+      "members": [
+        {
+          "name": "addAnimation",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Name",
+              "type": "String"
+            },
+            {
+              "name": "Frames",
+              "type": "Array"
+            },
+            {
+              "name": "FrameRate",
+              "type": "Number"
+            },
+            {
+              "name": "Looped",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "alpha",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "color",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "currentAnimation",
+          "kind": "property",
+          "type": "String",
+          "static": false
+        },
+        {
+          "name": "draw",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "facing",
+          "kind": "field",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "finished",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "frame",
+          "kind": "field",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "frameHeight",
+          "kind": "field",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "frameWidth",
+          "kind": "field",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "loadGraphic",
+          "kind": "method",
+          "type": "FlxSprite",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Graphic",
+              "type": "Class"
+            },
+            {
+              "name": "Animated",
+              "type": "Boolean"
+            },
+            {
+              "name": "Reverse",
+              "type": "Boolean"
+            },
+            {
+              "name": "Width",
+              "type": "int"
+            },
+            {
+              "name": "Height",
+              "type": "int"
+            },
+            {
+              "name": "Unique",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "makeGraphic",
+          "kind": "method",
+          "type": "FlxSprite",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Width",
+              "type": "int"
+            },
+            {
+              "name": "Height",
+              "type": "int"
+            },
+            {
+              "name": "Color",
+              "type": "uint"
+            },
+            {
+              "name": "Unique",
+              "type": "Boolean"
+            },
+            {
+              "name": "Key",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "offset",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "play",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "AnimName",
+              "type": "String"
+            },
+            {
+              "name": "Force",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "scale",
+          "kind": "field",
+          "type": "FlxPoint",
+          "static": false
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "name": "FlxState",
+      "base": "FlxGroup",
+      "members": [
+        {
+          "name": "create",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "name": "FlxText",
+      "base": "FlxSprite",
+      "members": [
+        {
+          "name": "alignment",
+          "kind": "property",
+          "type": "String",
+          "static": false
+        },
+        {
+          "name": "draw",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "shadow",
+          "kind": "property",
+          "type": "uint",
+          "static": false
+        },
+        {
+          "name": "size",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "text",
+          "kind": "property",
+          "type": "String",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxTileblock",
+      "base": "FlxSprite",
+      "members": [
+        {
+          "name": "draw",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "loadTiles",
+          "kind": "method",
+          "type": "FlxTileblock",
+          "static": false,
+          "parameters": [
+            {
+              "name": "TileGraphic",
+              "type": "Class"
+            },
+            {
+              "name": "TileWidth",
+              "type": "int"
+            },
+            {
+              "name": "TileHeight",
+              "type": "int"
+            },
+            {
+              "name": "Empties",
+              "type": "int"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FlxTimer",
+      "members": [
+        {
+          "name": "callback",
+          "kind": "field",
+          "type": "Function",
+          "static": false
+        },
+        {
+          "name": "elapsedLoops",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "finished",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "loops",
+          "kind": "field",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "loopsLeft",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "manager",
+          "kind": "field",
+          "type": "TimerManager",
+          "static": true
+        },
+        {
+          "name": "paused",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "progress",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "start",
+          "kind": "method",
+          "type": "FlxTimer",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Time",
+              "type": "Number"
+            },
+            {
+              "name": "Loops",
+              "type": "int"
+            },
+            {
+              "name": "Callback",
+              "type": "Function"
+            }
+          ]
+        },
+        {
+          "name": "stop",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "time",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "timeLeft",
+          "kind": "property",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "name": "FlxU",
+      "members": [
+        {
+          "name": "abs",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Value",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "ceil",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Value",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "computeVelocity",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Velocity",
+              "type": "Number"
+            },
+            {
+              "name": "Acceleration",
+              "type": "Number"
+            },
+            {
+              "name": "Drag",
+              "type": "Number"
+            },
+            {
+              "name": "Max",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "floor",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Value",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "formatTime",
+          "kind": "method",
+          "type": "String",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Seconds",
+              "type": "Number"
+            },
+            {
+              "name": "ShowMS",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "getAngle",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Point1",
+              "type": "FlxPoint"
+            },
+            {
+              "name": "Point2",
+              "type": "FlxPoint"
+            }
+          ]
+        },
+        {
+          "name": "getDistance",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Point1",
+              "type": "FlxPoint"
+            },
+            {
+              "name": "Point2",
+              "type": "FlxPoint"
+            }
+          ]
+        },
+        {
+          "name": "max",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Number1",
+              "type": "Number"
+            },
+            {
+              "name": "Number2",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "min",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Number1",
+              "type": "Number"
+            },
+            {
+              "name": "Number2",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "rotatePoint",
+          "kind": "method",
+          "type": "FlxPoint",
+          "static": true,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            },
+            {
+              "name": "PivotX",
+              "type": "Number"
+            },
+            {
+              "name": "PivotY",
+              "type": "Number"
+            },
+            {
+              "name": "Angle",
+              "type": "Number"
+            },
+            {
+              "name": "Point",
+              "type": "FlxPoint"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IFlxAssets",
+      "members": [
+        {
+          "name": "GetTextureSize",
+          "kind": "method",
+          "type": "(int Width, int Height)",
+          "static": false,
+          "parameters": [
+            {
+              "name": "texture",
+              "type": "AssetRef"
+            }
+          ]
+        },
+        {
+          "name": "PlaySound",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "sound",
+              "type": "AssetRef"
+            },
+            {
+              "name": "volume",
+              "type": "Number"
+            },
+            {
+              "name": "looped",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "ReadData",
+          "kind": "method",
+          "type": "Array",
+          "static": false,
+          "parameters": [
+            {
+              "name": "data",
+              "type": "AssetRef"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IFlxKeyState",
+      "members": [
+        {
+          "name": "IsDown",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "key",
+              "type": "Keys"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IFlxRenderer",
+      "members": [
+        {
+          "name": "Clear",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "argb",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "DrawFrame",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "texture",
+              "type": "AssetRef"
+            },
+            {
+              "name": "srcX",
+              "type": "int"
+            },
+            {
+              "name": "srcY",
+              "type": "int"
+            },
+            {
+              "name": "srcWidth",
+              "type": "int"
+            },
+            {
+              "name": "srcHeight",
+              "type": "int"
+            },
+            {
+              "name": "x",
+              "type": "Number"
+            },
+            {
+              "name": "y",
+              "type": "Number"
+            },
+            {
+              "name": "width",
+              "type": "Number"
+            },
+            {
+              "name": "height",
+              "type": "Number"
+            },
+            {
+              "name": "tintRgb",
+              "type": "uint"
+            },
+            {
+              "name": "alpha",
+              "type": "Number"
+            },
+            {
+              "name": "flipHorizontal",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "DrawQuad",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "x",
+              "type": "Number"
+            },
+            {
+              "name": "y",
+              "type": "Number"
+            },
+            {
+              "name": "width",
+              "type": "Number"
+            },
+            {
+              "name": "height",
+              "type": "Number"
+            },
+            {
+              "name": "argb",
+              "type": "uint"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PixelFont",
+      "members": [
+        {
+          "name": "Draw",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "renderer",
+              "type": "IFlxRenderer"
+            },
+            {
+              "name": "line",
+              "type": "String"
+            },
+            {
+              "name": "x",
+              "type": "Number"
+            },
+            {
+              "name": "y",
+              "type": "Number"
+            },
+            {
+              "name": "scale",
+              "type": "int"
+            },
+            {
+              "name": "argb",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "LineHeight",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "Measure",
+          "kind": "method",
+          "type": "Number",
+          "static": true,
+          "parameters": [
+            {
+              "name": "line",
+              "type": "String"
+            },
+            {
+              "name": "scale",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "ScaleFor",
+          "kind": "method",
+          "type": "int",
+          "static": true,
+          "parameters": [
+            {
+              "name": "size",
+              "type": "Number"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
