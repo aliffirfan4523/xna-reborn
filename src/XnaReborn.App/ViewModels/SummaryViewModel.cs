@@ -81,6 +81,17 @@ public sealed partial class SummaryViewModel : PageViewModel
     [ObservableProperty]
     private bool _isFlash;
 
+    [ObservableProperty]
+    private int _assetsBuiltCount;
+
+    [ObservableProperty]
+    private int _fontsSwappedCount;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BuildSucceeded))]
+    [NotifyPropertyChangedFor(nameof(HeadlineText))]
+    private bool _buildFailed;
+
     /// <summary>Creates the page.</summary>
     /// <param name="session">The shared workflow data.</param>
     /// <param name="navigator">Moves to other pages.</param>
@@ -97,6 +108,15 @@ public sealed partial class SummaryViewModel : PageViewModel
 
     /// <summary>True when the page lists the behaviors a Flash conversion only approximates.</summary>
     public bool HasFlashApproximations => FlashApproximations.Count > 0;
+
+    /// <summary>True when a build ran and succeeded. False when it failed or has not run.</summary>
+    public bool BuildSucceeded => !BuildFailed && Session.RunnerResult?.Build is { Succeeded: true };
+
+    /// <summary>The big line at the top: ready, failed, or finished without a build.</summary>
+    public string HeadlineText => BuildFailed ? "The build did not succeed" : BuildSucceeded ? "Your project is migrated" : "Migration finished";
+
+    /// <summary>The score gain as text, such as "+50 points". Empty without a report.</summary>
+    public string GainText => Session.Report is { } r ? $"{(r.ProjectedScore >= r.Score ? "+" : string.Empty)}{r.ProjectedScore - r.Score} points" : string.Empty;
 
     /// <summary>True when there is manual work left to show.</summary>
     public bool HasManualItems => ManualItems.Count > 0;
@@ -121,6 +141,10 @@ public sealed partial class SummaryViewModel : PageViewModel
         AfterScore = report?.ProjectedScore ?? 0;
         ScoreText = report is null ? string.Empty : $"{report.Score} to {report.ProjectedScore} (+{report.ProjectedScore - report.Score})";
         BuildText = DescribeBuild(Session.RunnerResult);
+        BuildFailed = Session.RunnerResult?.Build is { Succeeded: false };
+        OnPropertyChanged(nameof(BuildSucceeded));
+        OnPropertyChanged(nameof(GainText));
+        AssetsBuiltCount = result?.Manifest.Content?.CountsByStatus.GetValueOrDefault("Converted") ?? 0;
 
         var applied = result?.Plan.Items.Select(i => i.RuleId).ToHashSet(StringComparer.Ordinal) ?? [];
         var findings = report?.Findings ?? [];
@@ -129,6 +153,7 @@ public sealed partial class SummaryViewModel : PageViewModel
             || (f.Classification == Classification.AutoFixable && !applied.Contains(f.RuleId)));
         UnsupportedCount = findings.Count(f => f.Classification == Classification.Unsupported);
         ManualItems = result is null ? [] : ListManualItems(result.Manifest);
+        FontsSwappedCount = ManualItems.Count(i => i.Kind == "Font swapped");
         IsFlash = result?.Manifest.SourceKind == "Flash";
         FlashMarkers = IsFlash ? ListFlashMarkers(result!.Manifest, report) : [];
         FlashApproximations = IsFlash ? result!.Manifest.Approximations ?? [] : [];
@@ -147,6 +172,15 @@ public sealed partial class SummaryViewModel : PageViewModel
     [RelayCommand(CanExecute = nameof(HasOutput))]
     private Task OpenMarkerAsync(FlashMarkerLink? link) =>
         link is null ? Task.CompletedTask : RunShellAsync(() => _shell.OpenFileAsync(Path.Combine(OutputFolder!, link.ConvertedFile)));
+
+    [RelayCommand]
+    private void RunGame() => Navigator.GoTo(WorkflowStep.BuildRun);
+
+    [RelayCommand]
+    private void GoToDiff() => Navigator.GoTo(WorkflowStep.Diff);
+
+    [RelayCommand]
+    private void GoToReport() => Navigator.GoTo(WorkflowStep.Report);
 
     [RelayCommand]
     private void StartOver()
