@@ -84,7 +84,7 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
 
 - [x] 13. Source upgrade
   - [x] 13.1 `ColorTransparentBlackRewriter` with before and after fixtures, including a file with no `Microsoft.Xna.Framework` import (no change) and an ambiguous case (marker). Links: MG032
-  - [ ] 13.2 (stretch) Reuse `XnaReborn.Compat` for `GamerServices`; add `Net` stand-ins only if the GamerServices pattern fits. Without shims, leave markers. Related: MG021, MG028, MG029
+  - [x] 13.2 (stretch) Reuse `XnaReborn.Compat` for `GamerServices`; add `Net` stand-ins only if the GamerServices pattern fits. Without shims, leave markers. Related: MG021, MG028, MG029. Done for GamerServices (MG029, shims on). No `Net` stand-ins: the pattern does not fit, so MG028 keeps its marker.
   - [x] 13.3 Register `EntryPointRewriter` for legacy MonoGame projects; fixture with `Program` inside `#if WINDOWS || LINUX`
   - [x] 13.4 Marker for Manual source findings (MG030, MG031) through `MarkerInserter`
   - _Requirements: R8_

@@ -310,7 +310,7 @@
       "category": "Api",
       "match": { "type": "type", "name": "RectangleF", "namespaces": ["SharpDX"] },
       "explanation": "RectangleF is a SharpDX type with float fields. MonoGame has no such type, and SpriteBatch.Draw takes a Rectangle with integer fields. Matching is by syntax only, so a look-alike name in unrelated code can match.",
-      "resolution": "Use Rectangle, or add a small struct of your own."
+      "resolution": "Use Rectangle, or add a small struct of your own. With the compatibility shims on, the migrated copy gets a RectangleF stand-in (sharpdx-toolkit task 14) and no marker."
     },
     {
       "id": "SDX035",
@@ -320,7 +320,7 @@
       "category": "Api",
       "match": { "type": "type", "name": "Color4", "namespaces": ["SharpDX"], "alsoNames": ["Color3"] },
       "explanation": "Color4 and Color3 are float color structs of SharpDX. MonoGame has Color (bytes) and Vector4 (floats) but no type of this name. Matching is by syntax only, so a look-alike name in unrelated code can match.",
-      "resolution": "Use Color for byte colors or Vector4 for float colors."
+      "resolution": "Use Color for byte colors or Vector4 for float colors. With the compatibility shims on, the migrated copy gets Color4 and Color3 stand-ins (sharpdx-toolkit task 14) and no marker."
     },
     {
       "id": "SDX040",

@@ -332,6 +332,33 @@ public sealed class LegacyMonoGameMigrationTests : IDisposable
     }
 
     [Fact]
+    public async Task Shims_on_gives_GamerServices_users_the_Compat_library_and_no_MG029_marker()
+    {
+        var options = Options(Out(), dryRun: true) with { EnableShims = true };
+
+        var result = await MigrateAsync(FixturePaths.Of("mg37-source-apis"), options);
+
+        Assert.Equal(ChangeKind.Copied, Single(result, "Services.cs").Kind);
+        Assert.Contains("// XNAREBORN: MG028:", Single(result, "NetCode.cs").NewText);
+        Assert.Contains(result.Changes, c => c.RelativePath == "XnaReborn.Compat/GamerServices.cs");
+        Assert.Contains("XnaReborn.Compat\\XnaReborn.Compat.csproj", Single(result, "Mg37SourceApis.csproj").NewText);
+        var shims = result.Manifest.Shims!;
+        Assert.Equal(["Mg37SourceApis.csproj"], shims.ReferencedBy);
+        Assert.Equal([("Services.cs", "Microsoft.Xna.Framework.GamerServices")], shims.Uses.Select(u => (u.File, u.Namespace)));
+    }
+
+    [Fact]
+    public async Task Shims_on_adds_no_library_when_no_source_uses_GamerServices()
+    {
+        var options = Options(Out(), dryRun: true) with { EnableShims = true };
+
+        var result = await MigrateAsync(FixturePaths.Of("mg37-windowsdx-pkgconfig"), options);
+
+        Assert.DoesNotContain(result.Changes, c => c.RelativePath.StartsWith("XnaReborn.Compat/", StringComparison.Ordinal));
+        Assert.Null(result.Manifest.Shims);
+    }
+
+    [Fact]
     public async Task Excluded_color_step_leaves_the_file_alone()
     {
         var source = FixturePaths.Of("mg37-source-apis");
