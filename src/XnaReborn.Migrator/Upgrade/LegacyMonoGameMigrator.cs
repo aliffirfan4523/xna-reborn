@@ -549,7 +549,6 @@ internal sealed class LegacyMonoGameMigrator
             {
                 const string reason = "Custom content pipeline assembly built for an older MonoGame or XNA. Rebuild it against MonoGame 3.8.6.1; the copy is the old binary.";
                 state.Changes.Add(new FileChange(relative, ChangeKind.ManualWork, null, null, reason, full));
-                state.Notes.Add($"{relative}: MG025: {reason}");
             }
         }
 
@@ -589,10 +588,6 @@ internal sealed class LegacyMonoGameMigrator
         if (state.Claim(relative))
         {
             state.Changes.Add(new FileChange(relative, kind, null, null, reason, full));
-            if (reason is not null)
-            {
-                state.Notes.Add($"{relative}: {reason}");
-            }
         }
     }
 
@@ -609,7 +604,7 @@ internal sealed class LegacyMonoGameMigrator
     // A platform project is not migrated. Its files are copied unchanged and listed as manual work with the reason.
     private void CopyPlatformProject(DiscoveredProject discovered, ProjectReadResult read, string root, State state, CancellationToken cancellationToken)
     {
-        var reason = $"This is a {read.Info.MonoGamePlatform} project. This version does not migrate it; the files are copied unchanged. See manual work.";
+        var reason = $"Platform project ({MigrationScope.Describe(read.Info.MonoGamePlatform)}): this version does not migrate it, so the files are copied unchanged.";
         var projectDirectory = Path.GetDirectoryName(discovered.FullPath) ?? root;
         IEnumerable<string> fulls;
         if (string.Equals(ProjectMigrator.Relative(root, projectDirectory), ".", StringComparison.Ordinal))
@@ -630,7 +625,7 @@ internal sealed class LegacyMonoGameMigrator
             }
         }
 
-        state.Notes.Add($"{discovered.RelativePath}: {read.Info.MonoGamePlatform} project: not migrated, copied unchanged. See manual work.");
+        state.Notes.Add($"{discovered.RelativePath}: {MigrationScope.Describe(read.Info.MonoGamePlatform)} project: not migrated, copied unchanged. See manual work.");
     }
 
     private sealed class Work(DiscoveredProject discovered, ProjectReadResult read, IReadOnlySet<string> enabled, bool sdkStyle)

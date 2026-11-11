@@ -14,8 +14,8 @@ public sealed class ProjectRowItem
         Path = info.Path;
         (FamilyText, VersionText, PlatformText) = info.Family switch
         {
-            ProjectFamily.MonoGameLegacy => ("MonoGame (old)", MonoGameVersionOf(info), MonoGamePlatformText(info.MonoGamePlatform)),
-            ProjectFamily.MonoGameCurrent => ("MonoGame (current)", MonoGameVersionOf(info), MonoGamePlatformText(info.MonoGamePlatform)),
+            ProjectFamily.MonoGameLegacy => ("MonoGame (old)", MonoGameVersionOf(info), MigrationScope.Describe(info.MonoGamePlatform)),
+            ProjectFamily.MonoGameCurrent => ("MonoGame (current)", MonoGameVersionOf(info), MigrationScope.Describe(info.MonoGamePlatform)),
             _ => ("XNA", info.XnaVersion == XnaVersion.Unknown ? "Version unknown" : "XNA " + XnaVersionText(info.XnaVersion), info.Platform.ToString()),
         };
         IsNotMigrated = info.Family == ProjectFamily.MonoGameLegacy && MigrationScope.IsPlatformProject(info.MonoGamePlatform);
@@ -66,24 +66,6 @@ public sealed class ProjectRowItem
         MonoGameBand.V35Plus => "3.5 or later",
         MonoGameBand.V380Era => "3.8.0 era",
         _ => "unknown",
-    };
-
-    private static string MonoGamePlatformText(MonoGamePlatform platform) => platform switch
-    {
-        MonoGamePlatform.Unknown => "Platform unknown",
-        MonoGamePlatform.WindowsDX => "Windows (DirectX)",
-        MonoGamePlatform.WindowsGL => "WindowsGL",
-        MonoGamePlatform.Linux => "Linux",
-        MonoGamePlatform.MacOS => "macOS",
-        MonoGamePlatform.DesktopGL => "DesktopGL",
-        MonoGamePlatform.Uwp => "UWP",
-        MonoGamePlatform.WindowsPhone => "Windows Phone",
-        MonoGamePlatform.Ouya => "OUYA",
-        MonoGamePlatform.PlayStationMobile => "PlayStation Mobile",
-        MonoGamePlatform.PsVita => "PS Vita",
-        MonoGamePlatform.Android => "Android",
-        MonoGamePlatform.Ios => "iOS",
-        _ => platform.ToString(),
     };
 
     private static string XnaVersionText(XnaVersion version) => version switch

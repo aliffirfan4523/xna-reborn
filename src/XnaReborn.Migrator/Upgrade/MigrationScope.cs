@@ -13,4 +13,24 @@ public static class MigrationScope
     public static bool IsPlatformProject(MonoGamePlatform platform) =>
         platform is MonoGamePlatform.Uwp or MonoGamePlatform.WindowsPhone or MonoGamePlatform.Ouya
             or MonoGamePlatform.PlayStationMobile or MonoGamePlatform.PsVita or MonoGamePlatform.Android or MonoGamePlatform.Ios;
+
+    /// <summary>The platform in words, for reports and screens. Shared by the migrator manifest and the UI so the two never disagree.</summary>
+    /// <param name="platform">The platform the analyzer detected.</param>
+    public static string Describe(MonoGamePlatform platform) => platform switch
+    {
+        MonoGamePlatform.Unknown => "Platform unknown",
+        MonoGamePlatform.WindowsDX => "Windows (DirectX)",
+        MonoGamePlatform.WindowsGL => "WindowsGL",
+        MonoGamePlatform.Linux => "Linux",
+        MonoGamePlatform.MacOS => "macOS",
+        MonoGamePlatform.DesktopGL => "DesktopGL",
+        MonoGamePlatform.Uwp => "UWP",
+        MonoGamePlatform.WindowsPhone => "Windows Phone",
+        MonoGamePlatform.Ouya => "OUYA",
+        MonoGamePlatform.PlayStationMobile => "PlayStation Mobile",
+        MonoGamePlatform.PsVita => "PS Vita",
+        MonoGamePlatform.Android => "Android",
+        MonoGamePlatform.Ios => "iOS",
+        _ => platform.ToString(),
+    };
 }
