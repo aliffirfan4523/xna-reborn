@@ -90,24 +90,24 @@ Suggested waves (parallel inside a wave):
   - _Requirements: R5.4 to R5.6_
 
 - [ ] 11. Converter: emitters (MVP)
-  - [ ] 11.1 Type mapping, namespaces, class and member emission, access modifiers, getters and setters, constructors with base initializer, field initializers including `NaN`. Golden tests. (H)
-  - [ ] 11.2 Statement emission: all control flow, `for each`, `for in`, `switch` fallthrough, `try/catch` (catch type filters). Golden tests. (H)
-  - [ ] 11.3 Expression emission with resolver: int division, casts, `>>>`, `as`/`is`, object and array literals, `Vector.<T>`, closures to `AsFunction`, `Class` values, loose equality helper. Golden tests for each row of the language table. (H)
-  - [ ] 11.4 Marker emitter: `// XNAREBORN: FLxxx` with the original AS3 text; unsupported nodes; comment preservation from trivia. Tests for each marker rule id (FL020 to FL031, FL040 to FL055 subset). (H)
-  - [ ] 11.5 Compile check: a test helper compiles each golden C# output with Roslyn against the runtime sources and fails on errors. (H)
+  - [x] 11.1 Type mapping, namespaces, class and member emission, access modifiers, getters and setters, constructors with base initializer, field initializers including `NaN`. Golden tests. (H)
+  - [x] 11.2 Statement emission: all control flow, `for each`, `for in`, `switch` fallthrough, `try/catch` (catch type filters). Golden tests. (H)
+  - [x] 11.3 Expression emission with resolver: int division, casts, `>>>`, `as`/`is`, object and array literals, `Vector.<T>`, closures to `AsFunction`, `Class` values, loose equality helper. Golden tests for each row of the language table. (H)
+  - [x] 11.4 Marker emitter: `// XNAREBORN: FLxxx` with the original AS3 text; unsupported nodes; comment preservation from trivia. Tests for each marker rule id (FL020 to FL031, FL040 to FL055 subset). (H)
+  - [x] 11.5 Compile check: a test helper compiles each golden C# output with Roslyn against the runtime sources and fails on errors. (H)
   - _Requirements: R5_
 
 - [ ] 12. Converter: assets (MVP)
-  - [ ] 12.1 `AssetPlanner`: find `[Embed]` fields, resolve paths relative to the `.as` file, reject paths leaving the project, classify image, audio, data, font, symbol. Tests including path traversal attempts and `flx-missing-embed`. (H)
-  - [ ] 12.2 Feed images and audio to `ConvertedAsset` and the existing `MgcbWriter`; copy data files to `Content/`; emit asset handles (`new AssetRef(...)`) in the C# fields; fonts through `FontSubstituter`. Golden `Content.mgcb` tests. (H)
+  - [x] 12.1 `AssetPlanner`: find `[Embed]` fields, resolve paths relative to the `.as` file, reject paths leaving the project, classify image, audio, data, font, symbol. Tests including path traversal attempts and `flx-missing-embed`. (H)
+  - [x] 12.2 Feed images and audio to `ConvertedAsset` and the existing `MgcbWriter`; copy data files to `Content/`; emit asset handles (`new AssetRef(...)`) in the C# fields; fonts through `FontSubstituter`. Golden `Content.mgcb` tests. (H)
   - [ ] 12.3 Audio check on a real build: convert `flx-platformer`, run `dotnet-mgcb` 3.8.6.1 on the wav and an mp3 test file (generated or public domain, written by a test helper), and record whether `ffmpeg` is needed on the build machine and whether DesktopGL plays the result. Write the finding into the task notes, add a Runner hint if `ffmpeg` is needed. No network except package restore from the local cache. (H)
   - _Requirements: R6_
 
 - [ ] 13. Converter: project output and pipeline (MVP)
-  - [ ] 13.1 `FlashCsprojGenerator` (using `PackageSelector`, MonoGame 3.8.6.1), `Program.cs` generator for the entry class, tool manifest, build isolation props. Golden tests. (L)
-  - [ ] 13.2 Embed the Flixel runtime sources as resources; `FlixelRuntimeProjectGenerator` writes them (with `.editorconfig` and `THIRD-PARTY-NOTICES.md`) to `XnaReborn.Flixel/` in the output. Test: the written project builds. (H)
-  - [ ] 13.3 `FlashMigrator`: orchestration through `OutputGuard.Begin` / `OutputSession`, manifest with `SourceKind`, marker counts and assets. Progress and cancellation. (H)
-  - [ ] 13.4 Safety tests: source hashes unchanged, non-empty output refused without confirmation, cancellation leaves no output, `.swf` never read. (L)
+  - [x] 13.1 `FlashCsprojGenerator` (using `PackageSelector`, MonoGame 3.8.6.1), `Program.cs` generator for the entry class, tool manifest, build isolation props. Golden tests. (L)
+  - [x] 13.2 Embed the Flixel runtime sources as resources; `FlixelRuntimeProjectGenerator` writes them (with `.editorconfig` and `THIRD-PARTY-NOTICES.md`) to `XnaReborn.Flixel/` in the output. Test: the written project builds. (H)
+  - [x] 13.3 `FlashMigrator`: orchestration through `OutputGuard.Begin` / `OutputSession`, manifest with `SourceKind`, marker counts and assets. Progress and cancellation. (H)
+  - [x] 13.4 Safety tests: source hashes unchanged, non-empty output refused without confirmation, cancellation leaves no output, `.swf` never read. (L)
   - _Requirements: R9_
 
 - [ ] 14. Checkpoint: demo slice (MVP)
