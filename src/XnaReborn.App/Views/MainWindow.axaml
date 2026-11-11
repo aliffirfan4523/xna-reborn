@@ -155,14 +155,15 @@
               Background="{DynamicResource ErrorBannerBackgroundBrush}"
               BorderBrush="{DynamicResource ErrorBannerBorderBrush}"
               AutomationProperties.AutomationId="ErrorBanner"
-              AutomationProperties.Name="Error">
+              AutomationProperties.Name="Error"
+              AutomationProperties.LiveSetting="Assertive">
         <StackPanel Spacing="8">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <PathIcon Data="{StaticResource IconError}" Width="18" Height="18" VerticalAlignment="Center"
+          <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+            <PathIcon Data="{StaticResource IconError}" Width="18" Height="18" VerticalAlignment="Top" Margin="0,2,0,0"
                       Foreground="{DynamicResource SeverityErrorBrush}" />
-            <TextBlock Text="Error:" FontWeight="Bold" Foreground="{DynamicResource SeverityErrorBrush}" />
-            <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
-          </StackPanel>
+            <TextBlock Grid.Column="1" Text="Error:" FontWeight="Bold" Foreground="{DynamicResource SeverityErrorBrush}" />
+            <TextBlock Grid.Column="2" Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+          </Grid>
           <Expander Header="Details"
                     IsVisible="{Binding HasErrorDetails}"
                     IsExpanded="{Binding IsDetailsExpanded}"
@@ -198,14 +199,17 @@
               BorderThickness="0,1,0,0"
               Padding="24,0"
               MinHeight="32">
-        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-          <TextBlock Text="{Binding StatusText}" Classes="caption muted"
-                     AutomationProperties.AutomationId="StatusText" />
-          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
-            <PathIcon Data="{StaticResource IconLock}" Width="12" Height="12" Foreground="{DynamicResource TextMutedBrush}" />
-            <TextBlock Text="Your original project is never changed" Classes="caption muted" />
+        <!-- A wrap panel: in a narrow window or at a large text size the note drops to a second line instead of cutting the status. -->
+        <DockPanel VerticalAlignment="Center" Margin="0,4">
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6" Margin="16,0,0,0" VerticalAlignment="Top">
+            <PathIcon Data="{StaticResource IconLock}" Width="12" Height="12" Foreground="{DynamicResource TextMutedBrush}"
+                      AutomationProperties.AccessibilityView="Raw" />
+            <TextBlock Text="Your original project is never changed" Classes="caption muted" TextWrapping="Wrap" MaxWidth="260" />
           </StackPanel>
-        </Grid>
+          <TextBlock Text="{Binding StatusText}" Classes="caption muted" TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="StatusText"
+                     AutomationProperties.LiveSetting="Polite" />
+        </DockPanel>
       </Border>
     </Grid>
   </Grid>

@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
 using XnaReborn.App.Services;
 
@@ -15,6 +16,15 @@ internal static class AppearanceApplier
         MotionPreference.Mode = settings.ReduceMotion;
         if (Application.Current is { } app)
         {
+            // Windows that are already open follow a change of the motion setting (see the reduce-motion style in Styles/Controls.axaml).
+            if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                foreach (var window in desktop.Windows)
+                {
+                    window.Classes.Set("reduce-motion", MotionPreference.Reduce());
+                }
+            }
+
             app.RequestedThemeVariant = settings.Theme switch
             {
                 ThemeChoice.Light => ThemeVariant.Light,

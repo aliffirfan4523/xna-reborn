@@ -64,5 +64,8 @@ public sealed partial class ProgressLabel : UserControl
         PercentView.IsVisible = !IsIndeterminate;
         PercentView.Text = value.ToString("0", CultureInfo.InvariantCulture) + "%";
         AutomationProperties.SetName(this, IsIndeterminate ? $"{Label}, working" : $"{Label}, {PercentView.Text}");
+
+        // A screen reader says "working" and each new label. A percent that changes many times a second is left to be read on demand.
+        AutomationProperties.SetLiveSetting(this, IsIndeterminate ? AutomationLiveSetting.Polite : AutomationLiveSetting.Off);
     }
 }

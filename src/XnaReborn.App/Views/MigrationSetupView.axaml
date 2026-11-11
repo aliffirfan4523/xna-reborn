@@ -211,7 +211,7 @@
         <StackPanel Spacing="{StaticResource Space3}">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
             <StackPanel Grid.Column="0" Spacing="{StaticResource Space1}">
-              <TextBlock Text="4. Migration plan" Classes="title" AutomationProperties.HeadingLevel="2" />
+              <TextBlock Text="4. Migration plan" Classes="title" TextWrapping="Wrap" AutomationProperties.HeadingLevel="2" />
               <TextBlock Classes="muted" TextWrapping="Wrap"
                          Text="Steps marked Required are needed to build on MonoGame and cannot be switched off." />
             </StackPanel>

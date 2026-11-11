@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -191,6 +192,9 @@ public sealed partial class DiffViewer : UserControl
     {
         editor.TextArea.TextView.BackgroundRenderers.Add(background);
         editor.TextArea.LeftMargins.Insert(0, gutter);
+
+        // Keyboard focus lands on the editor's text area, so that is the element a screen reader announces.
+        AutomationProperties.SetName(editor.TextArea, AutomationProperties.GetName(editor));
     }
 
     private void Rebuild()
