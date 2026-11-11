@@ -130,7 +130,7 @@ public static class FlashMigrator
             Markers = markerCounts,
             RulesFired = ruleIds,
         };
-        changes.Add(new FileChange("manifest.json", ChangeKind.Created, null, ManifestJsonWriter.Write(manifest), "Record of this migration."));
+        changes.Add(new FileChange(ProjectMigrator.ManifestJsonName, ChangeKind.Created, null, ManifestJsonWriter.Write(manifest), "Record of this migration."));
         changes.Add(new FileChange("MIGRATION-NOTES.md", ChangeKind.Created, null, NotesText(project, markerCounts, assets.Notes, notConverted), "What needs a person."));
 
         progress?.Report(new FlashMigrationProgress("Writing", 3, 4, null));

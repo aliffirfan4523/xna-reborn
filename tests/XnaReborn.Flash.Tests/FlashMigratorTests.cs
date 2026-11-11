@@ -77,7 +77,7 @@ public sealed class FlashMigratorTests : IDisposable
         var o = result.OutputFolder;
         Assert.True(File.Exists(Path.Combine(o, "PlatformerGame.csproj")));
         Assert.True(File.Exists(Path.Combine(o, "Program.cs")));
-        Assert.True(File.Exists(Path.Combine(o, "manifest.json")));
+        Assert.True(File.Exists(Path.Combine(o, "xnareborn-manifest.json")));
         Assert.True(File.Exists(Path.Combine(o, "XnaReborn.Flixel", "XnaReborn.Flixel.csproj")));
         Assert.True(File.Exists(Path.Combine(o, "XnaReborn.Flixel", "FlxSprite.cs")));
         Assert.True(File.Exists(Path.Combine(o, "XnaReborn.Flixel", "As3", "AsCore.cs")));
@@ -87,7 +87,7 @@ public sealed class FlashMigratorTests : IDisposable
         Assert.Contains("/build:data/sprites.png", mgcb);
         Assert.Contains("WavImporter", mgcb);
         Assert.False(File.Exists(Path.Combine(o, "INCOMPLETE.txt")));
-        Assert.Equal("Flash", System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(o, "manifest.json"))).RootElement.GetProperty("sourceKind").GetString());
+        Assert.Equal("Flash", System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(o, "xnareborn-manifest.json"))).RootElement.GetProperty("sourceKind").GetString());
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public sealed class FlashMigratorTests : IDisposable
         var with = File.ReadAllText(Path.Combine(result.OutputFolder, "Game", "src", "GapWith.cs"));
         Assert.Contains("// XNAREBORN: FL020", with);
         Assert.Contains("with (o)", with);
-        var counts = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(result.OutputFolder, "manifest.json"))).RootElement.GetProperty("markers");
+        var counts = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(result.OutputFolder, "xnareborn-manifest.json"))).RootElement.GetProperty("markers");
         Assert.True(counts.GetProperty("FL020").GetInt32() >= 1);
     }
 

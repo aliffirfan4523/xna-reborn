@@ -11,7 +11,7 @@ public static class DefaultRewriters
     /// <summary>SDX034 (RectangleF) and SDX035 (Color4, Color3): markers that are enabled only when the shims are off (sharpdx-toolkit task 14).</summary>
     public static readonly IReadOnlyList<string> ToolkitShimFallbackIds = ["SDX034", "SDX035"];
 
-    /// <summary>Creates a registry with ENTRYPOINT, DEVICEINPUT, XNA015, XNA022, XNA024, XNA039, XNA040, XNA053, XNA056, XNA059, XNA062, XNA063, XNA102, XNA103, the Visual Basic rewriters ENTRYPOINT, XNA022, XNA024, XNA039, XNA040, MG028 to MG032 and the SharpDX Toolkit rules SDX005 to SDX063 that have a rewriter or a marker.</summary>
+    /// <summary>Creates a registry with ENTRYPOINT, DEVICEINPUT, XNA015, XNA022, XNA024, XNA039, XNA040, XNA053, XNA056, XNA059, XNA062, XNA063, XNA102, XNA103, the Visual Basic rewriters ENTRYPOINT, XNA022, XNA024, XNA039, XNA040 (fixes for direct patterns, markers for the rest), MG028 to MG032 and the SharpDX Toolkit rules SDX005 to SDX063 that have a rewriter or a marker.</summary>
     /// <returns>A new registry.</returns>
     public static RewriterRegistry Create()
     {
@@ -31,10 +31,9 @@ public static class DefaultRewriters
         registry.Register(new ColorTransparentBlackRewriter());
         registry.Register(new VisualBasicEntryPointSourceRewriter());
         registry.Register(new VisualBasicSpriteBatchBeginRewriter());
-        foreach (var marker in VisualBasicMarkerRewriter.CreateAll())
-        {
-            registry.Register(marker);
-        }
+        registry.Register(new VisualBasicRenderStateRewriter());
+        registry.Register(new VisualBasicEffectPassRewriter(EffectPassRewriter.PassRuleId));
+        registry.Register(new VisualBasicEffectPassRewriter(EffectPassRewriter.EffectRuleId));
 
         registry.Register(LoadGraphicsContentRewriter.ForLoad());
         registry.Register(LoadGraphicsContentRewriter.ForUnload());

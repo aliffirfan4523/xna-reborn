@@ -201,7 +201,7 @@ public sealed class ProjectMigrator
 
             if (read.Info.Language == SourceLanguage.VisualBasic)
             {
-                // The Visual Basic rewriters for these rules only add markers; their findings are Manual, so no plan item enables them.
+                // The Visual Basic rewriters for these rules fix the direct patterns and mark the rest. Enable them whether or not a plan item exists.
                 enabled.UnionWith(report.Findings
                     .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && VisualBasicMarkerRewriter.RuleIds.Contains(f.RuleId, StringComparer.Ordinal))
                     .Select(f => f.RuleId));
