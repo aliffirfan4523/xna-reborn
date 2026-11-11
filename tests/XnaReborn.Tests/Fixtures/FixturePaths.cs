@@ -6,6 +6,11 @@ public static class FixturePaths
     /// <summary>Names of all fixture folders, in a fixed order.</summary>
     public static readonly IReadOnlyList<string> AllNames =
     [
+        "device-windows-plain",
+        "device-wp-silverlight",
+        "device-wp7-xna",
+        "device-xbox360-copy-solution",
+        "device-zune-31",
         "empty-folder",
         "multi-project-sln",
         "not-xna",

@@ -21,7 +21,11 @@ public sealed record NamespaceMatch(string Namespace, bool IncludeChildren = tru
 /// <summary>A type name used in code, gated by an imported or qualifying namespace.</summary>
 /// <param name="Name">The type name.</param>
 /// <param name="Namespaces">Namespaces that make the name relevant.</param>
-public sealed record TypeMatch(string Name, IReadOnlyList<string> Namespaces) : RuleMatch;
+/// <param name="AlsoNames">More type names that the same rule matches (JSON "alsoNames"), or null.</param>
+public sealed record TypeMatch(
+    string Name,
+    IReadOnlyList<string> Namespaces,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? AlsoNames = null) : RuleMatch;
 
 /// <summary>A member access or call, matched by syntax only.</summary>
 /// <param name="Name">The member name.</param>
@@ -70,3 +74,11 @@ public sealed record ContentItemMatch(
 /// <summary>A .spritefont file whose FontName is one of the listed font families. Looks in the project folder and in each nested content project folder.</summary>
 /// <param name="Families">Font family names, compared case-insensitively with the FontName element.</param>
 public sealed record SpriteFontFamilyMatch(IReadOnlyList<string> Families) : RuleMatch;
+
+/// <summary>A project whose Compile items mostly link to files of other projects, such as a Game Studio platform copy.</summary>
+/// <param name="MinLinkedRatio">Smallest share of Compile items that must be links, from 0 to 1.</param>
+public sealed record ProjectLinksMatch(double MinLinkedRatio = 0.5) : RuleMatch;
+
+/// <summary>A conditional compilation symbol named in an <c>#if</c> or <c>#elif</c> directive, including inactive branches.</summary>
+/// <param name="Names">Symbols to look for. Whole identifiers are compared, so WINDOWS_PHONE_7 does not match WINDOWS.</param>
+public sealed record PreprocessorSymbolMatch(IReadOnlyList<string> Names) : RuleMatch;

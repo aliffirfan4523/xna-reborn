@@ -1,0 +1,53 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "WpSilverlight.csproj",
+      "assemblyName": "WpSilverlight",
+      "isXna": true,
+      "xnaVersion": "4.0",
+      "platform": "WindowsPhone",
+      "profile": "Reach",
+      "targetFramework": "v4.0",
+      "references": [
+        "Microsoft.Phone",
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Graphics",
+        "System.Windows",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "App.xaml.cs",
+        "MainPage.xaml.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "SILVERLIGHT",
+        "WINDOWS_PHONE"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    }
+  ],
+  "findings": [],
+  "triggeredRules": [],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}

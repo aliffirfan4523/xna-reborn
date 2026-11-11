@@ -30,6 +30,7 @@ internal sealed class SourceWalker
         var walker = new SourceWalker(index);
         walker.CollectImports(root);
         walker.Visit(root);
+        walker.VisitDirectives(root);
         return walker._hits;
     }
 
@@ -99,6 +100,50 @@ internal sealed class SourceWalker
                 case SimpleNameSyntax name when !IsInNamespaceName(name):
                     MatchType(name);
                     break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads <c>#if</c> and <c>#elif</c> conditions from directive trivia. Roslyn builds this trivia for inactive
+    /// branches too, so a symbol that only appears in code the project's defines switch off is still found.
+    /// Each rule gives one hit per file, at its first match.
+    /// </summary>
+    private void VisitDirectives(SyntaxNode root)
+    {
+        if (_index.Symbols.Count == 0)
+        {
+            return;
+        }
+
+        var fired = new HashSet<int>();
+        foreach (var trivia in root.DescendantTrivia(descendIntoTrivia: false))
+        {
+            if (!trivia.IsDirective)
+            {
+                continue;
+            }
+
+            var condition = trivia.GetStructure() switch
+            {
+                IfDirectiveTriviaSyntax directive => directive.Condition,
+                ElifDirectiveTriviaSyntax directive => directive.Condition,
+                _ => null,
+            };
+            if (condition is null)
+            {
+                continue;
+            }
+
+            foreach (var identifier in condition.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
+            {
+                foreach (var rule in _index.Symbols)
+                {
+                    if (rule.Match.Names.Contains(identifier.Identifier.ValueText, StringComparer.Ordinal) && fired.Add(rule.Order))
+                    {
+                        AddHit(identifier.SpanStart, rule.Order, rule.Rule);
+                    }
+                }
             }
         }
     }
