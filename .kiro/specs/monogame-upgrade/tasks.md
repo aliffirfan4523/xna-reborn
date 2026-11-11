@@ -96,16 +96,16 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [x] 14.4 Tests on fixture E: platform projects skipped, shared code linked, solution lists one project
   - _Requirements: R9_
 
-- [ ] 15. Build and run
-  - [ ] 15.1 Add hints H100 to H105 to `hints.json` with a matching and a non-matching sample diagnostic each
-  - [ ] 15.2 Integration test (`XNAREBORN_INTEGRATION=1`): migrate fixtures A and B, run `dotnet build` on the copy; record whether `net8.0-windows` with WindowsDX 3.8.6.1 restores and builds
-  - [ ] 15.3 Source folder hash unchanged after migration and build; the output has the manifest marker; the runner refuses the unmigrated fixture
+- [x] 15. Build and run
+  - [x] 15.1 Add hints H100 to H105 to `hints.json` with a matching and a non-matching sample diagnostic each
+  - [x] 15.2 Integration test (`XNAREBORN_INTEGRATION=1`): migrate fixtures A and B, run `dotnet build` on the copy; record whether `net8.0-windows` with WindowsDX 3.8.6.1 restores and builds
+  - [x] 15.3 Source folder hash unchanged after migration and build; the output has the manifest marker; the runner refuses the unmigrated fixture
   - _Requirements: R10, R11_
 
-- [ ] 16. Studio UI
-  - [ ] 16.1 Project list shows family, version with confidence, and platform
-  - [ ] 16.2 Platform projects are shown as "not migrated, see manual work"
-  - [ ] 16.3 UI tests with a fake analyzer; no migration logic in `XnaReborn.App`
+- [x] 16. Studio UI
+  - [x] 16.1 Project list shows family, version with confidence, and platform
+  - [x] 16.2 Platform projects are shown as "not migrated, see manual work"
+  - [x] 16.3 UI tests with a fake analyzer; no migration logic in `XnaReborn.App`
   - _Requirements: R5, R9_
 
 - [ ] 17. Manual checks on real projects (outside the repository)
@@ -114,9 +114,10 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 17.3 Record results in `docs/test-candidates/` (summary only; no source or assets copied)
   - _Requirements: R11_
 
-- [ ] 18. Final checkpoint
+- [x] 18. Final checkpoint
   - Full test suite, `dotnet build`, `dotnet format --verify-no-changes`
   - Review of all manifests, diffs, and snapshots
   - Demo: BloomFilter or Squid goes from not building to building with minimal manual work
   - Confirm the original folders are unchanged (hash)
+  - Done in the checkpoint PR, on the synthetic fixtures. The demo bullet needs a real project (BloomFilter or Squid) and was not run: it belongs to task 17, which the owner does by hand.
   - _Requirements: R1 to R12_

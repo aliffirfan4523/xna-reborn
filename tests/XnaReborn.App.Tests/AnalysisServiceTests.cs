@@ -60,7 +60,7 @@ public sealed class AnalysisServiceTests
         var report = await new AnalysisService().AnalyzeAsync(RepoPaths.Fixture("sdx-basic"), null, TestContext.Current.CancellationToken);
 
         Assert.Null(report.NoProjectReason);
-        Assert.Equal("xna-to-monogame + sharpdx-toolkit-to-monogame", report.CatalogName);
+        Assert.Equal("xna-to-monogame + sharpdx-toolkit-to-monogame + monogame-upgrade", report.CatalogName);
         Assert.Contains(report.Findings, f => f.RuleId == "SDX020");
         Assert.DoesNotContain(report.Findings, f => f.RuleId.StartsWith("XNA", StringComparison.Ordinal));
         Assert.DoesNotContain(report.Diagnostics, d => d.Code == "ANA021");
@@ -85,7 +85,7 @@ public sealed class AnalysisServiceTests
             var toolkit = await service.AnalyzeAsync(RepoPaths.Fixture("sdx-basic"), null, TestContext.Current.CancellationToken);
 
             Assert.NotEmpty(xna.Findings);
-            Assert.Equal("xna-to-monogame", xna.CatalogName);
+            Assert.Equal("xna-to-monogame + monogame-upgrade", xna.CatalogName);
             var note = Assert.Single(xna.Diagnostics, d => d.Code == "ANA021");
             Assert.Contains("Toolkit", note.Message, StringComparison.Ordinal);
             Assert.Empty(toolkit.Projects);

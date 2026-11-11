@@ -160,6 +160,32 @@
       "advice": "The project has no static Main method. Check that Program.cs was migrated and that its Main (or top-level code) is not inside a conditional compilation block that is off."
     },
     {
+      "id": "H102",
+      "match": { "code": "CS0117", "messageContains": "'TransparentBlack'" },
+      "title": "Color.TransparentBlack was removed",
+      "advice": "MonoGame 3.8.1 removed Color.TransparentBlack. Use Color.Transparent, which is the same value (0, 0, 0, 0).",
+      "ruleId": "MG032"
+    },
+    {
+      "id": "H103",
+      "match": { "messageRegex": "'OpenTK'" },
+      "title": "OpenTK is not part of MonoGame 3.8.6.1",
+      "advice": "MonoGame 3.8 no longer ships OpenTK or exposes it. Code that uses OpenTK types directly has to be ported to MonoGame's graphics API or to a package that you add yourself.",
+      "ruleId": "MG030"
+    },
+    {
+      "id": "H104",
+      "match": { "code": "NETSDK1100" },
+      "title": "A Windows-only project cannot build on this operating system",
+      "advice": "This copy targets net8.0-windows (MonoGame WindowsDX), which needs Windows. On another system, migrate again with the DesktopGL target."
+    },
+    {
+      "id": "H105",
+      "match": { "messageRegex": "Failed to load assembly" },
+      "title": "The content builder could not load a pipeline assembly",
+      "advice": "Content.mgcb names a custom pipeline assembly that is missing or was built for an older MonoGame or XNA. Rebuild it against MonoGame 3.8.6.1 and check the /reference path in Content.mgcb.",
+      "ruleId": "MG025"
+    },    {
       "id": "R001",
       "match": { "runtimeRegex": "could not find (file|a part of the path)[^\\r\\n]*\\.xnb|content file was not found|ContentLoadException:[^\\r\\n]*not found" },
       "title": "Compiled content (.xnb) was not found",

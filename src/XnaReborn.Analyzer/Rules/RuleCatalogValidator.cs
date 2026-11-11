@@ -11,7 +11,7 @@ internal static class RuleCatalogValidator
     private static readonly Lazy<JsonSchema> _schema = new(LoadSchema);
 
     private static readonly string[] _matchTypes =
-        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "mgcbSetting"];
+        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "mgcbSetting", "fileContent"];
 
     /// <summary>Returns every problem found in <paramref name="root"/>, in a stable order.</summary>
     /// <param name="root">The parsed catalog.</param>
@@ -241,6 +241,11 @@ internal static class RuleCatalogValidator
         if (match.TryGetProperty("matches", out var pattern) && pattern.ValueKind == JsonValueKind.String)
         {
             CheckRegex(pattern.GetString()!, $"{label} /rules/{index}/match/matches", add);
+        }
+
+        if (match.TryGetProperty("regex", out var contentPattern) && contentPattern.ValueKind == JsonValueKind.String)
+        {
+            CheckRegex(contentPattern.GetString()!, $"{label} /rules/{index}/match/regex", add);
         }
 
         if (match.TryGetProperty("metadata", out var metadata) && metadata.ValueKind == JsonValueKind.Object

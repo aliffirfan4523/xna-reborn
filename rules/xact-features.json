@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "description": "Facts about XACT (.xap) features used by the converter. status is 'confirmed' or 'expected, unverified'. Nothing is copied from any third-party file; sources name where each fact was read.",
+  "features": [
+    { "group": "unit", "key": "volume", "meaning": "Hundredths of a decibel. gain = 10^(value/2000). 0 is unity gain.", "status": "expected, unverified", "source": "Real .xap files read in the spec research (values such as -1200 and 203); archived XACT documentation could not be reached for a direct statement." },
+    { "group": "unit", "key": "pitch", "meaning": "Hundredths of a semitone in the .xap, range -1200 to 1200, mapped to the XNA pitch range -1 to 1. MonoGame divides pitch variation values in compiled banks by 1000, so the two disagree.", "status": "expected, unverified", "source": "Every pitch value in the real files read is 0. MonoGame v3.8.6.1 Audio/Xact/XactClip.cs divides by 1000." },
+    { "group": "loopCount", "key": "255", "meaning": "Infinite loop.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs: IsLooped is set when the loop count is 255 and the event has one track; the finite counter is skipped for 255." },
+    { "group": "loopCount", "key": "N", "meaning": "A count from 1 to 254 repeats the wave N more times after the first play.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs Update: replays while the loop index is below the loop count." },
+    { "group": "loopCount", "key": "0", "meaning": "Play once.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs Update: stops when the loop count is 0." },
+    { "group": "instanceBehavior", "key": "0", "meaning": "Fail to play.", "status": "expected, unverified", "source": "XACT authoring tool order, as read in the real files (values 0, 1, 2 and 4 occur)." },
+    { "group": "instanceBehavior", "key": "1", "meaning": "Queue.", "status": "expected, unverified", "source": "XACT authoring tool order." },
+    { "group": "instanceBehavior", "key": "2", "meaning": "Replace oldest.", "status": "expected, unverified", "source": "XACT authoring tool order." },
+    { "group": "instanceBehavior", "key": "3", "meaning": "Replace quietest.", "status": "expected, unverified", "source": "XACT authoring tool order." },
+    { "group": "instanceBehavior", "key": "4", "meaning": "Replace lowest priority.", "status": "expected, unverified", "source": "XACT authoring tool order." },
+    { "group": "variationType", "key": "0", "meaning": "Ordered.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs enum VariationType." },
+    { "group": "variationType", "key": "1", "meaning": "Ordered from random.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs enum VariationType." },
+    { "group": "variationType", "key": "2", "meaning": "Random.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs enum VariationType." },
+    { "group": "variationType", "key": "3", "meaning": "Random without immediate repeats.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs enum VariationType." },
+    { "group": "variationType", "key": "4", "meaning": "Shuffle.", "status": "confirmed", "source": "MonoGame v3.8.6.1 Audio/Xact/PlayWaveEvent.cs enum VariationType." },
+    { "group": "unsupported", "key": "DSP", "meaning": "Effect chains (DSP paths and presets) are not converted.", "status": "expected, unverified", "source": "Block names from the XACT authoring tool; not present in the real files read." },
+    { "group": "unsupported", "key": "Reverb", "meaning": "Reverb settings are not converted.", "status": "expected, unverified", "source": "Block names from the XACT authoring tool; not present in the real files read." },
+    { "group": "unsupported", "key": "Filter", "meaning": "Filter settings are not converted.", "status": "expected, unverified", "source": "MonoGame v3.8.6.1 Audio/Xact/XactClip.cs reads filter fields; the .xap block name is unverified." },
+    { "group": "unsupported", "key": "Stop Event", "meaning": "Stop events are not converted.", "status": "expected, unverified", "source": "MonoGame v3.8.6.1 Audio/Xact/XactClip.cs event id 0 throws for a stop event; the .xap block name is unverified." },
+    { "group": "unsupported", "key": "Volume Event", "meaning": "Volume events are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Pitch Event", "meaning": "Pitch events are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Marker Event", "meaning": "Marker events are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Set Variable Event", "meaning": "Set variable events are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Transition", "meaning": "Interactive transitions are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Interactive", "meaning": "Interactive audio is not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Occlusion", "meaning": "Occlusion settings are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." },
+    { "group": "unsupported", "key": "Obstruction", "meaning": "Obstruction settings are not converted.", "status": "expected, unverified", "source": "Block name from the XACT authoring tool." }
+  ]
+}
