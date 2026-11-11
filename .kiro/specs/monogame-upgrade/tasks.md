@@ -114,9 +114,10 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 17.3 Record results in `docs/test-candidates/` (summary only; no source or assets copied)
   - _Requirements: R11_
 
-- [ ] 18. Final checkpoint
+- [x] 18. Final checkpoint
   - Full test suite, `dotnet build`, `dotnet format --verify-no-changes`
   - Review of all manifests, diffs, and snapshots
   - Demo: BloomFilter or Squid goes from not building to building with minimal manual work
   - Confirm the original folders are unchanged (hash)
+  - Done in the checkpoint PR, on the synthetic fixtures. The demo bullet needs a real project (BloomFilter or Squid) and was not run: it belongs to task 17, which the owner does by hand.
   - _Requirements: R1 to R12_
