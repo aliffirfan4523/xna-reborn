@@ -1,124 +1,301 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:XnaReborn.App.ViewModels"
+             xmlns:controls="using:XnaReborn.App.Controls"
              x:Class="XnaReborn.App.Views.MigrationSetupView"
              x:DataType="vm:MigrationSetupViewModel">
+  <UserControl.Styles>
+    <!-- Target choice: a radio button drawn as a selectable card. The check mark and the word "Selected" are the non-color cue. -->
+    <Style Selector="RadioButton.option">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Top" />
+      <Setter Property="Padding" Value="{DynamicResource CardPadding}" />
+      <Setter Property="MinHeight" Value="{DynamicResource MinTarget}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushStrong}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border x:Name="OptionRoot" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Foreground="{TemplateBinding Foreground}" RecognizesAccessKey="True" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="RadioButton.option:pointerover /template/ Border#OptionRoot">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+    </Style>
+    <Style Selector="RadioButton.option:checked /template/ Border#OptionRoot">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+    </Style>
+    <Style Selector="RadioButton.option:focus-visible /template/ Border#OptionRoot">
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRingBrush}" />
+      <Setter Property="BorderThickness" Value="3" />
+    </Style>
+    <Style Selector="RadioButton.option PathIcon.selected-mark">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="RadioButton.option:checked PathIcon.selected-mark">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="RadioButton.option TextBlock.selected-word">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="RadioButton.option:checked TextBlock.selected-word">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+  </UserControl.Styles>
+
   <ScrollViewer>
-    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}" MaxWidth="900"
-                HorizontalAlignment="Left">
-      <TextBlock Text="{Binding Title}" Classes="headline"
-                 AutomationProperties.HeadingLevel="1" />
-
-      <!-- Output folder -->
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Output folder" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <TextBlock Text="The migrated copy goes here. Your original project is never changed." TextWrapping="Wrap" />
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingMedium}">
-          <TextBox Grid.Column="0" Text="{Binding OutputFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                   PlaceholderText="Folder for the migrated copy"
-                   AutomationProperties.AutomationId="OutputFolderBox"
-                   AutomationProperties.Name="Output folder" />
-          <Button Classes="secondary" Grid.Column="1" Content="Browse..." Command="{Binding BrowseCommand}"
-                  AutomationProperties.AutomationId="BrowseButton"
-                  AutomationProperties.Name="Browse for the output folder" />
-        </Grid>
-        <!-- The text starts with OK, Warning or Problem, so color is never the only cue. -->
-        <TextBlock Text="{Binding OutputMessage}" TextWrapping="Wrap"
-                   AutomationProperties.AutomationId="OutputMessage"
-                   AutomationProperties.LiveSetting="Polite" />
+    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource Space5}" MaxWidth="{StaticResource ContentMaxWidth}"
+                HorizontalAlignment="Stretch">
+      <StackPanel Spacing="{StaticResource Space1}">
+        <TextBlock Text="{Binding Title}" Classes="headline"
+                   AutomationProperties.HeadingLevel="1" />
+        <TextBlock Classes="muted" TextWrapping="Wrap"
+                   Text="Set up the migrated copy, check the plan, then preview or migrate. Your original project is never changed." />
       </StackPanel>
 
-      <!-- Target -->
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="MonoGame target" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <RadioButton GroupName="Target" Content="DesktopGL (OpenGL, works on Windows, Linux and macOS)"
-                     IsChecked="{Binding IsDesktopGL, Mode=TwoWay}"
-                     AutomationProperties.AutomationId="TargetDesktopGL"
-                     AutomationProperties.Name="Target DesktopGL" />
-        <RadioButton GroupName="Target" Content="WindowsDX (DirectX, Windows only)"
-                     IsChecked="{Binding IsWindowsDx, Mode=TwoWay}"
-                     AutomationProperties.AutomationId="TargetWindowsDX"
-                     AutomationProperties.Name="Target WindowsDX" />
-      </StackPanel>
+      <!-- 1. Output folder -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <StackPanel Spacing="{StaticResource Space1}">
+            <TextBlock Text="1. Output folder" Classes="title" AutomationProperties.HeadingLevel="2" />
+            <TextBlock Classes="muted" TextWrapping="Wrap"
+                       Text="The migrated copy goes here. Your original project is never changed." />
+          </StackPanel>
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <TextBox Grid.Column="0" Text="{Binding OutputFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="Folder for the migrated copy" MinHeight="{StaticResource MinTarget}"
+                     AutomationProperties.AutomationId="OutputFolderBox"
+                     AutomationProperties.Name="Output folder" />
+            <Button Classes="secondary" Grid.Column="1" Command="{Binding BrowseCommand}"
+                    AutomationProperties.AutomationId="BrowseButton"
+                    AutomationProperties.Name="Browse for the output folder">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+                <PathIcon Data="{StaticResource IconFolderOpen}" Width="16" Height="16" />
+                <TextBlock Text="Browse..." />
+              </StackPanel>
+            </Button>
+          </Grid>
+          <!-- The text starts with OK, Warning or Problem, and each state has its own icon, so color is never the only cue. -->
+          <Border Classes="chip" Classes.success="{Binding OutputIsOk}" Classes.warning="{Binding OutputNeedsConfirmation}"
+                  Classes.error="{Binding OutputIsRefused}" HorizontalAlignment="Left" CornerRadius="{StaticResource RadiusSmall}"
+                  Padding="10,6">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+              <PathIcon Width="16" Height="16" VerticalAlignment="Top" Margin="0,2,0,0"
+                        Data="{StaticResource IconInfo}" IsVisible="{Binding !OutputIsOk}" />
+              <PathIcon Width="16" Height="16" VerticalAlignment="Top" Margin="0,2,0,0"
+                        Data="{StaticResource IconCheckCircle}" IsVisible="{Binding OutputIsOk}" />
+              <TextBlock Text="{Binding OutputMessage}" TextWrapping="Wrap" MaxWidth="760"
+                         AutomationProperties.AutomationId="OutputMessage"
+                         AutomationProperties.LiveSetting="Polite" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Border>
 
-      <!-- Options -->
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Options" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <CheckBox Content="Add compatibility shims" IsChecked="{Binding EnableShims, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="ShimsToggle"
-                  AutomationProperties.Name="Add compatibility shims" />
-        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
-                   Text="Off by default. Adds small stand-in classes for XNA parts that MonoGame does not have, so more code compiles without edits." />
-        <CheckBox Content="Substitute fonts that only XNA installed" IsChecked="{Binding SubstituteFonts, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="FontSubstitutionToggle"
-                  AutomationProperties.Name="Substitute fonts that only XNA installed" />
-        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
-                   Text="Off by default. When on, a .spritefont that names an XNA-only font gets a Windows font. When off, it is listed as manual work." />
-        <CheckBox Content="Let the window be resized" IsChecked="{Binding AllowWindowResize, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="ResizeToggle"
-                  AutomationProperties.Name="Let the window be resized" />
-        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
-                   Text="Off by default. The game keeps its own resolution and is scaled to the window with black bars. Mouse positions are not remapped." />
-        <CheckBox Content="Alt+Enter toggles fullscreen" IsChecked="{Binding FullscreenToggle, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="FullscreenToggle"
-                  AutomationProperties.Name="Alt plus Enter toggles fullscreen" />
-        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
-                   Text="Off by default. Switches between a window and borderless fullscreen. The game keeps its own resolution and is scaled." />
-        <CheckBox Content="High-DPI awareness (Windows)" IsChecked="{Binding HighDpi, Mode=TwoWay}"
-                  AutomationProperties.AutomationId="HighDpiToggle"
-                  AutomationProperties.Name="High DPI awareness" />
-        <TextBlock Margin="24,0,0,0" TextWrapping="Wrap"
-                   Text="Off by default. The window is not blurred by Windows scaling, but it looks smaller on a high-DPI screen. Best with resizing or fullscreen." />
-      </StackPanel>
+      <!-- 2. Target -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <StackPanel Spacing="{StaticResource Space1}">
+            <TextBlock Text="2. MonoGame target" Classes="title" AutomationProperties.HeadingLevel="2" />
+            <TextBlock Classes="muted" TextWrapping="Wrap" Text="Pick the graphics backend the migrated game uses. Use the arrow keys to switch." />
+          </StackPanel>
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space3}">
+            <RadioButton Grid.Column="0" Classes="option" GroupName="Target"
+                         IsChecked="{Binding IsDesktopGL, Mode=TwoWay}"
+                         AutomationProperties.AutomationId="TargetDesktopGL"
+                         AutomationProperties.Name="Target DesktopGL">
+              <StackPanel Spacing="{StaticResource Space1}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+                  <TextBlock Text="DesktopGL" Classes="subtitle" FontWeight="SemiBold" />
+                  <PathIcon Classes="selected-mark" Data="{StaticResource IconCheckCircle}" Width="16" Height="16"
+                            Foreground="{DynamicResource AccentTextBrush}" />
+                  <TextBlock Classes="selected-word caption" Text="Selected" VerticalAlignment="Center"
+                             Foreground="{DynamicResource AccentTextBrush}" />
+                </StackPanel>
+                <TextBlock Text="OpenGL. Runs on Windows, Linux and macOS." TextWrapping="Wrap" />
+                <TextBlock Classes="caption muted" Text="Recommended if you want one build for every desktop." TextWrapping="Wrap" />
+              </StackPanel>
+            </RadioButton>
+            <RadioButton Grid.Column="1" Classes="option" GroupName="Target"
+                         IsChecked="{Binding IsWindowsDx, Mode=TwoWay}"
+                         AutomationProperties.AutomationId="TargetWindowsDX"
+                         AutomationProperties.Name="Target WindowsDX">
+              <StackPanel Spacing="{StaticResource Space1}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+                  <TextBlock Text="WindowsDX" Classes="subtitle" FontWeight="SemiBold" />
+                  <PathIcon Classes="selected-mark" Data="{StaticResource IconCheckCircle}" Width="16" Height="16"
+                            Foreground="{DynamicResource AccentTextBrush}" />
+                  <TextBlock Classes="selected-word caption" Text="Selected" VerticalAlignment="Center"
+                             Foreground="{DynamicResource AccentTextBrush}" />
+                </StackPanel>
+                <TextBlock Text="DirectX. Windows only." TextWrapping="Wrap" />
+                <TextBlock Classes="caption muted" Text="Closest to how XNA ran. Pick it for a Windows-only game." TextWrapping="Wrap" />
+              </StackPanel>
+            </RadioButton>
+          </Grid>
+        </StackPanel>
+      </Border>
 
-      <!-- Plan -->
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Migration plan" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <TextBlock Text="{Binding PlanSummary}" AutomationProperties.AutomationId="PlanSummary" />
-        <ItemsControl ItemsSource="{Binding PlanItems}" AutomationProperties.AutomationId="PlanList">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:PlanItemViewModel">
-              <Border Padding="8" Margin="0,0,0,4" BorderThickness="1"
-                      BorderBrush="#60808080" CornerRadius="4">
-                <CheckBox IsChecked="{Binding IsIncluded, Mode=TwoWay}" IsEnabled="{Binding CanExclude}"
-                          AutomationProperties.AutomationId="PlanItemCheck"
-                          AutomationProperties.Name="{Binding Description}">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
-                    <TextBlock Text="{Binding FilesText}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
-                  </StackPanel>
-                </CheckBox>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </StackPanel>
+      <!-- 3. Options -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <StackPanel Spacing="{StaticResource Space1}">
+            <TextBlock Text="3. Options" Classes="title" AutomationProperties.HeadingLevel="2" />
+            <TextBlock Classes="muted" TextWrapping="Wrap" Text="All are off by default. Switch on only what you need." />
+          </StackPanel>
+
+          <CheckBox IsChecked="{Binding EnableShims, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="ShimsToggle"
+                    AutomationProperties.Name="Add compatibility shims">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Add compatibility shims" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Off by default. Adds small stand-in classes for XNA parts that MonoGame does not have, so more code compiles without edits." />
+            </StackPanel>
+          </CheckBox>
+          <Border Classes="divider" />
+          <CheckBox IsChecked="{Binding SubstituteFonts, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="FontSubstitutionToggle"
+                    AutomationProperties.Name="Substitute fonts that only XNA installed">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Substitute fonts that only XNA installed" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Off by default. When on, a .spritefont that names an XNA-only font gets a Windows font. When off, it is listed as manual work." />
+            </StackPanel>
+          </CheckBox>
+          <Border Classes="divider" />
+          <TextBlock Text="Modern extras" Classes="subtitle" AutomationProperties.HeadingLevel="3" />
+          <CheckBox IsChecked="{Binding AllowWindowResize, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="ResizeToggle"
+                    AutomationProperties.Name="Let the window be resized">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Let the window be resized" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Off by default. The game keeps its own resolution and is scaled to the window with black bars. Mouse positions are not remapped." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding FullscreenToggle, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="FullscreenToggle"
+                    AutomationProperties.Name="Alt plus Enter toggles fullscreen">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Alt+Enter toggles fullscreen" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Off by default. Switches between a window and borderless fullscreen. The game keeps its own resolution and is scaled." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding HighDpi, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="HighDpiToggle"
+                    AutomationProperties.Name="High DPI awareness">
+            <StackPanel Spacing="2">
+              <TextBlock Text="High-DPI awareness (Windows)" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Off by default. The window is not blurred by Windows scaling, but it looks smaller on a high-DPI screen. Best with resizing or fullscreen." />
+            </StackPanel>
+          </CheckBox>
+        </StackPanel>
+      </Border>
+
+      <!-- 4. Plan -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <StackPanel Grid.Column="0" Spacing="{StaticResource Space1}">
+              <TextBlock Text="4. Migration plan" Classes="title" AutomationProperties.HeadingLevel="2" />
+              <TextBlock Classes="muted" TextWrapping="Wrap"
+                         Text="Steps marked Required are needed to build on MonoGame and cannot be switched off." />
+            </StackPanel>
+            <controls:Chip Grid.Column="1" Kind="Accent" Text="{Binding PlanSummary}" VerticalAlignment="Top"
+                           AutomationProperties.AutomationId="PlanSummary" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding PlanItems}" AutomationProperties.AutomationId="PlanList">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="{StaticResource Space2}" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:PlanItemViewModel">
+                <Border Classes="card flat compact">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsIncluded, Mode=TwoWay}" IsEnabled="{Binding CanExclude}"
+                              AutomationProperties.AutomationId="PlanItemCheck"
+                              AutomationProperties.Name="{Binding Description}">
+                      <StackPanel Spacing="2">
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" Classes="caption muted" />
+                        <TextBlock Text="{Binding FilesText}" TextWrapping="Wrap" Classes="caption muted" />
+                      </StackPanel>
+                    </CheckBox>
+                    <!-- Icon plus word, so locked vs optional is not shown by color alone. -->
+                    <Border Grid.Column="1" Classes="chip neutral" VerticalAlignment="Top"
+                            IsVisible="{Binding !CanExclude}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Data="{StaticResource IconLock}" Width="14" Height="14" />
+                        <TextBlock Text="Required" />
+                      </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Classes="chip info" VerticalAlignment="Top"
+                            IsVisible="{Binding CanExclude}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Data="{StaticResource IconTune}" Width="14" Height="14" />
+                        <TextBlock Text="Optional" />
+                      </StackPanel>
+                    </Border>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
 
       <!-- Actions -->
-      <StackPanel Spacing="{StaticResource SpacingMedium}">
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-          <Button Classes="secondary" Content="Preview" Command="{Binding PreviewCommand}"
-                  AutomationProperties.AutomationId="PreviewButton"
-                  AutomationProperties.Name="Preview the changes without writing anything"
-                  ToolTip.Tip="Shows the changes without writing anything." />
-          <Button Content="Migrate" Classes="primary" Command="{Binding MigrateCommand}"
-                  AutomationProperties.AutomationId="MigrateButton"
-                  AutomationProperties.Name="Migrate and write the copy to the output folder"
-                  ToolTip.Tip="Writes the migrated copy to the output folder." />
-          <Button Classes="secondary" Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}" IsCancel="True"
-                  AutomationProperties.AutomationId="CancelButton"
-                  AutomationProperties.Name="Cancel the running preview or migration" />
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space3}">
+            <Button Classes="secondary" Command="{Binding PreviewCommand}"
+                    AutomationProperties.AutomationId="PreviewButton"
+                    AutomationProperties.Name="Preview the changes without writing anything"
+                    ToolTip.Tip="Shows the changes without writing anything.">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+                <PathIcon Data="{StaticResource IconDiff}" Width="16" Height="16" />
+                <TextBlock Text="Preview" />
+              </StackPanel>
+            </Button>
+            <Button Classes="primary" Command="{Binding MigrateCommand}"
+                    AutomationProperties.AutomationId="MigrateButton"
+                    AutomationProperties.Name="Migrate and write the copy to the output folder"
+                    ToolTip.Tip="Writes the migrated copy to the output folder.">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+                <PathIcon Data="{StaticResource IconPlay}" Width="16" Height="16" />
+                <TextBlock Text="Migrate" />
+              </StackPanel>
+            </Button>
+            <Button Classes="secondary" Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}" IsCancel="True"
+                    AutomationProperties.AutomationId="CancelButton"
+                    AutomationProperties.Name="Cancel the running preview or migration" />
+          </StackPanel>
+          <StackPanel Spacing="{StaticResource Space2}" IsVisible="{Binding IsBusy}">
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"
+                         IsIndeterminate="{Binding ProgressIsIndeterminate}"
+                         AutomationProperties.Name="Migration progress" />
+            <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+          </StackPanel>
+          <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                     AutomationProperties.AutomationId="StatusMessage" AutomationProperties.LiveSetting="Polite" />
         </StackPanel>
-        <StackPanel Spacing="{StaticResource SpacingSmall}" IsVisible="{Binding IsBusy}">
-          <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"
-                       IsIndeterminate="{Binding ProgressIsIndeterminate}"
-                       AutomationProperties.Name="Migration progress" />
-          <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
-        </StackPanel>
-        <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                   AutomationProperties.AutomationId="StatusMessage" AutomationProperties.LiveSetting="Polite" />
-      </StackPanel>
+      </Border>
     </StackPanel>
   </ScrollViewer>
 </UserControl>
