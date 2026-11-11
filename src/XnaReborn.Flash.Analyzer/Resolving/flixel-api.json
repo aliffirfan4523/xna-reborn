@@ -1080,6 +1080,18 @@
           ]
         },
         {
+          "name": "destroySounds",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "ForceDestroyMusic",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
           "name": "drawFrame",
           "kind": "method",
           "type": "void",
@@ -1183,6 +1195,18 @@
           "static": true
         },
         {
+          "name": "music",
+          "kind": "field",
+          "type": "FlxSound",
+          "static": true
+        },
+        {
+          "name": "mute",
+          "kind": "property",
+          "type": "Boolean",
+          "static": true
+        },
+        {
           "name": "overlap",
           "kind": "method",
           "type": "Boolean",
@@ -1207,6 +1231,13 @@
           ]
         },
         {
+          "name": "pauseSounds",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": []
+        },
+        {
           "name": "play",
           "kind": "method",
           "type": "FlxSound",
@@ -1223,6 +1254,26 @@
             {
               "name": "Looped",
               "type": "Boolean"
+            },
+            {
+              "name": "AutoDestroy",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "playMusic",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Music",
+              "type": "Class"
+            },
+            {
+              "name": "Volume",
+              "type": "Number"
             }
           ]
         },
@@ -1245,6 +1296,19 @@
           "type": "void",
           "static": true,
           "parameters": []
+        },
+        {
+          "name": "resumeSounds",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": []
+        },
+        {
+          "name": "sounds",
+          "kind": "field",
+          "type": "FlxGroup",
+          "static": true
         },
         {
           "name": "state",
@@ -1283,6 +1347,12 @@
               "type": "FlxState"
             }
           ]
+        },
+        {
+          "name": "volume",
+          "kind": "property",
+          "type": "Number",
+          "static": true
         },
         {
           "name": "width",
@@ -2427,22 +2497,130 @@
     },
     {
       "name": "FlxSound",
+      "base": "FlxBasic",
       "members": [
         {
           "name": "asset",
-          "kind": "field",
+          "kind": "property",
           "type": "AssetRef",
           "static": false
         },
         {
-          "name": "looped",
-          "kind": "field",
+          "name": "autoDestroy",
+          "kind": "property",
           "type": "Boolean",
           "static": false
         },
         {
+          "name": "destroy",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "fadeIn",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Seconds",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "fadeOut",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Seconds",
+              "type": "Number"
+            },
+            {
+              "name": "PauseInstead",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "kill",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "loadEmbedded",
+          "kind": "method",
+          "type": "FlxSound",
+          "static": false,
+          "parameters": [
+            {
+              "name": "EmbeddedSound",
+              "type": "Class"
+            },
+            {
+              "name": "Looped",
+              "type": "Boolean"
+            },
+            {
+              "name": "AutoDestroy",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "looped",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "pause",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "play",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ForceRestart",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "playing",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "stop",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
           "name": "volume",
-          "kind": "field",
+          "kind": "property",
           "type": "Number",
           "static": false
         }
@@ -3023,6 +3201,18 @@
       "name": "IFlxAssets",
       "members": [
         {
+          "name": "CreateSound",
+          "kind": "method",
+          "type": "IFlxSoundInstance",
+          "static": false,
+          "parameters": [
+            {
+              "name": "sound",
+              "type": "AssetRef"
+            }
+          ]
+        },
+        {
           "name": "GetTextureSize",
           "kind": "method",
           "type": "(int Width, int Height)",
@@ -3031,26 +3221,6 @@
             {
               "name": "texture",
               "type": "AssetRef"
-            }
-          ]
-        },
-        {
-          "name": "PlaySound",
-          "kind": "method",
-          "type": "void",
-          "static": false,
-          "parameters": [
-            {
-              "name": "sound",
-              "type": "AssetRef"
-            },
-            {
-              "name": "volume",
-              "type": "Number"
-            },
-            {
-              "name": "looped",
-              "type": "Boolean"
             }
           ]
         },
@@ -3206,6 +3376,57 @@
               "type": "uint"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "IFlxSoundInstance",
+      "members": [
+        {
+          "name": "IsPlaying",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "Looped",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "Pause",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "Play",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "Resume",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "Stop",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "Volume",
+          "kind": "property",
+          "type": "Number",
+          "static": false
         }
       ]
     },

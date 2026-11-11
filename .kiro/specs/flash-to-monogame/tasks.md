@@ -85,7 +85,7 @@ Suggested waves (parallel inside a wave):
   - [x] 9.2 `FlxCamera` (single camera): scroll, bounds, follow, `flash`, `fade`, `shake`, background color. `FlxSprite` drawing: frames, animation (`addAnimation`, `play`), flip, scale, angle, alpha, color, `makeGraphic`, `loadGraphic`. Frame and animation math tested headless. (H)
   - [ ] 9.3 `FlxText` with `SpriteFont`, alignment, color, shadow; `FlxButton`; `FlxTileblock`. (H)
   - [x] 9.4 Input: `FlxG.keys`, `FlxG.mouse`, gamepad stub, key name map. Tests with a fake input provider. (L)
-  - [ ] 9.5 Audio: `FlxSound`, `FlxG.play`, `playMusic`, volume, mute, pause, loop, fade. Wrap `SoundEffect` behind an interface so logic is testable. (H)
+  - [x] 9.5 Audio: `FlxSound`, `FlxG.play`, `playMusic`, volume, mute, pause, loop, fade. Wrap `SoundEffect` behind an interface so logic is testable. (H)
   - [x] 9.6 Asset loading through `AssetRef` and `Content.RootDirectory` (textures, sounds, data as bytes or text, sprite fonts). Tests with an in-memory asset provider. (L)
   - _Requirements: R7.2, R7.5, R7.7_
 

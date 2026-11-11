@@ -67,7 +67,63 @@ public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState, IFlxMo
 
     public (int Width, int Height)? GetTextureSize(AssetRef texture) => Textures.TryGetValue(texture.Name, out var s) ? s : null;
 
-    public void PlaySound(AssetRef sound, double volume, bool looped) => Played.Add(sound.Name);
+    /// <summary>Every sound made so far.</summary>
+    public List<FakeSound> Sounds { get; } = new();
+
+    public IFlxSoundInstance CreateSound(AssetRef sound)
+    {
+        var fake = new FakeSound(sound.Name, this);
+        Sounds.Add(fake);
+        return fake;
+    }
 
     public byte[] ReadData(AssetRef data) => Data.TryGetValue(data.Name, out var bytes) ? bytes : throw new FileNotFoundException(data.Name);
+}
+
+/// <summary>A sound that records what it is told.</summary>
+public sealed class FakeSound(string name, FlxTestHost host) : IFlxSoundInstance
+{
+    private bool _paused;
+
+    public string Name { get; } = name;
+
+    public double Volume { get; set; }
+
+    public bool Looped { get; set; }
+
+    public bool IsPlaying { get; set; }
+
+    public int Stops { get; private set; }
+
+    public bool Disposed { get; private set; }
+
+    public void Play()
+    {
+        IsPlaying = true;
+        _paused = false;
+        host.Played.Add(Name);
+    }
+
+    public void Pause()
+    {
+        IsPlaying = false;
+        _paused = true;
+    }
+
+    public void Resume()
+    {
+        IsPlaying = true;
+        _paused = false;
+    }
+
+    public void Stop()
+    {
+        IsPlaying = false;
+        _paused = false;
+        Stops++;
+    }
+
+    public bool Paused => _paused;
+
+    public void Dispose() => Disposed = true;
 }
