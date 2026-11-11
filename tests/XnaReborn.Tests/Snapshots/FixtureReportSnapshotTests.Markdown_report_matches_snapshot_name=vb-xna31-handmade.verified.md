@@ -6,14 +6,14 @@ Rule catalog: xna-test-sample (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 100 / 100 |
-| Projected score after automatic fixes | 100 / 100 |
+| Compatibility score | 92 / 100 |
+| Projected score after automatic fixes | 92 / 100 |
 | Projects analyzed | 1 |
-| Findings | 0 |
+| Findings | 3 |
 
-Severity: Blocker 0, Error 0, Warning 0, Info 0
+Severity: Blocker 0, Error 3, Warning 0, Info 0
 
-Classification: AutoFixable 0, Manual 0, Unsupported 0
+Classification: AutoFixable 0, Manual 3, Unsupported 0
 
 ## Projects
 
@@ -23,4 +23,25 @@ Classification: AutoFixable 0, Manual 0, Unsupported 0
 
 ## Findings
 
-No findings.
+### Manual
+
+- **[Error] XNA905** SpriteBlendMode
+  - Project: `VbXna31Handmade.vbproj`
+  - Location: `Game1.vb:10:21`
+  - Code: `Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend`
+- **[Error] XNA905** SpriteBlendMode
+  - Project: `VbXna31Handmade.vbproj`
+  - Location: `Game1.vb:10:39`
+  - Code: `Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend`
+- **[Error] XNA905** SpriteBlendMode
+  - Project: `VbXna31Handmade.vbproj`
+  - Location: `Game1.vb:29:27`
+  - Code: `spriteBatch.Begin(SpriteBlendMode.AlphaBlend)`
+
+## Rules
+
+### XNA905 SpriteBlendMode
+
+SpriteBlendMode was replaced by BlendState.
+
+**Resolution:** Use BlendState.AlphaBlend or Additive.

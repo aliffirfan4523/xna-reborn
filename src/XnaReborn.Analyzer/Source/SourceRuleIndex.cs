@@ -14,14 +14,21 @@ internal readonly record struct IndexedRule<T>(int Order, Rule Rule, T Match)
 internal sealed class SourceRuleIndex
 {
     private readonly List<IndexedRule<NamespaceMatch>> _namespaces = [];
-    private readonly Dictionary<string, List<IndexedRule<TypeMatch>>> _types = new(StringComparer.Ordinal);
-    private readonly Dictionary<string, List<IndexedRule<MemberMatch>>> _members = new(StringComparer.Ordinal);
-    private readonly Dictionary<string, List<IndexedRule<MethodDeclarationMatch>>> _methods = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, List<IndexedRule<TypeMatch>>> _types;
+    private readonly Dictionary<string, List<IndexedRule<MemberMatch>>> _members;
+    private readonly Dictionary<string, List<IndexedRule<MethodDeclarationMatch>>> _methods;
     private readonly List<IndexedRule<PreprocessorSymbolMatch>> _symbols = [];
 
-    private SourceRuleIndex()
+    private SourceRuleIndex(StringComparer comparer)
     {
+        Comparer = comparer;
+        _types = new(comparer);
+        _members = new(comparer);
+        _methods = new(comparer);
     }
+
+    /// <summary>Gets the comparer used for type, member and method names.</summary>
+    internal StringComparer Comparer { get; }
 
     /// <summary>Gets the namespace rules in rule order.</summary>
     internal IReadOnlyList<IndexedRule<NamespaceMatch>> Namespaces => _namespaces;
@@ -43,10 +50,11 @@ internal sealed class SourceRuleIndex
 
     /// <summary>Builds the index. Rules of other match types and repeated rule instances are skipped.</summary>
     /// <param name="rules">The rules passed to the matcher.</param>
+    /// <param name="ignoreCase">True to compare names without case (Visual Basic).</param>
     /// <returns>The index.</returns>
-    internal static SourceRuleIndex Build(IReadOnlyList<Rule> rules)
+    internal static SourceRuleIndex Build(IReadOnlyList<Rule> rules, bool ignoreCase = false)
     {
-        var index = new SourceRuleIndex();
+        var index = new SourceRuleIndex(ignoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
         var seen = new HashSet<Rule>(ReferenceEqualityComparer.Instance);
         for (var i = 0; i < rules.Count; i++)
         {
@@ -62,7 +70,7 @@ internal sealed class SourceRuleIndex
                     index._namespaces.Add(new IndexedRule<NamespaceMatch>(i, rule, ns));
                     break;
                 case TypeMatch type:
-                    foreach (var name in (type.AlsoNames ?? []).Prepend(type.Name).Distinct(StringComparer.Ordinal))
+                    foreach (var name in (type.AlsoNames ?? []).Prepend(type.Name).Distinct(index.Comparer))
                     {
                         Add(index._types, name, new IndexedRule<TypeMatch>(i, rule, type));
                     }
@@ -75,7 +83,7 @@ internal sealed class SourceRuleIndex
                     Add(index._methods, method.Name, new IndexedRule<MethodDeclarationMatch>(i, rule, method));
                     break;
                 case MemberMatch member:
-                    foreach (var name in member.AllNames.Distinct(StringComparer.Ordinal))
+                    foreach (var name in member.AllNames.Distinct(index.Comparer))
                     {
                         Add(index._members, name, new IndexedRule<MemberMatch>(i, rule, member));
                     }

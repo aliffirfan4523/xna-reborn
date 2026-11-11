@@ -6,7 +6,7 @@ Public Class Game1
 
     Private graphics As GraphicsDeviceManager
     Private spriteBatch As SpriteBatch
-    Private fx As BasicEffect
+    Private effect As BasicEffect
     Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend
 
     Public Sub New()
@@ -15,7 +15,7 @@ Public Class Game1
 
     Protected Overrides Sub LoadContent()
         spriteBatch = New SpriteBatch(GraphicsDevice)
-        fx = New BasicEffect(GraphicsDevice, Nothing)
+        effect = New BasicEffect(GraphicsDevice, Nothing)
     End Sub
 
     Protected Overrides Sub Draw(ByVal gameTime As GameTime)
@@ -29,8 +29,12 @@ Public Class Game1
         spriteBatch.Begin(SpriteBlendMode.AlphaBlend)
         spriteBatch.End()
 
-        fx.Begin
-        fx.End()
+        effect.Begin
+        For Each pass As EffectPass In effect.CurrentTechnique.Passes
+            pass.Begin()
+            pass.End()
+        Next
+        effect.End()
 
         Dim title As String = My.Application.Info.Title
         Window.Title = title

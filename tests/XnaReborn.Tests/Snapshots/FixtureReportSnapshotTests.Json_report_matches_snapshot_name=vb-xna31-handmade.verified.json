@@ -31,21 +31,69 @@
       "language": "vb"
     }
   ],
-  "findings": [],
-  "triggeredRules": [],
+  "findings": [
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "VbXna31Handmade.vbproj",
+      "location": {
+        "file": "Game1.vb",
+        "line": 10,
+        "column": 21
+      },
+      "snippet": "Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend"
+    },
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "VbXna31Handmade.vbproj",
+      "location": {
+        "file": "Game1.vb",
+        "line": 10,
+        "column": 39
+      },
+      "snippet": "Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend"
+    },
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "VbXna31Handmade.vbproj",
+      "location": {
+        "file": "Game1.vb",
+        "line": 29,
+        "column": 27
+      },
+      "snippet": "spriteBatch.Begin(SpriteBlendMode.AlphaBlend)"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA905",
+      "title": "SpriteBlendMode",
+      "explanation": "SpriteBlendMode was replaced by BlendState.",
+      "resolution": "Use BlendState.AlphaBlend or Additive.",
+      "migratorTask": null
+    }
+  ],
   "countsBySeverity": {
     "Info": 0,
     "Warning": 0,
-    "Error": 0,
+    "Error": 3,
     "Blocker": 0
   },
   "countsByClassification": {
     "AutoFixable": 0,
-    "Manual": 0,
+    "Manual": 3,
     "Unsupported": 0
   },
-  "score": 100,
-  "projectedScore": 100,
+  "score": 92,
+  "projectedScore": 92,
   "diagnostics": [],
   "noProjectReason": null
 }

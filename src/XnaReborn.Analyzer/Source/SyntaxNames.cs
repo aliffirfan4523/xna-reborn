@@ -50,10 +50,11 @@ internal static class SyntaxNames
     /// <param name="text">The dotted name.</param>
     /// <param name="ns">The namespace.</param>
     /// <param name="includeChildren">Whether names below the namespace match.</param>
+    /// <param name="comparison">How names are compared.</param>
     /// <returns>True when the name equals the namespace, or starts with it followed by a dot and children are included.</returns>
-    internal static bool IsNamespaceOrChild(string text, string ns, bool includeChildren)
+    internal static bool IsNamespaceOrChild(string text, string ns, bool includeChildren, StringComparison comparison = StringComparison.Ordinal)
     {
-        if (!text.StartsWith(ns, StringComparison.Ordinal))
+        if (!text.StartsWith(ns, comparison))
         {
             return false;
         }
@@ -64,8 +65,9 @@ internal static class SyntaxNames
     /// <summary>Tests whether a dotted name is one of the namespaces or starts with one followed by a dot.</summary>
     /// <param name="text">The dotted name, or null.</param>
     /// <param name="namespaces">The candidate namespaces.</param>
+    /// <param name="comparison">How names are compared.</param>
     /// <returns>True when the name is qualified by one of the namespaces.</returns>
-    internal static bool IsQualifiedBy(string? text, IReadOnlyList<string> namespaces)
+    internal static bool IsQualifiedBy(string? text, IReadOnlyList<string> namespaces, StringComparison comparison = StringComparison.Ordinal)
     {
         if (text is null)
         {
@@ -74,7 +76,7 @@ internal static class SyntaxNames
 
         foreach (var ns in namespaces)
         {
-            if (IsNamespaceOrChild(text, ns, includeChildren: true))
+            if (IsNamespaceOrChild(text, ns, includeChildren: true, comparison))
             {
                 return true;
             }
