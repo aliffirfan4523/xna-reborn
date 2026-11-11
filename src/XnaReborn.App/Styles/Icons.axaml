@@ -20,4 +20,6 @@
   <StreamGeometry x:Key="IconTheme">M12,18V6A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z</StreamGeometry>
   <StreamGeometry x:Key="IconEmpty">M20,6H12L10,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8A2,2 0 0,0 20,6M20,18H4V8H20V18Z</StreamGeometry>
   <StreamGeometry x:Key="IconCopy">M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z</StreamGeometry>
+  <StreamGeometry x:Key="IconStop">M18,18H6V6H18V18Z</StreamGeometry>
+  <StreamGeometry x:Key="IconArrowDown">M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z</StreamGeometry>
 </ResourceDictionary>

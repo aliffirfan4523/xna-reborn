@@ -23,6 +23,9 @@ public sealed class FakeDialogService : IDialogService
     /// <summary>The titles of the folder pickers that were shown.</summary>
     public List<string> FolderPickerTitles { get; } = [];
 
+    /// <summary>Runs when a question is asked, before it is answered. Lets a test look at the page while the dialog is open.</summary>
+    public Action? OnConfirm { get; set; }
+
     /// <summary>The questions that were asked.</summary>
     public List<(string Title, string Message, string ConfirmText, string CancelText)> Confirmations { get; } = [];
 
@@ -41,6 +44,7 @@ public sealed class FakeDialogService : IDialogService
 
     public Task<bool> ConfirmAsync(string title, string message, string confirmText, string cancelText)
     {
+        OnConfirm?.Invoke();
         Confirmations.Add((title, message, confirmText, cancelText));
         return Task.FromResult(ConfirmAnswers.Count > 0 ? ConfirmAnswers.Dequeue() : DefaultConfirmAnswer);
     }

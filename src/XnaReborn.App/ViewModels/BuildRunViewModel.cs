@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,6 +33,10 @@ public sealed partial class BuildRunViewModel : PageViewModel
     private bool _closing;
     private TaskCompletionSource? _idle;
     private Task _watching = Task.CompletedTask;
+    private bool _inRun;
+    private bool _awaitingConfirm;
+    private bool _launched;
+    private Stopwatch? _clock;
 
     /// <summary>True while a build, a start or an environment check is running.</summary>
     [ObservableProperty]
@@ -101,6 +106,22 @@ public sealed partial class BuildRunViewModel : PageViewModel
     [NotifyPropertyChangedFor(nameof(HasGameOutput))]
     private string _gameOutput = string.Empty;
 
+    /// <summary>True while the log follows the newest line.</summary>
+    [ObservableProperty]
+    private bool _autoScroll = true;
+
+    /// <summary>Only lines that contain this text (any letter case) are shown in <see cref="VisibleLogLines"/>.</summary>
+    [ObservableProperty]
+    private string _logFilter = string.Empty;
+
+    /// <summary>When true, <see cref="VisibleLogLines"/> holds only error lines.</summary>
+    [ObservableProperty]
+    private bool _errorsOnly;
+
+    /// <summary>The running game in words, such as the process id, or empty.</summary>
+    [ObservableProperty]
+    private string _gameStatusText = string.Empty;
+
     /// <summary>Creates the page.</summary>
     /// <param name="session">The shared workflow data.</param>
     /// <param name="navigator">Moves to other pages.</param>
@@ -111,7 +132,33 @@ public sealed partial class BuildRunViewModel : PageViewModel
         : base("Build and run", session, navigator, dialogs)
     {
         _runner = runner;
+        Steps = [SdkStep, BuildStep, LaunchStep];
         Publish = new PublishPanelViewModel(session, dialogs, runner, shell, () => Target()?.Folder, () => IsBusy || IsGameRunning, RefreshState);
+    }
+
+    /// <summary>Pipeline card for the SDK check.</summary>
+    public PipelineStepViewModel SdkStep { get; } = new(".NET SDK check");
+
+    /// <summary>Pipeline card for the build.</summary>
+    public PipelineStepViewModel BuildStep { get; } = new("Build");
+
+    /// <summary>Pipeline card for starting the game.</summary>
+    public PipelineStepViewModel LaunchStep { get; } = new("Launch");
+
+    /// <summary>The three pipeline cards in order.</summary>
+    public IReadOnlyList<PipelineStepViewModel> Steps { get; }
+
+    /// <summary>The log lines that pass <see cref="LogFilter"/> and <see cref="ErrorsOnly"/>. The log view shows this list.</summary>
+    public ObservableCollection<BuildRunLogLine> VisibleLogLines { get; } = [];
+
+    /// <summary>How many lines are shown, out of how many, and how many are errors.</summary>
+    public string LogSummary
+    {
+        get
+        {
+            var errors = LogLines.Count(l => l.IsError);
+            return $"{Plural(VisibleLogLines.Count, "line")} shown of {LogLines.Count}, {Plural(errors, "error line")}.";
+        }
     }
 
     /// <summary>The Publish section: platform picker, Publish, progress, Cancel and Open folder.</summary>
@@ -194,6 +241,10 @@ public sealed partial class BuildRunViewModel : PageViewModel
 
     partial void OnIsGameRunningChanged(bool value) => RefreshState();
 
+    partial void OnLogFilterChanged(string value) => RebuildVisibleLog();
+
+    partial void OnErrorsOnlyChanged(bool value) => RebuildVisibleLog();
+
     partial void OnHasMigrationChanged(bool value)
     {
         OnPropertyChanged(nameof(NoMigrationMessage));
@@ -221,6 +272,103 @@ public sealed partial class BuildRunViewModel : PageViewModel
         GoToSummaryCommand.NotifyCanExecuteChanged();
         RefreshEnvironmentCommand.NotifyCanExecuteChanged();
         Publish?.Refresh();
+        RefreshSteps();
+    }
+
+    private bool PassesFilter(BuildRunLogLine line) =>
+        (!ErrorsOnly || line.IsError)
+        && (LogFilter.Length == 0 || line.Text.Contains(LogFilter, StringComparison.OrdinalIgnoreCase));
+
+    private void RebuildVisibleLog()
+    {
+        VisibleLogLines.Clear();
+        foreach (var line in LogLines.Where(PassesFilter))
+        {
+            VisibleLogLines.Add(line);
+        }
+
+        OnPropertyChanged(nameof(LogSummary));
+    }
+
+    private void RefreshSteps()
+    {
+        var result = Session.RunnerResult;
+        var build = _lastResult?.Build;
+        var ok = EnvironmentStatus is { SdkCompatible: true, TargetSupported: true };
+
+        if (!HasMigration)
+        {
+            SdkStep.Set(PipelineState.Waiting, "Migrate a project first.");
+        }
+        else if (EnvironmentStatus is null)
+        {
+            SdkStep.Set(IsBusy && !_inRun ? PipelineState.Running : PipelineState.Waiting, SdkText);
+        }
+        else
+        {
+            SdkStep.Set(ok ? PipelineState.Done : PipelineState.Failed, ok ? SdkText : EnvironmentProblem ?? SdkText);
+        }
+
+        if (_inRun && !_awaitingConfirm)
+        {
+            BuildStep.Set(PipelineState.Running, "Building the migrated copy.", Elapsed());
+        }
+        else if (build is not null)
+        {
+            BuildStep.Set(build.Succeeded ? PipelineState.Done : PipelineState.Failed, build.Succeeded ? "Build succeeded." : "Build failed.", Seconds(build.Duration));
+        }
+        else if (_awaitingConfirm)
+        {
+            BuildStep.Set(PipelineState.Done, "Build succeeded.", BuildStep.ElapsedText);
+        }
+        else if (HasResult)
+        {
+            BuildStep.Set(PipelineState.Failed, _lastResult?.Problem ?? "The build did not run.");
+        }
+        else
+        {
+            BuildStep.Set(PipelineState.Waiting, "Not built yet.");
+        }
+
+        if (IsGameRunning)
+        {
+            LaunchStep.Set(PipelineState.Running, GameStatusText);
+        }
+        else if (_awaitingConfirm)
+        {
+            LaunchStep.Set(PipelineState.Running, "Waiting for your OK. Nothing starts until you say yes.");
+        }
+        else if (HasStartupFailure)
+        {
+            LaunchStep.Set(PipelineState.Failed, "The game stopped right after it started.");
+        }
+        else if (_declined)
+        {
+            LaunchStep.Set(PipelineState.Skipped, "You chose not to run the game.");
+        }
+        else if (_launched)
+        {
+            LaunchStep.Set(PipelineState.Done, "The game ran and closed.");
+        }
+        else if (HasResult && result is not null)
+        {
+            LaunchStep.Set(PipelineState.Skipped, "Not started in this run.");
+        }
+        else
+        {
+            LaunchStep.Set(PipelineState.Waiting, "Starts after a good build, and only after you confirm.");
+        }
+    }
+
+    private string Elapsed() => _clock is null ? string.Empty : Seconds(_clock.Elapsed);
+
+    private async Task TickAsync()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (_inRun && await timer.WaitForNextTickAsync().ConfigureAwait(true))
+        {
+            RefreshSteps();
+        }
     }
 
     /// <summary>
@@ -337,7 +485,11 @@ public sealed partial class BuildRunViewModel : PageViewModel
         _declined = false;
         using var cts = new CancellationTokenSource();
         _cts = cts;
+        _launched = false;
+        _inRun = true;
+        _clock = Stopwatch.StartNew();
         IsBusy = true;
+        _ = TickAsync();
         StatusText = "Starting...";
         var context = SynchronizationContext.Current;
         var log = new BuildRunSink<OutputLine>(AppendLog, context);
@@ -375,6 +527,8 @@ public sealed partial class BuildRunViewModel : PageViewModel
         finally
         {
             _cts = null;
+            _inRun = false;
+            _awaitingConfirm = false;
             IsBusy = false;
         }
     }
@@ -414,10 +568,14 @@ public sealed partial class BuildRunViewModel : PageViewModel
         SetOutcome(result, game);
         if (game is not null)
         {
+            _launched = true;
+            GameStatusText = $"Process {game.ProcessId} is running.";
             IsGameRunning = true;
             _game = game;
             _watching = WatchAsync(game);
         }
+
+        RefreshSteps();
     }
 
     private void SetOutcome(RunnerResult result, RunHandle? game)
@@ -514,17 +672,33 @@ public sealed partial class BuildRunViewModel : PageViewModel
 
     private async Task<bool> AskLaunchAsync(LaunchConfirmation request)
     {
-        var allowed = await Dialogs.ConfirmAsync("Run this game?", request.Message, "Run game", "Don't run").ConfigureAwait(true);
-        _declined = !allowed;
-        return allowed;
+        _awaitingConfirm = true;
+        RefreshSteps();
+        try
+        {
+            var allowed = await Dialogs.ConfirmAsync("Run this game?", request.Message, "Run game", "Don't run").ConfigureAwait(true);
+            _declined = !allowed;
+            return allowed;
+        }
+        finally
+        {
+            _awaitingConfirm = false;
+        }
     }
 
     private void AppendLog(IReadOnlyList<OutputLine> lines)
     {
         foreach (var line in lines)
         {
-            LogLines.Add(new BuildRunLogLine(++_lineNumber, line.Text, line.IsError));
+            var entry = new BuildRunLogLine(++_lineNumber, line.Text, line.IsError);
+            LogLines.Add(entry);
+            if (PassesFilter(entry))
+            {
+                VisibleLogLines.Add(entry);
+            }
         }
+
+        OnPropertyChanged(nameof(LogSummary));
     }
 
     private void ShowStage(IReadOnlyList<RunnerProgress> stages) => StatusText = stages[^1].Stage + "...";
@@ -559,6 +733,11 @@ public sealed partial class BuildRunViewModel : PageViewModel
     private void ResetResults()
     {
         LogLines.Clear();
+        VisibleLogLines.Clear();
+        OnPropertyChanged(nameof(LogSummary));
+        _launched = false;
+        _declined = false;
+        GameStatusText = string.Empty;
         _lineNumber = 0;
         Groups = [];
         DiagnosticsSummary = string.Empty;
