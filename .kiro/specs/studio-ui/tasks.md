@@ -58,6 +58,7 @@
 
 - [ ] 10. Final checkpoint
   - [x] ViewModel and headless tests pass (both test projects, integration tests included)
+  - [x] Demo rehearsal checklist written (`docs/demo-rehearsal.md`)
   - [ ] Demo rehearsal recorded (left for the owner)
 
 - [x] 11. Modern targets in the UI
