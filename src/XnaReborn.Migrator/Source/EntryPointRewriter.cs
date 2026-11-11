@@ -20,6 +20,17 @@ public sealed class EntryPointRewriter
         "LINUX",
     };
 
+    // Symbols of Windows Store and Windows Phone builds. The migrated desktop project never defines them, so a conditional on one of them
+    // is decided already (its #else branch is the one that compiles) and needs neither unwrapping nor a note.
+    private static readonly HashSet<string> _undefinedSymbols = new(StringComparer.Ordinal)
+    {
+        "NETFX_CORE",
+        "WINDOWS_APP",
+        "WINDOWS_PHONE_APP",
+        "WINDOWS_UWP",
+        "WINRT",
+    };
+
     /// <summary>Unwraps platform-only conditionals around the entry point of one source file.</summary>
     /// <param name="sourceText">Text of one .cs file.</param>
     /// <param name="originalSymbols">The original project's DefineConstants, such as WINDOWS, DEBUG and TRACE.</param>
@@ -40,7 +51,9 @@ public sealed class EntryPointRewriter
             return new EntryPointRewrite(sourceText, EntryPointStatus.NoEntryPoint, null);
         }
 
-        var regions = FindEnclosingRegions(root, position.Value);
+        var regions = FindEnclosingRegions(root, position.Value)
+            .Where(r => !IsOnly(r.If.Condition, _undefinedSymbols))
+            .ToList();
         if (regions.Count == 0)
         {
             return new EntryPointRewrite(sourceText, EntryPointStatus.Unchanged, null);
@@ -145,13 +158,15 @@ public sealed class EntryPointRewriter
         return enclosing.OrderBy(r => r.If.SpanStart).ToList();
     }
 
-    private static bool IsPlatformOnly(ExpressionSyntax expression) => expression switch
+    private static bool IsPlatformOnly(ExpressionSyntax expression) => IsOnly(expression, _platformSymbols);
+
+    private static bool IsOnly(ExpressionSyntax expression, HashSet<string> symbols) => expression switch
     {
-        IdentifierNameSyntax id => !id.IsMissing && _platformSymbols.Contains(id.Identifier.ValueText),
-        ParenthesizedExpressionSyntax p => IsPlatformOnly(p.Expression),
-        PrefixUnaryExpressionSyntax u when u.IsKind(SyntaxKind.LogicalNotExpression) => IsPlatformOnly(u.Operand),
+        IdentifierNameSyntax id => !id.IsMissing && symbols.Contains(id.Identifier.ValueText),
+        ParenthesizedExpressionSyntax p => IsOnly(p.Expression, symbols),
+        PrefixUnaryExpressionSyntax u when u.IsKind(SyntaxKind.LogicalNotExpression) => IsOnly(u.Operand, symbols),
         BinaryExpressionSyntax b when b.IsKind(SyntaxKind.LogicalOrExpression) || b.IsKind(SyntaxKind.LogicalAndExpression)
-            => IsPlatformOnly(b.Left) && IsPlatformOnly(b.Right),
+            => IsOnly(b.Left, symbols) && IsOnly(b.Right, symbols),
         _ => false,
     };
 

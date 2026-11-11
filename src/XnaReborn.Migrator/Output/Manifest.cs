@@ -12,6 +12,8 @@ namespace XnaReborn.Migrator.Output;
 /// <param name="Content">Totals for the converted content, or null when no content was converted.</param>
 /// <param name="Shims">The shim library and every use of it, or null when shims were off. Left out of the JSON when null.</param>
 /// <param name="Modern">The opt-in window extras and where they were hooked in, or null when all were off. Left out of the JSON when null.</param>
+/// <param name="SourceFrameworks">The frameworks of the migrated projects (Xna, SharpDxToolkit), sorted, or null when the source had no SharpDX Toolkit project. Left out of the JSON when null, so XNA manifests do not change.</param>
+/// <param name="RulesFired">Every rule id that had a finding in the analysis, sorted, or null when <paramref name="SourceFrameworks"/> is null. Left out of the JSON when null.</param>
 public sealed record Manifest(
     int Version,
     string Migrator,
@@ -21,7 +23,9 @@ public sealed record Manifest(
     ManifestBuild? Build,
     ManifestContent? Content = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestShims? Shims = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestModern? Modern = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ManifestModern? Modern = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? SourceFrameworks = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? RulesFired = null);
 
 /// <summary>Shims added to the migrated copy: offline stand-ins for dead XNA APIs, not real XNA services.</summary>
 /// <param name="Project">Path of the shim project file, relative to the output, with '/' separators.</param>

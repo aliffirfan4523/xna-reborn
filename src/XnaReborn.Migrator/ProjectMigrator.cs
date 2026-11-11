@@ -41,14 +41,17 @@ public sealed class ProjectMigrator
     private const string _contentReason =
         "Content conversion is switched off for this project; this asset was copied unchanged and is not built.";
 
-    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049"];
+    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049", "SDX010", "SDX011", "SDX012", "SDX014"];
+
+    // Toolkit effects and compiled .tkb files are Manual or Unsupported, so they are not plan items. Their finding still starts the content conversion.
+    private static readonly string[] _toolkitContentFindingIds = ["SDX013", "SDX015"];
 
     // Plan items that make the device part of the Compat library necessary (device-to-desktop tasks 7 and 8).
     private static readonly string[] _deviceRuleIds = ["XNA007", "XNA054", "XNA055", "XNA057", "XNA058", "XNA060", "XNA061", "XNA062"];
 
     // Manual device rules that only get a marker in the source. They are not plan items, so they are enabled by their finding.
     private static readonly string[] _markerRuleIds =
-        [DeviceManualMarkerRewriter.MediaLibraryId, DeviceManualMarkerRewriter.ChooserId, DeviceManualMarkerRewriter.ThirdPartyId];
+        [DeviceManualMarkerRewriter.MediaLibraryId, DeviceManualMarkerRewriter.ChooserId, DeviceManualMarkerRewriter.ThirdPartyId, .. ToolkitMarkerRewriter.CreateAll().Select(r => r.RuleId)];
 
     private static readonly UTF8Encoding _utf8 = new(encoderShouldEmitUTF8Identifier: false);
     private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
@@ -91,7 +94,7 @@ public sealed class ProjectMigrator
         // Step 1: discovery.
         progress?.Report(new MigrationProgress(_stageDiscover, 0, 1, null));
         var discovery = await new ProjectDiscovery(_fileSystem).DiscoverAsync(sourcePath, cancellationToken).ConfigureAwait(false);
-        var xnaProjects = discovery.XnaProjects.ToList();
+        var xnaProjects = discovery.MigratableProjects.ToList();
         if (xnaProjects.Count == 0 && discovery.MonoGameProjects.Any())
         {
             // An old MonoGame upgrade has its own flow (monogame-upgrade spec). A folder with any XNA project keeps the XNA flow.
@@ -103,7 +106,7 @@ public sealed class ProjectMigrator
         if (xnaProjects.Count == 0)
         {
             throw new InvalidOperationException(
-                report.NoProjectReason ?? discovery.NoProjectReason ?? "No XNA project was found in the source.");
+                report.NoProjectReason ?? discovery.NoProjectReason ?? "No XNA or SharpDX Toolkit project was found in the source.");
         }
 
         var root = discovery.Root;
@@ -122,7 +125,8 @@ public sealed class ProjectMigrator
         progress?.Report(new MigrationProgress(_stagePlan, 0, 1, null));
         var plan = new MigrationPlanner().CreatePlan(report, options);
         var contentRuleIds = report.TriggeredRules
-            .Where(r => r.MigratorTask?.StartsWith("content-conversion", StringComparison.Ordinal) == true)
+            .Where(r => r.MigratorTask?.StartsWith("content-conversion", StringComparison.Ordinal) == true
+                || r.MigratorTask?.StartsWith(ToolkitRules.ContentTaskPrefix, StringComparison.Ordinal) == true)
             .Select(r => r.Id)
             .ToHashSet(StringComparer.Ordinal);
         progress?.Report(new MigrationProgress(_stagePlan, 1, 1, null));
@@ -152,8 +156,23 @@ public sealed class ProjectMigrator
 
         state.Notes.AddRange(copyPlan.Notes.Where(n => skips.Values.Any(s => n.StartsWith(s.Kept + " ", StringComparison.Ordinal))));
 
+        // Windows Store and Windows Phone Toolkit projects (SDX004) cannot be hosted by MonoGame desktop. They are refused one by one, with no partial copy.
+        var refused = xnaProjects
+            .Where(d => d.IsSharpDxToolkit && report.Findings.Any(f => f.RuleId == ToolkitRules.StoreAppRuleId && string.Equals(f.Project, d.RelativePath, StringComparison.Ordinal)))
+            .ToDictionary(d => d.RelativePath, StringComparer.Ordinal);
+        foreach (var project in refused.Keys)
+        {
+            state.Add(new FileChange(project, ChangeKind.Skipped, null, null, ToolkitRules.StoreAppReason), [ToolkitRules.StoreAppRuleId]);
+            state.Notes.Add($"{project}: {ToolkitRules.StoreAppRuleId}: {ToolkitRules.StoreAppReason}");
+        }
+
+        if (xnaProjects.All(d => skips.ContainsKey(d.RelativePath) || refused.ContainsKey(d.RelativePath)) && refused.Count > 0)
+        {
+            throw new InvalidOperationException($"Every project in the source was refused: {ToolkitRules.StoreAppReason}");
+        }
+
         // Step 4: read the projects, convert their content, then write the project files and the solution.
-        foreach (var discovered in xnaProjects.Where(d => !skips.ContainsKey(d.RelativePath)))
+        foreach (var discovered in xnaProjects.Where(d => !skips.ContainsKey(d.RelativePath) && !refused.ContainsKey(d.RelativePath)))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var read = await reader.ReadAsync(discovered.FullPath, root, cancellationToken).ConfigureAwait(false);
@@ -174,24 +193,28 @@ public sealed class ProjectMigrator
                 .ToList();
             var contentRules = items
                 .Select(p => p.RuleId)
-                .Where(id => _contentRuleIds.Contains(id, StringComparer.Ordinal))
+                .Concat(discovered.IsSharpDxToolkit
+                    ? report.Findings.Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _toolkitContentFindingIds.Contains(f.RuleId, StringComparer.Ordinal)).Select(f => f.RuleId)
+                    : [])
+                .Where(id => _contentRuleIds.Contains(id, StringComparer.Ordinal) || _toolkitContentFindingIds.Contains(id, StringComparer.Ordinal))
                 .Distinct(StringComparer.Ordinal)
                 .ToList();
 
             projects.Add(new ProjectWork(discovered, read, enabled, projectLevel, contentRules));
         }
 
-        var converting = projects.Where(p => p.ContentRules.Count > 0 && p.Read.Info.ContentProjects.Count > 0).ToList();
+        var converting = projects.Where(p => p.ContentRules.Count > 0 && (p.Read.Info.ContentProjects.Count > 0 || (p.Discovered.IsSharpDxToolkit && ToolkitContentConverter.HasContent(p.Read)))).ToList();
         var converter = new ContentConverter(_fileSystem);
+        var toolkitConverter = new ToolkitContentConverter(_fileSystem);
         var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts);
         for (var i = 0; i < converting.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var project = converting[i];
             progress?.Report(new MigrationProgress(_stageConvert, i, converting.Count, project.Discovered.RelativePath));
-            project.Content = await converter
-                .ConvertAsync(project.Read, root, project.GameDirectory, contentOptions, cancellationToken)
-                .ConfigureAwait(false);
+            project.Content = project.Discovered.IsSharpDxToolkit
+                ? await toolkitConverter.ConvertAsync(project.Read, root, project.GameDirectory, contentOptions, cancellationToken).ConfigureAwait(false)
+                : await converter.ConvertAsync(project.Read, root, project.GameDirectory, contentOptions, cancellationToken).ConfigureAwait(false);
             progress?.Report(new MigrationProgress(_stageConvert, i + 1, converting.Count, project.Discovered.RelativePath));
         }
 
@@ -394,7 +417,27 @@ public sealed class ProjectMigrator
         IReadOnlyList<FileChange> changes,
         BuildState state,
         string version) =>
-        ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content, state.ShimManifest(changes), state.ModernManifest(changes));
+        ManifestBuilder.Build(
+            report.CatalogName,
+            completed,
+            changes,
+            state.RuleIdsByPath,
+            null,
+            version,
+            state.Content,
+            state.ShimManifest(changes),
+            state.ModernManifest(changes),
+            SourceFrameworks(report),
+            RulesFired(report));
+
+    // Only a source with a SharpDX Toolkit project names its frameworks and fired rules in the manifest, so XNA manifests do not change.
+    private static IReadOnlyList<string>? SourceFrameworks(AnalysisReport report) =>
+        report.Projects.Any(p => p.Family == ProjectFamily.SharpDxToolkit)
+            ? report.Projects.Select(p => p.Family).Where(f => f is ProjectFamily.SharpDxToolkit or ProjectFamily.Xna).Select(f => f.ToString()).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList()
+            : null;
+
+    private static IReadOnlyList<string>? RulesFired(AnalysisReport report) =>
+        SourceFrameworks(report) is null ? null : report.Findings.Select(f => f.RuleId).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
 
     internal static async Task WriteManifestFilesAsync(
         string staging,

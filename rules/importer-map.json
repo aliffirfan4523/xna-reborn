@@ -10,6 +10,10 @@
     "https://github.com/MonoGame/MonoGame/issues/2661",
     "https://github.com/MonoGame/MonoGame/issues/4376"
   ],
+  "notes": [
+    "SharpDX Toolkit content (sharpdx-toolkit task 9.3), checked with dotnet-mgcb 3.8.6.1 on generated 1x1 files, platform Windows, profile Reach: TextureImporter with TextureProcessor built .png, .bmp, .gif, .jpg, .tga and a DXT1 .dds. XImporter and FbxImporter with ModelProcessor built a one-triangle .x and .fbx. OpenAssetImporter with ModelProcessor built a one-triangle .obj, but it is not a stock XNA importer, so it is not in the pairs below and the Toolkit conversion leaves .obj and other model formats as manual work.",
+    "TIFF textures and non-wav audio were not built in that check, so the Toolkit conversion leaves them as manual work."
+  ],
   "pairs": [
     { "importer": "TextureImporter", "processor": "TextureProcessor" },
     { "importer": "TextureImporter", "processor": "FontTextureProcessor", "note": "Bitmap fonts built from a marked .bmp." },
