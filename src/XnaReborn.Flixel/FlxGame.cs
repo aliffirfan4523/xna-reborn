@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using XnaReborn.As3;
 
 namespace org.flixel;
@@ -153,26 +154,20 @@ public class FlxGame : Game
             }
         }
 
-        public void PlaySound(AssetRef sound, double volume, bool looped)
+        public IFlxSoundInstance CreateSound(AssetRef sound)
         {
+            if (sound.Kind == AssetKind.Song)
+            {
+                return new SongVoice(_game.Content.Load<Song>(sound.Name));
+            }
+
             if (!_sounds.TryGetValue(sound.Name, out var effect))
             {
                 _sounds[sound.Name] = effect = _game.Content.Load<SoundEffect>(sound.Name);
             }
 
-            if (looped)
-            {
-                var instance = effect.CreateInstance();
-                instance.IsLooped = true;
-                instance.Volume = (float)Math.Clamp(volume, 0, 1);
-                instance.Play();
-            }
-            else
-            {
-                effect.Play((float)Math.Clamp(volume, 0, 1), 0, 0);
-            }
+            return new EffectVoice(effect.CreateInstance());
         }
-
         public byte[] ReadData(AssetRef data)
         {
             using var stream = TitleContainer.OpenStream(Path.Combine(_game.Content.RootDirectory, data.Name.Replace('/', Path.DirectorySeparatorChar)));
@@ -192,6 +187,59 @@ public class FlxGame : Game
             }
 
             return t;
+        }
+    }
+
+    private sealed class EffectVoice(SoundEffectInstance instance) : IFlxSoundInstance
+    {
+        public double Volume
+        {
+            set => instance.Volume = (float)Math.Clamp(value, 0, 1);
+        }
+
+        public bool Looped
+        {
+            set => instance.IsLooped = value;
+        }
+
+        public bool IsPlaying => instance.State == SoundState.Playing;
+
+        public void Play() => instance.Play();
+
+        public void Pause() => instance.Pause();
+
+        public void Resume() => instance.Resume();
+
+        public void Stop() => instance.Stop();
+
+        public void Dispose() => instance.Dispose();
+    }
+
+    // MediaPlayer plays one song at a time and has one volume, which is what playMusic needs.
+    private sealed class SongVoice(Song song) : IFlxSoundInstance
+    {
+        public double Volume
+        {
+            set => MediaPlayer.Volume = (float)Math.Clamp(value, 0, 1);
+        }
+
+        public bool Looped
+        {
+            set => MediaPlayer.IsRepeating = value;
+        }
+
+        public bool IsPlaying => MediaPlayer.State == MediaState.Playing && MediaPlayer.Queue.ActiveSong == song;
+
+        public void Play() => MediaPlayer.Play(song);
+
+        public void Pause() => MediaPlayer.Pause();
+
+        public void Resume() => MediaPlayer.Resume();
+
+        public void Stop() => MediaPlayer.Stop();
+
+        public void Dispose()
+        {
         }
     }
 }

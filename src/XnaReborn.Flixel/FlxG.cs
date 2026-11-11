@@ -21,30 +21,19 @@ public interface IFlxAssets
     /// <summary>Size of a texture in pixels, or null when it cannot be found.</summary>
     (int Width, int Height)? GetTextureSize(AssetRef texture);
 
-    /// <summary>Plays a sound once, or in a loop.</summary>
-    void PlaySound(AssetRef sound, double volume, bool looped);
+    /// <summary>Makes a sound that can be played, paused and stopped. Textures and sounds are loaded from the Content folder.</summary>
+    IFlxSoundInstance CreateSound(AssetRef sound);
 
     /// <summary>Reads an embedded data file as bytes.</summary>
     byte[] ReadData(AssetRef data);
-}
-
-/// <summary>A sound that was started with <see cref="FlxG.play"/>.</summary>
-public sealed class FlxSound
-{
-    /// <summary>The sound asset.</summary>
-    public AssetRef? asset;
-
-    /// <summary>Loudness from 0 to 1.</summary>
-    public double volume = 1;
-
-    /// <summary>Whether the sound loops.</summary>
-    public bool looped;
 }
 
 /// <summary>Global game state and helpers, like Flixel's <c>FlxG</c>.</summary>
 public static class FlxG
 {
     private static FlxState? _requested;
+    private static double _volume = 1;
+    private static bool _mute;
 
     /// <summary>Width of the game view in game pixels.</summary>
     public static int width = 320;
@@ -83,6 +72,34 @@ public static class FlxG
     /// <summary>How many times the world box is split by the quad tree.</summary>
     public static int worldDivisions = 6;
 
+    /// <summary>Master loudness from 0 to 1, for the music and every sound.</summary>
+    public static double volume
+    {
+        get => _volume;
+        set
+        {
+            _volume = Math.Clamp(value, 0, 1);
+            ApplyVolume();
+        }
+    }
+
+    /// <summary>True silences everything without changing <see cref="volume"/>.</summary>
+    public static bool mute
+    {
+        get => _mute;
+        set
+        {
+            _mute = value;
+            ApplyVolume();
+        }
+    }
+
+    /// <summary>The sounds started by <see cref="play"/>.</summary>
+    public static FlxGroup sounds = new();
+
+    /// <summary>The song started by <see cref="playMusic"/>, or null.</summary>
+    public static FlxSound? music;
+
     /// <summary>The state that is running, or null before the game starts.</summary>
     public static FlxState? state { get; private set; }
 
@@ -103,6 +120,9 @@ public static class FlxG
         worldDivisions = 6;
         keys = new FlxKeyboard();
         mouse = new FlxMouse();
+        destroySounds(true);
+        _volume = 1;
+        _mute = false;
         state = null;
         _requested = null;
         FlxTimer.manager.clear();
@@ -143,6 +163,7 @@ public static class FlxG
         if (_requested is not null)
         {
             state?.destroy();
+            destroySounds();
             FlxTimer.manager.clear();
             state = _requested;
             _requested = null;
@@ -161,6 +182,8 @@ public static class FlxG
 
         FlxTimer.manager.update();
         state?.update();
+        sounds.update();
+        music?.update();
         camera.update();
     }
 
@@ -219,18 +242,50 @@ public static class FlxG
         return System.Text.Encoding.UTF8.GetString(bytes, skip, bytes.Length - skip);
     }
 
-    /// <summary>Plays an embedded sound once, or in a loop.</summary>
-    public static FlxSound play(AsClass EmbeddedSound, double Volume = 1, bool Looped = false)
+    /// <summary>Plays an embedded sound once, or in a loop. A sound that ended is reused by the next call when <paramref name="AutoDestroy"/> is true.</summary>
+    public static FlxSound play(AsClass EmbeddedSound, double Volume = 1, bool Looped = false, bool AutoDestroy = true)
     {
-        var sound = new FlxSound { asset = EmbeddedSound.Asset, volume = Volume, looped = Looped };
-        if (sound.asset is not null)
-        {
-            assets?.PlaySound(sound.asset, Volume, Looped);
-        }
-
+        var sound = (FlxSound)sounds.recycle(AsClass.Of<FlxSound>())!;
+        sound.loadEmbedded(EmbeddedSound, Looped, AutoDestroy);
+        sound.volume = Volume;
+        sound.play();
         return sound;
     }
 
+    /// <summary>Plays one looping song. A song that is already playing is replaced.</summary>
+    public static void playMusic(AsClass Music, double Volume = 1)
+    {
+        music ??= new FlxSound();
+        music.loadEmbedded(Music, true);
+        music.volume = Volume;
+        music.play();
+    }
+
+    /// <summary>Pauses the music and every sound.</summary>
+    public static void pauseSounds()
+    {
+        music?.pause();
+        sounds.callAll(s => ((FlxSound)s).pause());
+    }
+
+    /// <summary>Carries on with the music and every sound that <see cref="pauseSounds"/> paused.</summary>
+    public static void resumeSounds()
+    {
+        music?.Resume();
+        sounds.callAll(s => ((FlxSound)s).Resume());
+    }
+
+    /// <summary>Stops and drops every sound. The music stays unless <paramref name="ForceDestroyMusic"/> is true.</summary>
+    public static void destroySounds(bool ForceDestroyMusic = false)
+    {
+        if (ForceDestroyMusic)
+        {
+            music?.destroy();
+            music = null;
+        }
+
+        sounds.destroy();
+    }
     /// <summary>Separates every pair of objects that overlap. <paramref name="NotifyCallback"/> is called with each separated pair.</summary>
     public static bool collide(FlxBasic? ObjectOrGroup1 = null, FlxBasic? ObjectOrGroup2 = null, AsFunction? NotifyCallback = null) =>
         Run(ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, FlxObject.separate);
@@ -241,6 +296,12 @@ public static class FlxG
     /// </summary>
     public static bool overlap(FlxBasic? ObjectOrGroup1 = null, FlxBasic? ObjectOrGroup2 = null, AsFunction? NotifyCallback = null, AsFunction? ProcessCallback = null) =>
         Run(ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, ProcessCallback is null ? null : (a, b) => AsOps.ToBoolean(ProcessCallback.Call(a, b)));
+
+    private static void ApplyVolume()
+    {
+        music?.Apply();
+        sounds.callAll(s => ((FlxSound)s).Apply());
+    }
 
     private static bool Run(FlxBasic? ObjectOrGroup1, FlxBasic? ObjectOrGroup2, AsFunction? NotifyCallback, Func<FlxObject, FlxObject, bool>? ProcessCallback)
     {
