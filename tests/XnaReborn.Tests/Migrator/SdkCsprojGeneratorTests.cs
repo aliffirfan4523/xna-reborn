@@ -100,6 +100,23 @@ public class SdkCsprojGeneratorTests
         Assert.Contains($"<OutputType>{expected}</OutputType>", text, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("Windows Phone", null, "WinExe")]
+    [InlineData("Xbox 360", "Game", "WinExe")]
+    [InlineData("Zune", null, "WinExe")]
+    [InlineData("Xbox 360", "Library", "Library")]
+    [InlineData("x86", null, "Library")]
+    public void A_device_game_marked_library_becomes_an_exe(string xnaPlatform, string? xnaOutputType, string expected)
+    {
+        var properties = new Dictionary<string, string> { ["OutputType"] = "Library", ["XnaPlatform"] = xnaPlatform };
+        if (xnaOutputType is not null)
+        {
+            properties["XnaOutputType"] = xnaOutputType;
+        }
+
+        Assert.Contains($"<OutputType>{expected}</OutputType>", Text(Build(properties: properties)), StringComparison.Ordinal);
+    }
+
     [Fact]
     public void Properties_come_in_the_documented_order()
     {

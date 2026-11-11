@@ -145,4 +145,27 @@ public sealed class ProjectRunnerIntegrationTests(ITestOutputHelper testOutput) 
             }
         }
     }
+
+    [LaunchIntegrationFact]
+    public async Task Migrated_phone_fixture_launches_and_writes_the_controls_file()
+    {
+        var folder = await MigrateAsync("device-wp7-xna");
+        Assert.True(File.Exists(Path.Combine(folder, "DEVICE-CONTROLS.md")));
+
+        var result = await RunAsync(new ProjectRunner(), folder, launch: true, crashWindow: TimeSpan.FromSeconds(3));
+
+        try
+        {
+            Assert.True(result.Succeeded, result.Problem + " " + result.StartupFailure?.Stderr);
+            Assert.NotNull(result.RunningGame);
+            Assert.False(result.RunningGame.HasExited);
+        }
+        finally
+        {
+            if (result.RunningGame is not null)
+            {
+                await result.RunningGame.StopAsync();
+            }
+        }
+    }
 }

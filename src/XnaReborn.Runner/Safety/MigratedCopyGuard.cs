@@ -98,6 +98,17 @@ public static class MigratedCopyGuard
         var projects = new List<string>();
         CollectProjects(root, projects);
         projects.Sort(StringComparer.Ordinal);
+
+        // The shim library sits beside the game and is built through the game's ProjectReference, so it is never the project to pick.
+        if (projects.Count > 1)
+        {
+            var games = projects.Where(p => !Path.GetFileName(p).Equals("XnaReborn.Compat.csproj", StringComparison.OrdinalIgnoreCase)).ToList();
+            if (games.Count > 0)
+            {
+                projects = games;
+            }
+        }
+
         return projects.Count switch
         {
             1 => new GuardVerdict(true, "Migrated copy found.", projects[0]),
