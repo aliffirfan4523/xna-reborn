@@ -1,0 +1,7 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #262628; background: #fff; }
+.gallery { max-width: 1040px; margin: 0 auto; padding: 32px 20px 64px; }
+.gallery h1 { font-size: 24px; margin: 0 0 4px; }
+.gallery p { margin: 0 0 24px; color: #55555a; }
+.gallery h2 { font-size: 18px; margin: 32px 0 12px; }
+.gallery h3 { font-size: 15px; margin: 24px 0 8px; }
