@@ -64,11 +64,12 @@ public sealed partial class ShimProjectGenerator
     /// <param name="target">The MonoGame platform of the migrated games. The library uses the same package.</param>
     /// <param name="includeDevice">True to add the device stand-ins and the input layer (device-to-desktop tasks 7 and 8).</param>
     /// <param name="controls">The keys and tilt numbers of the device part. The shipped values when null.</param>
+    /// <param name="xactCatalog">The text of <c>XactCatalog.g.cs</c> to add the XACT stand-in (audio-and-shaders tasks 8 and 9) with that catalog. No XACT files when null.</param>
     /// <returns>
     /// Four <see cref="ChangeKind.Created"/> changes under <c>XnaReborn.Compat/</c>, in a fixed order, followed by the
-    /// device files (also in a fixed order) when <paramref name="includeDevice"/> is true.
+    /// device files and then the XACT files (each in a fixed order) when they are asked for.
     /// </returns>
-    public IReadOnlyList<FileChange> Generate(MonoGameTarget target, bool includeDevice = false, DeviceControlsModel? controls = null)
+    public IReadOnlyList<FileChange> Generate(MonoGameTarget target, bool includeDevice = false, DeviceControlsModel? controls = null, string? xactCatalog = null)
     {
         var packages = _selector.Select(target);
         var project = new StringBuilder()
@@ -109,6 +110,12 @@ public sealed partial class ShimProjectGenerator
                 Create(ProjectName + "/Input/DeviceInput.cs", ShimDeviceSources.DeviceInput),
                 Create(ProjectName + "/Input/GamePadMapper.cs", ShimDeviceSources.GamePadMapper),
             ]);
+        }
+
+        if (xactCatalog is not null)
+        {
+            files.AddRange(XactShimSources.Files.Select(f => Create(ProjectName + "/Xact/" + f.Name, f.Text)));
+            files.Add(Create(ProjectName + "/Xact/XactCatalog.g.cs", xactCatalog));
         }
 
         return files;
