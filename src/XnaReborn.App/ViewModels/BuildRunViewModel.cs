@@ -31,6 +31,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
     private bool _declined;
     private bool _closing;
     private TaskCompletionSource? _idle;
+    private Task _watching = Task.CompletedTask;
 
     /// <summary>True while a build, a start or an environment check is running.</summary>
     [ObservableProperty]
@@ -306,6 +307,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
     {
         if (_game is not { } game)
         {
+            await _watching.ConfigureAwait(true);
             return;
         }
 
@@ -313,6 +315,9 @@ public sealed partial class BuildRunViewModel : PageViewModel
         {
             await game.StopAsync().ConfigureAwait(true);
             EndGame(game, await game.Completion.ConfigureAwait(true));
+
+            // The watcher may have won the race to EndGame on another thread; wait until it has finished writing state.
+            await _watching.ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -411,7 +416,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
         {
             IsGameRunning = true;
             _game = game;
-            _ = WatchAsync(game);
+            _watching = WatchAsync(game);
         }
     }
 
