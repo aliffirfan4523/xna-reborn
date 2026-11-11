@@ -130,6 +130,17 @@ public sealed class TkFontConverterTests
     }
 
     [Theory]
+    [InlineData(32)]
+    [InlineData(160)]
+    public void A_whitespace_default_character_is_left_out_with_a_warning(int code)
+    {
+        var result = TkFontConverter.Convert(Root($"<FontName>A</FontName><DefaultCharacter>{code}</DefaultCharacter>"));
+
+        Assert.DoesNotContain("DefaultCharacter", result.SpriteFont, StringComparison.Ordinal);
+        Assert.Contains("whitespace character", Assert.Single(result.Warnings), StringComparison.Ordinal);
+    }
+
+    [Theory]
     [InlineData("<Other><FontName>A</FontName></Other>", "not 'TkFont'")]
     [InlineData("<XnaContent><Asset Type=\"Graphics:FontDescription\"/></XnaContent>", "not 'TkFont'")]
     [InlineData("<TkFont></TkFont>", "no FontName")]

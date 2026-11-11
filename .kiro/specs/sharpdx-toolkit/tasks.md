@@ -67,20 +67,20 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - [x] 10.2 Manifest JSON and Markdown show the source framework and each SDX rule that fired. Snapshot tests. Negative: the XNA manifest snapshot is unchanged.
   - _Requirements: R7_
 
-- [ ] 11. Effect check (research task, docs only)
-  - [ ] 11.1 Take a Toolkit-syntax `.fx` file written for the fixture (original), run it through the MonoGame effect compiler used by `dotnet-mgcb` 3.8.6.1, and record the exact error. Update the explanation and resolution text of SDX013 with what was observed. If the compiler accepts the form, say so and downgrade SDX013's explanation.
+- [x] 11. Effect check (research task, docs only)
+  - [x] 11.1 Take a Toolkit-syntax `.fx` file written for the fixture (original), run it through the MonoGame effect compiler used by `dotnet-mgcb` 3.8.6.1, and record the exact error. Update the explanation and resolution text of SDX013 with what was observed. If the compiler accepts the form, say so and downgrade SDX013's explanation.
   - _Requirements: R5, R9_
 
-- [ ] 12. Runner hints and UI label
-  - [ ] 12.1 Add the hint entries from `design.md` ("Runner and repair") to `HintCatalog`, each with a match test and a non-match test.
-  - [ ] 12.2 Show the source framework label in the studio through the existing report binding. No logic in the view. ViewModel test only.
+- [x] 12. Runner hints and UI label
+  - [x] 12.1 Add the hint entries from `design.md` ("Runner and repair") to `HintCatalog`, each with a match test and a non-match test.
+  - [x] 12.2 Show the source framework label in the studio through the existing report binding. No logic in the view. ViewModel test only.
   - _Requirements: R6, R7_
 
 - [ ] 13. Checkpoint: end-to-end on real candidates (read only)
-  - [ ] 13.1 Shallow-clone `zlynn1990/EcoSim`, `nuclearpidgeon/graphicsproj2` and `Luaancz/Yggmire` outside the repo. Run the analyzer on each. Record project count, framework detected, rule counts by id, false positives found (manual review of a sample), and score. Do not commit the clones.
-  - [ ] 13.2 Migrate EcoSim to an output folder outside the source, build it for WindowsDX and DesktopGL, and record the result and every manual edit needed. The build is expected to need manual work; record it honestly.
-  - [ ] 13.3 Run the analyzer on `kobush/ModernMoleculeViewer` and confirm SDX004 fires as Unsupported.
-  - [ ] 13.4 Write the findings into this spec as a "Candidate results" section. Add any new rule they require to the catalog by the normal rule process. Hashes of the source clones are identical before and after (read-only proof).
+  - [x] 13.1 Shallow-clone `zlynn1990/EcoSim`, `nuclearpidgeon/graphicsproj2` and `Luaancz/Yggmire` outside the repo. Run the analyzer on each. Record project count, framework detected, rule counts by id, false positives found (manual review of a sample), and score. Do not commit the clones.
+  - [x] 13.2 Migrate EcoSim to an output folder outside the source, build it for WindowsDX and DesktopGL, and record the result and every manual edit needed. The build is expected to need manual work; record it honestly.
+  - [x] 13.3 Run the analyzer on `kobush/ModernMoleculeViewer` and confirm SDX004 fires as Unsupported.
+  - [x] 13.4 Write the findings into this spec as a "Candidate results" section. Add any new rule they require to the catalog by the normal rule process. Hashes of the source clones are identical before and after (read-only proof).
   - [ ] 13.5 Run `dotnet build`, `dotnet test` and `dotnet format --verify-no-changes` on master. Stop for owner review before task 14.
   - _Requirements: R1 to R9_
 

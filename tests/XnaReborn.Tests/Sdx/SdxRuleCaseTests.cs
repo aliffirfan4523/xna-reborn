@@ -165,6 +165,29 @@ public sealed partial class SdxRuleCaseTests : IDisposable
         Assert.Equal(new SourceLocation("Game.cs", 4, 25), finding.Location);
     }
 
+    [Theory]
+    [InlineData("{BC8A1FFA-BEE3-4634-8014-F334798102B3}")]
+    [InlineData("{C089C8C0-30E0-4E22-80C0-CE093F111A43}")]
+    [InlineData("{76F1466A-8B6D-4E39-A767-685A06062A39}")]
+    [InlineData("{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A}")]
+    public async Task Every_store_phone_and_uwp_project_type_fires_sdx004(string guid)
+    {
+        var report = await AnalyzeFragmentAsync($"<PropertyGroup><ProjectTypeGuids>{guid};{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}</ProjectTypeGuids></PropertyGroup>");
+
+        Assert.Contains(report.Findings, f => f.RuleId == "SDX004");
+    }
+
+    [Theory]
+    [InlineData("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")]
+    [InlineData("{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")]
+    [InlineData("{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")]
+    public async Task Desktop_wpf_and_portable_project_types_do_not_fire_sdx004(string guids)
+    {
+        var report = await AnalyzeFragmentAsync($"<PropertyGroup><ProjectTypeGuids>{guids}</ProjectTypeGuids></PropertyGroup>");
+
+        Assert.DoesNotContain(report.Findings, f => f.RuleId == "SDX004");
+    }
+
     [Fact]
     public async Task A_project_with_only_xna_compile_items_has_no_content_finding()
     {

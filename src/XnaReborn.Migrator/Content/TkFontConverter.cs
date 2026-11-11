@@ -95,7 +95,16 @@ public static class TkFontConverter
                     return Fail($"DefaultCharacter {code} cannot be written in a .spritefont file.");
                 }
 
-                fallback = code;
+                // The MonoGame font reader trims the text of this element, so a space cannot be written (checked with dotnet-mgcb 3.8.6.1: it fails with
+                // "Not have enough entries in space-separated list!"). The element is left out and the author is told.
+                if (char.IsWhiteSpace((char)code))
+                {
+                    warnings.Add($"DefaultCharacter is the whitespace character {code}, which a MonoGame font file cannot hold. It was left out. A character that is not in CharacterRegions now throws when it is drawn; set a visible DefaultCharacter if that matters.");
+                }
+                else
+                {
+                    fallback = code;
+                }
             }
         }
 
