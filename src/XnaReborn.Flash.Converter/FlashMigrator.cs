@@ -37,6 +37,15 @@ public sealed record FlashMigrationResult(
 /// <summary>Creates a MonoGame copy of a Flash (AS3 + Flixel 2.x) source project. The original folder is only read.</summary>
 public static class FlashMigrator
 {
+    /// <summary>The AS3 behaviors the conversion only approximates. They go into the manifest, the migration notes and the summary screen.</summary>
+    public static IReadOnlyList<string> KnownDifferences { get; } =
+    [
+        "Number becomes double, and a Number field without a value starts as NaN, as in Flash.",
+        "Integer division is converted so the result keeps its fraction, as AS3 does.",
+        "Text uses a built-in pixel font and draws in capitals, so glyph shapes and spacing differ from Flash.",
+        "Sounds are rebuilt through the MonoGame content pipeline, so decoding, looping and timing can differ.",
+    ];
+
     /// <summary>Converts the project in <paramref name="sourceFolder"/> into <paramref name="outputFolder"/>.</summary>
     /// <param name="sourceFolder">The Flash project folder. It is never changed.</param>
     /// <param name="outputFolder">Where the migrated copy goes. A non-empty folder is refused unless confirmed.</param>
@@ -79,6 +88,7 @@ public static class FlashMigrator
 
         var changes = new List<FileChange>();
         var markers = new List<ConversionMarker>();
+        var sites = new List<ManifestMarkerSite>();
         var notConverted = new List<string>();
         var emitter = new CSharpEmitter(project, assets.Bindings, findings);
 
@@ -99,6 +109,7 @@ public static class FlashMigrator
             var emitted = emitter.Emit(file);
             markers.AddRange(emitted.Markers);
             var target = UniquePath("Game/" + RelativeToRoot(project, file.Path)[..^3] + ".cs", used);
+            sites.AddRange(emitted.Markers.Select(m => new ManifestMarkerSite(m.RuleId, m.File, m.Line, target)));
             changes.Add(new FileChange(target, ChangeKind.Created, null, emitted.Text, "Converted from " + file.Path + "."));
         }
 
@@ -128,10 +139,12 @@ public static class FlashMigrator
         {
             SourceKind = "Flash",
             Markers = markerCounts,
+            MarkerSites = [.. sites.OrderBy(m => m.RuleId, StringComparer.Ordinal).ThenBy(m => m.File, StringComparer.Ordinal).ThenBy(m => m.Line)],
+            Approximations = KnownDifferences,
             RulesFired = ruleIds,
         };
         changes.Add(new FileChange(ProjectMigrator.ManifestJsonName, ChangeKind.Created, null, ManifestJsonWriter.Write(manifest), "Record of this migration."));
-        changes.Add(new FileChange("MIGRATION-NOTES.md", ChangeKind.Created, null, NotesText(project, markerCounts, assets.Notes, notConverted), "What needs a person."));
+        changes.Add(new FileChange("MIGRATION-NOTES.md", ChangeKind.Created, null, NotesText(project, markerCounts, sites, assets.Notes, notConverted), "What needs a person."));
 
         progress?.Report(new FlashMigrationProgress("Writing", 3, 4, null));
         await new OutputWriter().WriteAsync(session, sourceFolder, changes, cancellationToken).ConfigureAwait(false);
@@ -246,7 +259,7 @@ public static class FlashMigrator
             "Notice for the Flixel API.");
     }
 
-    private static string NotesText(FlashProject project, IReadOnlyDictionary<string, int> markers, IReadOnlyList<string> notes, IReadOnlyList<string> notConverted)
+    private static string NotesText(FlashProject project, IReadOnlyDictionary<string, int> markers, IReadOnlyList<ManifestMarkerSite> sites, IReadOnlyList<string> notes, IReadOnlyList<string> notConverted)
     {
         var sb = new StringBuilder();
         sb.Append("# Migration notes\n\n");
@@ -260,6 +273,10 @@ public static class FlashMigrator
         foreach (var (rule, count) in markers)
         {
             sb.Append($"- {rule}: {count}\n");
+            foreach (var site in sites.Where(m => m.RuleId == rule).GroupBy(m => m.File, StringComparer.Ordinal).OrderBy(g => g.Key, StringComparer.Ordinal))
+            {
+                sb.Append($"  - {site.Key}, line {string.Join(", ", site.Select(m => m.Line).Order())}\n");
+            }
         }
 
         sb.Append("\nSearch the Game folder for `XNAREBORN:` to find each one.\n");
@@ -273,8 +290,11 @@ public static class FlashMigrator
         }
 
         sb.Append("\n## Known behavior differences\n\n");
-        sb.Append("- Text uses a built-in pixel font and draws in capitals.\n");
-        sb.Append("- Number is a double, int division is converted, Number fields start as NaN.\n");
+        foreach (var difference in KnownDifferences)
+        {
+            sb.Append("- ").Append(difference).Append('\n');
+        }
+
         return sb.ToString();
     }
 }

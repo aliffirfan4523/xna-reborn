@@ -130,9 +130,10 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 16. UI flow (MVP)
   - [x] 16.1 Project-kind switch in `OpenProjectViewModel` and the services (`IAnalysisService`, `IMigrationService`, `IRunService`) using the detector; conflict prompt when both kinds match. No conversion logic in view models. (H)
-  - [ ] 16.2 Report screen: show FL findings, entry class, Flixel version; swf-only explanation. (L)
-  - [ ] 16.3 Summary screen: marker counts by rule id with links; the list of approximated behaviors. (L)
-  - [ ] 16.4 Headless UI tests for the Flash path using the fixtures. (L)
+  - [x] 16.2 Report screen: show FL findings, entry class, Flixel version; swf-only explanation. (L)
+  - [x] 16.3 Summary screen: marker counts by rule id with links; the list of approximated behaviors. (L)
+  - [x] 16.4 Headless UI tests for the Flash path using the fixtures. (L)
+  - Tasks 16.2 to 16.4 notes: the report page gets a "Flash project" panel (kind, entry class, Flixel version) built by `FlashReportInfo` from the shared report; the adapter carries the entry class in `ProjectInfo.References` as `Entry class: X`. A swf-only, Flash-Pro-only or no-single-entry folder shows a plain explanation and the Continue button is disabled, because the converter would refuse it. The summary page lists markers by rule id with one link per marker (opens the converted C# file; the shell cannot jump to a line) and the approximated behaviors. Both lists come from the manifest, which gained optional `markerSites` and `approximations` fields (left out of the JSON when null, so XNA manifests do not change). `MIGRATION-NOTES.md` now names the files and lines per rule. Tests: `tests/XnaReborn.App.Tests/Flash/` and `FlashManifestTests`.
   - _Requirements: R11, R13_
 
 - [ ] 17. Second wave: fuller Flixel coverage (after checkpoint 14)

@@ -16,6 +16,8 @@ namespace XnaReborn.Migrator.Output;
 /// <param name="RulesFired">Every rule id that had a finding in the analysis, sorted, or null when <paramref name="SourceFrameworks"/> is null. Left out of the JSON when null.</param>
 /// <param name="SourceKind">"Flash" for a converted Flash project, otherwise null. Left out of the JSON when null.</param>
 /// <param name="Markers">Number of XNAREBORN markers left in converted code, by rule id, or null. Left out of the JSON when null.</param>
+/// <param name="MarkerSites">Where each marker sits (rule id, original file and line, converted file), sorted, or null. Left out of the JSON when null.</param>
+/// <param name="Approximations">Plain statements of the behaviors the conversion only approximates, or null. Left out of the JSON when null.</param>
 public sealed record Manifest(
     int Version,
     string Migrator,
@@ -29,7 +31,16 @@ public sealed record Manifest(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? SourceFrameworks = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? RulesFired = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? SourceKind = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyDictionary<string, int>? Markers = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyDictionary<string, int>? Markers = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<ManifestMarkerSite>? MarkerSites = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? Approximations = null);
+
+/// <summary>One XNAREBORN marker left in converted code.</summary>
+/// <param name="RuleId">The rule that needs a person, such as FL020.</param>
+/// <param name="File">Relative path of the original source file, with '/' separators.</param>
+/// <param name="Line">1-based line in the original file.</param>
+/// <param name="ConvertedFile">Relative path of the converted file in the output, with '/' separators.</param>
+public sealed record ManifestMarkerSite(string RuleId, string File, int Line, string ConvertedFile);
 
 /// <summary>Shims added to the migrated copy: offline stand-ins for dead XNA APIs, not real XNA services.</summary>
 /// <param name="Project">Path of the shim project file, relative to the output, with '/' separators.</param>

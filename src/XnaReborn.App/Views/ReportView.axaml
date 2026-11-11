@@ -116,6 +116,25 @@
                 </ItemsControl>
               </StackPanel>
             </Expander>
+            <!-- Flash project: kind, entry class, Flixel version, and why it cannot be converted. Built from the report; this only shows it. -->
+            <Expander Header="Flash project" IsExpanded="True"
+                      IsVisible="{Binding IsFlash}"
+                      HorizontalAlignment="Stretch"
+                      AutomationProperties.AutomationId="FlashPanel"
+                      AutomationProperties.Name="Flash project">
+              <StackPanel Spacing="{StaticResource SpacingSmall}" DataContext="{Binding Flash}" x:DataType="vm:FlashReportInfo">
+                <TextBlock Text="{Binding KindText}" TextWrapping="Wrap" AutomationProperties.AutomationId="FlashKind" />
+                <TextBlock Text="{Binding EntryClassText}" TextWrapping="Wrap" FontWeight="SemiBold" AutomationProperties.AutomationId="FlashEntryClass" />
+                <TextBlock Text="{Binding FlixelText}" TextWrapping="Wrap" AutomationProperties.AutomationId="FlashFlixelVersion" />
+                <Border IsVisible="{Binding Explanation, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Padding="12" BorderThickness="1" CornerRadius="4"
+                        BorderBrush="{DynamicResource SeverityBlockerBrush}"
+                        AutomationProperties.AutomationId="FlashExplanation"
+                        AutomationProperties.Name="Why this Flash project cannot be converted">
+                  <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" />
+                </Border>
+              </StackPanel>
+            </Expander>
             <!-- Projects of the report: family, version with confidence, platform. Display only. -->
             <Expander Header="Projects" IsExpanded="True"
                       IsVisible="{Binding HasProjects}"
