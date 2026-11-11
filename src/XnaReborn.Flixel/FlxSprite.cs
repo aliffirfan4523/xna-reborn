@@ -160,8 +160,8 @@ public class FlxSprite : FlxObject
             return;
         }
 
-        var dx = x - offset.x;
-        var dy = y - offset.y;
+        var dx = x - offset.x - (FlxG.camera.scroll.x * scrollFactor.x);
+        var dy = y - offset.y - (FlxG.camera.scroll.y * scrollFactor.y);
         var dw = frameWidth * scale.x;
         var dh = frameHeight * scale.y;
         if (_graphic is not null && frameWidth > 0 && frameHeight > 0)
@@ -185,6 +185,8 @@ public class FlxSprite : FlxObject
             return;
         }
 
+        var originX = x - (FlxG.camera.scroll.x * scrollFactor.x);
+        var originY = y - (FlxG.camera.scroll.y * scrollFactor.y);
         var size = FlxG.assets?.GetTextureSize(texture) ?? (tileWidth, tileHeight);
         var perRow = Math.Max(1, size.Item1 / tileWidth);
         var frames = Math.Max(1, perRow * Math.Max(1, size.Item2 / tileHeight) - firstFrame);
@@ -195,7 +197,7 @@ public class FlxSprite : FlxObject
                 var f = firstFrame + ((cx + cy) % frames);
                 var w = Math.Min(tileWidth, width - cx * tileWidth);
                 var h = Math.Min(tileHeight, height - cy * tileHeight);
-                r.DrawFrame(texture, f % perRow * tileWidth, f / perRow * tileHeight, (int)w, (int)h, x + cx * tileWidth, y + cy * tileHeight, w, h, color, alpha, false);
+                r.DrawFrame(texture, f % perRow * tileWidth, f / perRow * tileHeight, (int)w, (int)h, originX + (cx * tileWidth), originY + (cy * tileHeight), w, h, color, alpha, false);
             }
         }
     }
@@ -286,15 +288,16 @@ public class FlxText : FlxSprite
         var scaleFactor = PixelFont.ScaleFor(size);
         var lineHeight = PixelFont.LineHeight * scaleFactor;
         var argb = ((uint)Math.Round(255 * Math.Clamp(alpha, 0, 1)) << 24) | (color & 0xffffff);
-        var py = y;
+        var originX = x - (FlxG.camera.scroll.x * scrollFactor.x);
+        var py = y - (FlxG.camera.scroll.y * scrollFactor.y);
         foreach (var line in _text.Split('\n'))
         {
             var lineWidth = PixelFont.Measure(line, scaleFactor);
             var px = alignment switch
             {
-                "center" => x + (width - lineWidth) / 2,
-                "right" => x + width - lineWidth,
-                _ => x,
+                "center" => originX + ((width - lineWidth) / 2),
+                "right" => originX + width - lineWidth,
+                _ => originX,
             };
             if (shadow != 0)
             {

@@ -76,7 +76,7 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 9. Flixel runtime: rendering, input, audio (MVP)
   - [ ] 9.1 `FlxGame : Game` with fixed timestep, logical-size render target, zoom scaling with point sampling, window title and size. Needs `GraphicsDevice`. A smoke test runs only when a graphics device is available and is skipped otherwise. (H)
-  - [ ] 9.2 `FlxCamera` (single camera): scroll, bounds, follow, `flash`, `fade`, `shake`, background color. `FlxSprite` drawing: frames, animation (`addAnimation`, `play`), flip, scale, angle, alpha, color, `makeGraphic`, `loadGraphic`. Frame and animation math tested headless. (H)
+  - [x] 9.2 `FlxCamera` (single camera): scroll, bounds, follow, `flash`, `fade`, `shake`, background color. `FlxSprite` drawing: frames, animation (`addAnimation`, `play`), flip, scale, angle, alpha, color, `makeGraphic`, `loadGraphic`. Frame and animation math tested headless. (H)
   - [ ] 9.3 `FlxText` with `SpriteFont`, alignment, color, shadow; `FlxButton`; `FlxTileblock`. (H)
   - [ ] 9.4 Input: `FlxG.keys`, `FlxG.mouse`, gamepad stub, key name map. Tests with a fake input provider. (L)
   - [ ] 9.5 Audio: `FlxSound`, `FlxG.play`, `playMusic`, volume, mute, pause, loop, fade. Wrap `SoundEffect` behind an interface so logic is testable. (H)
