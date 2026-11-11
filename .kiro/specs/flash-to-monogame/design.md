@@ -341,3 +341,8 @@ Stretch: convert Mode from a local checkout.
 - `MonoGame.Framework.DesktopGL 3.8.6.1` was added to `Directory.Packages.props` because `XnaReborn.Flixel` must reference MonoGame. It is the version already pinned in `packages.json`.
 - Parser: tests are plain xUnit assertions and a round trip of every fixture. Verify tree snapshots (task 4.5) are not done yet. A custom namespace modifier (such as `mx_internal`) is skipped without a record. The E4X filter body `.( ... )` is skipped as balanced tokens, not parsed.
 - Existing fixture tests that list the folders of `tests/fixtures` now ignore the `flash` folder, which has its own fixture tests.
+- PR 2 (rules): the Flash rules use their own small model (`FlashRule`, `FlashRuleCatalog` in `XnaReborn.Flash.Analyzer`) and the catalog `rules/flash-to-monogame.json`, embedded in the assembly. Task 6.1 (adding match types to the Core rule model) was not done on purpose: it would touch the shared RuleSchema and RuleEngine that other workers edit. Findings, scoring and report shapes reuse Core types (`Finding`, `Severity`, `Scorer`). Task 6.1 stays open.
+- FL055 (Flixel member not in the runtime) is not in the catalog yet. It needs the generated API map (task 10.1) and the runtime.
+- `As3TypeResolver` uses a hand-written Flixel member map (shortcut, replace in 10.1). Tasks 10.2 and 10.3 are done for the analyzer's needs; the converter reuses the same class.
+- Embed files are checked for existence only. Stub files stand in for assets in `flx-embeds`; the platformer fixture has a generated png and wav.
+- Snapshots use Verify for the JSON and Markdown reports of `flx-hello`, `flx-platformer` and `flx-gaps`.
