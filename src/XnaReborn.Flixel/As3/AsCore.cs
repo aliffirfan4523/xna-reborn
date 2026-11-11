@@ -87,6 +87,9 @@ public enum AssetKind
 
     /// <summary>A data file copied to the Content folder.</summary>
     Data,
+
+    /// <summary>A font, loaded as a <c>SpriteFont</c>.</summary>
+    Font,
 }
 
 /// <summary>A reference to an embedded asset: the content name and its kind. It stands in for AS3 embed classes.</summary>

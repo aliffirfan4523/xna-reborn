@@ -72,7 +72,7 @@ Suggested waves (parallel inside a wave):
   - [x] 7.4 Tests for 7.1 to 7.3 including NaN and string-to-number cases. (L)
   - _Requirements: R8_
 
-- [ ] 8. Flixel runtime: logic (MVP)
+- [x] 8. Flixel runtime: logic (MVP)
   - [x] 8.1 `FlxPoint`, `FlxRect`, `FlxU` (math helpers, `getAngle`, `rotatePoint`, `formatTime`, `floor`, `ceil`), `FlxG` constants and random. Ported from the AS3 source with the MIT notice. Tests with hand-computed values. (L)
   - [x] 8.2 `FlxBasic`, `FlxObject` (motion, `overlaps`, `separate` helpers, `flicker`, `kill/revive`), `FlxGroup` (`add`, `remove`, `recycle`, `getFirstAvailable`, `countLiving`, `setAll`, `callAll`, `sort`). Tests: group recycling, kill/revive, object motion step. (H)
   - [x] 8.3 `FlxQuadTree`, `FlxList`, and `FlxG.collide` / `overlap` / `separate` / `worldBounds`. Tests: separation on X and Y, one-way platforms, group against group, notify callbacks through `AsFunction`. (H)
@@ -80,10 +80,10 @@ Suggested waves (parallel inside a wave):
   - [x] 8.5 `FlxState`, `FlxGroup` lifecycle (`create`, `update`, `draw`, `destroy`) wired through a headless `FlxTestHost` that steps the game with no graphics device. Tests: a two-state script runs deterministically. (H)
   - _Requirements: R7.1 to R7.6_
 
-- [ ] 9. Flixel runtime: rendering, input, audio (MVP)
-  - [ ] 9.1 `FlxGame : Game` with fixed timestep, logical-size render target, zoom scaling with point sampling, window title and size. Needs `GraphicsDevice`. A smoke test runs only when a graphics device is available and is skipped otherwise. (H)
+- [x] 9. Flixel runtime: rendering, input, audio (MVP)
+  - [x] 9.1 `FlxGame : Game` with fixed timestep, logical-size render target, zoom scaling with point sampling, window title and size. Needs `GraphicsDevice`. A smoke test runs only when a graphics device is available and is skipped otherwise. (H)
   - [x] 9.2 `FlxCamera` (single camera): scroll, bounds, follow, `flash`, `fade`, `shake`, background color. `FlxSprite` drawing: frames, animation (`addAnimation`, `play`), flip, scale, angle, alpha, color, `makeGraphic`, `loadGraphic`. Frame and animation math tested headless. (H)
-  - [ ] 9.3 `FlxText` with `SpriteFont`, alignment, color, shadow; `FlxButton`; `FlxTileblock`. (H)
+  - [x] 9.3 `FlxText` with `SpriteFont`, alignment, color, shadow; `FlxButton`; `FlxTileblock`. (H)
   - [x] 9.4 Input: `FlxG.keys`, `FlxG.mouse`, gamepad stub, key name map. Tests with a fake input provider. (L)
   - [x] 9.5 Audio: `FlxSound`, `FlxG.play`, `playMusic`, volume, mute, pause, loop, fade. Wrap `SoundEffect` behind an interface so logic is testable. (H)
   - [x] 9.6 Asset loading through `AssetRef` and `Content.RootDirectory` (textures, sounds, data as bytes or text, sprite fonts). Tests with an in-memory asset provider. (L)

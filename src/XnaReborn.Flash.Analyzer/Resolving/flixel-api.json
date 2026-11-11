@@ -701,6 +701,12 @@
           "static": true
         },
         {
+          "name": "Font",
+          "kind": "field",
+          "type": "AssetKind",
+          "static": true
+        },
+        {
           "name": "Song",
           "kind": "field",
           "type": "AssetKind",
@@ -812,6 +818,119 @@
           "kind": "field",
           "type": "Boolean",
           "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxButton",
+      "base": "FlxSprite",
+      "members": [
+        {
+          "name": "HIGHLIGHT",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "NORMAL",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "PRESSED",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "destroy",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "draw",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "label",
+          "kind": "property",
+          "type": "FlxText",
+          "static": false
+        },
+        {
+          "name": "loadGraphic",
+          "kind": "method",
+          "type": "FlxSprite",
+          "static": false,
+          "parameters": [
+            {
+              "name": "Graphic",
+              "type": "Class"
+            },
+            {
+              "name": "Animated",
+              "type": "Boolean"
+            },
+            {
+              "name": "Reverse",
+              "type": "Boolean"
+            },
+            {
+              "name": "Width",
+              "type": "int"
+            },
+            {
+              "name": "Height",
+              "type": "int"
+            },
+            {
+              "name": "Unique",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "onDown",
+          "kind": "property",
+          "type": "Function",
+          "static": false
+        },
+        {
+          "name": "onOut",
+          "kind": "property",
+          "type": "Function",
+          "static": false
+        },
+        {
+          "name": "onOver",
+          "kind": "property",
+          "type": "Function",
+          "static": false
+        },
+        {
+          "name": "onUp",
+          "kind": "property",
+          "type": "Function",
+          "static": false
+        },
+        {
+          "name": "status",
+          "kind": "property",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
         }
       ]
     },
@@ -2837,6 +2956,12 @@
           "parameters": []
         },
         {
+          "name": "font",
+          "kind": "property",
+          "type": "Class",
+          "static": false
+        },
+        {
           "name": "shadow",
           "kind": "property",
           "type": "uint",
@@ -3225,6 +3350,22 @@
           ]
         },
         {
+          "name": "MeasureText",
+          "kind": "method",
+          "type": "(double Width, double Height)",
+          "static": false,
+          "parameters": [
+            {
+              "name": "font",
+              "type": "AssetRef"
+            },
+            {
+              "name": "text",
+              "type": "String"
+            }
+          ]
+        },
+        {
           "name": "ReadData",
           "kind": "method",
           "type": "Array",
@@ -3369,6 +3510,38 @@
             },
             {
               "name": "height",
+              "type": "Number"
+            },
+            {
+              "name": "argb",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "DrawText",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "font",
+              "type": "AssetRef"
+            },
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "x",
+              "type": "Number"
+            },
+            {
+              "name": "y",
+              "type": "Number"
+            },
+            {
+              "name": "scale",
               "type": "Number"
             },
             {
