@@ -1,0 +1,1 @@
+Compiled 'C:/work/obj/Sm2.fx' to 'C:/work/obj/Sm2.mgfxo'.

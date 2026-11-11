@@ -1,0 +1,4 @@
+C:/work/obj/AlphaTest.fx,(13,9) : Unexpected token 'A' found. Expected CloseBracket
+
+C:/work/obj/AlphaTest.fx,(13,9) : Unexpected token 'A' found. Expected CloseBracket
+Failed to parse 'C:/work/obj/AlphaTest.fx'!

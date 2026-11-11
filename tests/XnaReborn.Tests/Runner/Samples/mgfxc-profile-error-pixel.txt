@@ -1,0 +1,2 @@
+Invalid profile ''. Pixel shader 'MainPS' must be SM 4.0 level 9.1 or higher!
+Unexpected error compiling 'C:/work/obj/Vpos.fx'!

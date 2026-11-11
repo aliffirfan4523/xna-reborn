@@ -114,4 +114,29 @@ public sealed class EffectCompilerIntegrationTests : IDisposable
             Assert.True(ok, profile + ": " + output);
         }
     }
+
+    [IntegrationFact]
+    public async Task Build_check_runs_the_pinned_tool_in_a_migrated_copy()
+    {
+        var root = Path.Combine(_work, "copy");
+        Directory.CreateDirectory(Path.Combine(root, "Content"));
+        File.WriteAllText(Path.Combine(root, "xnareborn-manifest.json"), """{"version":1,"completed":true}""");
+        File.WriteAllText(Path.Combine(root, "Game.csproj"), "<Project />");
+        var manifest = new ToolManifestGenerator().Generate(PackageVersions.Default.MonoGame);
+        Directory.CreateDirectory(Path.Combine(root, ".config"));
+        File.WriteAllText(Path.Combine(root, manifest.RelativePath), manifest.NewText!);
+        var runner = new XnaReborn.Runner.Processes.ProcessRunner();
+        var restore = await runner.RunAsync(new XnaReborn.Runner.Processes.ProcessRequest("dotnet", ["tool", "restore"], root, TimeSpan.FromMinutes(3)), null, CancellationToken.None);
+        Assert.Equal(0, restore.ExitCode);
+
+        var good = Path.Combine(root, "Content", "Sm2.fx");
+        var bad = Path.Combine(root, "Content", "AlphaTest.fx");
+        File.WriteAllText(good, EffectRewriteStep.Rewrite(File.ReadAllText(Path.Combine(_folder, "Sm2.fx"))).Text);
+        File.WriteAllText(bad, EffectRewriteStep.Rewrite(File.ReadAllText(Path.Combine(_folder, "AlphaTest.fx"))).Text);
+
+        var results = await new XnaReborn.Runner.Effects.EffectBuildCheck().RunAsync(root, XnaReborn.Runner.Effects.EffectCompilerProfile.OpenGL, [good, bad], runner, CancellationToken.None);
+
+        Assert.Equal([XnaReborn.Runner.Effects.EffectCheckStatus.Passed, XnaReborn.Runner.Effects.EffectCheckStatus.Failed], results.Select(r => r.Status));
+        Assert.Equal("MGFX0001", results[1].Diagnostics[0].Code);
+    }
 }
