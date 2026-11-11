@@ -326,6 +326,25 @@
       "match": { "runtimeRegex": "NoAudioHardwareException|OpenAL[^\\r\\n]*(device|error|failed)" },
       "title": "No audio device",
       "advice": "The game could not open an audio device. Connect or enable an audio output and install OpenAL. The game may run without sound if it handles NoAudioHardwareException."
+    },
+    {
+      "id": "F001",
+      "match": { "code": "CS1061", "messageRegex": "'(FlxSprite|FlxObject|FlxGroup|FlxState|FlxText|FlxG|FlxBasic|FlxTileblock|FlxPoint|FlxKeyboard)' does not contain a definition" },
+      "title": "Flixel member is not in the runtime",
+      "advice": "The converted game calls a Flixel member that the XnaReborn.Flixel runtime does not have yet. Remove the call, or add the member to the XnaReborn.Flixel folder of the migrated copy."
+    },
+    {
+      "id": "F002",
+      "match": { "code": "CS1503", "messageContains": "'AsFunction'" },
+      "title": "Function value needs a delegate type",
+      "advice": "An AS3 function was passed where the runtime expects an AsFunction. Wrap it with AsFunction.From(new Action<...>(...)) or AsFunction.From(new Func<...>(...)).",
+      "ruleId": "FL026"
+    },
+    {
+      "id": "F003",
+      "match": { "code": "CS0266", "messageRegex": "type 'double' to '(int|uint)'" },
+      "title": "Number needs a cast to int",
+      "advice": "AS3 converts a Number to an int on assignment, C# does not. Add an explicit cast such as (int)value where this value is passed or assigned."
     }
   ]
 }

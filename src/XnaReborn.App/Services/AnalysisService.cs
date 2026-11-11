@@ -39,6 +39,11 @@ public sealed class AnalysisService : IAnalysisService
     public async Task<AnalysisReport> AnalyzeAsync(string path, IProgress<AnalysisProgress>? progress, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        if (FlashServiceAdapter.IsFlash(path))
+        {
+            return await FlashServiceAdapter.AnalyzeAsync(path, progress, cancellationToken).ConfigureAwait(false);
+        }
+
         var loaded = await GetCatalogsAsync(cancellationToken).ConfigureAwait(false);
         return await new ProjectAnalyzer().AnalyzeAsync(path, loaded.Catalogs, loaded.Diagnostics, progress, cancellationToken).ConfigureAwait(false);
     }
