@@ -23,6 +23,7 @@ public sealed class RuleMatchJsonConverter : JsonConverter<RuleMatch>
         ["spriteFontFamily"] = typeof(SpriteFontFamilyMatch),
         ["projectLinks"] = typeof(ProjectLinksMatch),
         ["preprocessorSymbol"] = typeof(PreprocessorSymbolMatch),
+        ["mgcbSetting"] = typeof(MgcbSettingMatch),
         ["fileContent"] = typeof(FileContentMatch),
     };
 

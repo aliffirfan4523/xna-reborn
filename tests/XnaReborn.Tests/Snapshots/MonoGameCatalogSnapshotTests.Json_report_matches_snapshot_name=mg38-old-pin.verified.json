@@ -1,0 +1,83 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + monogame-upgrade",
+  "projects": [
+    {
+      "path": "Mg38OldPin.csproj",
+      "assemblyName": "Mg38OldPin",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "netcoreapp3.1",
+      "references": [],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "MonoGameLegacy",
+      "monoGameVersion": {
+        "exact": "3.8.0.1641",
+        "band": "V38",
+        "confidence": "High"
+      },
+      "monoGamePlatform": "DesktopGL",
+      "mgcbFiles": [
+        "Content/Content.mgcb"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "MG008",
+      "title": "MonoGame package pinned below 3.8.6.1",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Mg38OldPin.csproj",
+      "location": null,
+      "snippet": "MonoGame.Framework.DesktopGL"
+    },
+    {
+      "ruleId": "MG009",
+      "title": "Older .NET target (netcoreapp3.1, net5.0, net6.0, net7.0)",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Mg38OldPin.csproj",
+      "location": null,
+      "snippet": "TargetFramework=netcoreapp3.1"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "MG008",
+      "title": "MonoGame package pinned below 3.8.6.1",
+      "explanation": "The project already uses a MonoGame 3.8 package but pins an older version. The 3.8 line fixes bugs and adds net8.0 support. Packages not named MonoGame.Framework.* (for example MonoGame.Extended) are not checked, because they have their own versions.",
+      "resolution": "The migrator updates the MonoGame package versions, the target framework and the dotnet-mgcb tool manifest to 3.8.6.1.",
+      "migratorTask": "monogame-upgrade:11.2"
+    },
+    {
+      "id": "MG009",
+      "title": "Older .NET target (netcoreapp3.1, net5.0, net6.0, net7.0)",
+      "explanation": "The project targets a .NET version that is out of support. MonoGame 3.8.2 and later build for net8.0.",
+      "resolution": "The migrator sets the target framework to net8.0 or net8.0-windows.",
+      "migratorTask": "monogame-upgrade:11.2"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 2,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 2,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}

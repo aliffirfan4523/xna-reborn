@@ -9,6 +9,11 @@
     "$schema": { "type": "string" },
     "version": { "const": 1, "description": "Catalog schema version." },
     "name": { "type": "string", "minLength": 1 },
+    "appliesTo": {
+      "enum": ["xna", "monogame", "SharpDxToolkit"],
+      "default": "xna",
+      "description": "Project family the catalog runs against. Omit for XNA projects."
+    },
     "scoring": { "$ref": "#/$defs/scoring" },
     "rules": {
       "type": "array",
@@ -57,7 +62,7 @@
       "required": ["id", "title", "severity", "classification", "match", "explanation", "resolution"],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^XNA[0-9]{3}$" },
+        "id": { "type": "string", "pattern": "^(XNA|MG|SDX)[0-9]{3}$" },
         "title": { "type": "string", "minLength": 1, "maxLength": 100 },
         "severity": { "$ref": "#/$defs/severity" },
         "classification": { "$ref": "#/$defs/classification" },
@@ -99,6 +104,7 @@
         { "$ref": "#/$defs/matchSpriteFontFamily" },
         { "$ref": "#/$defs/matchProjectLinks" },
         { "$ref": "#/$defs/matchPreprocessorSymbol" },
+        { "$ref": "#/$defs/matchMgcbSetting" },
         { "$ref": "#/$defs/matchFileContent" }
       ]
     },
@@ -142,13 +148,20 @@
       }
     },
     "matchMember": {
-      "description": "A member access or call. Syntax only. When 'receiver' is set, the identifier left of the dot must equal it.",
+      "description": "A member access or call. Syntax only. When 'receiver' is set, the identifier left of the dot must equal it. Exactly one of 'name' or 'names' is required.",
       "type": "object",
-      "required": ["type", "name", "namespaces"],
+      "required": ["type", "namespaces"],
       "additionalProperties": false,
       "properties": {
         "type": { "const": "member" },
         "name": { "type": "string", "minLength": 1 },
+        "names": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Several member names that the same rule matches."
+        },
         "receiver": { "type": "string", "minLength": 1 },
         "namespaces": { "$ref": "#/$defs/namespaces" },
         "kind": { "enum": ["Invocation", "Access", "Any"], "default": "Any" },
@@ -182,7 +195,19 @@
       "properties": {
         "type": { "const": "projectItem" },
         "itemType": { "type": "string", "minLength": 1 },
-        "include": { "type": "string", "minLength": 1 }
+        "include": { "type": "string", "minLength": 1 },
+        "metadata": {
+          "description": "Optional filter on one attribute or child element of the item, for example the Version of a PackageReference. Every filter that is set must pass. An item without that metadata passes none of them.",
+          "type": "object",
+          "required": ["name"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "equals": { "type": "string" },
+            "notEquals": { "type": "string" },
+            "matches": { "type": "string", "description": ".NET regular expression." }
+          }
+        }
       }
     },
     "matchFilePattern": {
@@ -264,6 +289,21 @@
           "uniqueItems": true,
           "items": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" }
         }
+      }
+    },
+    "matchMgcbSetting": {
+      "description": "A setting, reference, or entry in a Content.mgcb file. For platform, profile, config, compress, and reference, the value is compared with equals or matches (no filter: any value). For entry, importer, processor, and nonStandardPair filter the entries. A reference value is the path as written.",
+      "type": "object",
+      "required": ["type", "setting"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "mgcbSetting" },
+        "setting": { "enum": ["platform", "profile", "config", "compress", "reference", "entry"] },
+        "equals": { "type": "string" },
+        "matches": { "type": "string", "description": ".NET regular expression." },
+        "importer": { "type": "string", "minLength": 1 },
+        "processor": { "type": "string", "minLength": 1 },
+        "nonStandardPair": { "type": "boolean" }
       }
     }
   }

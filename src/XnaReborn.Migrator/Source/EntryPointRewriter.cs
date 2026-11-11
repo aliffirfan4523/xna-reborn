@@ -17,6 +17,7 @@ public sealed class EntryPointRewriter
         "XBOX360",
         "ZUNE",
         "WINDOWS_PHONE",
+        "LINUX",
     };
 
     /// <summary>Unwraps platform-only conditionals around the entry point of one source file.</summary>

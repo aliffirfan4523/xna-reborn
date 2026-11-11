@@ -23,15 +23,25 @@ public static class Scorer
     public static ScoreResult Compute(IEnumerable<Finding> findings, ScoringOptions? options)
     {
         ArgumentNullException.ThrowIfNull(findings);
-        var weights = options ?? ScoringOptions.Default;
+        return ComputeByRule(findings, _ => options);
+    }
+
+    /// <summary>Computes the score when findings come from several catalogs, each with its own weights.</summary>
+    /// <param name="findings">All findings of the analysis.</param>
+    /// <param name="optionsFor">Returns the weights of the catalog that owns the finding's rule, or null for the defaults.</param>
+    /// <returns>Integer scores clamped to 0 to 100.</returns>
+    public static ScoreResult ComputeByRule(IEnumerable<Finding> findings, Func<Finding, ScoringOptions?> optionsFor)
+    {
+        ArgumentNullException.ThrowIfNull(findings);
+        ArgumentNullException.ThrowIfNull(optionsFor);
 
         var perRule = findings
             .GroupBy(f => f.RuleId, StringComparer.Ordinal)
             .Select(g => g.First())
             .ToList();
 
-        var total = perRule.Sum(f => Penalty(f, weights));
-        var fixable = perRule.Where(f => f.Classification == Classification.AutoFixable).Sum(f => Penalty(f, weights));
+        var total = perRule.Sum(f => Penalty(f, optionsFor(f) ?? ScoringOptions.Default));
+        var fixable = perRule.Where(f => f.Classification == Classification.AutoFixable).Sum(f => Penalty(f, optionsFor(f) ?? ScoringOptions.Default));
 
         return new ScoreResult(ToScore(total), ToScore(total - fixable));
     }

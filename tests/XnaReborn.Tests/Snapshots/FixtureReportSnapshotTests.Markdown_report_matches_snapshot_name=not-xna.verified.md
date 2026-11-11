@@ -1,4 +1,4 @@
-﻿# XNA Reborn compatibility report
+# XNA Reborn compatibility report
 
 Rule catalog: xna-test-sample (report format 1)
 
@@ -17,7 +17,7 @@ Classification: AutoFixable 0, Manual 0, Unsupported 0
 
 ## No XNA project found
 
-Found 1 project(s), but none use XNA.
+Found 1 project(s), but none use XNA, MonoGame or the SharpDX Toolkit.
 
 ## Findings
 

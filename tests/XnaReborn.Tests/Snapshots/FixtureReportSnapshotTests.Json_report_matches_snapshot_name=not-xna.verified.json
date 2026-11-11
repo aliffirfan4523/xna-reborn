@@ -1,4 +1,4 @@
-﻿{
+{
   "schemaVersion": 1,
   "catalogName": "xna-test-sample",
   "projects": [],
@@ -18,5 +18,5 @@
   "score": 100,
   "projectedScore": 100,
   "diagnostics": [],
-  "noProjectReason": "Found 1 project(s), but none use XNA."
+  "noProjectReason": "Found 1 project(s), but none use XNA, MonoGame or the SharpDX Toolkit."
 }

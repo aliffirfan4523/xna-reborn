@@ -28,17 +28,24 @@ public sealed record TypeMatch(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? AlsoNames = null) : RuleMatch;
 
 /// <summary>A member access or call, matched by syntax only.</summary>
-/// <param name="Name">The member name.</param>
+/// <param name="Name">The member name, or null when <paramref name="Names"/> is used. Exactly one of the two is set.</param>
 /// <param name="Namespaces">Namespaces of which one must be imported by the file.</param>
 /// <param name="Receiver">Identifier that must appear left of the dot, or null for any.</param>
 /// <param name="Kind">Whether to match invocations, accesses, or both.</param>
 /// <param name="Arguments">Allowed argument count range, or null for any.</param>
+/// <param name="Names">Several member names that the same rule matches, or null. Used for rename families.</param>
 public sealed record MemberMatch(
-    string Name,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Name,
     IReadOnlyList<string> Namespaces,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Receiver = null,
     MemberMatchKind Kind = MemberMatchKind.Any,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ArgumentRange? Arguments = null) : RuleMatch;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ArgumentRange? Arguments = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? Names = null) : RuleMatch
+{
+    /// <summary>Every member name the rule matches: <see cref="Name"/> or <see cref="Names"/>.</summary>
+    [JsonIgnore]
+    public IReadOnlyList<string> AllNames => Names ?? (Name is null ? [] : [Name]);
+}
 
 /// <summary>An MSBuild property in a project file.</summary>
 /// <param name="Name">The property name.</param>
@@ -52,9 +59,22 @@ public sealed record ProjectPropertyMatch(
 /// <summary>An item in a project file, such as Reference, Compile, NestedContentProject, or Import.</summary>
 /// <param name="ItemType">The item type.</param>
 /// <param name="Include">Item include value (the Project attribute for Import), or null for any. A * is a wildcard.</param>
+/// <param name="Metadata">Optional filter on one attribute or child element of the item, or null for no filter.</param>
 public sealed record ProjectItemMatch(
     string ItemType,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Include = null) : RuleMatch;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Include = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] MetadataFilter? Metadata = null) : RuleMatch;
+
+/// <summary>A filter on one metadata value of a project item, such as the Version of a PackageReference. Every filter that is set must pass. An item without the named metadata passes none of them.</summary>
+/// <param name="Name">Attribute or child element name, compared ignoring case.</param>
+/// <param name="EqualsValue">Required exact value (JSON "equals"), or null.</param>
+/// <param name="NotEquals">Value the metadata must differ from, or null.</param>
+/// <param name="MatchesPattern">.NET regular expression the value must match (JSON "matches"), or null.</param>
+public sealed record MetadataFilter(
+    string Name,
+    [property: JsonPropertyName("equals"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? EqualsValue = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? NotEquals = null,
+    [property: JsonPropertyName("matches"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? MatchesPattern = null);
 
 /// <summary>A file under the project folder that matches a glob.</summary>
 /// <param name="Glob">The glob pattern, for example **/*.xap.</param>
@@ -92,3 +112,18 @@ public sealed record FileContentMatch(string Glob, string Regex, int MaxBytes = 
 /// <summary>A conditional compilation symbol named in an <c>#if</c> or <c>#elif</c> directive, including inactive branches.</summary>
 /// <param name="Names">Symbols to look for. Whole identifiers are compared, so WINDOWS_PHONE_7 does not match WINDOWS.</param>
 public sealed record PreprocessorSymbolMatch(IReadOnlyList<string> Names) : RuleMatch;
+
+/// <summary>A setting, reference, or entry in a Content.mgcb file.</summary>
+/// <param name="Setting">One of platform, profile, config, compress, reference, or entry.</param>
+/// <param name="EqualsValue">Required exact value (JSON "equals"), or null. Not used with entry.</param>
+/// <param name="MatchesPattern">.NET regular expression the value must match (JSON "matches"), or null. Not used with entry.</param>
+/// <param name="Importer">With entry: importer name filter, or null. A trailing * is a wildcard.</param>
+/// <param name="Processor">With entry: processor name filter, or null. A trailing * is a wildcard.</param>
+/// <param name="NonStandardPair">With entry: when true, the entry must use an importer or processor that is not a stock pair.</param>
+public sealed record MgcbSettingMatch(
+    string Setting,
+    [property: JsonPropertyName("equals"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? EqualsValue = null,
+    [property: JsonPropertyName("matches"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? MatchesPattern = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Importer = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Processor = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool NonStandardPair = false) : RuleMatch;
