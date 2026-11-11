@@ -73,7 +73,7 @@ Migrator task: sharpdx-toolkit:8.1
 
 ### SDX004 Windows Store or Windows Phone project
 
-The project type GUIDs include the Windows Store app type (BC8A1FFA) or the Windows Phone 8 type (C089C8C0). These are the two non-desktop project types of the Toolkit project template (read from ProjectTemplate.csproj in the Toolkit repository). MonoGame desktop cannot host them.
+The project type GUIDs include the Windows Store app type (BC8A1FFA), the Windows Phone 8 type (C089C8C0), the Windows Phone 8.1 type (76F1466A) or the Universal Windows type (A5A43C5B). The first two are the non-desktop project types of the Toolkit project template (read from ProjectTemplate.csproj in the Toolkit repository). The last two were found on real Toolkit projects. MonoGame desktop cannot host any of them.
 
 **Resolution:** Migrate the game code into a desktop Toolkit project first, or port it by hand. XNA Reborn refuses these projects and creates no copy for them.
 
