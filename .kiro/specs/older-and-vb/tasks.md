@@ -181,9 +181,9 @@ Rules for every task:
   - [ ] 24.4 Start only if checkpoint B shows these patterns in real VB code
   - _Requirements: R11_
 
-- [ ] 25. Stretch: adjacent API gaps found in research
-  - [ ] 25.1 Check MonoGame 3.8.6.1 for `EffectPool`, `GammaRamp`, `ClipPlane`, `VertexShader`, `PixelShader`, `PrimitiveType.TriangleFan` and the `Color` byte order change
-  - [ ] 25.2 For each one that is missing or different, add a rule with a positive and negative case; for each one that exists, record that in the PR text and add nothing
+- [x] 25. Stretch: adjacent API gaps found in research
+  - [x] 25.1 Check MonoGame 3.8.6.1 for `EffectPool`, `GammaRamp`, `ClipPlane`, `VertexShader`, `PixelShader`, `PrimitiveType.TriangleFan` and the `Color` byte order change
+  - [x] 25.2 For each one that is missing or different, add a rule with a positive and negative case; for each one that exists, record that in the PR text and add nothing
   - _Requirements: R3_
 
 - [ ] 26. Final checkpoint

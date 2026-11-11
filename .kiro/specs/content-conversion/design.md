@@ -162,3 +162,9 @@ XNA Game Studio shipped a set of fonts that modern systems do not have (for exam
 6. **Prebuilt tests**: xnb-only fixture produces Prebuilt entries and the limitation note.
 7. **Determinism test**: byte-identical output on repeated runs.
 8. **Integration test (slow)**: run the content build on the simplest fixture through the runner.
+
+
+## Update from older-and-vb
+
+- ules/importer-map.json has an liases array: XNA 1.0 processors (SpriteTextureProcessor, ModelTextureProcessor) that count as stock and are built with TextureProcessor. ContentItem.InProject marks content listed inside the game project (Express 1.0); Content.mgcb then goes next to the project file.
+

@@ -880,6 +880,61 @@
       "explanation": "The project has a My Project/AssemblyInfo.vb file with assembly attributes. An SDK-style project generates the same attributes, so the build fails with duplicate attribute errors.",
       "resolution": "The migrator keeps the file and turns off the generated assembly information (GenerateAssemblyInfo false), as it does for AssemblyInfo.cs.",
       "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA115",
+      "title": "EffectPool (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
+      "match": { "type": "type", "name": "EffectPool", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "EffectPool let several effects share parameter values. XNA 4.0 removed it, and MonoGame 3.8.6.1 does not have the type. XNA 1.0 to 3.1 constructors such as BasicEffect(GraphicsDevice, EffectPool) take it. Checked on 2026-11-11 against the MonoGame.Framework.DesktopGL 3.8.6.1 assembly.",
+      "resolution": "Use the constructor without the pool, for example new BasicEffect(GraphicsDevice), and set shared values on each effect."
+    },
+    {
+      "id": "XNA116",
+      "title": "GammaRamp (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
+      "match": { "type": "type", "name": "GammaRamp", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "GammaRamp and GraphicsDevice.SetGammaRamp changed the display gamma. They were removed in XNA 4.0 and MonoGame 3.8.6.1 does not have them.",
+      "resolution": "Apply the brightness or gamma change in a shader or with a post-processing pass."
+    },
+    {
+      "id": "XNA117",
+      "title": "ClipPlane (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
+      "match": { "type": "type", "name": "ClipPlane", "alsoNames": ["ClipPlaneCollection"], "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "User clip planes (GraphicsDevice.ClipPlanes) were removed in XNA 4.0 and are not in MonoGame 3.8.6.1.",
+      "resolution": "Clip in the pixel shader with the clip() intrinsic, or use a stencil or scissor test."
+    },
+    {
+      "id": "XNA118",
+      "title": "PrimitiveType.TriangleFan (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
+      "match": { "type": "member", "name": "TriangleFan", "receiver": "PrimitiveType", "namespaces": ["Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
+      "explanation": "Triangle fans were removed in XNA 4.0 and MonoGame 3.8.6.1 has only point lists, line lists and strips, and triangle lists and strips.",
+      "resolution": "Convert the fan to a triangle list: for N vertices, emit the triangles (0, i, i + 1) with an index buffer."
+    },
+    {
+      "id": "XNA119",
+      "title": "VertexShader and PixelShader (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
+      "match": { "type": "type", "name": "VertexShader", "alsoNames": ["PixelShader"], "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "The low-level shader types VertexShader and PixelShader, with SetVertexShaderConstant and SetPixelShaderConstant, were removed in XNA 4.0. MonoGame 3.8.6.1 has no public type with these names.",
+      "resolution": "Wrap the shader in an Effect (.fx file) and set its parameters by name."
     }
   ]
 }

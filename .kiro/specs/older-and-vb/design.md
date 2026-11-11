@@ -522,3 +522,14 @@ Content was paraphrased from these sources, not quoted at length.
 
 - Task 21: `GameLocator` and `MigratedCopyGuard` also list `*.vbproj`; the guard messages keep the ".csproj" wording. `MsBuildOutputParser` already read `BC` codes and `vbc : error` lines without a file, so no parser change was needed; a hand-written sample (`build-vb-errors.txt`) covers the forms. Two hints were added with the ids H501 (`BC30002` on application model types) and H502 (`BC30451` on `My`), both linked to XNA112. The ids H409 to H411 were already taken by other hints. The planned hint for `BC30451` on a removed XNA name already exists as H007 and the other H0xx hints (they match the message text without a code), so none was added.
 - Task 22: the project list shows a "Visual Basic" badge text (and the screen reader name says so). `DiffViewer` and `DiffViewModel` find markers through `MarkerPrefixes`. The existing `Summary` line is unchanged for C# projects.
+
+## Implementation status (final)
+
+Done and merged: tasks 1 to 9, 11 to 18, 20 to 22 and 25. Not done:
+
+- Task 10 and task 23 (checkpoints): the read-only scans and migrations of the public candidate repositories need network clones and a person to read the results. The synthetic parts of both checkpoints are covered by tests (hash tests over every fixture, migrated Express, 2.0 and VB 4.0 fixtures build in the integration tests).
+- Task 19: 19.1 (rename of the generator) was not done, and `.myapp` and `.settings` files in `My Project` are not copied or noted (19.3 gap).
+- Task 24 (stretch): it starts only when checkpoint B shows `RenderState` and effect pass patterns in real VB code, which has not been checked.
+- Task 26: the spec updates and full test run are done; re-running the candidate scans and updating the table above with measured results is left for the owner.
+
+Task 25 result (MonoGame.Framework.DesktopGL 3.8.6.1, checked by reading the type and member names of the assembly, not by compiling code against it): `EffectPool`, `GammaRamp`, `ClipPlane`, `PrimitiveType.TriangleFan` and the `Set*ShaderConstant` methods are missing and got rules XNA115 to XNA118. `VertexShader` and `PixelShader` names appear in the assembly only as internal types, so XNA119 covers them as missing for user code. `StateBlock` (XNA026) and `PointSprite` were not changed: PointSprite is a render state value reached through `RenderState`, which XNA024 already covers. The `Color` byte order change was not checked.

@@ -50,7 +50,7 @@ All are immutable records with XML docs.
 ```csharp
 public enum Severity { Info, Warning, Error, Blocker }
 public enum Classification { AutoFixable, Manual, Unsupported }
-public enum XnaVersion { Unknown, V30, V31, V40 }
+public enum XnaVersion { Unknown, V30, V31, V40, V10, V20 } // V10 and V20 were added by the older-and-vb spec; ProjectInfo also has Language (csharp or vb)
 public enum XnaPlatform { Unknown, Windows, Xbox360, Zune, WindowsPhone }
 
 public sealed record SourceLocation(string File, int Line, int Column);   // File is relative, forward slashes
