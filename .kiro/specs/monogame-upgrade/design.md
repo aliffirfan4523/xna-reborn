@@ -165,7 +165,7 @@ Ids are contiguous: `MG001` to `MG032`. Ids are never reused.
 | MG005 | .NET Framework 4.x target (`TargetFrameworkVersion`) | Warning | AutoFixable | `projectProperty` `TargetFrameworkVersion` matches `^v[2-4]\.` | A, B | 11.1 |
 | MG006 | x86-only build (`PlatformTarget` x86) | Warning | AutoFixable | `projectProperty` `PlatformTarget` equals `x86` | A, B | 11.1 |
 | MG007 | `packages.config` NuGet list | Warning | AutoFixable | `filePattern` `**/packages.config` | A | 11.3 |
-| MG008 | MonoGame package pinned below 3.8.6.1 | Info | AutoFixable | `projectItem` PackageReference `MonoGame.*` with `metadata` Version not `3.8.6.1` | G | 11.2 |
+| MG008 | MonoGame package pinned below 3.8.6.1 | Info | AutoFixable | `projectItem` PackageReference `MonoGame.Framework.*` with `metadata` Version not `3.8.6.1` | G | 11.2 |
 | MG009 | Older .NET target (`netcoreapp3.1`, `net5.0`, `net6.0`, `net7.0`) | Info | AutoFixable | `projectProperty` `TargetFramework` matches `^(netcoreapp3\.1\|net[5-7]\.0)` | G | 11.2 |
 | MG010 | Protobuild project definitions | Error | Manual | `filePattern` `**/Protobuild.exe` | F | - |
 | MG011 | WindowsGL, Linux or macOS desktop project (OpenTK era) | Warning | AutoFixable | `projectProperty` `MonoGamePlatform` matches `^(WindowsGL\|Linux\|MacOSX)$` | C | 11.1 |
@@ -404,6 +404,18 @@ Read on 2026-11-11 from the MonoGame tags on GitHub (`v3.3` to `v3.8.6.1`) and f
 
 Rule changes made in this step: MG011 uses `MacOSX` (not `MacOS`), MG014 matches `WindowsStoreApp` only, MG015 matches `WindowsPhone8` only, MG016 uses `PlayStationMobile` and `PSVita`, and MG024 uses the names above. Every "to confirm" note is removed.
 
+## Analyzer implementation notes (tasks 3 to 10)
+
+What the analyzer part changed compared with the text above:
+
+- **MG008 include.** The rule uses `MonoGame.Framework.*`, not `MonoGame.*`, so third-party packages such as `MonoGame.Extended` (their own version numbers) are not reported. `metadata` filters need the metadata to exist: a `PackageReference` without a `Version` matches none of `equals`, `notEquals` and `matches`.
+- **MG010 and fixture F.** A rule runs per project, and F has no project. The F fixture is used for the Protobuild-only message (R1.5). The MG010 test copies F to a temp folder and adds a generated project next to `Protobuild.exe`. The glob is relative to the project folder, so a `Protobuild.exe` above the project is not seen; the no-project message covers that case.
+- **Order of `ProjectInfo` fields.** `Family`, `MonoGameVersion`, `MonoGamePlatform` and `MgcbFiles` are optional and come last. They are left out of the JSON report when they hold the XNA default, so existing XNA reports are byte-identical. The Markdown project table gets the Family and MonoGame version columns only when the report holds a project that is not XNA.
+- **No-project wording.** "Found N project(s), but none use XNA." became "Found N project(s), but none use XNA or MonoGame." (R1.6). Only the `not-xna` snapshots changed. A folder whose MonoGame projects are all current is analyzed (score 100) and reports "All MonoGame projects are already current. Nothing to migrate." as `NoProjectReason`.
+- **Source of SDK-style projects.** An SDK-style MonoGame project lists no `Compile` items, so the reader adds `**/*.cs` (skipping `bin` and `obj`) unless `EnableDefaultCompileItems` is false. `Compile Remove` is not read.
+- **New diagnostics.** `ANA008` XNA plus MonoGame mix, `ANA009` version conflict, `ANA010` unreadable mgcb line, `ANA011` unreadable packages.config, `ANA012` unreadable shared items file, `ANA013` missing or unreadable mgcb file.
+- **Findings from mgcb files** carry the mgcb path and the line of the first match as their location.
+- **Catalog API.** `RuleCatalogLoader.LoadAllAsync` and `EnsureUniqueIds` check ids across catalogs; `ProjectAnalyzer.AnalyzeAsync` has an overload that takes a list of catalogs and scores each rule with the weights of its own catalog.
 ## Open questions
 1. **WindowsDX on `net8.0-windows`.** Still unverified for 3.8.x in this product. The integration test decides.
 2. **Android and iOS output.** Not generated here. A follow-up spec could target `net8.0-android` and `net8.0-ios`.
