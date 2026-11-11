@@ -36,17 +36,17 @@ Order: 1 → 2 → 3 → 4 (analyzer, can overlap after 2) → 5 → 6 → 7 and
   - [x] 4.5 Snapshot update
   - _Requirements: R2.4, R5, R9_
 
-- [ ] 5. Migrator: device project selection
-  - [ ] 5.1 `MigrationPlanner`: turn an included XNA007 finding into plan items for the device conversion (project generation as DesktopGL, device library, directive folding); choose the platform symbol set (design table)
-  - [ ] 5.2 Skip platform copies: plan item "skip copy" per copy, chosen-project order Windows, Windows Phone, Xbox 360, Zune, user can flip; `SolutionGenerator` writes only migrated projects
-  - [ ] 5.3 Manifest: Skipped entries with reason and duplicated project (R3.3, R3.4)
-  - [ ] 5.4 Tests: Windows + copy, device-only solution, link cycle, one-way link ratio edge, excluded skip item; source hash unchanged
+- [x] 5. Migrator: device project selection
+  - [x] 5.1 `MigrationPlanner`: turn an included XNA007 finding into plan items for the device conversion (project generation as DesktopGL, device library, directive folding); choose the platform symbol set (design table)
+  - [x] 5.2 Skip platform copies: plan item "skip copy" per copy, chosen-project order Windows, Windows Phone, Xbox 360, Zune, user can flip; `SolutionGenerator` writes only migrated projects
+  - [x] 5.3 Manifest: Skipped entries with reason and duplicated project (R3.3, R3.4)
+  - [x] 5.4 Tests: Windows + copy, device-only solution, link cycle, one-way link ratio edge, excluded skip item; source hash unchanged
   - _Requirements: R2, R3, R8_
 
-- [ ] 6. Migrator: device conditional compilation
-  - [ ] 6.1 Implement `PlatformDirectiveRewriter`: line scanner, condition parser (`!`, `&&`, `||`, parentheses, `true`, `false`), three-valued evaluation, group folding, markers for unresolved groups
-  - [ ] 6.2 Add an explicit rewriter order table to `SourceRewriteEngine` (XNA053 before the entry point rewriter) and register the rewriter in `DefaultRewriters`
-  - [ ] 6.3 Tests: before/after for every symbol set in the design table, `#elif` and `#else`, nested groups, `DEBUG && XBOX`, a parse failure, a file with no directives is byte-identical, `Main` inside `#if WINDOWS || XBOX` ends up compiling, determinism
+- [x] 6. Migrator: device conditional compilation
+  - [x] 6.1 Implement `PlatformDirectiveRewriter`: line scanner, condition parser (`!`, `&&`, `||`, parentheses, `true`, `false`), three-valued evaluation, group folding, markers for unresolved groups
+  - [x] 6.2 Add an explicit rewriter order table to `SourceRewriteEngine` (XNA053 before the entry point rewriter) and register the rewriter in `DefaultRewriters`
+  - [x] 6.3 Tests: before/after for every symbol set in the design table, `#elif` and `#else`, nested groups, `DEBUG && XBOX`, a parse failure, a file with no directives is byte-identical, `Main` inside `#if WINDOWS || XBOX` ends up compiling, determinism
   - _Requirements: R4, R8.5, R9.3_
 
 - [ ] 7. Compat library: device stand-ins
