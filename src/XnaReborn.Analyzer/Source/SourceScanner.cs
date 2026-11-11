@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.VisualBasic;
 using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Models;
@@ -17,14 +18,28 @@ public sealed class SourceScanner
 {
     private readonly IReadOnlyFileSystem _fileSystem;
     private readonly long _maxFileBytes;
-    private readonly Func<SyntaxTree, IReadOnlyList<Rule>, IReadOnlyList<SourceMatch>> _matcher;
+    private readonly Func<SyntaxTree, IReadOnlyList<Rule>, IReadOnlyList<string>?, IReadOnlyList<SourceMatch>> _matcher;
 
     /// <summary>Creates a scanner that uses the real rule matcher.</summary>
     /// <param name="fileSystem">Read-only file system used for all disk access.</param>
     /// <param name="maxFileBytes">Files larger than this are skipped with an ANA005 diagnostic.</param>
     public SourceScanner(IReadOnlyFileSystem fileSystem, long maxFileBytes = 5 * 1024 * 1024)
-        : this(fileSystem, maxFileBytes, SourceRuleMatcher.Match)
+        : this(fileSystem, maxFileBytes, (tree, rules, imports) => SourceRuleMatcher.Match(tree, rules, imports))
     {
+    }
+
+    /// <summary>Creates a scanner with a custom matcher that also receives the project-level imports. Used by tests.</summary>
+    /// <param name="fileSystem">Read-only file system used for all disk access.</param>
+    /// <param name="maxFileBytes">Files larger than this are skipped with an ANA005 diagnostic.</param>
+    /// <param name="matcher">Finds matches in one syntax tree.</param>
+    internal SourceScanner(
+        IReadOnlyFileSystem fileSystem,
+        long maxFileBytes,
+        Func<SyntaxTree, IReadOnlyList<Rule>, IReadOnlyList<string>?, IReadOnlyList<SourceMatch>> matcher)
+    {
+        _fileSystem = fileSystem;
+        _maxFileBytes = maxFileBytes;
+        _matcher = matcher;
     }
 
     /// <summary>Creates a scanner with a custom matcher. Used by tests.</summary>
@@ -35,13 +50,11 @@ public sealed class SourceScanner
         IReadOnlyFileSystem fileSystem,
         long maxFileBytes,
         Func<SyntaxTree, IReadOnlyList<Rule>, IReadOnlyList<SourceMatch>> matcher)
+        : this(fileSystem, maxFileBytes, (tree, rules, _) => matcher(tree, rules))
     {
-        _fileSystem = fileSystem;
-        _maxFileBytes = maxFileBytes;
-        _matcher = matcher;
     }
 
-    /// <summary>Scans the C# compile items of one project.</summary>
+    /// <summary>Scans the C# or Visual Basic compile items of one project.</summary>
     /// <param name="project">The project as read by <see cref="ProjectReader"/>.</param>
     /// <param name="projectDirectory">Absolute folder of the project file. Compile items are relative to it.</param>
     /// <param name="root">Absolute discovery root. Locations and diagnostics are relative to it with '/'.</param>
@@ -65,11 +78,13 @@ public sealed class SourceScanner
             return new SourceScanResult([], []);
         }
 
+        var isVisualBasic = project.Info.Language == SourceLanguage.VisualBasic;
+        var sourceExtension = isVisualBasic ? ".vb" : ".cs";
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var files = new List<string>();
         foreach (var item in project.Info.CompileFiles)
         {
-            if (!item.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+            if (!item.EndsWith(sourceExtension, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
@@ -83,7 +98,9 @@ public sealed class SourceScanner
 
         var results = new FileScan[files.Count];
         var completed = 0;
-        var options = new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: project.Info.DefineConstants);
+        ParseOptions options = isVisualBasic
+            ? new VisualBasicParseOptions(Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.Latest, preprocessorSymbols: project.Info.DefineConstants.Select(s => new KeyValuePair<string, object>(s, true)).ToList())
+            : new CSharpParseOptions(Microsoft.CodeAnalysis.CSharp.LanguageVersion.Latest, preprocessorSymbols: project.Info.DefineConstants);
         var parallel = new ParallelOptions
         {
             MaxDegreeOfParallelism = Environment.ProcessorCount,
@@ -97,7 +114,7 @@ public sealed class SourceScanner
             {
                 ct.ThrowIfCancellationRequested();
                 var relative = Relative(root, files[index]);
-                results[index] = ScanFile(files[index], relative, options, projectRelativePath, sourceRules);
+                results[index] = ScanFile(files[index], relative, options, projectRelativePath, sourceRules, project.Info.Language, project.ImplicitImports);
                 var done = Interlocked.Increment(ref completed);
                 progress?.Report(new AnalysisProgress("Scanning source", done, files.Count, relative));
                 return ValueTask.CompletedTask;
@@ -119,9 +136,11 @@ public sealed class SourceScanner
     private FileScan ScanFile(
         string fullPath,
         string relative,
-        CSharpParseOptions options,
+        ParseOptions options,
         string projectRelativePath,
-        IReadOnlyList<Rule> rules)
+        IReadOnlyList<Rule> rules,
+        SourceLanguage language,
+        IReadOnlyList<string>? implicitImports)
     {
         var diagnostics = new List<Diagnostic>();
         string text;
@@ -149,7 +168,9 @@ public sealed class SourceScanner
             return new FileScan(relative, [], diagnostics);
         }
 
-        var tree = CSharpSyntaxTree.ParseText(text, options, relative);
+        var tree = language == SourceLanguage.VisualBasic
+            ? VisualBasicSyntaxTree.ParseText(text, (VisualBasicParseOptions)options, relative)
+            : CSharpSyntaxTree.ParseText(text, (CSharpParseOptions)options, relative);
         var firstError = tree.GetDiagnostics().FirstOrDefault(d => d.Severity == DiagnosticSeverity.Error);
         if (firstError is not null)
         {
@@ -157,7 +178,7 @@ public sealed class SourceScanner
             diagnostics.Add(new Diagnostic("ANA004", $"Source file has syntax errors: {firstError.GetMessage()} (line {line})", relative));
         }
 
-        var findings = _matcher(tree, rules)
+        var findings = _matcher(tree, rules, implicitImports)
             .Select((m, i) => (Match: m, Index: i))
             .OrderBy(x => x.Match.Line)
             .ThenBy(x => x.Match.Column)
@@ -166,7 +187,7 @@ public sealed class SourceScanner
                 x.Match.Rule.Id,
                 x.Match.Rule.Title,
                 x.Match.Rule.Severity,
-                x.Match.Rule.Classification,
+                x.Match.Rule.EffectiveClassification(language),
                 projectRelativePath,
                 new SourceLocation(relative, x.Match.Line, x.Match.Column),
                 x.Match.Snippet))

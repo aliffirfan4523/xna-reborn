@@ -20,18 +20,29 @@ internal static class SourceRuleMatcher
     /// Matches in source order, and in rule order at equal positions. A rule matches at most once per position.
     /// Line and column are 1-based and point to the start of the matched node.
     /// </returns>
-    internal static IReadOnlyList<SourceMatch> Match(SyntaxTree tree, IReadOnlyList<Rule> rules)
+    internal static IReadOnlyList<SourceMatch> Match(SyntaxTree tree, IReadOnlyList<Rule> rules) => Match(tree, rules, null);
+
+    /// <summary>Finds every match of the namespace, type, member, method and preprocessor symbol rules in one syntax tree of either language.</summary>
+    /// <param name="tree">A parsed C# or Visual Basic file.</param>
+    /// <param name="rules">Source rules. Rules of other match types are ignored.</param>
+    /// <param name="implicitImports">Namespaces the project imports for every file (Visual Basic project-level imports), or null.</param>
+    /// <returns>Matches in source order, and in rule order at equal positions.</returns>
+    internal static IReadOnlyList<SourceMatch> Match(SyntaxTree tree, IReadOnlyList<Rule> rules, IReadOnlyList<string>? implicitImports)
     {
         ArgumentNullException.ThrowIfNull(tree);
         ArgumentNullException.ThrowIfNull(rules);
 
-        var index = SourceRuleIndex.Build(rules);
+        var isVisualBasic = tree.Options.Language == LanguageNames.VisualBasic;
+        var index = SourceRuleIndex.Build(rules, ignoreCase: isVisualBasic);
         if (index.IsEmpty)
         {
             return [];
         }
 
-        var hits = SourceWalker.Walk(tree.GetRoot(), index);
+        var collector = new RuleHitCollector(index, isVisualBasic, implicitImports);
+        ISourceWalker walker = isVisualBasic ? new VisualBasicSourceWalker() : new CSharpSourceWalker();
+        walker.Walk(tree.GetRoot(), collector);
+        var hits = collector.Hits;
         if (hits.Count == 0)
         {
             return [];

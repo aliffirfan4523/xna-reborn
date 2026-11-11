@@ -489,3 +489,22 @@ Content was paraphrased from these sources, not quoted at length.
 - Task 9 (`LoadGraphicsContentRewriter`): markers go in first, then the edits are worked out again on the new text. A file that has the override twice (for example both XNA102 and XNA103 methods) is handled by two rewriters, one per rule id.
 - Task 9.4 and the 2.0 build (task 10): integration tests build the migrated `xna10-express-basic` and `xna20-vs2005` (needs `XNAREBORN_INTEGRATION=1`). The fixtures hold ASCII placeholder images, so the tests overwrite the copied `.png` files with a 1x1 image before building. `xna10-express-basic` does not use `ResourceUsage` or `ResourceManagementMode` (no automatic fix), and `xna20-vs2005` uses the one-argument `BasicEffect` constructor, so that the migrated copies build.
 - Checkpoint A (task 10) was not completed: the read-only scan and migration of the four public candidate projects needs network clones and is left for the owner. The hash test for the new fixtures is covered by `AnalysisReadOnlyTests`, which runs over every fixture.
+
+## Implementation notes (part B language and reading)
+
+- `ProjectInfo.Language` is omitted from JSON when C#, so existing reports and snapshots keep their shape. The Markdown project table gets a Language column only when a project is not C#.
+- `Rule.Languages` and `Rule.AutoFixLanguages` are optional trailing record fields. The analyzer computes the effective classification when it creates a finding (`Rule.EffectiveClassification`), so `Scorer` and the planner needed no change.
+- Discovery message texts (`No .csproj files found.`) were left as they are, to keep existing behavior and snapshots; `.vbproj` files are found and listed in solutions.
+- `ProjectReadResult.ImplicitImports` is set for Visual Basic projects only. `NamespaceImport` is the item type for `ItemGroup` `Import` elements in every project, which cannot collide with the MSBuild `Import` item.
+- The C# source scanner still reads only `.cs` files. Visual Basic source is scanned from task 16.
+- Real-VB candidate scans of checkpoint B (task 23) need network clones and are left for the owner.
+
+## Implementation notes (part B matcher and catalog)
+
+- `SourceWalker` became `CSharpSourceWalker`; the rule logic moved to `RuleHitCollector` (an `ISourceFactSink`). The 14.3 check held: the C# source tests and all C# analyzer snapshots passed before and after, with no edit.
+- Alias resolution (task 15) is applied to type and member names (`Xna.Graphics.Texture2D`). It is not applied to namespace chains, because the import statement already hits and a second hit at every alias use would change existing C# reports (`Namespace_alias_using_matches_on_its_target`).
+- The sink also takes `MethodDeclaration` and `PreprocessorSymbol` facts, so XNA102 to XNA105 style rules and `#If` symbol rules work in both languages.
+- `autoFixLanguages`: XNA022 `["csharp","vb"]` (a VB `SpriteBatch.Begin` rewriter follows in task 20); XNA024, XNA039, XNA040, XNA053, XNA062 `["csharp"]`. XNA053 and XNA062 were added beyond the spec list, because their only rewriters are C# only and a VB project would otherwise count them as fixable. XNA102 to XNA105 got `languages ["csharp"]`.
+- XNA111, XNA113 and XNA114 link `older-and-vb:19` and `project-migrator:4.1`. Until task 19 lands, a VB project shows them as AutoFixable although the migrator does not write VB projects yet.
+- `rule-cases.json` has an optional `language` field (default `csharp`). Changed rules (XNA022, XNA024, XNA039, XNA040) are covered for VB by the `vb-xna31-handmade` snapshot and `VisualBasicSourceWalkerTests`, not by extra cases, because the case test expects exactly one case per rule.
+- The VB walker table row "indexing is a call" gives `Receiver` as the invoked name (`Vertices` in `device.Vertices(0).SetSource`), tested.

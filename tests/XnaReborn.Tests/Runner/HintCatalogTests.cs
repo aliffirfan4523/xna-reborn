@@ -27,7 +27,7 @@ public class HintCatalogTests
     public void Every_rule_id_in_the_catalog_exists_in_the_real_rule_catalog()
     {
         var ruleIds = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var file in new[] { "xna-to-monogame.json", "monogame-upgrade.json" })
+        foreach (var file in new[] { "xna-to-monogame.json", "monogame-upgrade.json", "sharpdx-toolkit-to-monogame.json" })
         {
             using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(FixturePaths.Root, "..", "..", "rules", file)));
             ruleIds.UnionWith(doc.RootElement.GetProperty("rules").EnumerateArray().Select(r => r.GetProperty("id").GetString()!));

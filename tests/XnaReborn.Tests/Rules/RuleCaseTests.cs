@@ -98,36 +98,39 @@ public sealed class RuleCaseTests : IDisposable
         var folder = Path.Combine(_work, ruleId + (positive ? "-pos" : "-neg"));
         Directory.CreateDirectory(folder);
         var snippet = positive ? testCase.Positive : testCase.Negative;
+        var vb = string.Equals(testCase.Language, "vb", StringComparison.Ordinal);
+        var projectFile = vb ? "Game.vbproj" : "Game.csproj";
+        var sourceFile = vb ? "Game.vb" : "Game.cs";
         var version = rule.XnaVersions is { Count: > 0 } versions && versions[0] == XnaVersion.V31 ? "v3.1" : "v4.0";
 
         switch (testCase.Kind)
         {
             case "project":
-                File.WriteAllText(Path.Combine(folder, "Game.csproj"), snippet);
+                File.WriteAllText(Path.Combine(folder, projectFile), snippet);
                 break;
             case "source":
-                File.WriteAllText(Path.Combine(folder, "Game.cs"), snippet);
-                File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version, compile: "Game.cs"));
+                File.WriteAllText(Path.Combine(folder, sourceFile), snippet);
+                File.WriteAllText(Path.Combine(folder, projectFile), GameProject(version, compile: sourceFile));
                 break;
             case "file":
-                File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version));
+                File.WriteAllText(Path.Combine(folder, projectFile), GameProject(version));
                 Write(Path.Combine(folder, snippet.Replace('/', Path.DirectorySeparatorChar)), "placeholder");
                 break;
             case "fileContent":
                 {
                     // The first line of the snippet is the relative path, the rest is the file text.
-                    File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version));
+                    File.WriteAllText(Path.Combine(folder, projectFile), GameProject(version));
                     var split = snippet.IndexOf('\n', StringComparison.Ordinal);
                     Write(Path.Combine(folder, snippet[..split].Replace('/', Path.DirectorySeparatorChar)), snippet[(split + 1)..]);
                     break;
                 }
 
             case "content":
-                File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version, nested: @"Content\Content.contentproj"));
+                File.WriteAllText(Path.Combine(folder, projectFile), GameProject(version, nested: @"Content\Content.contentproj"));
                 Write(Path.Combine(folder, "Content", "Content.contentproj"), snippet);
                 break;
             case "font":
-                File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version, nested: @"Content\Content.contentproj"));
+                File.WriteAllText(Path.Combine(folder, projectFile), GameProject(version, nested: @"Content\Content.contentproj"));
                 Write(Path.Combine(folder, "Content", "Content.contentproj"), "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" />");
                 Write(Path.Combine(folder, "Content", "Fonts", "Test.spritefont"), snippet);
                 break;
@@ -160,5 +163,5 @@ public sealed class RuleCaseTests : IDisposable
             """;
     }
 
-    private sealed record RuleCase(string RuleId, string Kind, string Positive, string Negative);
+    private sealed record RuleCase(string RuleId, string Kind, string Positive, string Negative, string Language = "csharp");
 }

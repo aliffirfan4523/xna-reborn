@@ -1,0 +1,99 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "VbXna31Handmade.vbproj",
+      "assemblyName": "VbXna31Handmade",
+      "isXna": true,
+      "xnaVersion": "3.1",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "v3.5",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "System",
+        "System.Core",
+        "System.Windows.Forms"
+      ],
+      "compileFiles": [
+        "Game1.vb",
+        "Module1.vb",
+        "My Project/Application.Designer.vb"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "language": "vb"
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "VbXna31Handmade.vbproj",
+      "location": {
+        "file": "Game1.vb",
+        "line": 10,
+        "column": 21
+      },
+      "snippet": "Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend"
+    },
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "VbXna31Handmade.vbproj",
+      "location": {
+        "file": "Game1.vb",
+        "line": 10,
+        "column": 39
+      },
+      "snippet": "Private mode As SpriteBlendMode = SpriteBlendMode.AlphaBlend"
+    },
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "VbXna31Handmade.vbproj",
+      "location": {
+        "file": "Game1.vb",
+        "line": 29,
+        "column": 27
+      },
+      "snippet": "spriteBatch.Begin(SpriteBlendMode.AlphaBlend)"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA905",
+      "title": "SpriteBlendMode",
+      "explanation": "SpriteBlendMode was replaced by BlendState.",
+      "resolution": "Use BlendState.AlphaBlend or Additive.",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 3,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 3,
+    "Unsupported": 0
+  },
+  "score": 92,
+  "projectedScore": 92,
+  "diagnostics": [],
+  "noProjectReason": null
+}

@@ -104,7 +104,7 @@ Migrator task: sharpdx-toolkit:9.2
 
 ### SDX013 Toolkit effect (ToolkitFxc)
 
-The project builds effects with the ToolkitFxc build action (the tkfxc compiler). Toolkit effects use a syntax that the MonoGame effect compiler does not take: technique passes name their shaders with Profile and PixelShader settings instead of the compile keyword, and use Texture2D<float4> with a separate SamplerState. The Toolkit can also generate wrapper classes that are not in source control.
+The project builds effects with the ToolkitFxc build action (the tkfxc compiler). Toolkit effects use a syntax that the MonoGame effect compiler rejects. Checked with the compiler of dotnet-mgcb 3.8.6.1: a pass that names its shader without the compile keyword (PixelShader = Name;) fails with "Unexpected token 'P' found. Expected Compile"; a Profile = 9.1; pass state fails with "Unexpected token 'P' found. Expected CloseBracket"; a Direct3D 10 sampler block (Filter = MIN_MAG_MIP_POINT;) fails with "Unexpected token 'M' found. Expected None, Linear, Point, or Anisotropic." Texture2D<float4> declarations parse. The Toolkit can also generate wrapper classes that are not in source control.
 
 **Resolution:** Rewrite each .fx file in the MonoGame effect syntax by hand and add it to Content.mgcb. The migrator copies the original and flags it. Code that used a generated wrapper class needs the wrapper removed.
 

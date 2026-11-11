@@ -80,53 +80,53 @@ Rules for every task:
 
 ## Part B: Visual Basic
 
-- [ ] 11. Fixtures for VB (`tests/fixtures`)
-  - [ ] 11.1 `vb-xna40-basic`: VB 4.0 game and content project reference, project-level `Import` items, `Program.vb` with `#If WINDOWS OrElse XBOX Then` around `Shared Sub Main`, `My Project/AssemblyInfo.vb`, comma separated `DefineConstants`
-  - [ ] 11.2 `vb-xna31-handmade`: VB 3.1, plain references, `MyType WindowsForms`, `Application.Designer.vb`, `SpriteBlendMode`, a `With device.RenderState` block, `fx.Begin` without parentheses, one `My.Application` call
-  - [ ] 11.3 `vb-monogame-already` (negative) and `mixed-cs-vb-sln` (a C# game plus a VB library)
-  - [ ] 11.4 README per fixture with expected findings
+- [x] 11. Fixtures for VB (`tests/fixtures`)
+  - [x] 11.1 `vb-xna40-basic`: VB 4.0 game and content project reference, project-level `Import` items, `Program.vb` with `#If WINDOWS OrElse XBOX Then` around `Shared Sub Main`, `My Project/AssemblyInfo.vb`, comma separated `DefineConstants`
+  - [x] 11.2 `vb-xna31-handmade`: VB 3.1, plain references, `MyType WindowsForms`, `Application.Designer.vb`, `SpriteBlendMode`, a `With device.RenderState` block, `fx.Begin` without parentheses, one `My.Application` call
+  - [x] 11.3 `vb-monogame-already` (negative) and `mixed-cs-vb-sln` (a C# game plus a VB library)
+  - [x] 11.4 README per fixture with expected findings
   - _Requirements: R6 to R8, R14_
 
-- [ ] 12. Shared language types (`Core`, `Analyzer`)
-  - [ ] 12.1 `SourceLanguage` enum with JSON converter; `ProjectLanguage.FromPath`; `ProjectInfo.Language` as a last parameter with a default
-  - [ ] 12.2 `Rule.Languages` and `Rule.AutoFixLanguages`; `RuleSchema.json`; loader error for an unknown language
-  - [ ] 12.3 `RuleEngine` skips rules by project language; `Scorer` and planner use the effective classification
-  - [ ] 12.4 Report JSON and Markdown show `language`; schema minor increment; old reports still load
-  - [ ] 12.5 Tests: default is C#; rule with `languages ["vb"]` skipped for a C# project; AutoFixable with `autoFixLanguages ["csharp"]` counts as Manual for VB in score and projected score
+- [x] 12. Shared language types (`Core`, `Analyzer`)
+  - [x] 12.1 `SourceLanguage` enum with JSON converter; `ProjectLanguage.FromPath`; `ProjectInfo.Language` as a last parameter with a default
+  - [x] 12.2 `Rule.Languages` and `Rule.AutoFixLanguages`; `RuleSchema.json`; loader error for an unknown language
+  - [x] 12.3 `RuleEngine` skips rules by project language; `Scorer` and planner use the effective classification
+  - [x] 12.4 Report JSON and Markdown show `language`; schema minor increment; old reports still load
+  - [x] 12.5 Tests: default is C#; rule with `languages ["vb"]` skipped for a C# project; AutoFixable with `autoFixLanguages ["csharp"]` counts as Manual for VB in score and projected score
   - _Requirements: R6, R8, R13_
 
-- [ ] 13. VB discovery and project reading (`Analyzer`)
-  - [ ] 13.1 `ProjectDiscovery`: `.vbproj` at the four extension checks, folder search, `.sln` filter, messages
-  - [ ] 13.2 `ProjectXml.ReadItems`: `ItemGroup` `Import` becomes `NamespaceImport`; `ProjectReadResult.ImplicitImports`
-  - [ ] 13.3 `ProjectReader`: `DefineConstants` split on `;` and `,`; strip `=value`; set `Language`
-  - [ ] 13.4 Tests on `vb-xna40-basic`, `vb-xna31-handmade`, `vb-monogame-already`, `mixed-cs-vb-sln`: language, IsXna, version, imports, defines, compile files; hash test for all four
+- [x] 13. VB discovery and project reading (`Analyzer`)
+  - [x] 13.1 `ProjectDiscovery`: `.vbproj` at the four extension checks, folder search, `.sln` filter, messages
+  - [x] 13.2 `ProjectXml.ReadItems`: `ItemGroup` `Import` becomes `NamespaceImport`; `ProjectReadResult.ImplicitImports`
+  - [x] 13.3 `ProjectReader`: `DefineConstants` split on `;` and `,`; strip `=value`; set `Language`
+  - [x] 13.4 Tests on `vb-xna40-basic`, `vb-xna31-handmade`, `vb-monogame-already`, `mixed-cs-vb-sln`: language, IsXna, version, imports, defines, compile files; hash test for all four
   - _Requirements: R6, R7, R14_
 
-- [ ] 14. Matcher refactor to a fact sink (`Analyzer`, C# only)
-  - [ ] 14.1 Add `ISourceFactSink`, `ISourceWalker`, `MemberUse`; move rule logic from `SourceWalker` to `RuleHitCollector`; rename the walker to `CSharpSourceWalker`; carry `MethodDeclaration` from task 5
-  - [ ] 14.2 `SourceRuleMatcher.Match` takes `implicitImports` and picks the walker by `tree.Options.Language`
-  - [ ] 14.3 No VB code and no package change in this task. All existing source-matching tests and analyzer snapshots pass with no edit
+- [x] 14. Matcher refactor to a fact sink (`Analyzer`, C# only)
+  - [x] 14.1 Add `ISourceFactSink`, `ISourceWalker`, `MemberUse`; move rule logic from `SourceWalker` to `RuleHitCollector`; rename the walker to `CSharpSourceWalker`; carry `MethodDeclaration` from task 5
+  - [x] 14.2 `SourceRuleMatcher.Match` takes `implicitImports` and picks the walker by `tree.Options.Language`
+  - [x] 14.3 No VB code and no package change in this task. All existing source-matching tests and analyzer snapshots pass with no edit
   - _Requirements: R9_
 
-- [ ] 15. Alias resolution in the sink (`Analyzer`)
-  - [ ] 15.1 Resolve the first segment of a qualified name through the alias table (`using X = ...`)
-  - [ ] 15.2 Tests: alias qualified type hit, alias of an unrelated namespace no hit
-  - [ ] 15.3 Review snapshot diffs by hand; any new C# finding must be a true positive
+- [x] 15. Alias resolution in the sink (`Analyzer`)
+  - [x] 15.1 Resolve the first segment of a qualified name through the alias table (`using X = ...`)
+  - [x] 15.2 Tests: alias qualified type hit, alias of an unrelated namespace no hit
+  - [x] 15.3 Review snapshot diffs by hand; any new C# finding must be a true positive
   - _Requirements: R8, R9_
 
-- [ ] 16. VB walker (`Analyzer`)
-  - [ ] 16.1 Add `Microsoft.CodeAnalysis.VisualBasic` 4.14.0 to `Directory.Packages.props` and the Analyzer project
-  - [ ] 16.2 `VisualBasicSourceWalker`: one test per row of the walker table in the design
-  - [ ] 16.3 `SourceRuleIndex.Build(rules, ignoreCase)`; case-insensitive gate, receiver and type names for VB
-  - [ ] 16.4 `SourceScanner`: pick files by project language; VB parse options with symbols; ANA004 for VB syntax errors
-  - [ ] 16.5 Tests: `vb-xna31-handmade` gives the expected XNA022, XNA024, XNA039/040 findings; `With` block, no-parentheses call, alias, project-level imports, different casing all covered; a VB file with a user type named like an XNA type and no gate gives no finding
+- [x] 16. VB walker (`Analyzer`)
+  - [x] 16.1 Add `Microsoft.CodeAnalysis.VisualBasic` 4.14.0 to `Directory.Packages.props` and the Analyzer project
+  - [x] 16.2 `VisualBasicSourceWalker`: one test per row of the walker table in the design
+  - [x] 16.3 `SourceRuleIndex.Build(rules, ignoreCase)`; case-insensitive gate, receiver and type names for VB
+  - [x] 16.4 `SourceScanner`: pick files by project language; VB parse options with symbols; ANA004 for VB syntax errors
+  - [x] 16.5 Tests: `vb-xna31-handmade` gives the expected XNA022, XNA024, XNA039/040 findings; `With` block, no-parentheses call, alias, project-level imports, different casing all covered; a VB file with a user type named like an XNA type and no gate gives no finding
   - _Requirements: R8_
 
-- [ ] 17. VB catalog (`rules/xna-to-monogame.json`, `rule-cases.json`)
-  - [ ] 17.1 Add XNA110 to XNA114 as in the design table; add `autoFixLanguages` to XNA022, XNA024, XNA039, XNA040
-  - [ ] 17.2 Add the `language` field to `rule-cases.json` (default `csharp`); positive and negative case per new rule and per changed rule
-  - [ ] 17.3 Check that XNA001 to XNA008 and XNA045 to XNA049 fire on the VB fixtures where the design says they do
-  - [ ] 17.4 Update snapshots and review the diff
+- [x] 17. VB catalog (`rules/xna-to-monogame.json`, `rule-cases.json`)
+  - [x] 17.1 Add XNA110 to XNA114 as in the design table; add `autoFixLanguages` to XNA022, XNA024, XNA039, XNA040
+  - [x] 17.2 Add the `language` field to `rule-cases.json` (default `csharp`); positive and negative case per new rule and per changed rule
+  - [x] 17.3 Check that XNA001 to XNA008 and XNA045 to XNA049 fire on the VB fixtures where the design says they do
+  - [x] 17.4 Update snapshots and review the diff
   - _Requirements: R8, R13_
 
 - [ ] 18. Rewriter contracts (`Migrator`)
