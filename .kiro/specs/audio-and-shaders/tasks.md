@@ -4,24 +4,24 @@ Each numbered task is sized for one worker, on its own branch cut from `master` 
 
 Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts only meet in tasks 1, 3, 17 and 20. Tasks 11 to 13 can start after task 1, in parallel with Part A.
 
-- [ ] 1. Fixtures and confirmations
-  - [ ] 1.1 Write `tests/fixtures/xna40-xact` (project, `Game1.cs`, `Content/Content.contentproj`, `Content/Sounds.xap`) as described in the design. It has two categories, three variables, one RPC on volume, a normal wave bank (3 waves, 2 pointing to one file), a streaming wave bank, a single-wave cue, a random-variation cue, a looping music cue, a multi-track sound, a cue with a DSP block and a wave with a missing file. Wave bytes are generated at test time.
-  - [ ] 1.2 Write `tests/fixtures/xna40-xact-compiled` (same calls, placeholder `.xgs/.xwb/.xsb`) and `tests/fixtures/xna40-effects` (the effect files listed in the design, one `.fxh` include). Each with a `README.md` stating the files are original and synthetic.
-  - [ ] 1.3 Add the three names to `FixturePaths.AllNames` and run the existing fixture integrity tests over them.
-  - [ ] 1.4 Create `rules/xact-features.json` (data): XACT feature names, units (volume in hundredths of a dB, pitch range), loop count meaning, instance behavior names, variation types, each with a `status` of `confirmed` or `expected, unverified` and a source. Confirm from the archived XACT documentation and from MonoGame's `Tests/Assets/Audio/Tests.xap` (read-only, nothing copied). Where the documentation cannot be reached, mark the item unverified; do not guess silently.
-  - [ ] 1.5 Tests: fixtures exist and parse as XML or text; the effect fixtures are each under 40 lines; the fixture hash test helper covers the new folders.
+- [x] 1. Fixtures and confirmations
+  - [x] 1.1 Write `tests/fixtures/xna40-xact` (project, `Game1.cs`, `Content/Content.contentproj`, `Content/Sounds.xap`) as described in the design. It has two categories, three variables, one RPC on volume, a normal wave bank (3 waves, 2 pointing to one file), a streaming wave bank, a single-wave cue, a random-variation cue, a looping music cue, a multi-track sound, a cue with a DSP block and a wave with a missing file. Wave bytes are generated at test time.
+  - [x] 1.2 Write `tests/fixtures/xna40-xact-compiled` (same calls, placeholder `.xgs/.xwb/.xsb`) and `tests/fixtures/xna40-effects` (the effect files listed in the design, one `.fxh` include). Each with a `README.md` stating the files are original and synthetic.
+  - [x] 1.3 Add the three names to `FixturePaths.AllNames` and run the existing fixture integrity tests over them.
+  - [x] 1.4 Create `rules/xact-features.json` (data): XACT feature names, units (volume in hundredths of a dB, pitch range), loop count meaning, instance behavior names, variation types, each with a `status` of `confirmed` or `expected, unverified` and a source. Confirm from the archived XACT documentation and from MonoGame's `Tests/Assets/Audio/Tests.xap` (read-only, nothing copied). Where the documentation cannot be reached, mark the item unverified; do not guess silently.
+  - [x] 1.5 Tests: fixtures exist and parse as XML or text; the effect fixtures are each under 40 lines; the fixture hash test helper covers the new folders.
   - _Requirements: R17, R16.2_
 
-- [ ] 2. XACT models and reader
-  - [ ] 2.1 Add the `Xap*` records to `XnaReborn.Core/Models/Xact` with XML comments (design: Models).
-  - [ ] 2.2 Implement `XapReader` in `XnaReborn.Analyzer/Xact` using `IReadOnlyFileSystem`: generic block tree, typed mapper, unsupported list, findings with line numbers, BOM, CRLF, tabs.
-  - [ ] 2.3 Tests: one test per block type from `xna40-xact`; unknown key goes to the unsupported list without stopping; unbalanced braces give a finding and manual-work result; a hash test proves the fixture files are unchanged after reading. A negative test uses `xna40-basic` (no `.xap`).
+- [x] 2. XACT models and reader
+  - [x] 2.1 Add the `Xap*` records to `XnaReborn.Core/Models/Xact` with XML comments (design: Models).
+  - [x] 2.2 Implement `XapReader` in `XnaReborn.Analyzer/Xact` using `IReadOnlyFileSystem`: generic block tree, typed mapper, unsupported list, findings with line numbers, BOM, CRLF, tabs.
+  - [x] 2.3 Tests: one test per block type from `xna40-xact`; unknown key goes to the unsupported list without stopping; unbalanced braces give a finding and manual-work result; a hash test proves the fixture files are unchanged after reading. A negative test uses `xna40-basic` (no `.xap`).
   - _Requirements: R1, R16.2_
 
-- [ ] 3. `fileContent` match type
-  - [ ] 3.1 Extend the rule schema and loader with `fileContent` (`glob`, `regex`, optional `maxBytes`, default 1 MiB).
-  - [ ] 3.2 Implement the matcher in `XnaReborn.Analyzer`: read-only, text only, blank `//` and `/* */` comments for `.fx` and `.fxh`, report the first matching lines.
-  - [ ] 3.3 Tests: positive (a regex that matches `xna40-effects`), negative (a regex that matches only inside a comment, and a file over `maxBytes`), loader rejects a missing `regex`, hash-unchanged test. Do not add catalog rules in this task.
+- [x] 3. `fileContent` match type
+  - [x] 3.1 Extend the rule schema and loader with `fileContent` (`glob`, `regex`, optional `maxBytes`, default 1 MiB).
+  - [x] 3.2 Implement the matcher in `XnaReborn.Analyzer`: read-only, text only, blank `//` and `/* */` comments for `.fx` and `.fxh`, report the first matching lines.
+  - [x] 3.3 Tests: positive (a regex that matches `xna40-effects`), negative (a regex that matches only inside a comment, and a file over `maxBytes`), loader rejects a missing `regex`, hash-unchanged test. Do not add catalog rules in this task.
   - _Requirements: R15.3, R16.2_
 
 - [ ] 4. Planner, conversion mode and compiled-bank fallback

@@ -68,6 +68,7 @@ public sealed class RuleEngine
         ContentItemMatch m => ContentItemMatcher.Match(m, project),
         SpriteFontFamilyMatch m => SpriteFontMatcher.Match(m, project, _fileSystem, projectDirectory, token),
         ProjectLinksMatch m => ProjectLinksMatcher.Match(m, project),
+        FileContentMatch m => FileContentMatcher.Match(m, _fileSystem, projectDirectory, token),
         _ => [],
     };
 

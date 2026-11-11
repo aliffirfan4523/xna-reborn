@@ -19,8 +19,11 @@ public static class FixturePaths
         "xna40-audio",
         "xna40-basic",
         "xna40-custom-content",
+        "xna40-effects",
         "xna40-gamerservices",
         "xna40-prebuilt",
+        "xna40-xact",
+        "xna40-xact-compiled",
     ];
 
     /// <summary>Absolute path of <c>tests/fixtures</c>.</summary>

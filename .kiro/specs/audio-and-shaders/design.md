@@ -549,3 +549,14 @@ Archived XNA and Microsoft documentation:
 - [What Is a Profile?](https://docs.monogame.net/articles/getting_to_know/whatis/graphics/WhatIs_GraphicsProfile.html) (Reach is Shader Model 2, HiDef is Shader Model 3 or above)
 
 Real `.xap` and `.fx` files were read from the repositories in the candidate table to learn the formats; none was copied into this repository.
+
+## Implementation notes and gaps
+
+Kept up to date by the worker that implements the tasks. Each entry names the task.
+
+- **Tasks 1 to 3 (fixtures, reader, `fileContent`).**
+  - `rules/xact-features.json` is embedded in `XnaReborn.Core` and loaded by `XactFeatures`. Loop count (255 infinite, N repeats N more times, 0 once) and the five variation types are marked confirmed, from the MonoGame v3.8.6.1 `PlayWaveEvent.cs` source. Volume units, pitch units, instance behavior names and the `.xap` block names for unsupported features are still marked `expected, unverified`: the archived XACT documentation was not read, so nothing there was confirmed from it. Pitch also differs from MonoGame's compiled-bank reader (divides by 1000), which stays an open risk.
+  - `fixtures/xna40-xact` has four `Wave Bank` waves counted as three plus one: the missing `ghost.wav` sits in its own `Extra Bank` so the normal bank keeps the three waves the task asks for.
+  - The reader reports `ANA070` (unbalanced braces) and `ANA071` (malformed line, unreadable file). The spec reserved `ANA050` to `ANA059` for another spec, so these two were picked outside that block.
+  - The reader lists unsupported items by looking for the `unsupported` terms in `xact-features.json` inside block names and keys (case-insensitive substring). Values are not searched. A block that matches is reported once and not searched further.
+  - `fileContent` returns `path:line` for up to three matching lines per file. It skips files with a NUL byte and files over `maxBytes`. Comments are blanked only for `.fx` and `.fxh`.

@@ -11,7 +11,7 @@ internal static class RuleCatalogValidator
     private static readonly Lazy<JsonSchema> _schema = new(LoadSchema);
 
     private static readonly string[] _matchTypes =
-        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol"];
+        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "fileContent"];
 
     /// <summary>Returns every problem found in <paramref name="root"/>, in a stable order.</summary>
     /// <param name="root">The parsed catalog.</param>
@@ -232,15 +232,18 @@ internal static class RuleCatalogValidator
             add($"{label} /rules/{index}/match/type: unknown match type '{type.GetString()}'.");
         }
 
-        if (match.TryGetProperty("matches", out var pattern) && pattern.ValueKind == JsonValueKind.String)
+        foreach (var property in new[] { "matches", "regex" })
         {
-            try
+            if (match.TryGetProperty(property, out var pattern) && pattern.ValueKind == JsonValueKind.String)
             {
-                _ = new System.Text.RegularExpressions.Regex(pattern.GetString()!, System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(1));
-            }
-            catch (ArgumentException ex)
-            {
-                add($"{label} /rules/{index}/match/matches: not a valid regular expression ({ex.Message}).");
+                try
+                {
+                    _ = new System.Text.RegularExpressions.Regex(pattern.GetString()!, System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(1));
+                }
+                catch (ArgumentException ex)
+                {
+                    add($"{label} /rules/{index}/match/{property}: not a valid regular expression ({ex.Message}).");
+                }
             }
         }
 

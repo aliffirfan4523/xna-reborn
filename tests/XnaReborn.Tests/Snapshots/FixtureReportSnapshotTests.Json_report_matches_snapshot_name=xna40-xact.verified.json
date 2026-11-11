@@ -1,0 +1,96 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "Xna40Xact.csproj",
+      "assemblyName": "Xna40Xact",
+      "isXna": true,
+      "xnaVersion": "4.0",
+      "platform": "Windows",
+      "profile": "HiDef",
+      "targetFramework": "v4.0",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "Microsoft.Xna.Framework.Graphics",
+        "Microsoft.Xna.Framework.Input",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [
+        "Content/Content.contentproj"
+      ],
+      "contentItems": [
+        {
+          "sourcePath": "Sounds.xap",
+          "nameOverride": "Sounds",
+          "importer": "XactImporter",
+          "processor": "XactProcessor",
+          "processorParams": {}
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA908",
+      "title": "XACT audio project",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "project": "Xna40Xact.csproj",
+      "location": null,
+      "snippet": "Content/Sounds.xap"
+    },
+    {
+      "ruleId": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Xna40Xact.csproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v4.0\\Microsoft.Xna.GameStudio.targets"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "explanation": "The project imports the XNA build targets.",
+      "resolution": "The migrator writes an SDK-style project.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA908",
+      "title": "XACT audio project",
+      "explanation": "XACT is not supported by MonoGame.",
+      "resolution": "Export the sounds as plain wav files.",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 1,
+    "Error": 1,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 1,
+    "Manual": 0,
+    "Unsupported": 1
+  },
+  "score": 87,
+  "projectedScore": 88,
+  "diagnostics": [],
+  "noProjectReason": null
+}
