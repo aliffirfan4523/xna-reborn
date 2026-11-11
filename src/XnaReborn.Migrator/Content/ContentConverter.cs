@@ -3,6 +3,7 @@ using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Content;
 using XnaReborn.Core.Models;
+using XnaReborn.Migrator.Effects;
 using XnaReborn.Migrator.Output;
 
 namespace XnaReborn.Migrator.Content;
@@ -13,7 +14,8 @@ namespace XnaReborn.Migrator.Content;
 /// True to give a font that only XNA Game Studio installed a Windows substitute in the copied <c>.spritefont</c>.
 /// False to list such an asset as manual work and leave it out of <c>Content.mgcb</c>.
 /// </param>
-public sealed record ContentOptions(MonoGameTarget Target, bool SubstituteFonts);
+/// <param name="RewriteEffects">True to rewrite <c>.fx</c> files (shader model macros, sampler fixes, markers) and copy the files they include. False to copy them unchanged.</param>
+public sealed record ContentOptions(MonoGameTarget Target, bool SubstituteFonts, bool RewriteEffects = true);
 
 /// <summary>The outcome of converting the content of one game project.</summary>
 /// <param name="Changes">
@@ -274,6 +276,17 @@ public sealed class ContentConverter
             }
         }
 
+        // Effects: rewrite the copied .fx text and copy the files it includes.
+        if (options.RewriteEffects)
+        {
+            foreach (var slot in slots.Where(s => s.Asset.Status == AssetStatus.Converted
+                         && Extension(s.Asset.Item.SourcePath).Equals(".fx", StringComparison.OrdinalIgnoreCase)))
+            {
+                ct.ThrowIfCancellationRequested();
+                RewriteEffect(slot, folder, changes, used, notes, ct);
+            }
+        }
+
         // A missing source cannot take a path that a real file needs.
         foreach (var change in skipped.OrderBy(c => c.RelativePath, StringComparer.Ordinal))
         {
@@ -455,6 +468,70 @@ public sealed class ContentConverter
         using var text = new MemoryStream(bytes);
         using var reader = new StreamReader(text, new UTF8Encoding(false), detectEncodingFromByteOrderMarks: true);
         return (reader.ReadToEnd(), hasBom, !isUtf16Or32);
+    }
+
+    private void RewriteEffect(Slot slot, string folder, List<FileChange> changes, HashSet<string> used, List<string> notes, CancellationToken ct)
+    {
+        var index = changes.FindIndex(c => string.Equals(c.RelativePath, slot.OutputPath, StringComparison.Ordinal) && c.Kind == ChangeKind.Copied);
+        if (index < 0)
+        {
+            return;
+        }
+
+        string text;
+        bool hasBom;
+        bool isUtf8;
+        try
+        {
+            (text, hasBom, isUtf8) = ReadText(slot.SourceFullPath);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            notes.Add($"{slot.OutputPath}: the effect could not be read for rewriting ({e.Message}), so it was copied unchanged.");
+            return;
+        }
+
+        if (!isUtf8)
+        {
+            notes.Add($"{slot.OutputPath}: the effect is not UTF-8, so it was copied unchanged. Save it as UTF-8 to have its shader models rewritten.");
+            return;
+        }
+
+        var result = EffectRewriteStep.Rewrite(text);
+        foreach (var note in result.Notes)
+        {
+            notes.Add($"{slot.OutputPath}: [{note.RuleId}] {note.Message}");
+        }
+
+        if (!string.Equals(result.Text, text, StringComparison.Ordinal))
+        {
+            changes[index] = new FileChange(
+                slot.OutputPath,
+                ChangeKind.Modified,
+                (hasBom ? "\uFEFF" : string.Empty) + text,
+                result.Text,
+                "Shader models, sampler states and unsupported constructs were adjusted for MonoGame. See the notes for this file.");
+        }
+
+        var includes = EffectRewriteStep.CollectIncludes(slot.SourceFullPath, _fileSystem, ct);
+        foreach (var missing in includes.Missing)
+        {
+            notes.Add($"{slot.OutputPath}: {missing}");
+        }
+
+        var sourceDirectory = Path.GetDirectoryName(slot.SourceFullPath) ?? string.Empty;
+        var outputDirectory = slot.OutputPath.Contains('/', StringComparison.Ordinal) ? slot.OutputPath[..slot.OutputPath.LastIndexOf('/')] : string.Empty;
+        foreach (var include in includes.Files)
+        {
+            var relative = Path.GetRelativePath(sourceDirectory, include).Replace('\\', '/');
+            var outputPath = IsOutside(relative)
+                ? Join(folder, _externalFolder, Path.GetFileName(include))
+                : Join(outputDirectory, relative);
+            if (used.Add(outputPath))
+            {
+                changes.Add(new FileChange(outputPath, ChangeKind.Copied, null, null, $"Included by {Path.GetFileName(slot.SourceFullPath)}.", include));
+            }
+        }
     }
 
     private static void ToManual(Slot slot, string note) =>

@@ -560,3 +560,13 @@ Kept up to date by the worker that implements the tasks. Each entry names the ta
   - The reader reports `ANA070` (unbalanced braces) and `ANA071` (malformed line, unreadable file). The spec reserved `ANA050` to `ANA059` for another spec, so these two were picked outside that block.
   - The reader lists unsupported items by looking for the `unsupported` terms in `xact-features.json` inside block names and keys (case-insensitive substring). Values are not searched. A block that matches is reported once and not searched further.
   - `fileContent` returns `path:line` for up to three matching lines per file. It skips files with a NUL byte and files over `maxBytes`. Comments are blanked only for `.fx` and `.fxh`.
+
+- **Tasks 11 to 14 (effect scanner, rewriters, migrator step).**
+  - Data is in `rules/effect-profiles.json` (embedded in Core as `EffectProfiles`). `vs_2_a`/`ps_2_b` to `vs_3_0`/`ps_3_0` on OpenGL is now confirmed by a real `dotnet-mgfxc` 3.8.6.1 run (both profiles). Deviation from the design table: `vs_1_1` and `ps_1_x` map to `vs_2_0`/`ps_2_0` on OpenGL, not "same", because the OpenGL compiler only accepts models 2 and 3. Those rows stay `expected, unverified`.
+  - The model regex is `(vs|ps)_N_[0-4ab]`, so `vs_2_a` and `ps_2_b` are literals. A model that matches the shape but is not in the table gets a manual note and is left as written.
+  - `VPOS` is detected only as a semantic (an identifier after `:`), because a technique can be named `Vpos`.
+  - Parameter "unused" means the name appears nowhere outside its declaration (the design said function bodies only); a texture used only by a `sampler_state` is therefore not reported.
+  - Marker notes carry line numbers of the migrated file, because markers run after the profile block is inserted. The file note in the report names the migrated path.
+  - `FxRuleIds` use the provisional `NEW-B1` to `NEW-B6` labels until task 17. `NEW-B7` is not used.
+  - `EffectRewriteStep` copies `#include` files only when the effect itself is rewritten (option `RewriteEffects`). A file that is not UTF-8 is copied unchanged with a note.
+  - Verified with the real tool (slow tests, `XNAREBORN_INTEGRATION=1`): all rewritten fixtures that should be portable compile on OpenGL and DirectX_11; the unrewritten SM2 fixture fails on DirectX with the level 9.1 message; `AlphaTest` and `Annotated` still fail after the rewrite, with a marker on each offending line. Rendered output was not compared (task 18 needs a person).

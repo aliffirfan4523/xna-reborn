@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "description": "Shader model mapping for the .fx rewriter, the escalation ladder for the build check, and the allow lists for pass states and sampler states. Sources: MonoGame v3.8.6.1 Tools/MonoGame.Effect.Compiler (MGFX.tpg, ShaderProfile.DirectX11.cs, ShaderProfile.OpenGL.cs) and probe runs of dotnet-mgfxc 3.8.6.1 described in the audio-and-shaders design.",
+  "profiles": [
+    { "model": "vs_1_1", "openGl": "vs_2_0", "directX": "vs_4_0_level_9_1", "status": "expected, unverified" },
+    { "model": "vs_2_0", "openGl": "vs_2_0", "directX": "vs_4_0_level_9_1", "status": "confirmed" },
+    { "model": "vs_2_a", "openGl": "vs_3_0", "directX": "vs_4_0_level_9_3", "status": "confirmed" },
+    { "model": "vs_3_0", "openGl": "vs_3_0", "directX": "vs_4_0_level_9_3", "status": "confirmed" },
+    { "model": "ps_1_1", "openGl": "ps_2_0", "directX": "ps_4_0_level_9_1", "status": "expected, unverified" },
+    { "model": "ps_1_2", "openGl": "ps_2_0", "directX": "ps_4_0_level_9_1", "status": "expected, unverified" },
+    { "model": "ps_1_3", "openGl": "ps_2_0", "directX": "ps_4_0_level_9_1", "status": "expected, unverified" },
+    { "model": "ps_1_4", "openGl": "ps_2_0", "directX": "ps_4_0_level_9_1", "status": "expected, unverified" },
+    { "model": "ps_2_0", "openGl": "ps_2_0", "directX": "ps_4_0_level_9_1", "status": "confirmed" },
+    { "model": "ps_2_a", "openGl": "ps_3_0", "directX": "ps_4_0_level_9_3", "status": "expected, unverified" },
+    { "model": "ps_2_b", "openGl": "ps_3_0", "directX": "ps_4_0_level_9_3", "status": "confirmed" },
+    { "model": "ps_3_0", "openGl": "ps_3_0", "directX": "ps_4_0_level_9_3", "status": "confirmed" }
+  ],
+  "escalation": {
+    "levels": ["_4_0_level_9_1", "_4_0_level_9_3", "_4_0"],
+    "hiDefFrom": "_4_0"
+  },
+  "passStates": [
+    "VertexShader", "PixelShader", "CullMode", "FillMode", "AlphaBlendEnable", "SrcBlend", "DestBlend", "BlendOp",
+    "ColorWriteEnable", "DepthBias", "SlopeScaleDepthBias", "ZEnable", "ZWriteEnable", "ZFunc", "MultiSampleAntiAlias",
+    "ScissorTestEnable", "StencilEnable", "StencilFail", "StencilFunc", "StencilMask", "StencilPass", "StencilRef",
+    "StencilWriteMask", "StencilZFail"
+  ],
+  "samplerStates": [
+    "Texture", "MinFilter", "MagFilter", "MipFilter", "Filter", "AddressU", "AddressV", "AddressW", "BorderColor",
+    "MaxMipLevel", "MaxLod", "MaxAnisotropy", "MipLodBias"
+  ]
+}
