@@ -30,7 +30,7 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 4.5 Tests per fixture: family, version, platform; signals alone and in conflict; negative: `not-xna`, `xna40-basic` stay as before
   - _Requirements: R1, R2, R3_
 
-- [ ] 5. Reading and engine
+- [x] 5. Reading and engine
   - [ ] 5.1 `ProjectReader` stores parsed `Content.mgcb` files in `ProjectReadResult` (through `ReadOnlyFileSystem`)
   - [ ] 5.2 `RuleEngine` runs a list of catalogs and filters by `appliesTo`; `ProjectAnalyzer.AnalyzeAsync` gets an overload that takes a list of catalogs
   - [ ] 5.3 Tests: an XNA rule never fires on a MonoGame project and the reverse; the old overload still works; the report JSON keeps existing fields

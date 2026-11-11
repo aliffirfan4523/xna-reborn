@@ -2,6 +2,7 @@ using System.Xml;
 using System.Xml.Linq;
 using XnaReborn.Analyzer.Discovery;
 using XnaReborn.Analyzer.IO;
+using XnaReborn.Core.Mgcb;
 using XnaReborn.Core.Models;
 
 namespace XnaReborn.Analyzer.Reading;
@@ -124,6 +125,8 @@ public sealed class ProjectReader
             diagnostics.AddRange(content.Diagnostics);
         }
 
+        var mgcbFiles = isMonoGame ? ReadMgcbFiles(items, projectDirectory, root, diagnostics, ct) : [];
+
         var info = new ProjectInfo(
             relative,
             Prop(properties, "AssemblyName") is { Length: > 0 } name ? name : Path.GetFileNameWithoutExtension(projectFullPath),
@@ -139,8 +142,52 @@ public sealed class ProjectReader
             contentItems,
             family,
             monoGame?.Version,
-            monoGame?.Platform ?? MonoGamePlatform.Unknown);
-        return new ProjectReadResult(info, properties, items, diagnostics, packagesResult.Packages);
+            monoGame?.Platform ?? MonoGamePlatform.Unknown,
+            mgcbFiles.Count == 0 ? null : mgcbFiles.Select(m => m.Path).ToList());
+        return new ProjectReadResult(info, properties, items, diagnostics, packagesResult.Packages, mgcbFiles);
+    }
+
+    private const string _conventionalMgcb = "Content/Content.mgcb";
+
+    // Reads each Content.mgcb named by a MonoGameContentReference item, then the conventional Content/Content.mgcb if it is not already listed.
+    private List<ParsedMgcb> ReadMgcbFiles(List<ProjectItem> items, string projectDirectory, string root, List<Diagnostic> diagnostics, CancellationToken ct)
+    {
+        var result = new List<ParsedMgcb>();
+        var seen = new HashSet<string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+        var listed = items.Where(i => i.ItemType == "MonoGameContentReference").Select(i => (Include: i.Include, Listed: true));
+        foreach (var (include, isListed) in listed.Append((_conventionalMgcb, false)))
+        {
+            ct.ThrowIfCancellationRequested();
+            var full = Path.GetFullPath(Path.Combine(projectDirectory, ProjectXml.ToNative(include)));
+            if (!seen.Add(full))
+            {
+                continue;
+            }
+
+            var relative = ProjectXml.Rel(root, full);
+            if (!_fileSystem.FileExists(full))
+            {
+                if (isListed)
+                {
+                    diagnostics.Add(new Diagnostic("ANA013", "Content.mgcb listed by the project was not found.", relative));
+                }
+
+                continue;
+            }
+
+            try
+            {
+                var file = MgcbParser.Parse(_fileSystem.ReadAllText(full), relative);
+                diagnostics.AddRange(file.Diagnostics);
+                result.Add(new ParsedMgcb(relative, file));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                diagnostics.Add(new Diagnostic("ANA013", $"Content.mgcb could not be read: {ex.Message}", relative));
+            }
+        }
+
+        return result;
     }
 
     private const string _sharedItemsExtension = ".projitems";

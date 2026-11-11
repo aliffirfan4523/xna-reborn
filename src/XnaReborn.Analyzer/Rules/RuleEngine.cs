@@ -11,25 +11,40 @@ public sealed class RuleEngine
 {
     private const int _maxSnippetValues = 3;
 
-    private readonly IReadOnlyList<Rule> _rules;
+    private readonly IReadOnlyList<RuleCatalog> _catalogs;
     private readonly IReadOnlyFileSystem _fileSystem;
 
-    /// <summary>Creates an engine for a catalog.</summary>
+    /// <summary>Creates an engine for one catalog.</summary>
     /// <param name="catalog">The rule catalog.</param>
     /// <param name="fileSystem">Read-only file system used by file pattern rules.</param>
     public RuleEngine(RuleCatalog catalog, IReadOnlyFileSystem fileSystem)
+        : this(catalog is null ? throw new ArgumentNullException(nameof(catalog)) : [catalog], fileSystem)
     {
-        ArgumentNullException.ThrowIfNull(catalog);
-        ArgumentNullException.ThrowIfNull(fileSystem);
-        _rules = catalog.Rules;
-        _fileSystem = fileSystem;
-        SourceRules = _rules.Where(r => r.Match is NamespaceMatch or TypeMatch or MemberMatch).ToList();
     }
 
-    /// <summary>Rules whose match is a namespace, type, or member. The source scanner uses these.</summary>
+    /// <summary>Creates an engine for several catalogs. Each catalog runs only against projects of the family it applies to.</summary>
+    /// <param name="catalogs">The rule catalogs, in run order.</param>
+    /// <param name="fileSystem">Read-only file system used by file pattern rules.</param>
+    public RuleEngine(IReadOnlyList<RuleCatalog> catalogs, IReadOnlyFileSystem fileSystem)
+    {
+        ArgumentNullException.ThrowIfNull(catalogs);
+        ArgumentNullException.ThrowIfNull(fileSystem);
+        _catalogs = catalogs;
+        _fileSystem = fileSystem;
+        SourceRules = catalogs.SelectMany(c => c.Rules).Where(IsSourceRule).ToList();
+    }
+
+    /// <summary>Source rules (namespace, type, or member match) of every catalog, regardless of family.</summary>
     public IReadOnlyList<Rule> SourceRules { get; }
 
-    /// <summary>Evaluates the project-level rules for one project. Gives at most one finding per rule, in catalog order.</summary>
+    /// <summary>Source rules of the catalogs that apply to a project family. The source scanner uses these.</summary>
+    /// <param name="family">The project family.</param>
+    public IReadOnlyList<Rule> SourceRulesFor(ProjectFamily family) =>
+        _catalogs.Where(c => c.AppliesToFamily(family)).SelectMany(c => c.Rules).Where(IsSourceRule).ToList();
+
+    private static bool IsSourceRule(Rule rule) => rule.Match is NamespaceMatch or TypeMatch or MemberMatch;
+
+    /// <summary>Evaluates the project-level rules of the catalogs that apply to the project's family. Gives at most one finding per rule, in catalog order.</summary>
     /// <param name="project">The project as read by <see cref="ProjectReader"/>.</param>
     /// <param name="projectDirectory">Absolute directory of the project, the base for file patterns.</param>
     /// <param name="projectRelativePath">Project path relative to the analysis root, stored in each finding.</param>
@@ -39,7 +54,8 @@ public sealed class RuleEngine
     {
         ArgumentNullException.ThrowIfNull(project);
         var findings = new List<Finding>();
-        foreach (var rule in _rules)
+        var rules = _catalogs.Where(c => c.AppliesToFamily(project.Info.Family)).SelectMany(c => c.Rules);
+        foreach (var rule in rules)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (rule.XnaVersions is { } versions && !versions.Contains(project.Info.XnaVersion))
