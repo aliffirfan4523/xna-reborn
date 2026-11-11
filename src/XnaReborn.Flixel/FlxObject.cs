@@ -42,6 +42,13 @@ public static class FlxU
         return Velocity;
     }
 
+    /// <summary>Sets <see cref="FlxG.worldBounds"/>. A width or height of 0 or less means the size of the view.</summary>
+    public static void setWorldBounds(double X = 0, double Y = 0, double Width = 0, double Height = 0, int Divisions = 6)
+    {
+        FlxG.worldBounds = new FlxRect(X, Y, Width <= 0 ? FlxG.width : Width, Height <= 0 ? FlxG.height : Height);
+        FlxG.worldDivisions = Divisions;
+    }
+
     /// <summary>Rounds down to a whole number.</summary>
     public static double floor(double Value) => Math.Floor(Value);
 
