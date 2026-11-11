@@ -96,8 +96,20 @@ public sealed partial class ReportViewModel : PageViewModel
     /// <summary>Why no XNA project was found, or an empty string.</summary>
     public string NoProjectReason => Report?.NoProjectReason ?? string.Empty;
 
-    /// <summary>The projects of the report: path, family, version and platform. Empty when there is no report.</summary>
-    public IReadOnlyList<ProjectRowItem> Projects => Report?.Projects.Select(p => new ProjectRowItem(p)).ToList() ?? [];
+    /// <summary>The Flash facts (entry class, Flixel version, why it cannot be converted), or null when the report is not a Flash report.</summary>
+    public FlashReportInfo? Flash => FlashReportInfo.From(Report);
+
+    /// <summary>True when the report is for a Flash project.</summary>
+    public bool IsFlash => Flash is not null;
+
+    /// <summary>True when the Flash project cannot be converted, so the explanation is shown.</summary>
+    public bool HasFlashExplanation => Flash?.Explanation is not null;
+
+    /// <summary>True when the next page can be opened: there is a project and, for Flash, it can be converted.</summary>
+    public bool CanContinue => HasProject && (Flash?.CanConvert ?? true);
+
+    /// <summary>The projects of the report: path, family, version and platform. Empty when there is no report and for a Flash report, which has its own panel.</summary>
+    public IReadOnlyList<ProjectRowItem> Projects => IsFlash ? [] : Report?.Projects.Select(p => new ProjectRowItem(p)).ToList() ?? [];
 
     /// <summary>True when the report lists at least one project.</summary>
     public bool HasProjects => Projects.Count > 0;
@@ -197,7 +209,7 @@ public sealed partial class ReportViewModel : PageViewModel
     public Task CopyFindingAsync() => CopyAsync(SelectedFinding?.ToClipboardText(), "Finding copied.");
 
     /// <summary>Goes to the migration setup page.</summary>
-    [RelayCommand(CanExecute = nameof(HasProject))]
+    [RelayCommand(CanExecute = nameof(CanContinue))]
     public void Continue() => Navigator.GoTo(WorkflowStep.MigrationSetup);
 
     /// <summary>Goes back to the page where a project is chosen.</summary>
@@ -242,7 +254,7 @@ public sealed partial class ReportViewModel : PageViewModel
     {
         foreach (var name in new[]
         {
-            nameof(HasReport), nameof(HasProject), nameof(Projects), nameof(HasProjects), nameof(ShowNoProject), nameof(NoProjectReason), nameof(Score), nameof(ProjectedScore),
+            nameof(HasReport), nameof(HasProject), nameof(Flash), nameof(IsFlash), nameof(HasFlashExplanation), nameof(CanContinue), nameof(Projects), nameof(HasProjects), nameof(ShowNoProject), nameof(NoProjectReason), nameof(Score), nameof(ProjectedScore),
             nameof(AutoFixableCount), nameof(ManualCount), nameof(UnsupportedCount), nameof(Diagnostics), nameof(HasDiagnostics),
             nameof(StartHere), nameof(HasStartHere),
         })

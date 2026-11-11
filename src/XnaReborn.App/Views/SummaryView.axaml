@@ -64,6 +64,47 @@
         </ItemsControl>
       </StackPanel>
 
+      <!-- Flash conversion: markers left in the code, by rule, each a link to the converted file. Built from the manifest. -->
+      <StackPanel Spacing="{StaticResource SpacingSmall}" IsVisible="{Binding IsFlash}"
+                  AutomationProperties.AutomationId="FlashMarkersPanel">
+        <TextBlock Text="Markers left in the code" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="None." IsVisible="{Binding !HasFlashMarkers}" AutomationProperties.AutomationId="FlashNoMarkers" />
+        <ItemsControl ItemsSource="{Binding FlashMarkers}"
+                      IsVisible="{Binding HasFlashMarkers}"
+                      AutomationProperties.Name="Markers left in the code">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:FlashMarkerGroup">
+              <StackPanel Margin="0,0,0,8">
+                <TextBlock Text="{Binding Header}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <ItemsControl ItemsSource="{Binding Links}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FlashMarkerLink">
+                      <Button Content="{Binding Text}"
+                              Command="{Binding $parent[UserControl].((vm:SummaryViewModel)DataContext).OpenMarkerCommand}"
+                              CommandParameter="{Binding}"
+                              AutomationProperties.Name="{Binding AutomationName}" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <StackPanel Spacing="{StaticResource SpacingSmall}" IsVisible="{Binding HasFlashApproximations}"
+                  AutomationProperties.AutomationId="FlashApproximationsPanel">
+        <TextBlock Text="Behavior that is only approximated" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <ItemsControl ItemsSource="{Binding FlashApproximations}"
+                      AutomationProperties.Name="Behavior that is only approximated">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <TextBlock Text="{Binding StringFormat='- {0}'}" TextWrapping="Wrap" Margin="0,0,0,4" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
         <Button Content="Open output folder" Command="{Binding OpenOutputFolderCommand}"
                 AutomationProperties.AutomationId="OpenOutputFolder"

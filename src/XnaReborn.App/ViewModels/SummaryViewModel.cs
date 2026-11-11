@@ -14,6 +14,29 @@ namespace XnaReborn.App.ViewModels;
 /// <param name="Reason">What to do or what happened.</param>
 public sealed record SummaryManualItem(string Path, string Kind, string Reason);
 
+/// <summary>One marker a Flash conversion left in the code, as a link.</summary>
+/// <param name="File">Relative path of the original .as file.</param>
+/// <param name="Line">1-based line in the original file.</param>
+/// <param name="ConvertedFile">Relative path of the converted C# file in the output folder. The link opens this file.</param>
+public sealed record FlashMarkerLink(string File, int Line, string ConvertedFile)
+{
+    /// <summary>The link text, such as "src/Player.as, line 12".</summary>
+    public string Text => $"{File}, line {Line}";
+
+    /// <summary>The name a screen reader reads for the link.</summary>
+    public string AutomationName => $"Open the converted file for {File}, line {Line}";
+}
+
+/// <summary>All markers of one rule in a Flash conversion.</summary>
+/// <param name="RuleId">The rule id, such as FL020.</param>
+/// <param name="Title">The rule title, or an empty string when the report does not know the rule.</param>
+/// <param name="Links">One link per marker, sorted by file and line.</param>
+public sealed record FlashMarkerGroup(string RuleId, string Title, IReadOnlyList<FlashMarkerLink> Links)
+{
+    /// <summary>The header, such as "FL020 'with' statement: 2 markers".</summary>
+    public string Header => $"{(Title.Length == 0 ? RuleId : RuleId + " " + Title)}: {Links.Count} {(Links.Count == 1 ? "marker" : "markers")}";
+}
+
 /// <summary>The "Summary" page: score before and after, build result, counts, manual work left and exit buttons.</summary>
 public sealed partial class SummaryViewModel : PageViewModel
 {
@@ -47,6 +70,17 @@ public sealed partial class SummaryViewModel : PageViewModel
     [ObservableProperty]
     private string? _outputFolder;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFlashMarkers))]
+    private IReadOnlyList<FlashMarkerGroup> _flashMarkers = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFlashApproximations))]
+    private IReadOnlyList<string> _flashApproximations = [];
+
+    [ObservableProperty]
+    private bool _isFlash;
+
     /// <summary>Creates the page.</summary>
     /// <param name="session">The shared workflow data.</param>
     /// <param name="navigator">Moves to other pages.</param>
@@ -57,6 +91,12 @@ public sealed partial class SummaryViewModel : PageViewModel
     {
         _shell = shell;
     }
+
+    /// <summary>True when a Flash conversion left at least one marker in the code.</summary>
+    public bool HasFlashMarkers => FlashMarkers.Count > 0;
+
+    /// <summary>True when the page lists the behaviors a Flash conversion only approximates.</summary>
+    public bool HasFlashApproximations => FlashApproximations.Count > 0;
 
     /// <summary>True when there is manual work left to show.</summary>
     public bool HasManualItems => ManualItems.Count > 0;
@@ -89,8 +129,12 @@ public sealed partial class SummaryViewModel : PageViewModel
             || (f.Classification == Classification.AutoFixable && !applied.Contains(f.RuleId)));
         UnsupportedCount = findings.Count(f => f.Classification == Classification.Unsupported);
         ManualItems = result is null ? [] : ListManualItems(result.Manifest);
+        IsFlash = result?.Manifest.SourceKind == "Flash";
+        FlashMarkers = IsFlash ? ListFlashMarkers(result!.Manifest, report) : [];
+        FlashApproximations = IsFlash ? result!.Manifest.Approximations ?? [] : [];
         OpenOutputFolderCommand.NotifyCanExecuteChanged();
         OpenManifestCommand.NotifyCanExecuteChanged();
+        OpenMarkerCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand(CanExecute = nameof(HasOutput))]
@@ -99,6 +143,10 @@ public sealed partial class SummaryViewModel : PageViewModel
     [RelayCommand(CanExecute = nameof(HasOutput))]
     private Task OpenManifestAsync() =>
         RunShellAsync(() => _shell.OpenFileAsync(Path.Combine(OutputFolder!, ProjectMigrator.ManifestMarkdownName)));
+
+    [RelayCommand(CanExecute = nameof(HasOutput))]
+    private Task OpenMarkerAsync(FlashMarkerLink? link) =>
+        link is null ? Task.CompletedTask : RunShellAsync(() => _shell.OpenFileAsync(Path.Combine(OutputFolder!, link.ConvertedFile)));
 
     [RelayCommand]
     private void StartOver()
@@ -136,6 +184,21 @@ public sealed partial class SummaryViewModel : PageViewModel
         }
 
         return "Build did not succeed. " + (run.Problem ?? "See the Build and run page.");
+    }
+
+    private static List<FlashMarkerGroup> ListFlashMarkers(Manifest manifest, AnalysisReport? report)
+    {
+        var titles = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var rule in report?.TriggeredRules ?? [])
+        {
+            titles.TryAdd(rule.Id, rule.Title);
+        }
+
+        return (manifest.MarkerSites ?? [])
+            .GroupBy(m => m.RuleId, StringComparer.Ordinal)
+            .OrderBy(g => g.Key, StringComparer.Ordinal)
+            .Select(g => new FlashMarkerGroup(g.Key, titles.GetValueOrDefault(g.Key, string.Empty), [.. g.Select(m => new FlashMarkerLink(m.File, m.Line, m.ConvertedFile))]))
+            .ToList();
     }
 
     private static List<SummaryManualItem> ListManualItems(Manifest manifest)

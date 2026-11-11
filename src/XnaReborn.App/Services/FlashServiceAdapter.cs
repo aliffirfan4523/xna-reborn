@@ -18,6 +18,12 @@ internal static class FlashServiceAdapter
     /// <summary>The catalog name that marks a report as a Flash report.</summary>
     public const string CatalogName = "flash-to-monogame";
 
+    /// <summary>Prefix of the <see cref="ProjectInfo.References"/> entry that carries the entry class. Present only when exactly one FlxGame class was found.</summary>
+    public const string EntryClassPrefix = "Entry class: ";
+
+    /// <summary>Prefix of the <see cref="ProjectInfo.References"/> entry that carries the Flixel version.</summary>
+    public const string FlixelPrefix = "Flixel ";
+
     /// <summary>True when the path is a folder with Flash signals and no .NET project.</summary>
     public static bool IsFlash(string path)
     {
@@ -36,6 +42,17 @@ internal static class FlashServiceAdapter
         var folder = Directory.Exists(path) ? path : Path.GetDirectoryName(Path.GetFullPath(path))!;
         var flash = await FlashProjectAnalyzer.AnalyzeAsync(Path.GetFullPath(folder), null, progress, cancellationToken).ConfigureAwait(false);
         var name = flash.EntryClass ?? new DirectoryInfo(Path.GetFullPath(folder)).Name;
+        var references = new List<string>();
+        if (flash.EntryClass is not null)
+        {
+            references.Add(EntryClassPrefix + flash.EntryClass);
+        }
+
+        if (flash.FlixelVersion is not null)
+        {
+            references.Add(FlixelPrefix + flash.FlixelVersion);
+        }
+
         var project = new ProjectInfo(
             flash.ProjectFile ?? name + ".as3proj",
             name,
@@ -44,7 +61,7 @@ internal static class FlashServiceAdapter
             XnaPlatform.Windows,
             null,
             null,
-            flash.FlixelVersion is null ? [] : ["Flixel " + flash.FlixelVersion],
+            references,
             [],
             [],
             [],
