@@ -102,10 +102,10 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [x] 15.3 Source folder hash unchanged after migration and build; the output has the manifest marker; the runner refuses the unmigrated fixture
   - _Requirements: R10, R11_
 
-- [ ] 16. Studio UI
-  - [ ] 16.1 Project list shows family, version with confidence, and platform
-  - [ ] 16.2 Platform projects are shown as "not migrated, see manual work"
-  - [ ] 16.3 UI tests with a fake analyzer; no migration logic in `XnaReborn.App`
+- [x] 16. Studio UI
+  - [x] 16.1 Project list shows family, version with confidence, and platform
+  - [x] 16.2 Platform projects are shown as "not migrated, see manual work"
+  - [x] 16.3 UI tests with a fake analyzer; no migration logic in `XnaReborn.App`
   - _Requirements: R5, R9_
 
 - [ ] 17. Manual checks on real projects (outside the repository)

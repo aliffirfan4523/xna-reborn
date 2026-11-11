@@ -96,6 +96,12 @@ public sealed partial class ReportViewModel : PageViewModel
     /// <summary>Why no XNA project was found, or an empty string.</summary>
     public string NoProjectReason => Report?.NoProjectReason ?? string.Empty;
 
+    /// <summary>The projects of the report: path, family, version and platform. Empty when there is no report.</summary>
+    public IReadOnlyList<ProjectRowItem> Projects => Report?.Projects.Select(p => new ProjectRowItem(p)).ToList() ?? [];
+
+    /// <summary>True when the report lists at least one project.</summary>
+    public bool HasProjects => Projects.Count > 0;
+
     /// <summary>Compatibility score from 0 to 100.</summary>
     public int Score => Report?.Score ?? 0;
 
@@ -236,7 +242,7 @@ public sealed partial class ReportViewModel : PageViewModel
     {
         foreach (var name in new[]
         {
-            nameof(HasReport), nameof(HasProject), nameof(ShowNoProject), nameof(NoProjectReason), nameof(Score), nameof(ProjectedScore),
+            nameof(HasReport), nameof(HasProject), nameof(Projects), nameof(HasProjects), nameof(ShowNoProject), nameof(NoProjectReason), nameof(Score), nameof(ProjectedScore),
             nameof(AutoFixableCount), nameof(ManualCount), nameof(UnsupportedCount), nameof(Diagnostics), nameof(HasDiagnostics),
             nameof(StartHere), nameof(HasStartHere),
         })
