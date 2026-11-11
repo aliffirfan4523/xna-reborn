@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using XnaReborn.As3;
@@ -65,7 +66,7 @@ public class FlxGame : Game
     /// <inheritdoc />
     protected override void Update(GameTime gameTime)
     {
-        FlxG.step(_step, _adapter);
+        FlxG.step(_step, _adapter, _adapter);
         base.Update(gameTime);
     }
 
@@ -89,7 +90,7 @@ public class FlxGame : Game
         base.Draw(gameTime);
     }
 
-    private sealed class Adapter : IFlxRenderer, IFlxAssets, IFlxKeyState
+    private sealed class Adapter : IFlxRenderer, IFlxAssets, IFlxKeyState, IFlxMouseState
     {
         private readonly FlxGame _game;
         private readonly SpriteBatch _batch;
@@ -106,6 +107,19 @@ public class FlxGame : Game
         }
 
         public bool IsDown(Keys key) => Keyboard.GetState().IsKeyDown(key);
+
+        public (double X, double Y) Position
+        {
+            get
+            {
+                var m = Mouse.GetState();
+                return ((double)m.X / _game._zoom, (double)m.Y / _game._zoom);
+            }
+        }
+
+        public bool LeftDown => Mouse.GetState().LeftButton == ButtonState.Pressed;
+
+        public int WheelTotal => Mouse.GetState().ScrollWheelValue;
 
         public void Clear(uint argb) => _game.GraphicsDevice.Clear(ToColor(argb));
 
@@ -128,8 +142,15 @@ public class FlxGame : Game
 
         public (int Width, int Height)? GetTextureSize(AssetRef texture)
         {
-            var t = Load(texture);
-            return (t.Width, t.Height);
+            try
+            {
+                var t = Load(texture);
+                return (t.Width, t.Height);
+            }
+            catch (ContentLoadException)
+            {
+                return null;
+            }
         }
 
         public void PlaySound(AssetRef sound, double volume, bool looped)
@@ -154,7 +175,7 @@ public class FlxGame : Game
 
         public byte[] ReadData(AssetRef data)
         {
-            using var stream = TitleContainer.OpenStream(Path.Combine(_game.Content.RootDirectory, data.Name));
+            using var stream = TitleContainer.OpenStream(Path.Combine(_game.Content.RootDirectory, data.Name.Replace('/', Path.DirectorySeparatorChar)));
             using var memory = new MemoryStream();
             stream.CopyTo(memory);
             return memory.ToArray();

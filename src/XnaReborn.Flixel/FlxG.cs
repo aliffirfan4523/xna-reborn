@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework.Input;
 using XnaReborn.As3;
 
 namespace org.flixel;
@@ -27,116 +26,6 @@ public interface IFlxAssets
 
     /// <summary>Reads an embedded data file as bytes.</summary>
     byte[] ReadData(AssetRef data);
-}
-
-/// <summary>Reports which keys are down. The game uses the MonoGame keyboard; tests use a fake.</summary>
-public interface IFlxKeyState
-{
-    /// <summary>True when the key is down now.</summary>
-    bool IsDown(Keys key);
-}
-
-/// <summary>Keyboard state with Flixel's names: <c>FlxG.keys.LEFT</c>, <c>FlxG.keys.justPressed("X")</c>.</summary>
-public sealed class FlxKeyboard
-{
-    private readonly Dictionary<string, Keys> _map = BuildMap();
-    private readonly HashSet<Keys> _down = new();
-    private readonly HashSet<Keys> _previous = new();
-
-    /// <summary>Reads the new key state. Call once per frame.</summary>
-    public void update(IFlxKeyState state)
-    {
-        _previous.Clear();
-        _previous.UnionWith(_down);
-        _down.Clear();
-        foreach (var key in _map.Values.Distinct().Where(state.IsDown))
-        {
-            _down.Add(key);
-        }
-    }
-
-    /// <summary>True while the key is held. Names are Flixel key names such as "LEFT", "SPACE" or "X".</summary>
-    public bool pressed(string KeyName) => _map.TryGetValue(KeyName.ToUpperInvariant(), out var k) && _down.Contains(k);
-
-    /// <summary>True on the frame the key went down.</summary>
-    public bool justPressed(string KeyName) => _map.TryGetValue(KeyName.ToUpperInvariant(), out var k) && _down.Contains(k) && !_previous.Contains(k);
-
-    /// <summary>True on the frame the key went up.</summary>
-    public bool justReleased(string KeyName) => _map.TryGetValue(KeyName.ToUpperInvariant(), out var k) && !_down.Contains(k) && _previous.Contains(k);
-
-    /// <summary>Left arrow.</summary>
-    public bool LEFT => pressed("LEFT");
-
-    /// <summary>Right arrow.</summary>
-    public bool RIGHT => pressed("RIGHT");
-
-    /// <summary>Up arrow.</summary>
-    public bool UP => pressed("UP");
-
-    /// <summary>Down arrow.</summary>
-    public bool DOWN => pressed("DOWN");
-
-    /// <summary>Space bar.</summary>
-    public bool SPACE => pressed("SPACE");
-
-    /// <summary>Enter key.</summary>
-    public bool ENTER => pressed("ENTER");
-
-    /// <summary>Escape key.</summary>
-    public bool ESCAPE => pressed("ESCAPE");
-
-    /// <summary>Shift key.</summary>
-    public bool SHIFT => pressed("SHIFT");
-
-    /// <summary>The A key.</summary>
-    public bool A => pressed("A");
-
-    /// <summary>The C key.</summary>
-    public bool C => pressed("C");
-
-    /// <summary>The D key.</summary>
-    public bool D => pressed("D");
-
-    /// <summary>The S key.</summary>
-    public bool S => pressed("S");
-
-    /// <summary>The W key.</summary>
-    public bool W => pressed("W");
-
-    /// <summary>The X key.</summary>
-    public bool X => pressed("X");
-
-    /// <summary>The Z key.</summary>
-    public bool Z => pressed("Z");
-
-    private static Dictionary<string, Keys> BuildMap()
-    {
-        var map = new Dictionary<string, Keys>(StringComparer.Ordinal)
-        {
-            ["LEFT"] = Keys.Left,
-            ["RIGHT"] = Keys.Right,
-            ["UP"] = Keys.Up,
-            ["DOWN"] = Keys.Down,
-            ["SPACE"] = Keys.Space,
-            ["ENTER"] = Keys.Enter,
-            ["ESCAPE"] = Keys.Escape,
-            ["SHIFT"] = Keys.LeftShift,
-            ["CONTROL"] = Keys.LeftControl,
-            ["TAB"] = Keys.Tab,
-        };
-        for (var c = 'A'; c <= 'Z'; c++)
-        {
-            map[c.ToString()] = Enum.Parse<Keys>(c.ToString());
-        }
-
-        for (var d = 0; d <= 9; d++)
-        {
-            map["D" + d] = Enum.Parse<Keys>("D" + d);
-            map[d switch { 0 => "ZERO", 1 => "ONE", 2 => "TWO", 3 => "THREE", 4 => "FOUR", 5 => "FIVE", 6 => "SIX", 7 => "SEVEN", 8 => "EIGHT", _ => "NINE" }] = Enum.Parse<Keys>("D" + d);
-        }
-
-        return map;
-    }
 }
 
 /// <summary>A sound that was started with <see cref="FlxG.play"/>.</summary>
@@ -179,6 +68,12 @@ public static class FlxG
     /// <summary>The keyboard.</summary>
     public static FlxKeyboard keys = new();
 
+    /// <summary>The mouse.</summary>
+    public static FlxMouse mouse = new();
+
+    /// <summary>Gamepads. A stub: nothing is ever pressed.</summary>
+    public static FlxGamepad[] gamepads = [new FlxGamepad()];
+
     /// <summary>Seed of <see cref="random"/>, a number from 0 to 1. Set it to repeat a sequence.</summary>
     public static double globalSeed = Random.Shared.NextDouble();
 
@@ -207,6 +102,7 @@ public static class FlxG
         worldBounds = new FlxRect(-10, -10, Width + 20, Height + 20);
         worldDivisions = 6;
         keys = new FlxKeyboard();
+        mouse = new FlxMouse();
         state = null;
         _requested = null;
         FlxTimer.manager.clear();
@@ -240,8 +136,8 @@ public static class FlxG
         }
     }
 
-    /// <summary>Runs one frame: starts a requested state, reads the keys, updates the state.</summary>
-    public static void step(double Elapsed, IFlxKeyState? keyState = null)
+    /// <summary>Runs one frame: starts a requested state, reads the keys and mouse, updates the state.</summary>
+    public static void step(double Elapsed, IFlxKeyState? keyState = null, IFlxMouseState? mouseState = null)
     {
         elapsed = Elapsed;
         if (_requested is not null)
@@ -256,6 +152,11 @@ public static class FlxG
         if (keyState is not null)
         {
             keys.update(keyState);
+        }
+
+        if (mouseState is not null)
+        {
+            mouse.update(mouseState);
         }
 
         FlxTimer.manager.update();
@@ -301,6 +202,21 @@ public static class FlxG
         }
 
         camera.drawEffects(real);
+    }
+
+    /// <summary>Reads an embedded data file (a class made by an <c>[Embed]</c> of a text or binary file) as bytes.</summary>
+    public static byte[] loadBytes(AsClass Data)
+    {
+        var asset = Data.Asset ?? throw new ArgumentException("The class is not an embedded asset.", nameof(Data));
+        return (assets ?? throw new InvalidOperationException("The game has not started.")).ReadData(asset);
+    }
+
+    /// <summary>Reads an embedded data file as UTF-8 text, without a byte order mark.</summary>
+    public static string loadText(AsClass Data)
+    {
+        var bytes = loadBytes(Data);
+        var skip = bytes is [0xEF, 0xBB, 0xBF, ..] ? 3 : 0;
+        return System.Text.Encoding.UTF8.GetString(bytes, skip, bytes.Length - skip);
     }
 
     /// <summary>Plays an embedded sound once, or in a loop.</summary>
