@@ -47,7 +47,7 @@ public sealed class KeyboardAccessTests
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(
-            ["ExportMarkdown", "ExportJson", "CopyReport", "ContinueButton", "StartHerePanel", "Show unsupported findings", "Show manual findings", "SearchBox", "SeverityFilter", "ClassificationFilter", "ListBoxItem", "CopyFinding", "Snippet"],
+            ["ExportMarkdown", "ExportJson", "CopyReport", "ContinueButton", "StartHerePanel", "Show unsupported findings", "Show manual findings", "SearchBox", "ListBoxItem", "ListBoxItem", "ListBoxItem", "CopyFinding", "Snippet"],
             PageStops(window));
         AssertAllNamed(window);
     }

@@ -108,7 +108,7 @@ public sealed class ReportViewTests
         Assert.Equal(2, list.ItemCount);
         Assert.Equal("Showing 2 of 6 findings", TextOf(view, "FilterSummary"));
 
-        Find<ComboBox>(view, "SeverityFilter").SelectedItem = vm.SeverityChoices.Single(c => c.Value == Severity.Warning);
+        Find<ListBox>(view, "SeverityFilter").SelectedItem = vm.SeverityChoices.Single(c => c.Value == Severity.Warning);
         Dispatcher.UIThread.RunJobs();
         Assert.Equal(0, list.ItemCount);
         Assert.True(Find<TextBlock>(view, "NoMatchesMessage").IsVisible);
@@ -128,11 +128,11 @@ public sealed class ReportViewTests
         t.Session.Report = ReportTestData.Small();
         var (window, view) = await ShowAsync(t);
 
-        var combo = Find<ComboBox>(view, "ClassificationFilter");
+        var combo = Find<ListBox>(view, "ClassificationFilter");
         combo.SelectedItem = t.Get<ReportViewModel>().ClassificationChoices.Single(c => c.Value == Classification.Unsupported);
         Dispatcher.UIThread.RunJobs();
 
-        Assert.True(combo.Focusable);
+        Assert.True(combo.GetVisualDescendants().OfType<ListBoxItem>().All(i => i.Focusable));
         Assert.Equal("Filter by classification", AutomationProperties.GetName(combo));
         Assert.Equal(1, Find<ListBox>(view, "FindingsList").ItemCount);
         foreach (var id in new[] { "ExportMarkdown", "ExportJson", "CopyReport", "ContinueButton", "ClearFilters" })
@@ -196,7 +196,7 @@ public sealed class ReportViewTests
         Assert.True(panel.IsVisible);
         Assert.Contains(panel.GetVisualDescendants().OfType<TextBlock>(), x => x.Text == "No .csproj with an XNA reference was found.");
         Assert.Contains(panel.GetVisualDescendants().OfType<TextBlock>(), x => x.Text == "No XNA project found");
-        Assert.False(Find<ListBox>(view, "FindingsList").GetVisualAncestors().OfType<Grid>().First().IsVisible);
+        Assert.False(view.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "DashScroll").IsVisible);
         Assert.False(Find<Button>(view, "ContinueButton").IsEffectivelyEnabled);
         window.Close();
     }
@@ -267,6 +267,54 @@ public sealed class ReportViewTests
         return (window, window.GetVisualDescendants().OfType<ReportView>().Single());
     }
 
+    [AvaloniaFact]
+    public async Task Severity_counts_add_up_to_the_findings_and_the_tiles_show_them()
+    {
+        using var t = TestServices.Create();
+        t.Session.Report = ReportTestData.Small();
+        var (window, view) = await ShowAsync(t);
+        var vm = t.Get<ReportViewModel>();
+
+        Assert.Equal(vm.TotalCount, vm.BlockerCount + vm.ErrorCount + vm.WarningCount + vm.InfoCount);
+        var tiles = view.GetVisualDescendants().OfType<StatTile>().ToList();
+        Assert.Contains(tiles, x => x.Label == "Blockers" && x.Value == vm.BlockerCount.ToString());
+        Assert.Contains(tiles, x => x.Label == "Warnings" && x.Value == vm.WarningCount.ToString());
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task Choosing_a_filter_chip_narrows_the_list_and_the_empty_state_shows_only_when_nothing_matches()
+    {
+        using var t = TestServices.Create();
+        t.Session.Report = ReportTestData.Small();
+        var (window, view) = await ShowAsync(t);
+        var vm = t.Get<ReportViewModel>();
+
+        Assert.False(vm.ShowEmptyList);
+        Find<ListBox>(view, "ClassificationFilter").SelectedItem = vm.ClassificationChoices.Single(c => c.Value == Classification.Unsupported);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal(1, Find<ListBox>(view, "FindingsList").ItemCount);
+
+        vm.SearchText = "no finding has this text";
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(vm.ShowEmptyList);
+        Assert.True(Find<TextBlock>(view, "NoMatchesMessage").IsVisible);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task Without_a_report_the_page_shows_an_empty_state_with_a_way_back()
+    {
+        using var t = TestServices.Create();
+        var (window, view) = await ShowAsync(t);
+        t.Session.Report = null;
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(t.Get<ReportViewModel>().ShowNoReport);
+        Assert.True(Find<EmptyState>(view, "NoReportState").IsVisible);
+        Assert.True(Find<Button>(view, "ChooseProjectFromEmpty").IsEffectivelyEnabled);
+        window.Close();
+    }
     private static T Find<T>(Control root, string automationId)
         where T : Control => root.GetVisualDescendants().OfType<T>().Single(c => AutomationProperties.GetAutomationId(c) == automationId);
 

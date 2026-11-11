@@ -7,50 +7,77 @@
              x:DataType="vm:ReportViewModel">
 
   <Grid RowDefinitions="Auto,Auto,*,Auto"
-        RowSpacing="{StaticResource SpacingMedium}"
+        RowSpacing="{DynamicResource Space3}"
         Margin="{StaticResource PagePadding}">
 
-    <!-- Title and page actions -->
-    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingLarge}">
+    <!-- Title and export toolbar -->
+    <Grid Grid.Row="0" RowDefinitions="Auto,Auto" RowSpacing="{DynamicResource Space2}">
       <TextBlock Text="{Binding Title}" Classes="headline" VerticalAlignment="Center"
                  AutomationProperties.HeadingLevel="1" />
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-        <Button Classes="secondary" Content="Export Markdown" Command="{Binding ExportMarkdownCommand}"
+      <WrapPanel Grid.Row="1" ItemSpacing="8" LineSpacing="8">
+        <Button Classes="secondary" Command="{Binding ExportMarkdownCommand}"
                 AutomationProperties.AutomationId="ExportMarkdown"
-                AutomationProperties.Name="Export report as Markdown" />
-        <Button Classes="secondary" Content="Export JSON" Command="{Binding ExportJsonCommand}"
+                AutomationProperties.Name="Export report as Markdown">
+          <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space1}">
+            <PathIcon Data="{StaticResource IconDiff}" Width="16" Height="16" />
+            <TextBlock Text="Export Markdown" />
+          </StackPanel>
+        </Button>
+        <Button Classes="secondary" Command="{Binding ExportJsonCommand}"
                 AutomationProperties.AutomationId="ExportJson"
-                AutomationProperties.Name="Export report as JSON" />
-        <Button Classes="secondary" Content="Copy report" Command="{Binding CopyReportCommand}"
+                AutomationProperties.Name="Export report as JSON">
+          <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space1}">
+            <PathIcon Data="{StaticResource IconDiff}" Width="16" Height="16" />
+            <TextBlock Text="Export JSON" />
+          </StackPanel>
+        </Button>
+        <Button Classes="secondary" Command="{Binding CopyReportCommand}"
                 AutomationProperties.AutomationId="CopyReport"
-                AutomationProperties.Name="Copy report as Markdown" />
-        <Button Content="Continue to migration setup" Classes="primary" Command="{Binding ContinueCommand}"
+                AutomationProperties.Name="Copy report as Markdown">
+          <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space1}">
+            <PathIcon Data="{StaticResource IconCopy}" Width="16" Height="16" />
+            <TextBlock Text="Copy report" />
+          </StackPanel>
+        </Button>
+        <Button Classes="primary" Command="{Binding ContinueCommand}"
                 AutomationProperties.AutomationId="ContinueButton"
-                AutomationProperties.Name="Continue to migration setup" />
-      </StackPanel>
+                AutomationProperties.Name="Continue to migration setup">
+          <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space1}">
+            <TextBlock Text="Continue to migration setup" />
+            <PathIcon Data="{StaticResource IconPlay}" Width="14" Height="14" />
+          </StackPanel>
+        </Button>
+      </WrapPanel>
     </Grid>
 
-    <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" TextWrapping="Wrap"
+    <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" TextWrapping="Wrap" Classes="muted"
                AutomationProperties.AutomationId="StatusMessage"
                AutomationProperties.LiveSetting="Polite" />
 
     <Panel Grid.Row="2">
 
+      <!-- No report yet -->
+      <controls:EmptyState IsVisible="{Binding ShowNoReport}"
+                           Title="No report yet"
+                           Message="Open a project first. The analysis report appears here."
+                           AutomationProperties.AutomationId="NoReportState">
+        <Button Classes="secondary" Content="Choose a project" Command="{Binding ChooseAnotherProjectCommand}"
+                AutomationProperties.AutomationId="ChooseProjectFromEmpty"
+                AutomationProperties.Name="Choose a project" />
+      </controls:EmptyState>
+
       <!-- No XNA project found: show the analyzer's explanation (R1.3). -->
       <Border IsVisible="{Binding ShowNoProject}"
+              Classes="card"
               VerticalAlignment="Top"
-              Padding="16"
-              BorderThickness="1"
-              CornerRadius="{DynamicResource RadiusMedium}"
               Background="{DynamicResource WarningSoftBrush}"
               BorderBrush="{DynamicResource SeverityWarningBrush}"
               AutomationProperties.AutomationId="NoProjectPanel"
               AutomationProperties.Name="No XNA project found">
-        <StackPanel Spacing="{StaticResource SpacingMedium}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-            <TextBlock Text="{DynamicResource SeverityWarningIcon}" Foreground="{DynamicResource SeverityWarningBrush}" />
-            <TextBlock Text="No XNA project found" Classes="subtitle"
-                       AutomationProperties.HeadingLevel="2" />
+        <StackPanel Spacing="{DynamicResource Space3}">
+          <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+            <PathIcon Data="{StaticResource IconWarning}" Width="20" Height="20" Foreground="{DynamicResource SeverityWarningBrush}" />
+            <TextBlock Text="No XNA project found" Classes="title" AutomationProperties.HeadingLevel="2" />
           </StackPanel>
           <TextBlock Text="{Binding NoProjectReason}" TextWrapping="Wrap" />
           <Button Classes="secondary" Content="Choose another project" Command="{Binding ChooseAnotherProjectCommand}"
@@ -60,37 +87,72 @@
         </StackPanel>
       </Border>
 
-      <!-- Score, filters, findings and details -->
-      <Grid IsVisible="{Binding HasProject}"
-            ColumnDefinitions="Auto,2*,3*"
-            ColumnSpacing="{StaticResource SpacingLarge}">
+      <!-- Dashboard: hero, tiles, guide, then the findings list and its details -->
+      <ScrollViewer x:Name="DashScroll" IsVisible="{Binding HasProject}" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="{DynamicResource Space4}" Margin="0,0,12,0">
 
-        <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingLarge}" MinWidth="150">
-          <controls:ScoreGauge Score="{Binding Score}" ProjectedScore="{Binding ProjectedScore}"
-                               AutomationProperties.AutomationId="ScoreGauge" />
-          <StackPanel Spacing="{StaticResource SpacingSmall}" AutomationProperties.Name="Findings per classification">
-            <TextBlock Text="Findings" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-            <TextBlock Text="{Binding AutoFixableCount, StringFormat='Auto-fixable: {0}'}"
-                       AutomationProperties.AutomationId="CountAutoFixable" />
-            <TextBlock Text="{Binding ManualCount, StringFormat='Manual: {0}'}"
-                       AutomationProperties.AutomationId="CountManual" />
-            <TextBlock Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
-                       AutomationProperties.AutomationId="CountUnsupported" />
-          </StackPanel>
-        </StackPanel>
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Space4}">
+            <!-- Hero: score now and after the migration -->
+            <Border Classes="card" VerticalAlignment="Top">
+              <StackPanel Spacing="{DynamicResource Space3}" MinWidth="170">
+                <TextBlock Text="Compatibility score" Classes="section" AutomationProperties.HeadingLevel="2" />
+                <controls:ScoreGauge Score="{Binding Score}" ProjectedScore="{Binding ProjectedScore}"
+                                     AutomationProperties.AutomationId="ScoreGauge" />
+              </StackPanel>
+            </Border>
 
-        <DockPanel Grid.Column="1">
-          <StackPanel DockPanel.Dock="Top" Spacing="{StaticResource SpacingMedium}" Margin="0,0,0,8">
-            <!-- Start here tip. Built by the view model; this only shows it. -->
-            <Expander Header="Start here" IsExpanded="{Binding IsStartHereExpanded}"
-                      IsVisible="{Binding HasStartHere}"
+            <StackPanel Grid.Column="1" Spacing="{DynamicResource Space3}">
+              <!-- Severity tiles -->
+              <UniformGrid Columns="4" AutomationProperties.Name="Findings per severity">
+                <controls:StatTile Kind="Error" Icon="{StaticResource IconFlag}" Label="Blockers" Value="{Binding BlockerCount}" Margin="0,0,8,0" />
+                <controls:StatTile Kind="Error" Label="Errors" Value="{Binding ErrorCount}" Margin="0,0,8,0" />
+                <controls:StatTile Kind="Warning" Label="Warnings" Value="{Binding WarningCount}" Margin="0,0,8,0" />
+                <controls:StatTile Kind="Info" Label="Info" Value="{Binding InfoCount}" />
+              </UniformGrid>
+
+              <!-- Who fixes what -->
+              <Border Classes="card compact">
+                <StackPanel Spacing="{DynamicResource Space1}" AutomationProperties.Name="Findings per classification">
+                  <TextBlock Text="Who fixes it" Classes="section" AutomationProperties.HeadingLevel="2" />
+                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                    <PathIcon Data="{StaticResource IconCheckCircle}" Width="16" Height="16" Foreground="{DynamicResource SuccessTextBrush}" />
+                    <TextBlock Text="{Binding AutoFixableCount, StringFormat='Auto-fixable: {0}'}"
+                               AutomationProperties.AutomationId="CountAutoFixable" />
+                    <TextBlock Text="the migrator does it" Classes="caption muted" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                    <PathIcon Data="{StaticResource IconTune}" Width="16" Height="16" Foreground="{DynamicResource SeverityWarningBrush}" />
+                    <TextBlock Text="{Binding ManualCount, StringFormat='Manual: {0}'}"
+                               AutomationProperties.AutomationId="CountManual" />
+                    <TextBlock Text="you fix these by hand" Classes="caption muted" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                    <PathIcon Data="{StaticResource IconError}" Width="16" Height="16" Foreground="{DynamicResource SeverityErrorBrush}" />
+                    <TextBlock Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
+                               AutomationProperties.AutomationId="CountUnsupported" />
+                    <TextBlock Text="no modern equivalent" Classes="caption muted" VerticalAlignment="Center" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Grid>
+
+          <!-- Start here guide. Built by the view model; this only shows it. -->
+          <Expander IsExpanded="{Binding IsStartHereExpanded}" IsVisible="{Binding HasStartHere}"
+                      Background="{DynamicResource AccentSoftBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
                       HorizontalAlignment="Stretch"
                       AutomationProperties.AutomationId="StartHerePanel"
                       AutomationProperties.Name="Start here">
-              <StackPanel Spacing="{StaticResource SpacingSmall}" DataContext="{Binding StartHere}" x:DataType="vm:StartHereTip">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpacingMedium}" IsVisible="{Binding HasBlocker}"
+              <Expander.Header>
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                  <PathIcon Data="{StaticResource IconFlag}" Width="18" Height="18" Foreground="{DynamicResource AccentTextBrush}" />
+                  <TextBlock Text="Start here" Classes="title" Foreground="{DynamicResource AccentTextBrush}" />
+                </StackPanel>
+              </Expander.Header>
+              <StackPanel Spacing="{DynamicResource Space2}" DataContext="{Binding StartHere}" x:DataType="vm:StartHereTip">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Space2}" IsVisible="{Binding HasBlocker}"
                       AutomationProperties.AutomationId="StartHereBlocker">
-                  <TextBlock Text="{DynamicResource SeverityBlockerIcon}" Foreground="{DynamicResource SeverityBlockerBrush}" />
+                  <PathIcon Data="{StaticResource IconFlag}" Width="18" Height="18" Foreground="{DynamicResource SeverityBlockerBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding BlockerLine}" TextWrapping="Wrap" FontWeight="SemiBold" />
                 </Grid>
                 <TextBlock Text="{Binding CleanLine}" TextWrapping="Wrap" IsVisible="{Binding IsClean}"
@@ -104,6 +166,7 @@
                                 Command="{Binding $parent[UserControl].((vm:ReportViewModel)DataContext).ShowClassificationCommand}"
                                 CommandParameter="{Binding FilterTo}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Margin="0,2"
                                 AutomationProperties.Name="{Binding AutomationName}">
                           <Button.ContentTemplate>
                             <DataTemplate x:DataType="x:String">
@@ -117,18 +180,18 @@
                 </ItemsControl>
               </StackPanel>
             </Expander>
-            <!-- Flash project: kind, entry class, Flixel version, and why it cannot be converted. Built from the report; this only shows it. -->
-            <Expander Header="Flash project" IsExpanded="True"
-                      IsVisible="{Binding IsFlash}"
+
+          <!-- Flash project: kind, entry class, Flixel version, and why it cannot be converted. Built from the report; this only shows it. -->
+          <Expander Header="Flash project" IsExpanded="True" IsVisible="{Binding IsFlash}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
                       HorizontalAlignment="Stretch"
                       AutomationProperties.AutomationId="FlashPanel"
                       AutomationProperties.Name="Flash project">
-              <StackPanel Spacing="{StaticResource SpacingSmall}" DataContext="{Binding Flash}" x:DataType="vm:FlashReportInfo">
+              <StackPanel Spacing="{DynamicResource Space1}" DataContext="{Binding Flash}" x:DataType="vm:FlashReportInfo">
                 <TextBlock Text="{Binding KindText}" TextWrapping="Wrap" AutomationProperties.AutomationId="FlashKind" />
                 <TextBlock Text="{Binding EntryClassText}" TextWrapping="Wrap" FontWeight="SemiBold" AutomationProperties.AutomationId="FlashEntryClass" />
                 <TextBlock Text="{Binding FlixelText}" TextWrapping="Wrap" AutomationProperties.AutomationId="FlashFlixelVersion" />
                 <Border IsVisible="{Binding Explanation, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Padding="12" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}"
+                        Classes="card flat compact"
                         Background="{DynamicResource ErrorSoftBrush}"
                         BorderBrush="{DynamicResource SeverityBlockerBrush}"
                         AutomationProperties.AutomationId="FlashExplanation"
@@ -137,9 +200,9 @@
                 </Border>
               </StackPanel>
             </Expander>
-            <!-- Projects of the report: family, version with confidence, platform. Display only. -->
-            <Expander Header="Projects" IsExpanded="True"
-                      IsVisible="{Binding HasProjects}"
+
+          <!-- Projects of the report: family, version with confidence, platform. Display only. -->
+          <Expander Header="Projects" IsExpanded="True" IsVisible="{Binding HasProjects}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
                       HorizontalAlignment="Stretch"
                       AutomationProperties.AutomationId="ProjectsPanel"
                       AutomationProperties.Name="Projects">
@@ -148,161 +211,198 @@
                   <DataTemplate x:DataType="vm:ProjectRowItem">
                     <StackPanel Margin="0,2" AutomationProperties.Name="{Binding AutomationName}">
                       <TextBlock Text="{Binding Path}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                      <TextBlock Text="{Binding Summary}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
-                      <TextBlock Text="{Binding LanguageBadgeText}" FontSize="12" FontWeight="SemiBold"
+                      <TextBlock Text="{Binding Summary}" Classes="caption muted" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding LanguageBadgeText}" Classes="caption" FontWeight="SemiBold"
                                  IsVisible="{Binding IsVisualBasic}"
                                  AutomationProperties.AutomationId="LanguageBadge" />
-                      <TextBlock Text="{Binding NotMigratedText}" FontSize="12" FontWeight="SemiBold"
+                      <TextBlock Text="{Binding NotMigratedText}" Classes="caption" FontWeight="SemiBold"
                                  IsVisible="{Binding IsNotMigrated}" />
                     </StackPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
             </Expander>
-            <TextBox Text="{Binding SearchText}"
-                     PlaceholderText="Search rule, title, file or code"
-                     AutomationProperties.AutomationId="SearchBox"
-                     AutomationProperties.Name="Search findings" />
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpacingMedium}">
-              <ComboBox Grid.Column="0" HorizontalAlignment="Stretch"
-                        ItemsSource="{Binding SeverityChoices}"
-                        SelectedItem="{Binding SelectedSeverity}"
-                        AutomationProperties.AutomationId="SeverityFilter"
-                        AutomationProperties.Name="Filter by severity">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate x:DataType="vm:ReportFilterChoice">
-                    <TextBlock Text="{Binding Label}" />
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
-              <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
-                        ItemsSource="{Binding ClassificationChoices}"
-                        SelectedItem="{Binding SelectedClassification}"
-                        AutomationProperties.AutomationId="ClassificationFilter"
-                        AutomationProperties.Name="Filter by classification">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate x:DataType="vm:ReportFilterChoice">
-                    <TextBlock Text="{Binding Label}" />
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
-            </Grid>
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-              <Button Classes="secondary" Content="Clear filters" Command="{Binding ClearFiltersCommand}"
-                      AutomationProperties.AutomationId="ClearFilters"
-                      AutomationProperties.Name="Clear filters" />
-              <TextBlock Text="{Binding FilterSummary}" VerticalAlignment="Center"
-                         AutomationProperties.AutomationId="FilterSummary" />
-            </StackPanel>
-          </StackPanel>
 
-          <Panel>
-            <ListBox ItemsSource="{Binding Rows}"
-                     SelectedItem="{Binding SelectedRow}"
-                     AutomationProperties.AutomationId="FindingsList"
-                     AutomationProperties.Name="Findings">
-              <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="vm:ReportRow">
-                  <StackPanel>
-                    <StackPanel IsVisible="{Binding StartsGroup}" Margin="0,8,0,6">
-                      <TextBlock Text="{Binding GroupHeader}" FontWeight="Bold"
-                                 AutomationProperties.HeadingLevel="2" />
-                      <TextBlock Text="{Binding GroupDescription}" FontSize="12" Opacity="0.8" />
-                    </StackPanel>
-                    <StackPanel Spacing="{StaticResource SpacingSmall}"
-                                AutomationProperties.Name="{Binding Item.AutomationName}">
-                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-                        <controls:SeverityBadge Severity="{Binding Item.Severity}" />
-                        <TextBlock Text="{Binding Item.RuleId}" FontWeight="SemiBold" />
-                      </StackPanel>
-                      <TextBlock Text="{Binding Item.Title}" TextWrapping="Wrap" />
-                      <TextBlock Text="{Binding Item.LocationText}" FontSize="12" Opacity="0.8" />
-                    </StackPanel>
+          <!-- Findings: search, filter chips, list -->
+          <Grid x:Name="FindingsHost" ColumnDefinitions="5*,6*" ColumnSpacing="{DynamicResource Space4}" Height="560">
+            <Border Classes="card">
+              <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Space2}" Margin="0,0,0,8">
+                  <TextBlock Text="Findings" Classes="title" AutomationProperties.HeadingLevel="2" />
+                  <TextBox Text="{Binding SearchText}"
+                           PlaceholderText="Search rule, title, file or code"
+                           AutomationProperties.AutomationId="SearchBox"
+                           AutomationProperties.Name="Search findings" />
+                  <TextBlock Text="Severity" Classes="caption muted" />
+                  <ListBox Classes="chips" ItemsSource="{Binding SeverityChoices}"
+                           SelectedItem="{Binding SelectedSeverity}"
+                           AutomationProperties.AutomationId="SeverityFilter"
+                           AutomationProperties.Name="Filter by severity">
+                    <ListBox.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                      <DataTemplate x:DataType="vm:ReportFilterChoice">
+                        <TextBlock Text="{Binding Label}" />
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                  <TextBlock Text="Who fixes it" Classes="caption muted" />
+                  <ListBox Classes="chips" ItemsSource="{Binding ClassificationChoices}"
+                           SelectedItem="{Binding SelectedClassification}"
+                           AutomationProperties.AutomationId="ClassificationFilter"
+                           AutomationProperties.Name="Filter by classification">
+                    <ListBox.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                      <DataTemplate x:DataType="vm:ReportFilterChoice">
+                        <TextBlock Text="{Binding Label}" />
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                    <Button Classes="subtle" Content="Clear filters" Command="{Binding ClearFiltersCommand}"
+                            AutomationProperties.AutomationId="ClearFilters"
+                            AutomationProperties.Name="Clear filters" />
+                    <TextBlock Text="{Binding FilterSummary}" VerticalAlignment="Center" Classes="caption muted"
+                               AutomationProperties.AutomationId="FilterSummary" />
                   </StackPanel>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBlock IsVisible="{Binding ShowNoFindings}" TextWrapping="Wrap" Margin="8"
-                       VerticalAlignment="Top"
-                       Text="No findings. Nothing in this project blocks the migration."
-                       AutomationProperties.AutomationId="NoFindingsMessage" />
-            <TextBlock IsVisible="{Binding ShowNoMatches}" TextWrapping="Wrap" Margin="8"
-                       VerticalAlignment="Top"
-                       Text="No findings match the filters."
-                       AutomationProperties.AutomationId="NoMatchesMessage" />
-          </Panel>
-        </DockPanel>
+                </StackPanel>
 
-        <DockPanel Grid.Column="2">
-          <Button Classes="secondary" DockPanel.Dock="Bottom" Content="Copy finding" Command="{Binding CopyFindingCommand}"
-                  Margin="0,8,0,0" HorizontalAlignment="Left"
-                  AutomationProperties.AutomationId="CopyFinding"
-                  AutomationProperties.Name="Copy the selected finding" />
-          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <Panel>
-              <TextBlock IsVisible="{Binding ShowSelectionHint}" TextWrapping="Wrap"
-                         Text="Select a finding to see why it matters, how to fix it, and where it is."
-                         AutomationProperties.AutomationId="SelectionHint" />
-              <ContentControl Content="{Binding SelectedFinding}"
-                              AutomationProperties.AutomationId="FindingDetails"
-                              AutomationProperties.Name="Finding details">
-                <ContentControl.ContentTemplate>
-                  <DataTemplate x:DataType="vm:ReportFindingItem">
-                    <StackPanel Spacing="{StaticResource SpacingMedium}">
-                      <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap"
-                                 AutomationProperties.HeadingLevel="2" />
-                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingLarge}">
-                        <controls:SeverityBadge Severity="{Binding Severity}" />
-                        <TextBlock Text="{Binding ClassificationLabel}" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding RuleId}" />
-                      </StackPanel>
-                      <TextBlock Text="Where" FontWeight="SemiBold" AutomationProperties.HeadingLevel="3" />
-                      <TextBlock Text="{Binding LocationText}" TextWrapping="Wrap" />
-                      <TextBlock Text="{Binding Project, StringFormat='Project: {0}'}" TextWrapping="Wrap" Opacity="0.8" />
-                      <TextBlock Text="Why it matters" FontWeight="SemiBold" AutomationProperties.HeadingLevel="3" />
-                      <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" />
-                      <TextBlock Text="How to fix it" FontWeight="SemiBold" AutomationProperties.HeadingLevel="3" />
-                      <TextBlock Text="{Binding Resolution}" TextWrapping="Wrap" />
-                      <StackPanel IsVisible="{Binding HasSnippet}" Spacing="{StaticResource SpacingMedium}">
-                        <TextBlock Text="Code" FontWeight="SemiBold" AutomationProperties.HeadingLevel="3" />
-                        <Border BorderThickness="1" CornerRadius="4" Padding="8"
-                                BorderBrush="{DynamicResource SystemAccentColor}">
-                          <SelectableTextBlock Text="{Binding Snippet}" FontFamily="Consolas,Menlo,monospace"
-                                               TextWrapping="Wrap"
-                                               AutomationProperties.AutomationId="Snippet"
-                                               AutomationProperties.Name="Code snippet" />
-                        </Border>
-                      </StackPanel>
-                    </StackPanel>
-                  </DataTemplate>
-                </ContentControl.ContentTemplate>
-              </ContentControl>
-            </Panel>
-          </ScrollViewer>
-        </DockPanel>
-      </Grid>
+                <Panel>
+                  <ListBox Classes="findings" ItemsSource="{Binding Rows}"
+                           SelectedItem="{Binding SelectedRow}"
+                           AutomationProperties.AutomationId="FindingsList"
+                           AutomationProperties.Name="Findings">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate x:DataType="vm:ReportRow">
+                        <StackPanel>
+                          <StackPanel IsVisible="{Binding StartsGroup}" Margin="0,8,0,6">
+                            <TextBlock Text="{Binding GroupHeader}" Classes="section"
+                                       AutomationProperties.HeadingLevel="3" />
+                            <TextBlock Text="{Binding GroupDescription}" Classes="caption muted" />
+                          </StackPanel>
+                          <StackPanel Spacing="{DynamicResource Space1}"
+                                      AutomationProperties.Name="{Binding Item.AutomationName}">
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                              <controls:SeverityBadge Severity="{Binding Item.Severity}" />
+                              <TextBlock Text="{Binding Item.RuleId}" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding Item.Title}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Item.LocationText}" Classes="caption muted" />
+                          </StackPanel>
+                        </StackPanel>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                  <StackPanel IsVisible="{Binding ShowEmptyList}" VerticalAlignment="Top" HorizontalAlignment="Center" Spacing="{DynamicResource Space2}" Margin="0,24">
+                    <PathIcon Data="{StaticResource IconEmpty}" Width="32" Height="32" Foreground="{DynamicResource TextMutedBrush}" />
+                    <TextBlock IsVisible="{Binding ShowNoFindings}" TextWrapping="Wrap" TextAlignment="Center" Classes="muted"
+                               Text="No findings. Nothing in this project blocks the migration."
+                               AutomationProperties.AutomationId="NoFindingsMessage" />
+                    <TextBlock IsVisible="{Binding ShowNoMatches}" TextWrapping="Wrap" TextAlignment="Center" Classes="muted"
+                               Text="No findings match the filters."
+                               AutomationProperties.AutomationId="NoMatchesMessage" />
+                  </StackPanel>
+                </Panel>
+              </DockPanel>
+            </Border>
+
+            <!-- Details of the selected finding -->
+            <Border Grid.Column="1" Classes="card">
+              <DockPanel>
+                <Button Classes="secondary" DockPanel.Dock="Bottom" Command="{Binding CopyFindingCommand}"
+                        Margin="0,8,0,0" HorizontalAlignment="Left"
+                        AutomationProperties.AutomationId="CopyFinding"
+                        AutomationProperties.Name="Copy the selected finding">
+                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space1}">
+                    <PathIcon Data="{StaticResource IconCopy}" Width="16" Height="16" />
+                    <TextBlock Text="Copy finding" />
+                  </StackPanel>
+                </Button>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                  <Panel>
+                    <TextBlock IsVisible="{Binding ShowSelectionHint}" TextWrapping="Wrap" Classes="muted" Margin="0,24"
+                               Text="Select a finding to see why it matters, how to fix it, and where it is."
+                               AutomationProperties.AutomationId="SelectionHint" />
+                    <ContentControl Content="{Binding SelectedFinding}"
+                                    AutomationProperties.AutomationId="FindingDetails"
+                                    AutomationProperties.Name="Finding details">
+                      <ContentControl.ContentTemplate>
+                        <DataTemplate x:DataType="vm:ReportFindingItem">
+                          <StackPanel Spacing="{DynamicResource Space3}" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding Title}" Classes="title" TextWrapping="Wrap"
+                                       AutomationProperties.HeadingLevel="2" />
+                            <WrapPanel>
+                              <controls:SeverityBadge Severity="{Binding Severity}" Margin="0,0,16,0" />
+                              <TextBlock Text="{Binding ClassificationLabel}" FontWeight="SemiBold" Margin="0,0,16,0" />
+                              <TextBlock Text="{Binding RuleId}" Classes="muted" />
+                            </WrapPanel>
+                            <StackPanel Spacing="{DynamicResource Space1}">
+                              <TextBlock Text="Where" Classes="section" AutomationProperties.HeadingLevel="3" />
+                              <TextBlock Text="{Binding LocationText}" TextWrapping="Wrap" FontFamily="Consolas,Menlo,monospace" />
+                              <TextBlock Text="{Binding Project, StringFormat='Project: {0}'}" TextWrapping="Wrap" Classes="caption muted" />
+                            </StackPanel>
+                            <StackPanel IsVisible="{Binding HasSnippet}" Spacing="{DynamicResource Space1}">
+                              <TextBlock Text="Code" Classes="section" AutomationProperties.HeadingLevel="3" />
+                              <Border Background="{DynamicResource SurfaceAltBrush}"
+                                      BorderBrush="{DynamicResource BorderBrushStrong}"
+                                      BorderThickness="3,1,1,1"
+                                      CornerRadius="{DynamicResource RadiusSmall}" Padding="12,8">
+                                <SelectableTextBlock Text="{Binding Snippet}" FontFamily="Consolas,Menlo,monospace"
+                                                     TextWrapping="Wrap"
+                                                     AutomationProperties.AutomationId="Snippet"
+                                                     AutomationProperties.Name="Code snippet" />
+                              </Border>
+                            </StackPanel>
+                            <StackPanel Spacing="{DynamicResource Space1}">
+                              <TextBlock Text="Why it matters" Classes="section" AutomationProperties.HeadingLevel="3" />
+                              <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Classes="card flat compact"
+                                    Background="{DynamicResource SuccessSoftBrush}"
+                                    BorderBrush="{DynamicResource SuccessTextBrush}">
+                              <StackPanel Spacing="{DynamicResource Space1}">
+                                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                                  <PathIcon Data="{StaticResource IconCheckCircle}" Width="16" Height="16" Foreground="{DynamicResource SuccessTextBrush}" />
+                                  <TextBlock Text="How to fix it" Classes="section" AutomationProperties.HeadingLevel="3" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding Resolution}" TextWrapping="Wrap" />
+                              </StackPanel>
+                            </Border>
+                          </StackPanel>
+                        </DataTemplate>
+                      </ContentControl.ContentTemplate>
+                    </ContentControl>
+                  </Panel>
+                </ScrollViewer>
+              </DockPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+      </ScrollViewer>
     </Panel>
 
     <!-- Problems met during analysis -->
-    <Expander Grid.Row="3" Header="Analysis notes" IsExpanded="True"
-              IsVisible="{Binding HasDiagnostics}"
-              HorizontalAlignment="Stretch"
-              AutomationProperties.AutomationId="DiagnosticsPanel"
-              AutomationProperties.Name="Analysis notes">
-      <ScrollViewer MaxHeight="120">
-        <ItemsControl ItemsSource="{Binding Diagnostics}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="core:Diagnostic">
-              <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-                <TextBlock Text="{Binding Code}" FontWeight="SemiBold" />
-                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding File}" Opacity="0.8" />
-              </StackPanel>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </ScrollViewer>
-    </Expander>
+    <Expander Grid.Row="3" Header="Analysis notes" IsExpanded="True" IsVisible="{Binding HasDiagnostics}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
+                HorizontalAlignment="Stretch"
+                AutomationProperties.AutomationId="DiagnosticsPanel"
+                AutomationProperties.Name="Analysis notes">
+        <ScrollViewer MaxHeight="120">
+          <ItemsControl ItemsSource="{Binding Diagnostics}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="core:Diagnostic">
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                  <TextBlock Text="{Binding Code}" FontWeight="SemiBold" />
+                  <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding File}" Classes="muted" />
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Expander>
 
   </Grid>
 </UserControl>

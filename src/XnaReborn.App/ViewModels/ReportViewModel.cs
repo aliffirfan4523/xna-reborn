@@ -129,6 +129,21 @@ public sealed partial class ReportViewModel : PageViewModel
     /// <summary>Number of unsupported findings in the report.</summary>
     public int UnsupportedCount => CountOf(Classification.Unsupported);
 
+    /// <summary>Number of blocker findings in the report.</summary>
+    public int BlockerCount => SeverityCountOf(Severity.Blocker);
+
+    /// <summary>Number of error findings in the report.</summary>
+    public int ErrorCount => SeverityCountOf(Severity.Error);
+
+    /// <summary>Number of warning findings in the report.</summary>
+    public int WarningCount => SeverityCountOf(Severity.Warning);
+
+    /// <summary>Number of info findings in the report.</summary>
+    public int InfoCount => SeverityCountOf(Severity.Info);
+
+    /// <summary>True when there is no report yet, so the page shows an empty state.</summary>
+    public bool ShowNoReport => Report is null;
+
     /// <summary>Problems met during analysis.</summary>
     public IReadOnlyList<Diagnostic> Diagnostics => Report?.Diagnostics ?? [];
 
@@ -152,6 +167,9 @@ public sealed partial class ReportViewModel : PageViewModel
 
     /// <summary>True when the report has findings but the filters hide all of them.</summary>
     public bool ShowNoMatches => TotalCount > 0 && VisibleCount == 0;
+
+    /// <summary>True when the list is empty, whether the report has no findings or the filters hide them all.</summary>
+    public bool ShowEmptyList => ShowNoFindings || ShowNoMatches;
 
     /// <summary>The selected finding, or null.</summary>
     public ReportFindingItem? SelectedFinding => SelectedRow?.Item;
@@ -255,7 +273,7 @@ public sealed partial class ReportViewModel : PageViewModel
         foreach (var name in new[]
         {
             nameof(HasReport), nameof(HasProject), nameof(Flash), nameof(IsFlash), nameof(HasFlashExplanation), nameof(CanContinue), nameof(Projects), nameof(HasProjects), nameof(ShowNoProject), nameof(NoProjectReason), nameof(Score), nameof(ProjectedScore),
-            nameof(AutoFixableCount), nameof(ManualCount), nameof(UnsupportedCount), nameof(Diagnostics), nameof(HasDiagnostics),
+            nameof(AutoFixableCount), nameof(ManualCount), nameof(UnsupportedCount), nameof(BlockerCount), nameof(ErrorCount), nameof(WarningCount), nameof(InfoCount), nameof(ShowNoReport), nameof(Diagnostics), nameof(HasDiagnostics),
             nameof(StartHere), nameof(HasStartHere),
         })
         {
@@ -307,9 +325,13 @@ public sealed partial class ReportViewModel : PageViewModel
         OnPropertyChanged(nameof(HasActiveFilter));
         OnPropertyChanged(nameof(ShowNoFindings));
         OnPropertyChanged(nameof(ShowNoMatches));
+        OnPropertyChanged(nameof(ShowEmptyList));
         OnPropertyChanged(nameof(ShowSelectionHint));
         ClearFiltersCommand.NotifyCanExecuteChanged();
     }
+
+    private int SeverityCountOf(Severity severity) =>
+        Report is not null && Report.CountsBySeverity.TryGetValue(severity, out var n) ? n : 0;
 
     private int CountOf(Classification classification) =>
         Report is not null && Report.CountsByClassification.TryGetValue(classification, out var n) ? n : 0;
