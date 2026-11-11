@@ -39,11 +39,11 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 5.4 Test that the generated file compiles (compile it with Roslyn together with the shim data types from task 8; until task 8 lands, compile it against a test stub of those types).
   - _Requirements: R4, R16.6_
 
-- [ ] 6. Content entries and audio tool check
+- [x] 6. Content entries and audio tool check
   - [x] 6.1 Add the wave entries to the `Content.mgcb` generation (`WavImporter` with `SoundEffectProcessor` or `SongProcessor`, `Quality=Best`, `source;destination` form). Confirm `MgcbWriter.FindProblems` accepts the pairs; if not, add an allowed-pairs list.
   - [x] 6.2 Add the audio section to `ContentReport` and the manifest (R7.1, R7.2); expose it as structured data.
   - [x] 6.3 Runner: detect `ffmpeg` and `ffprobe` on the path when `Content.mgcb` has audio entries; add the Warning and the `audio-no-ffmpeg` hint (R7.3). Fake `IProcessRunner` tests: found, missing, no audio entries (no warning).
-  - [ ] 6.4 Slow integration test (skipped without the tools): convert `xna40-xact`, run `dotnet-mgcb`, expect the wave assets to build.
+  - [x] 6.4 Slow integration test (skipped without the tools): convert `xna40-xact`, run `dotnet-mgcb`, expect the wave assets to build.
   - _Requirements: R3, R7_
 
 - [x] 7. Source aliasing
@@ -57,7 +57,7 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 8.1 Add `XactShimSources.cs` (it embeds the real files under `Shims/Xact`, see the design notes) and wire it into `ShimProjectGenerator`: data types (`XactEngineData`, `XactWaveBankData`, `XactSoundBankData` and friends), `AudioEngine`, `AudioCategory`, `WaveBank`, `SoundBank`, `Cue` (play, stop, pause, resume, states), lookup by stem, error messages, `EmptyServiceProvider`, private `ContentManager`.
   - [x] 8.2 Variations (types 0 to 4) with an injectable `Random`; sound, track, category and cue volume; pitch.
   - [x] 8.3 Seams for tests: `IXactVoiceFactory` and `IXactVoice` (named so, not `IInstanceFactory`) so tests run without an audio device.
-  - [ ] 8.4 Tests: lookup by stem (case, folders, missing file), variation order with a seeded random, volume math, state transitions, `FileNotFoundException` text. One test loads a real built `SoundEffect` asset through the empty-service-provider `ContentManager` (skipped without the audio tools) to prove R5.10.
+  - [x] 8.4 Tests: lookup by stem (case, folders, missing file), variation order with a seeded random, volume math, state transitions, `FileNotFoundException` text. One test loads a real built `SoundEffect` asset through the empty-service-provider `ContentManager` (skipped without the audio tools) to prove R5.10.
   - _Requirements: R5.1 to R5.6, R5.10, R5.11_
 
 - [x] 9. Shim advanced
@@ -69,7 +69,7 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 9.6 Tests for every behavior above, positive and negative.
   - _Requirements: R5.7 to R5.9, R5.1_
 
-- [ ] 10. Checkpoint: XACT end to end
+- [x] 10. Checkpoint: XACT end to end
   - Convert `xna40-xact` into a scratch output folder; the content file builds with `dotnet-mgcb`; the migrated game compiles against DesktopGL and WindowsDX; a test plays the cues through the shim with the real built assets; the report lists notes for the DSP cue, the missing wave and the streaming bank.
   - Review the catalog snapshot and the generated shim diff by eye. Decide the default for `StreamingWavesAsSong` from the results (design risk 2).
   - _Requirements: R2 to R7_
@@ -129,6 +129,6 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [ ] 19.3 Write the results into `docs/test-candidates/AUDIO-SHADERS.md` (summary only: no source, no assets) and delete the clones.
   - _Requirements: R16.5_
 
-- [ ] 20. Final checkpoint
+- [x] 20. Final checkpoint
   - Full test suite, `dotnet build`, `dotnet format --verify-no-changes`, review of all snapshots, review of generated files for the fixtures, requirement traceability (every R item has a test or a manual checkpoint).
   - Update `content-conversion` R6 and R7 text and `project-migrator` shim notes to point to this spec (done by that spec's owner, listed here so it is not forgotten).
