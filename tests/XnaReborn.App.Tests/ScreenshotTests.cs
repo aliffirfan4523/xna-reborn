@@ -41,6 +41,17 @@ public sealed class ScreenshotTests
                 window.CaptureRenderedFrame()?.Save(Path.Combine(folder, $"{prefix}-{name}-{(int)step + 1}-{step}.png"), new PngBitmapEncoderOptions());
                 window.Close();
             }
+
+            // Settings is not a workflow step, so it has its own capture. The file number follows the six steps.
+            using var settings = TestServices.Create();
+            var settingsWindow = new MainWindow { DataContext = settings.Main, Width = 1180, Height = 1760 };
+            settingsWindow.Show();
+            await settings.Main.OpenSettingsAsync();
+            Dispatcher.UIThread.RunJobs();
+            await Task.Delay(300);
+            Dispatcher.UIThread.RunJobs();
+            settingsWindow.CaptureRenderedFrame()?.Save(Path.Combine(folder, $"{prefix}-{name}-7-Settings.png"), new PngBitmapEncoderOptions());
+            settingsWindow.Close();
         }
 
         Application.Current!.RequestedThemeVariant = ThemeVariant.Default;

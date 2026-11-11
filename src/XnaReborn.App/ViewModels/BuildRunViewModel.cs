@@ -6,10 +6,12 @@ using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using XnaReborn.App.Services;
+using XnaReborn.Core.Models;
 using XnaReborn.Runner;
 using XnaReborn.Runner.Diagnostics;
 using XnaReborn.Runner.Environment;
 using XnaReborn.Runner.Processes;
+using XnaReborn.Runner.Publish;
 using XnaReborn.Runner.Run;
 
 namespace XnaReborn.App.ViewModels;
@@ -25,6 +27,8 @@ public sealed partial class BuildRunViewModel : PageViewModel
     private static readonly Regex _link = new(@"https://\S+", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private readonly IRunService _runner;
+    private readonly ISettingsService _settings;
+    private AnalysisReport? _defaultsFor;
     private CancellationTokenSource? _cts;
     private RunnerResult? _lastResult;
     private RunHandle? _game;
@@ -128,10 +132,12 @@ public sealed partial class BuildRunViewModel : PageViewModel
     /// <param name="dialogs">File pickers and message dialogs.</param>
     /// <param name="runner">Builds and launches the migrated copy.</param>
     /// <param name="shell">Opens the folder of a published game.</param>
-    public BuildRunViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IRunService runner, IShellService shell)
+    /// <param name="settings">The saved defaults: follow the log, show hints, the publish platform and the SDK check. A choice made here for one run overrides them.</param>
+    public BuildRunViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IRunService runner, IShellService shell, ISettingsService settings)
         : base("Build and run", session, navigator, dialogs)
     {
         _runner = runner;
+        _settings = settings;
         Steps = [SdkStep, BuildStep, LaunchStep];
         Publish = new PublishPanelViewModel(session, dialogs, runner, shell, () => Target()?.Folder, () => IsBusy || IsGameRunning, RefreshState);
     }
@@ -195,7 +201,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
         && !IsBusy
         && !IsGameRunning
         && !Publish.IsPublishing
-        && EnvironmentStatus is { SdkCompatible: true, TargetSupported: true };
+        && (EnvironmentStatus is { SdkCompatible: true, TargetSupported: true } || (EnvironmentStatus is null && !_settings.Current.CheckSdkOnStart));
 
     /// <summary>True while a build can be cancelled.</summary>
     public bool CanCancel => IsBusy;
@@ -222,7 +228,23 @@ public sealed partial class BuildRunViewModel : PageViewModel
             Publish.Reset();
         }
 
-        await RefreshEnvironmentAsync().ConfigureAwait(true);
+        // The saved defaults are read once per opened project. Choices made on this page afterwards are kept.
+        if (Session.Report is { } report && !ReferenceEquals(report, _defaultsFor))
+        {
+            _defaultsFor = report;
+            AutoScroll = _settings.Current.AutoFollowLog;
+            Publish.SelectedTarget = PublishTarget.Find(_settings.Current.PublishRid) ?? PublishTarget.WindowsX64;
+        }
+
+        if (_settings.Current.CheckSdkOnStart)
+        {
+            await RefreshEnvironmentAsync().ConfigureAwait(true);
+        }
+        else if (EnvironmentStatus is null)
+        {
+            SdkText = "Not checked. Press Check again to check the .NET SDK, or build and read the result.";
+            RefreshState();
+        }
     }
 
     partial void OnIsBusyChanged(bool value)
@@ -548,7 +570,7 @@ public sealed partial class BuildRunViewModel : PageViewModel
         _lastResult = result;
         HasResult = true;
 
-        Groups = result.Build?.Groups.Select(g => new DiagnosticGroupViewModel(g)).ToList() ?? [];
+        Groups = result.Build?.Groups.Select(g => new DiagnosticGroupViewModel(g, _settings.Current.ShowHints)).ToList() ?? [];
         if (Groups.FirstOrDefault(g => g.IsError) is { } first)
         {
             first.IsExpanded = true;

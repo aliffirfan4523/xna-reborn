@@ -108,6 +108,19 @@ public sealed class ScreenAuditTests
     }
 
     [AvaloniaFact]
+    public async Task Settings_screen_passes_the_audit()
+    {
+        using var t = TestServices.Create();
+        var window = Show(t);
+        await t.OpenPageAsync(WorkflowStep.Open);
+        await t.Main.OpenSettingsAsync();
+        Dispatcher.UIThread.RunJobs();
+
+        AssertClean(window, "Settings");
+        Assert.Empty(CheckHeadings(window, "Settings"));
+    }
+
+    [AvaloniaFact]
     public async Task Shell_with_an_error_banner_passes_the_audit_and_announces_the_error()
     {
         using var t = TestServices.Create();

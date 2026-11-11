@@ -21,10 +21,16 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
 
     private readonly IClipboardService _clipboard;
     private readonly IServiceProvider _services;
+    private readonly ISettingsService _settings;
     private readonly Dictionary<WorkflowStep, PageViewModel> _pages = [];
+    private SettingsViewModel? _settingsPage;
 
     [ObservableProperty]
     private WorkflowStep _currentStep = WorkflowStep.Open;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentPage), nameof(StatusText), nameof(SettingsAutomationName))]
+    private bool _isSettingsOpen;
 
     [ObservableProperty]
     private bool _isDetailsExpanded;
@@ -33,11 +39,14 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     /// <param name="session">The shared workflow data.</param>
     /// <param name="clipboard">Used by the Copy button of the error banner.</param>
     /// <param name="services">Resolves the page view models. Not used in the constructor, because pages depend on <see cref="INavigator"/>.</param>
-    public MainViewModel(WorkflowSession session, IClipboardService clipboard, IServiceProvider services)
+    /// <param name="settings">The saved settings. The theme toggle of the rail reads and writes the theme.</param>
+    public MainViewModel(WorkflowSession session, IClipboardService clipboard, IServiceProvider services, ISettingsService settings)
     {
         Session = session;
         _clipboard = clipboard;
         _services = services;
+        _settings = settings;
+        settings.Changed += (_, _) => OnPropertyChanged(nameof(ThemeText));
         Steps = _definitions.Select((d, i) => new StepItem(d.Step, d.Label, i + 1, GoTo)).ToList();
         RefreshSteps();
         session.PropertyChanged += OnSessionChanged;
@@ -49,8 +58,17 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     /// <summary>The stepper buttons, in order. The items change in place, the list does not.</summary>
     public IReadOnlyList<StepItem> Steps { get; }
 
-    /// <summary>The page view model for <see cref="CurrentStep"/>. Resolved from the container once and then kept.</summary>
-    public PageViewModel CurrentPage => GetPage(CurrentStep);
+    /// <summary>The saved settings. The window listens to <see cref="ISettingsService.Changed"/> to apply the theme and motion choice.</summary>
+    public ISettingsService Settings => _settings;
+
+    /// <summary>The text of the theme toggle in the rail, such as "Theme: System".</summary>
+    public string ThemeText => "Theme: " + _settings.Current.Theme;
+
+    /// <summary>Screen reader text of the Settings button of the rail.</summary>
+    public string SettingsAutomationName => IsSettingsOpen ? "Settings, current" : "Settings";
+
+    /// <summary>The Settings page while it is open, otherwise the page view model for <see cref="CurrentStep"/>. Resolved from the container once and then kept.</summary>
+    public PageViewModel CurrentPage => IsSettingsOpen ? GetSettingsPage() : GetPage(CurrentStep);
 
     /// <summary>Name of the opened project (folder or file name without extension), or null before a project is opened.</summary>
     public string? ProjectName => Session.SourcePath is { Length: > 0 } path
@@ -67,7 +85,7 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     public string ScoreText => $"Score {Session.Report?.Score ?? 0}";
 
     /// <summary>The text of the status bar: where the user is in the flow.</summary>
-    public string StatusText => $"Step {Steps.Single(s => s.IsCurrent).Number} of {Steps.Count}: {Steps.Single(s => s.IsCurrent).Label}";
+    public string StatusText => IsSettingsOpen ? "Settings" : $"Step {Steps.Single(s => s.IsCurrent).Number} of {Steps.Count}: {Steps.Single(s => s.IsCurrent).Label}";
 
     /// <summary>The short error message, or null.</summary>
     public string? ErrorMessage => Session.ErrorMessage;
@@ -118,7 +136,44 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
         }
 
         var page = GetPage(step);
+
+        // The step is set while Settings may still be showing, so the page changes once, when Settings closes.
         CurrentStep = step;
+        IsSettingsOpen = false;
+        await RefreshPageAsync(page).ConfigureAwait(true);
+    }
+
+    /// <summary>Shows the Settings page. The workflow step and the session stay as they are.</summary>
+    [RelayCommand]
+    public async Task OpenSettingsAsync()
+    {
+        if (IsSettingsOpen)
+        {
+            return;
+        }
+
+        var page = GetSettingsPage();
+        IsSettingsOpen = true;
+        await RefreshPageAsync(page).ConfigureAwait(true);
+    }
+
+    /// <inheritdoc />
+    public void CloseSettings() => IsSettingsOpen = false;
+
+    [RelayCommand]
+    private void CycleTheme()
+    {
+        var next = _settings.Current.Theme switch
+        {
+            ThemeChoice.System => ThemeChoice.Light,
+            ThemeChoice.Light => ThemeChoice.Dark,
+            _ => ThemeChoice.System,
+        };
+        _settings.Save(_settings.Current with { Theme = next });
+    }
+
+    private async Task RefreshPageAsync(PageViewModel page)
+    {
         try
         {
             await page.OnNavigatedToAsync().ConfigureAwait(true);
@@ -163,12 +218,20 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
         }
     }
 
+    partial void OnIsSettingsOpenChanged(bool value) => RefreshSteps();
+
     partial void OnCurrentStepChanged(WorkflowStep value)
     {
-        OnPropertyChanged(nameof(CurrentPage));
+        if (!IsSettingsOpen)
+        {
+            OnPropertyChanged(nameof(CurrentPage));
+        }
+
         RefreshSteps();
         OnPropertyChanged(nameof(StatusText));
     }
+
+    private SettingsViewModel GetSettingsPage() => _settingsPage ??= _services.GetRequiredService<SettingsViewModel>();
 
     private PageViewModel GetPage(WorkflowStep step)
     {
@@ -207,7 +270,7 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     {
         foreach (var item in Steps)
         {
-            item.Update(item.Step == CurrentStep, CanGoTo(item.Step), item.Step < CurrentStep);
+            item.Update(!IsSettingsOpen && item.Step == CurrentStep, CanGoTo(item.Step), item.Step < CurrentStep);
         }
 
         GoToCommand.NotifyCanExecuteChanged();

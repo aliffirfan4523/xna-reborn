@@ -60,6 +60,7 @@
   - _Requirements: R8_
 
 - [ ] 11. Final checkpoint
+  - [x] Demo rehearsal checklist written (`docs/demo-rehearsal.md`); the recording itself is not done
   - Full test suite, `dotnet format --verify-no-changes`, demo rehearsal: failing project to running game (the launch test needs `XNAREBORN_INTEGRATION=1` and `XNAREBORN_LAUNCH=1` and opens a game window, so it runs only when the owner asks)
 
 - [x] 12. One-file publish

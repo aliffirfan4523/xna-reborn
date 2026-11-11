@@ -7,15 +7,19 @@ namespace XnaReborn.App.ViewModels;
 /// <summary>Diagnostics that share one fix hint, shown as one expandable entry.</summary>
 public sealed partial class DiagnosticGroupViewModel : ObservableObject
 {
+    private readonly bool _showHints;
+
     /// <summary>True while the group shows its diagnostics.</summary>
     [ObservableProperty]
     private bool _isExpanded;
 
     /// <summary>Creates the view model.</summary>
     /// <param name="group">The group from the runner.</param>
-    public DiagnosticGroupViewModel(DiagnosticGroup group)
+    /// <param name="showHints">False hides the advice and the related rule. The group title and the diagnostics stay.</param>
+    public DiagnosticGroupViewModel(DiagnosticGroup group, bool showHints = true)
     {
         ArgumentNullException.ThrowIfNull(group);
+        _showHints = showHints;
         Hint = group.Hint is null ? null : new DiagnosticHintViewModel(group.Hint);
         Items = group.Items.Select(d => new DiagnosticItemViewModel(d)).ToList();
         ErrorCount = Items.Count(i => i.IsError);
@@ -31,19 +35,19 @@ public sealed partial class DiagnosticGroupViewModel : ObservableObject
     public string Title { get; }
 
     /// <summary>What to do next, or null without a hint.</summary>
-    public string? Advice => Hint?.Advice;
+    public string? Advice => _showHints ? Hint?.Advice : null;
 
     /// <summary>True when there is advice.</summary>
     public bool HasAdvice => Advice is not null;
 
     /// <summary>The related analyzer rule id, or null.</summary>
-    public string? RuleId => Hint?.RuleId;
+    public string? RuleId => _showHints ? Hint?.RuleId : null;
 
     /// <summary>True when there is a rule id.</summary>
     public bool HasRuleId => RuleId is not null;
 
     /// <summary>The rule line, such as "Related rule: XNA009", or empty.</summary>
-    public string RuleText => Hint?.RuleText ?? string.Empty;
+    public string RuleText => _showHints ? Hint?.RuleText ?? string.Empty : string.Empty;
 
     /// <summary>The diagnostics, errors first.</summary>
     public IReadOnlyList<DiagnosticItemViewModel> Items { get; }

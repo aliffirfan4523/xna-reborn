@@ -25,11 +25,12 @@ public static class AppServices
         services.AddSingleton<IClipboardService>(p => new ClipboardService(p.GetRequiredService<Func<TopLevel?>>()));
         services.AddSingleton<IRecentProjectsStore>(_ => new RecentProjectsStore());
         services.AddSingleton<IShellService, ShellService>();
+        services.AddSingleton<ISettingsService>(_ => new SettingsService());
         AddViewModels(services);
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
 
-    /// <summary>Registers the session, <see cref="INavigator"/>, <see cref="MainViewModel"/> and the six page view models. Tests reuse this with fake services.</summary>
+    /// <summary>Registers the session, <see cref="INavigator"/>, <see cref="MainViewModel"/> and the six page view models and the Settings page. Tests reuse this with fake services.</summary>
     /// <param name="services">The collection to add to.</param>
     public static IServiceCollection AddViewModels(IServiceCollection services)
     {
@@ -43,6 +44,7 @@ public static class AppServices
         services.AddSingleton<DiffViewModel>();
         services.AddSingleton<BuildRunViewModel>();
         services.AddSingleton<SummaryViewModel>();
+        services.AddSingleton<SettingsViewModel>();
         return services;
     }
 }

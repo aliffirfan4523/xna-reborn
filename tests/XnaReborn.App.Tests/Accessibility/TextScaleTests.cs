@@ -118,6 +118,20 @@ public sealed class TextScaleTests
     [AvaloniaTheory]
     [InlineData(1.0)]
     [InlineData(_scale)]
+    public async Task Settings_screen_fits_at_800x600(double scale)
+    {
+        using var t = TestServices.Create();
+        var window = Show(t);
+        await t.OpenPageAsync(WorkflowStep.Open);
+        await t.Main.OpenSettingsAsync();
+        Dispatcher.UIThread.RunJobs();
+
+        AssertFits(window, "Settings", scale);
+    }
+
+    [AvaloniaTheory]
+    [InlineData(1.0)]
+    [InlineData(_scale)]
     public async Task Error_banner_fits_at_800x600(double scale)
     {
         using var t = TestServices.Create();

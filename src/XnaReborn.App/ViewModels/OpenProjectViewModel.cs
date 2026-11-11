@@ -11,6 +11,7 @@ public sealed partial class OpenProjectViewModel : PageViewModel
 {
     private readonly IAnalysisService _analysis;
     private readonly IRecentProjectsStore _recentProjects;
+    private readonly ISettingsService _settings;
     private CancellationTokenSource? _cts;
 
     [ObservableProperty]
@@ -44,11 +45,13 @@ public sealed partial class OpenProjectViewModel : PageViewModel
     /// <param name="dialogs">File pickers and message dialogs.</param>
     /// <param name="analysis">Analyzes the chosen project.</param>
     /// <param name="recentProjects">Remembers opened projects.</param>
-    public OpenProjectViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IAnalysisService analysis, IRecentProjectsStore recentProjects)
+    /// <param name="settings">Tells whether to remember projects and how many to show.</param>
+    public OpenProjectViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IAnalysisService analysis, IRecentProjectsStore recentProjects, ISettingsService settings)
         : base("Open a project", session, navigator, dialogs)
     {
         _analysis = analysis;
         _recentProjects = recentProjects;
+        _settings = settings;
     }
 
     /// <summary>Recently opened projects, most recent first.</summary>
@@ -114,7 +117,15 @@ public sealed partial class OpenProjectViewModel : PageViewModel
 
             Session.SourcePath = path;
             Session.Report = report;
-            _recentProjects.Add(path, report.Score);
+            if (_settings.Current.KeepRecentProjects)
+            {
+                _recentProjects.Add(path, report.Score);
+                foreach (var older in _recentProjects.Load().Skip(_settings.Current.MaxRecentProjects))
+                {
+                    _recentProjects.Remove(older.Path);
+                }
+            }
+
             RefreshRecent();
             Navigator.GoTo(WorkflowStep.Report);
             return true;
@@ -209,7 +220,9 @@ public sealed partial class OpenProjectViewModel : PageViewModel
     private void RefreshRecent()
     {
         RecentProjects.Clear();
-        foreach (var item in _recentProjects.Load())
+        var settings = _settings.Current;
+        var shown = settings.KeepRecentProjects ? _recentProjects.Load().Take(settings.MaxRecentProjects) : [];
+        foreach (var item in shown)
         {
             RecentProjects.Add(item);
         }

@@ -60,6 +60,9 @@ public sealed class RecentProjectsStore : IRecentProjectsStore
         Save(Load().Where(i => !string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase)).ToList());
     }
 
+    /// <inheritdoc />
+    public void Clear() => Save([]);
+
     private void Save(List<RecentProject> items)
     {
         try

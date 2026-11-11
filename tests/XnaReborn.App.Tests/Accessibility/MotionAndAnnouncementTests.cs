@@ -2,7 +2,6 @@ using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
-using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using XnaReborn.App.Controls;
@@ -12,7 +11,7 @@ using AppBanner = XnaReborn.App.Controls.Banner;
 
 namespace XnaReborn.App.Tests.Accessibility;
 
-/// <summary>Reduced motion, live announcements, and the keyboard shortcuts that must keep working.</summary>
+/// <summary>Reduced motion and live announcements. The Ctrl+digit shortcuts are covered by the Settings page tests.</summary>
 public sealed class MotionAndAnnouncementTests
 {
     private const string _reduceVariable = "XNAREBORN_REDUCE_MOTION";
@@ -96,36 +95,6 @@ public sealed class MotionAndAnnouncementTests
 
         var status = window.GetVisualDescendants().OfType<TextBlock>().Single(b => AutomationProperties.GetAutomationId(b) == "StatusText");
         Assert.Equal(AutomationLiveSetting.Polite, AutomationProperties.GetLiveSetting(status));
-    }
-
-    [AvaloniaFact]
-    public async Task Ctrl_digit_still_jumps_between_unlocked_steps()
-    {
-        using var t = TestServices.Create();
-        var window = new MainWindow { DataContext = t.Main };
-        window.Show();
-        await t.OpenPageAsync(WorkflowStep.Summary);
-        window.Focus();
-        window.KeyPressQwerty(PhysicalKey.Tab, RawInputModifiers.None);
-        Dispatcher.UIThread.RunJobs();
-
-        var kb = window.KeyBindings[1]; Assert.True(kb.Command is not null, "command null; gesture " + kb.Gesture + " param " + kb.CommandParameter + " dc " + window.DataContext); Assert.True(kb.Command!.CanExecute(kb.CommandParameter), "cannot execute");
-        window.KeyPress(Key.D2, RawInputModifiers.Control, PhysicalKey.Digit2, "2");
-        await WaitForAsync(() => t.Main.StatusText.StartsWith("Step 2 of 6", StringComparison.Ordinal));
-        Assert.StartsWith("Step 2 of 6", t.Main.StatusText);
-
-        window.KeyPress(Key.D1, RawInputModifiers.Control, PhysicalKey.Digit1, "1");
-        await WaitForAsync(() => t.Main.StatusText.StartsWith("Step 1 of 6", StringComparison.Ordinal));
-        Assert.StartsWith("Step 1 of 6", t.Main.StatusText);
-    }
-
-    private static async Task WaitForAsync(Func<bool> condition)
-    {
-        for (var i = 0; i < 50 && !condition(); i++)
-        {
-            await Task.Delay(20);
-            Dispatcher.UIThread.RunJobs();
-        }
     }
 
     private static IDisposable Reduced(bool on)
