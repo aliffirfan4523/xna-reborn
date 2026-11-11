@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace XnaReborn.Core.Models;
 
-/// <summary>The XNA Game Studio version a project targets. Serialized as "3.0", "3.1", "4.0", or "Unknown".</summary>
+/// <summary>The XNA Game Studio version a project targets. Serialized as "1.0", "2.0", "3.0", "3.1", "4.0", or "Unknown".</summary>
 [JsonConverter(typeof(XnaVersionJsonConverter))]
 public enum XnaVersion
 {
@@ -17,4 +17,10 @@ public enum XnaVersion
 
     /// <summary>XNA 4.0.</summary>
     V40,
+
+    /// <summary>XNA Game Studio Express 1.0 (and 1.0 Refresh).</summary>
+    V10,
+
+    /// <summary>XNA Game Studio 2.0.</summary>
+    V20,
 }

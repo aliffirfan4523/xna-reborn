@@ -89,6 +89,8 @@ public static class MarkdownReportWriter
         {
             var version = p.XnaVersion switch
             {
+                XnaVersion.V10 => "1.0",
+                XnaVersion.V20 => "2.0",
                 XnaVersion.V30 => "3.0",
                 XnaVersion.V31 => "3.1",
                 XnaVersion.V40 => "4.0",

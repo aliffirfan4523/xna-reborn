@@ -47,6 +47,15 @@ public sealed record MemberMatch(
     public IReadOnlyList<string> AllNames => Names ?? (Name is null ? [] : [Name]);
 }
 
+/// <summary>A method declaration, matched by syntax only. Used for API members that a game overrides, such as the XNA 1.0 LoadGraphicsContent.</summary>
+/// <param name="Name">The method name, compared ordinally for C# and ignoring case for Visual Basic.</param>
+/// <param name="Namespaces">Namespaces of which one must be imported by the file.</param>
+/// <param name="Overrides">When true, the declaration must carry the override modifier (Overrides in Visual Basic).</param>
+public sealed record MethodDeclarationMatch(
+    string Name,
+    IReadOnlyList<string> Namespaces,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool Overrides = false) : RuleMatch;
+
 /// <summary>An MSBuild property in a project file.</summary>
 /// <param name="Name">The property name.</param>
 /// <param name="EqualsValue">Required exact value (JSON "equals"), or null.</param>

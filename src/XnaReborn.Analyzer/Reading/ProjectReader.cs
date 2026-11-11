@@ -112,7 +112,7 @@ public sealed class ProjectReader
             .ToList();
 
         var contentProjects = new List<string>();
-        var contentItems = new List<ContentItem>();
+        var contentItems = new List<ContentItem>(InProjectContentReader.Read(items));
         var contentReader = new ContentProjectReader(_fileSystem);
         var seenContentProjects = new HashSet<string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
         foreach (var nested in items.Where(IsContentProjectItem))

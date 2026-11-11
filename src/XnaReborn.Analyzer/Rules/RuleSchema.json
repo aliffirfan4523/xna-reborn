@@ -23,7 +23,7 @@
   "$defs": {
     "severity": { "enum": ["Info", "Warning", "Error", "Blocker"] },
     "classification": { "enum": ["AutoFixable", "Manual", "Unsupported"] },
-    "xnaVersion": { "enum": ["3.0", "3.1", "4.0"] },
+    "xnaVersion": { "enum": ["1.0", "2.0", "3.0", "3.1", "4.0"] },
     "namespaces": {
       "type": "array",
       "minItems": 1,
@@ -97,6 +97,7 @@
         { "$ref": "#/$defs/matchNamespace" },
         { "$ref": "#/$defs/matchType" },
         { "$ref": "#/$defs/matchMember" },
+        { "$ref": "#/$defs/matchMethodDeclaration" },
         { "$ref": "#/$defs/matchProjectProperty" },
         { "$ref": "#/$defs/matchProjectItem" },
         { "$ref": "#/$defs/matchFilePattern" },
@@ -173,6 +174,18 @@
             "max": { "type": "integer", "minimum": 0 }
           }
         }
+      }
+    },
+    "matchMethodDeclaration": {
+      "description": "A method declaration. Syntax only. At least one of the namespaces must be imported by the file. With overrides true the declaration must carry the override modifier.",
+      "type": "object",
+      "required": ["type", "name", "namespaces"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "methodDeclaration" },
+        "name": { "type": "string", "minLength": 1 },
+        "namespaces": { "$ref": "#/$defs/namespaces" },
+        "overrides": { "type": "boolean", "default": false }
       }
     },
     "matchProjectProperty": {
