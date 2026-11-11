@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\src\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
     <ProjectReference Include="..\..\src\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
     <ProjectReference Include="..\..\src\XnaReborn.Runner\XnaReborn.Runner.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Flash.Converter\XnaReborn.Flash.Converter.csproj" />
     <!-- Built first so launcher tests can start it; not referenced as an assembly. -->
     <ProjectReference Include="..\XnaReborn.TestGame\XnaReborn.TestGame.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
