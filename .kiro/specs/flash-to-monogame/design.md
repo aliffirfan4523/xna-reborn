@@ -330,7 +330,7 @@ Stretch: convert Mode from a local checkout.
 - **Behavior drift.** `Number` as `double`, NaN defaults, text rendering and audio looping may differ from Flash. The migration summary lists the known ones.
 - **Parser coverage.** Real games use odd syntax. The three candidate games plus fixtures are the test set. Unknown syntax becomes a marker, not a crash.
 - **Runtime size.** Flixel is about 20 core classes. A hand port is days of work. The task list splits it into worker-sized pieces and orders them by what the demo needs.
-- **Audio toolchain.** MP3 handling in `dotnet-mgcb` may need `ffmpeg`. Not verified yet (task 12.3).
+- **Audio toolchain.** MP3 handling in `dotnet-mgcb` 3.8.6.1 does not need a system `ffmpeg`: the tool bundles ffmpeg and ffprobe (verified on Windows x64, task 12.3).
 - **Licensing.** Candidate game assets may not be redistributable. They stay outside the repo. Unlicensed Flixel ports are reference only.
 - **Naming rules.** The runtime keeps AS3 member names. Repo analyzers and `dotnet format` may flag them. A folder-scoped `.editorconfig` handles it (task 1.3 proves it).
 - **Dynamic code.** `dynamic` needs the C# runtime binder. It ships with .NET 8, but dynamic call sites are slower. Only untyped code uses it.
