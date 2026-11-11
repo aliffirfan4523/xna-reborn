@@ -292,7 +292,9 @@ public sealed class VisualBasicMigrationTests(ITestOutputHelper testOutput) : ID
         var game = Single(result, "Game1.vb").NewText!;
         Assert.Contains("spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend)", game, StringComparison.Ordinal);
         Assert.Contains("' XNAREBORN: XNA024:", game, StringComparison.Ordinal);
-        Assert.Contains("' XNAREBORN: XNA040:", game, StringComparison.Ordinal);
+        Assert.Contains("pass.Apply()", game, StringComparison.Ordinal);
+        Assert.DoesNotContain("effect.Begin", game, StringComparison.Ordinal);
+        Assert.DoesNotContain("XNA040", game, StringComparison.Ordinal);
         Assert.Contains("My.Application.Info.Title", game, StringComparison.Ordinal);
     }
 
