@@ -100,16 +100,16 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 14.3 Tests: migrated `xna40-effects` copy has rewritten effects and included files, original folder hashes unchanged, `RewriteEffects = false` copies unchanged, the tool manifest lists both tools.
   - _Requirements: R9, R12, R16_
 
-- [ ] 15. Runner effect check
-  - [ ] 15.1 Implement `MgfxcOutputParser` with the patterns from the design; record the real outputs from the research runs as text fixtures under the runner tests (parse errors, HLSL errors, profile errors, summary lines).
-  - [ ] 15.2 Implement `EffectBuildCheck` and `ProfileEscalator` (R13), using `IProcessRunner` and `MigratedCopyGuard`.
-  - [ ] 15.3 Tests with a fake runner: pass, fail with hint, escalation 9_1 to 9_3 to `_4_0` with the HiDef warning, no escalation without the macro block, skip reasons (tool missing, no `.fx`), results in input order, no network access.
-  - [ ] 15.4 Slow test (skipped without the tool): run on the rewritten `xna40-effects` for the current target.
+- [x] 15. Runner effect check
+  - [x] 15.1 Implement `MgfxcOutputParser` with the patterns from the design; record the real outputs from the research runs as text fixtures under the runner tests (parse errors, HLSL errors, profile errors, summary lines).
+  - [x] 15.2 Implement `EffectBuildCheck` and `ProfileEscalator` (R13), using `IProcessRunner` and `MigratedCopyGuard`.
+  - [x] 15.3 Tests with a fake runner: pass, fail with hint, escalation 9_1 to 9_3 to `_4_0` with the HiDef warning, no escalation without the macro block, skip reasons (tool missing, no `.fx`), results in input order, no network access.
+  - [x] 15.4 Slow test (skipped without the tool): run on the rewritten `xna40-effects` for the current target.
   - _Requirements: R13_
 
-- [ ] 16. Effect hints
-  - [ ] 16.1 Add the hints in the design table to `hints.json`.
-  - [ ] 16.2 Tests: every hint has one message that matches and one that does not; the empty-profile message matches `fx-sm-too-low`.
+- [x] 16. Effect hints
+  - [x] 16.1 Add the hints in the design table to `hints.json`.
+  - [x] 16.2 Tests: every hint has one message that matches and one that does not; the empty-profile message matches `fx-sm-too-low`.
   - _Requirements: R14_
 
 - [ ] 17. Catalog rule changes
