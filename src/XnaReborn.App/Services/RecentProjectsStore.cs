@@ -40,15 +40,28 @@ public sealed class RecentProjectsStore : IRecentProjectsStore
     }
 
     /// <inheritdoc />
-    public void Add(string path)
+    public void Add(string path) => Add(path, null);
+
+    /// <inheritdoc />
+    public void Add(string path, int? score)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        var items = Load()
+        Save(Load()
             .Where(i => !string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase))
-            .Prepend(new RecentProject(path, DateTimeOffset.UtcNow))
+            .Prepend(new RecentProject(path, DateTimeOffset.UtcNow, score))
             .Take(MaxItems)
-            .ToList();
+            .ToList());
+    }
 
+    /// <inheritdoc />
+    public void Remove(string path)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        Save(Load().Where(i => !string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase)).ToList());
+    }
+
+    private void Save(List<RecentProject> items)
+    {
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);

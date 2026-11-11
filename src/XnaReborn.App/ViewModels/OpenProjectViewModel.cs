@@ -27,7 +27,16 @@ public sealed partial class OpenProjectViewModel : PageViewModel
     private bool _isProgressKnown;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMessage))]
+    [NotifyPropertyChangedFor(nameof(IsNotice))]
     private string? _message;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotice))]
+    private bool _isMessageError;
+
+    [ObservableProperty]
+    private bool _isDragOver;
 
     /// <summary>Creates the page.</summary>
     /// <param name="session">The shared workflow data.</param>
@@ -47,6 +56,12 @@ public sealed partial class OpenProjectViewModel : PageViewModel
 
     /// <summary>True when no analysis is running.</summary>
     public bool IsIdle => !IsBusy;
+
+    /// <summary>True when <see cref="Message"/> has text.</summary>
+    public bool HasMessage => !string.IsNullOrEmpty(Message);
+
+    /// <summary>True when <see cref="Message"/> is a plain notice, not an error (for example "canceled").</summary>
+    public bool IsNotice => HasMessage && !IsMessageError;
 
     /// <summary>True when there is at least one recent project.</summary>
     public bool HasRecentProjects => RecentProjects.Count > 0;
@@ -75,6 +90,7 @@ public sealed partial class OpenProjectViewModel : PageViewModel
 
         Session.ClearError();
         Message = null;
+        IsMessageError = false;
         var problem = CheckPath(path);
         if (problem is not null)
         {
@@ -98,7 +114,7 @@ public sealed partial class OpenProjectViewModel : PageViewModel
 
             Session.SourcePath = path;
             Session.Report = report;
-            _recentProjects.Add(path);
+            _recentProjects.Add(path, report.Score);
             RefreshRecent();
             Navigator.GoTo(WorkflowStep.Report);
             return true;
@@ -144,6 +160,18 @@ public sealed partial class OpenProjectViewModel : PageViewModel
     private Task OpenRecentAsync(RecentProject? project) => project is null ? Task.CompletedTask : OpenPathAsync(project.Path);
 
     [RelayCommand]
+    private void RemoveRecent(RecentProject? project)
+    {
+        if (project is null)
+        {
+            return;
+        }
+
+        _recentProjects.Remove(project.Path);
+        RefreshRecent();
+    }
+
+    [RelayCommand]
     private void Cancel() => _cts?.Cancel();
 
     private static string? CheckPath(string path)
@@ -167,6 +195,7 @@ public sealed partial class OpenProjectViewModel : PageViewModel
     private void Fail(string message, string details)
     {
         Message = message;
+        IsMessageError = true;
         Session.ShowError(message, details);
     }
 

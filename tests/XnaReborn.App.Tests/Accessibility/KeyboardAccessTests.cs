@@ -24,14 +24,14 @@ namespace XnaReborn.App.Tests.Accessibility;
 public sealed class KeyboardAccessTests
 {
     [AvaloniaFact]
-    public async Task Open_page_tab_stops_are_the_browse_buttons_then_the_recent_projects()
+    public async Task Open_page_tab_stops_are_the_browse_buttons_then_each_recent_project_open_and_remove()
     {
         using var t = TestServices.Create();
         t.Recent.Items.Add(new RecentProject("C:/projects/Old", DateTimeOffset.UtcNow));
         var window = Show(t);
         await t.OpenPageAsync(WorkflowStep.Open);
 
-        Assert.Equal(["BrowseFolder", "BrowseFile", "Open C:/projects/Old"], PageStops(window));
+        Assert.Equal(["BrowseFolder", "BrowseFile", "Open C:/projects/Old", "Remove C:/projects/Old from recent projects"], PageStops(window));
         AssertAllNamed(window);
     }
 

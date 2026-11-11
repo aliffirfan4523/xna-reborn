@@ -10,10 +10,14 @@ public sealed class FakeRecentProjectsStore : IRecentProjectsStore
 
     public IReadOnlyList<RecentProject> Load() => Items.ToList();
 
-    public void Add(string path)
+    public void Add(string path) => Add(path, null);
+
+    public void Remove(string path) => Items.RemoveAll(i => string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase));
+
+    public void Add(string path, int? score)
     {
         Items.RemoveAll(i => string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase));
-        Items.Insert(0, new RecentProject(path, DateTimeOffset.UtcNow));
+        Items.Insert(0, new RecentProject(path, DateTimeOffset.UtcNow, score));
         if (Items.Count > RecentProjectsStore.MaxItems)
         {
             Items.RemoveRange(RecentProjectsStore.MaxItems, Items.Count - RecentProjectsStore.MaxItems);
