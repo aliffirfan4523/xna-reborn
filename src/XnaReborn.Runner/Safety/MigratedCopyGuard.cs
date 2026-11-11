@@ -14,6 +14,8 @@ public static class MigratedCopyGuard
     private const string _manifestName = "xnareborn-manifest.json";
     private const string _incompleteName = "INCOMPLETE.txt";
 
+    private static readonly HashSet<string> _libraryProjects = new(["XnaReborn.Compat.csproj", "XnaReborn.Flixel.csproj"], StringComparer.OrdinalIgnoreCase);
+
     /// <summary>Checks a folder.</summary>
     /// <param name="folder">The folder the user wants to build.</param>
     /// <returns>The verdict. Never throws for a bad folder.</returns>
@@ -99,10 +101,10 @@ public static class MigratedCopyGuard
         CollectProjects(root, projects);
         projects.Sort(StringComparer.Ordinal);
 
-        // The shim library sits beside the game and is built through the game's ProjectReference, so it is never the project to pick.
+        // The shim libraries (XNA Compat, Flash Flixel runtime) sit beside the game and are built through its ProjectReference, so they are never the project to pick.
         if (projects.Count > 1)
         {
-            var games = projects.Where(p => !Path.GetFileName(p).Equals("XnaReborn.Compat.csproj", StringComparison.OrdinalIgnoreCase)).ToList();
+            var games = projects.Where(p => !_libraryProjects.Contains(Path.GetFileName(p))).ToList();
             if (games.Count > 0)
             {
                 projects = games;

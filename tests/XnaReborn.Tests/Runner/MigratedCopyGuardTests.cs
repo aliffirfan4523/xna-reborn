@@ -1,3 +1,4 @@
+using XnaReborn.Flash.Converter;
 using XnaReborn.Runner.Safety;
 using XnaReborn.Tests.Fixtures;
 
@@ -51,6 +52,30 @@ public sealed class MigratedCopyGuardTests : IDisposable
         var v = MigratedCopyGuard.Check(_dir);
         Assert.True(v.Allowed);
         Assert.Equal(Path.Combine(_dir, "Game.csproj"), v.ProjectOrSolutionPath);
+    }
+
+    [Fact]
+    public void PicksTheGameProjectNextToTheFlixelRuntime()
+    {
+        Manifest(1, true);
+        File.WriteAllText(Path.Combine(_dir, "Game.csproj"), "<Project/>");
+        Directory.CreateDirectory(Path.Combine(_dir, "XnaReborn.Flixel"));
+        File.WriteAllText(Path.Combine(_dir, "XnaReborn.Flixel", "XnaReborn.Flixel.csproj"), "<Project/>");
+        var v = MigratedCopyGuard.Check(_dir);
+        Assert.True(v.Allowed);
+        Assert.Equal(Path.Combine(_dir, "Game.csproj"), v.ProjectOrSolutionPath);
+    }
+
+    [Theory]
+    [InlineData("flx-hello", "HelloGame.csproj")]
+    [InlineData("flx-platformer", "PlatformerGame.csproj")]
+    public async Task AcceptsARealFlashMigrationAndPicksTheGame(string fixture, string project)
+    {
+        var output = Path.Combine(_dir, "flash-" + fixture);
+        await FlashMigrator.MigrateAsync(Path.Combine(FixturePaths.Root, "flash", fixture), output);
+        var v = MigratedCopyGuard.Check(output);
+        Assert.True(v.Allowed, v.Message);
+        Assert.Equal(Path.Combine(output, project), v.ProjectOrSolutionPath);
     }
 
     [Fact]
