@@ -167,7 +167,14 @@ public static class FlxG
     public static double elapsed;
 
     /// <summary>Background colour as 0xAARRGGBB.</summary>
-    public static uint bgColor = 0xff000000;
+    public static uint bgColor
+    {
+        get => camera.bgColor;
+        set => camera.bgColor = value;
+    }
+
+    /// <summary>The camera.</summary>
+    public static FlxCamera camera { get; private set; } = new();
 
     /// <summary>The keyboard.</summary>
     public static FlxKeyboard keys = new();
@@ -190,7 +197,7 @@ public static class FlxG
         width = Width;
         height = Height;
         elapsed = 0;
-        bgColor = 0xff000000;
+        camera = new FlxCamera();
         keys = new FlxKeyboard();
         state = null;
         _requested = null;
@@ -245,13 +252,47 @@ public static class FlxG
 
         FlxTimer.manager.update();
         state?.update();
+        camera.update();
+    }
+
+    private sealed class ShiftedRenderer(IFlxRenderer inner, double dx, double dy) : IFlxRenderer
+    {
+        public void Clear(uint argb) => inner.Clear(argb);
+
+        public void DrawQuad(double x, double y, double width, double height, uint argb) => inner.DrawQuad(x + dx, y + dy, width, height, argb);
+
+        public void DrawFrame(AssetRef texture, int srcX, int srcY, int srcWidth, int srcHeight, double x, double y, double width, double height, uint tintRgb, double alpha, bool flipHorizontal) =>
+            inner.DrawFrame(texture, srcX, srcY, srcWidth, srcHeight, x + dx, y + dy, width, height, tintRgb, alpha, flipHorizontal);
     }
 
     /// <summary>Draws one frame.</summary>
     public static void drawFrame()
     {
-        renderer?.Clear(bgColor);
-        state?.draw();
+        if (renderer is not { } real)
+        {
+            return;
+        }
+
+        real.Clear(bgColor);
+        var shake = camera.shakeOffset;
+        if (shake.x != 0 || shake.y != 0)
+        {
+            renderer = new ShiftedRenderer(real, shake.x, shake.y);
+            try
+            {
+                state?.draw();
+            }
+            finally
+            {
+                renderer = real;
+            }
+        }
+        else
+        {
+            state?.draw();
+        }
+
+        camera.drawEffects(real);
     }
 
     /// <summary>Plays an embedded sound once, or in a loop.</summary>

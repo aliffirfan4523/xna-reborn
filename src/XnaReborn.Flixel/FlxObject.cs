@@ -146,6 +146,9 @@ public class FlxObject : FlxBasic
     /// <summary>Position at the start of this frame.</summary>
     public FlxPoint last = new();
 
+    /// <summary>How much the camera scroll moves this object: 1 moves with the world, 0 stays on screen (a HUD).</summary>
+    public FlxPoint scrollFactor = new(1, 1);
+
     /// <summary>Speed in pixels per second.</summary>
     public FlxPoint velocity = new();
 
