@@ -145,6 +145,10 @@ public sealed class CSharpEmitter
         _sb.Append(text).Append('\n');
     }
 
+    // Points compiler messages for the lines that follow at the AS3 line they came from (task 15.2). The path is the project-relative .as path.
+    private void Mark(As3Node node) =>
+        _sb.Append("#line ").Append(node.Span.Line).Append(" \"").Append(_file.Path.Replace('\\', '/')).Append("\"\n");
+
     private void Marker(string ruleId, int line, string message, string? original)
     {
         _markers.Add(new ConversionMarker(ruleId, _file.Path, line));
@@ -308,6 +312,7 @@ public sealed class CSharpEmitter
     {
         var saveClass = _class;
         _class = t;
+        Mark(t);
         WriteMarkers(t, headerOnly: true);
         var bases = new List<string>();
         if (t.BaseType is not null)
@@ -372,6 +377,7 @@ public sealed class CSharpEmitter
 
     private void EmitField(As3Field f)
     {
+        Mark(f);
         WriteMarkers(f);
         var access = Access(f.Modifiers);
         var isStatic = (f.Modifiers & As3Modifier.Static) != 0 ? "static " : string.Empty;
@@ -461,6 +467,7 @@ public sealed class CSharpEmitter
 
     private void EmitMethod(As3TypeDeclaration t, As3Method m)
     {
+        Mark(m);
         WriteMarkers(m, headerOnly: true);
         _scope = As3TypeResolver.ScopeFor(t, m.Parameters, m.Body);
         _returnType = As3TypeResolver.TypeName(m.ReturnType);
@@ -510,6 +517,7 @@ public sealed class CSharpEmitter
         var typeRef = getter?.ReturnType ?? setter?.Parameters.FirstOrDefault()?.Type;
         var typeName = As3TypeResolver.TypeName(typeRef);
         var mods = MethodHeaderModifiers(t, first.Modifiers, allowVirtual: true);
+        Mark(first);
         WriteMarkers(first, headerOnly: true);
         if (t.Kind == As3TypeKind.Interface)
         {
@@ -590,6 +598,11 @@ public sealed class CSharpEmitter
 
     private void EmitStatement(As3Statement s)
     {
+        if (s is not (As3Block or As3EmptyStatement))
+        {
+            Mark(s);
+        }
+
         switch (s)
         {
             case As3Block b:

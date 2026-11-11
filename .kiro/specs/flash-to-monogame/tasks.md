@@ -106,7 +106,8 @@ Suggested waves (parallel inside a wave):
 - [ ] 12. Converter: assets (MVP)
   - [x] 12.1 `AssetPlanner`: find `[Embed]` fields, resolve paths relative to the `.as` file, reject paths leaving the project, classify image, audio, data, font, symbol. Tests including path traversal attempts and `flx-missing-embed`. (H)
   - [x] 12.2 Feed images and audio to `ConvertedAsset` and the existing `MgcbWriter`; copy data files to `Content/`; emit asset handles (`new AssetRef(...)`) in the C# fields; fonts through `FontSubstituter`. Golden `Content.mgcb` tests. (H)
-  - [ ] 12.3 Audio check on a real build: convert `flx-platformer`, run `dotnet-mgcb` 3.8.6.1 on the wav and an mp3 test file (generated or public domain, written by a test helper), and record whether `ffmpeg` is needed on the build machine and whether DesktopGL plays the result. Write the finding into the task notes, add a Runner hint if `ffmpeg` is needed. No network except package restore from the local cache. (H)
+  - [x] 12.3 Audio check on a real build: convert `flx-platformer`, run `dotnet-mgcb` 3.8.6.1 on the wav and an mp3 test file (generated or public domain, written by a test helper), and record whether `ffmpeg` is needed on the build machine and whether DesktopGL plays the result. Write the finding into the task notes, add a Runner hint if `ffmpeg` is needed. No network except package restore from the local cache. (H)
+  - Task 12.3 notes (2026-11-11, Windows x64, `dotnet-mgcb` 3.8.6.1): the wav and a generated silent mp3 (`Mp3Importer` + `SoundEffectProcessor`, and `SongProcessor` for a Song) build with every folder that holds ffmpeg removed from PATH. The tool ships its own ffmpeg and ffprobe for windows-x64/arm64, linux-x64/arm64 and osx, so a system `ffmpeg` is not needed; no Runner hint was added. Test: `FlashAudioBuildTests` (needs `XNAREBORN_INTEGRATION=1`). A throwaway console app loaded the wav and the mp3 as `SoundEffect` and the mp3 as `Song` on DesktopGL 3.8.6.1 without a window, and an mp3 effect instance reported Playing. Not checked: sound heard on a speaker, Linux and macOS. The Runner's `AudioToolCheck` still warns when ffmpeg is not on PATH; for 3.8.6.1 that warning looks unnecessary (owner of the audio spec to decide).
   - _Requirements: R6_
 
 - [ ] 13. Converter: project output and pipeline (MVP)
@@ -123,7 +124,8 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 15. Runner hints (MVP)
   - [x] 15.1 Add Flash hints to `hints.json`, each linked to an FL rule: missing asset, `dynamic` binder error, missing Flixel member, `AsFunction` conversion, `ffmpeg` missing (if task 12.3 says so). Matching tests, including "no known fix". (L)
-  - [ ] 15.2 Source map comment or `#line` support in emitted C# so diagnostics point at the `.as` file; test with a broken fixture. (H)
+  - [x] 15.2 Source map comment or `#line` support in emitted C# so diagnostics point at the `.as` file; test with a broken fixture. (H)
+  - Task 15.2 notes: the emitter writes `#line <as3 line> "<project-relative .as path>"` before every type, field, method, property and statement. The C# compiler resolves that path against the folder of the `.cs` file, so a build error reads `Game\src\HelloState.as(12,9): error CS0103`, which is the right file name and line but not a path that exists in the output folder (the original is never copied there). Only the line is mapped; the column is the C# column. Tests: `FlashSourceMapTests`.
   - _Requirements: R10_
 
 - [ ] 16. UI flow (MVP)
@@ -156,7 +158,7 @@ Tasks 1 to 16, with `flx-platformer` as the demo and `FlxTileblock` standing in 
 
 ## Open points to settle during the work
 
-- Whether `dotnet-mgcb` 3.8.6.1 needs `ffmpeg` for MP3 (task 12.3).
+- ~~Whether `dotnet-mgcb` 3.8.6.1 needs `ffmpeg` for MP3 (task 12.3).~~ No: the tool bundles ffmpeg and ffprobe. Playback on a speaker is still unchecked.
 - Whether `net8.0` DesktopGL audio plays `SoundEffect` from converted MP3 on Windows and Linux (task 12.3).
 - Which text approach gives the best match for Flixel's default font without redistributing a font file (task 9.3).
 - Whether `Manifest` needs a schema version bump for `SourceKind` (task 1.2).
