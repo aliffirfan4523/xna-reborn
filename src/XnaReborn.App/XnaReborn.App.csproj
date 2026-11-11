@@ -26,6 +26,7 @@
   <ItemGroup>
     <!-- The rule catalog is read at run time. AnalysisService looks next to the app first. -->
     <Content Include="..\..\rules\xna-to-monogame.json" Link="rules\xna-to-monogame.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\rules\sharpdx-toolkit-to-monogame.json" Link="rules\sharpdx-toolkit-to-monogame.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

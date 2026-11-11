@@ -1,0 +1,22 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + sharpdx-toolkit-to-monogame",
+  "projects": [],
+  "findings": [],
+  "triggeredRules": [],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": "Found 1 MonoGame project(s), but no rule catalog for them was loaded."
+}
