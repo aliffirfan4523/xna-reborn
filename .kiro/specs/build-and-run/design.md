@@ -168,3 +168,9 @@ Detected patterns map to hints from the same catalog.
 4. **Guard tests**: unmigrated folder refused.
 5. **Launcher tests** with a small test executable that exits immediately with an error to cover early-crash detection.
 6. **Integration test** (marked slow): build the migrated simplest fixture for real.
+
+
+## Update from older-and-vb
+
+- GameLocator and MigratedCopyGuard also accept .vbproj. The build output parser needed no change for Visual Basic (BC codes). Hints H501 and H502 cover the My namespace.
+
