@@ -5,7 +5,7 @@ using XnaReborn.As3;
 namespace XnaReborn.Flixel.Tests;
 
 /// <summary>Runs Flixel with no graphics device: a recording renderer, in-memory texture sizes and scripted key presses.</summary>
-public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState
+public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState, IFlxMouseState
 {
     private readonly HashSet<Keys> _down = new();
 
@@ -17,6 +17,15 @@ public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState
 
     /// <summary>Sounds that were played.</summary>
     public List<string> Played { get; } = new();
+
+    /// <summary>Embedded data files by content name.</summary>
+    public Dictionary<string, byte[]> Data { get; } = new();
+
+    public (double X, double Y) Position { get; set; }
+
+    public bool LeftDown { get; set; }
+
+    public int WheelTotal { get; set; }
 
     public FlxTestHost(int width = 320, int height = 240, double step = 1.0 / 60)
     {
@@ -30,6 +39,8 @@ public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState
 
     public void Press(params Keys[] keys) => _down.UnionWith(keys);
 
+    public void MoveMouse(double x, double y) => Position = (x, y);
+
     public void Release(params Keys[] keys) => _down.ExceptWith(keys);
 
     public void Start(FlxState first) => FlxG.switchState(first);
@@ -40,7 +51,7 @@ public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState
         for (var i = 0; i < count; i++)
         {
             Drawn.Clear();
-            FlxG.step(Step, this);
+            FlxG.step(Step, this, this);
             FlxG.drawFrame();
         }
     }
@@ -58,5 +69,5 @@ public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState
 
     public void PlaySound(AssetRef sound, double volume, bool looped) => Played.Add(sound.Name);
 
-    public byte[] ReadData(AssetRef data) => [];
+    public byte[] ReadData(AssetRef data) => Data.TryGetValue(data.Name, out var bytes) ? bytes : throw new FileNotFoundException(data.Name);
 }
