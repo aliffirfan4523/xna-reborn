@@ -1,3 +1,4 @@
+using XnaReborn.App.Controls;
 using XnaReborn.Migrator.Output;
 
 namespace XnaReborn.App.ViewModels;
@@ -19,6 +20,15 @@ public sealed record DiffFileItem(FileChange Change, int MarkerCount)
     /// <summary>One-character symbol for the kind.</summary>
     public string KindGlyph => DiffKindInfo.Glyph(Kind);
 
+    /// <summary>The chip tint for the kind. The label and glyph carry the meaning too.</summary>
+    public StatusKind Status => Kind switch
+    {
+        ChangeKind.Created => StatusKind.Success,
+        ChangeKind.Modified => StatusKind.Accent,
+        ChangeKind.ManualWork => StatusKind.Warning,
+        _ => StatusKind.Neutral,
+    };
+
     /// <summary>True when the new text has marker lines.</summary>
     public bool HasMarkers => MarkerCount > 0;
 
@@ -39,6 +49,9 @@ public sealed record DiffFileItem(FileChange Change, int MarkerCount)
 /// <param name="Count">How many files.</param>
 public sealed record DiffKindCount(ChangeKind Kind, int Count)
 {
+    /// <summary>True when this kind is the active filter.</summary>
+    public bool IsActive { get; init; }
+
     /// <summary>Plain-text name of the kind.</summary>
     public string Label => DiffKindInfo.Label(Kind);
 
@@ -47,6 +60,9 @@ public sealed record DiffKindCount(ChangeKind Kind, int Count)
 
     /// <summary>For example "Modified: 3".</summary>
     public string Text => $"{Label}: {Count}";
+
+    /// <summary>What a screen reader says for the filter button.</summary>
+    public string AccessibleName => $"Show only {Label}, {Count} {(Count == 1 ? "file" : "files")}, {(IsActive ? "on" : "off")}";
 }
 
 /// <summary>One <c>// XNAREBORN:</c> marker line in the new text of a file.</summary>

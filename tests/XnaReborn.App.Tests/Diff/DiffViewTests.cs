@@ -145,6 +145,68 @@ public sealed class DiffViewTests
         Assert.Contains("Skipped: 1", texts);
     }
 
+    [AvaloniaFact]
+    public async Task The_unified_switch_shows_one_pane_with_removed_and_added_rows()
+    {
+        using var t = TestServices.Create();
+        var window = await ShowAsync(t, real: true);
+        var viewer = Find<DiffViewer>(window, "DiffViewer");
+        Assert.True(viewer.OldPane.IsVisible);
+        Assert.False(viewer.UnifiedPane.IsVisible);
+
+        Find<Button>(window, "ViewUnified").Command!.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(viewer.UnifiedPane.IsVisible);
+        Assert.False(viewer.OldPane.IsVisible);
+        Assert.Equal("Unified view, selected", AutomationProperties.GetName(Find<Button>(window, "ViewUnified")));
+        Assert.Contains("using A;", viewer.UnifiedPane.Document.Text, StringComparison.Ordinal);
+        Assert.Contains("using B;", viewer.UnifiedPane.Document.Text, StringComparison.Ordinal);
+    }
+
+    [AvaloniaFact]
+    public async Task A_marker_jump_in_unified_mode_outlines_the_marker_row_and_shows_the_callout()
+    {
+        using var t = TestServices.Create();
+        var window = await ShowAsync(t, real: true);
+        var vm = t.Get<DiffViewModel>();
+        vm.ShowUnifiedCommand.Execute(null);
+        Assert.False(Find<XnaReborn.App.Controls.Banner>(window, "MarkerCallout").IsEffectivelyVisible);
+
+        vm.NextMarkerCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+
+        var viewer = Find<DiffViewer>(window, "DiffViewer");
+        Assert.True(viewer.ActiveRow >= 0);
+        Assert.Equal("// XNAREBORN: XNA022: fix by hand", viewer.UnifiedPane.Document.GetText(viewer.UnifiedPane.Document.GetLineByNumber(viewer.ActiveRow + 1)).Trim());
+        Assert.True(Find<XnaReborn.App.Controls.Banner>(window, "MarkerCallout").IsEffectivelyVisible);
+        Assert.Contains("XNA022", vm.CurrentMarkerText, StringComparison.Ordinal);
+    }
+
+    [AvaloniaFact]
+    public async Task The_kind_filter_limits_the_list_and_a_marker_jump_clears_it()
+    {
+        using var t = TestServices.Create();
+        var window = await ShowAsync(t, real: true);
+        var vm = t.Get<DiffViewModel>();
+        var files = Find<ListBox>(window, "DiffFiles");
+
+        vm.FilterByKindCommand.Execute(ChangeKind.Created);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(2, files.ItemCount);
+        Assert.Equal("2 of 7 files", vm.FilesSummary);
+        Assert.Equal(ChangeKind.Created, vm.SelectedFile?.Kind);
+        Assert.Equal(7, vm.Files.Count);
+
+        vm.NextMarkerCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Null(vm.FilterKind);
+        Assert.Equal(7, files.ItemCount);
+        Assert.Equal("Game1.cs", vm.SelectedFile?.Path);
+    }
+
     private static async Task<MainWindow> ShowAsync(TestServices t, bool real, IReadOnlyList<FileChange>? changes = null)
     {
         if (real)

@@ -1,26 +1,37 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ae="using:AvaloniaEdit"
              x:Class="XnaReborn.App.Controls.DiffViewer">
   <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,Auto,*">
-    <TextBlock Grid.Row="0" Grid.Column="0" Text="Original" FontWeight="SemiBold" Margin="4,2"
+    <TextBlock x:Name="OldHeader" Grid.Row="0" Grid.Column="0" Text="Original" Classes="section" Margin="8,6"
                AutomationProperties.HeadingLevel="2" />
-    <TextBlock Grid.Row="0" Grid.Column="2" Text="Migrated" FontWeight="SemiBold" Margin="4,2"
+    <TextBlock x:Name="NewHeader" Grid.Row="0" Grid.Column="2" Text="Migrated" Classes="section" Margin="8,6"
                AutomationProperties.HeadingLevel="2" />
 
     <ae:TextEditor x:Name="OldEditor" Grid.Row="1" Grid.Column="0"
                    IsReadOnly="True" ShowLineNumbers="False" WordWrap="False"
+                   Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextBrush}"
                    FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="13"
                    HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                    AutomationProperties.AutomationId="DiffOldEditor"
                    AutomationProperties.Name="Original text" />
-    <GridSplitter Grid.Row="1" Grid.Column="1" Width="4" ResizeDirection="Columns"
+    <GridSplitter x:Name="PaneSplitter" Grid.Row="1" Grid.Column="1" Width="4" ResizeDirection="Columns"
                   AutomationProperties.Name="Resize panes" />
     <ae:TextEditor x:Name="NewEditor" Grid.Row="1" Grid.Column="2"
                    IsReadOnly="True" ShowLineNumbers="False" WordWrap="False"
+                   Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextBrush}"
                    FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="13"
                    HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                    AutomationProperties.AutomationId="DiffNewEditor"
                    AutomationProperties.Name="Migrated text" />
+
+    <!-- Unified mode: one pane with removed and added rows in order. Hidden in side-by-side mode. -->
+    <ae:TextEditor x:Name="UnifiedEditor" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" IsVisible="False"
+                   IsReadOnly="True" ShowLineNumbers="False" WordWrap="False"
+                   Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextBrush}"
+                   FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="13"
+                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                   AutomationProperties.AutomationId="DiffUnifiedEditor"
+                   AutomationProperties.Name="Unified diff text" />
   </Grid>
 </UserControl>

@@ -42,6 +42,18 @@ public sealed partial class DiffViewModel : PageViewModel
     private IReadOnlyList<DiffKindCount> _kindCounts = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSideBySide))]
+    [NotifyPropertyChangedFor(nameof(SideBySideName))]
+    [NotifyPropertyChangedFor(nameof(UnifiedName))]
+    private bool _isUnified;
+
+    [ObservableProperty]
+    private ChangeKind? _filterKind;
+
+    [ObservableProperty]
+    private IReadOnlyList<DiffFileItem> _visibleFiles = [];
+
+    [ObservableProperty]
     private IReadOnlyList<DiffMarker> _markers = [];
 
     [ObservableProperty]
@@ -84,6 +96,31 @@ public sealed partial class DiffViewModel : PageViewModel
     /// <summary>True when the result is a real, finished migration, so Build and run can follow.</summary>
     public bool CanContinue => !IsDryRun && Result is { Completed: true };
 
+    /// <summary>True for the two-pane view (the default).</summary>
+    public bool IsSideBySide => !IsUnified;
+
+    /// <summary>Screen reader name of the side-by-side toggle, with its state.</summary>
+    public string SideBySideName => IsUnified ? "Side by side view" : "Side by side view, selected";
+
+    /// <summary>Screen reader name of the unified toggle, with its state.</summary>
+    public string UnifiedName => IsUnified ? "Unified view, selected" : "Unified view";
+
+    /// <summary>True when a kind filter hides some files.</summary>
+    public bool IsFiltered => FilterKind is not null;
+
+    /// <summary>For example "+3  -1  ~2" for the selected file, or an empty string.</summary>
+    public string DiffStats => CurrentDiff is { } d
+        ? string.Create(CultureInfo.InvariantCulture, $"+{d.Added}  -{d.Removed}  ~{d.Modified}")
+        : string.Empty;
+
+    /// <summary>The marker line of the current marker, or an empty string.</summary>
+    public string CurrentMarkerText => CurrentMarkerIndex >= 0 && CurrentMarkerIndex < Markers.Count
+        ? string.Create(CultureInfo.InvariantCulture, $"{Markers[CurrentMarkerIndex].Path}, line {Markers[CurrentMarkerIndex].NewLine}: {Markers[CurrentMarkerIndex].Text}")
+        : string.Empty;
+
+    /// <summary>True when a marker is selected, so its callout is shown.</summary>
+    public bool HasCurrentMarker => CurrentMarkerText.Length > 0;
+
     /// <summary>True when there is at least one marker.</summary>
     public bool HasMarkers => Markers.Count > 0;
 
@@ -95,7 +132,9 @@ public sealed partial class DiffViewModel : PageViewModel
             : string.Create(CultureInfo.InvariantCulture, $"Marker {CurrentMarkerIndex + 1} of {Markers.Count}");
 
     /// <summary>One-line summary above the list, for example "5 files".</summary>
-    public string FilesSummary => Files.Count == 1 ? "1 file" : string.Create(CultureInfo.InvariantCulture, $"{Files.Count} files");
+    public string FilesSummary => IsFiltered
+        ? string.Create(CultureInfo.InvariantCulture, $"{VisibleFiles.Count} of {Files.Count} files")
+        : Files.Count == 1 ? "1 file" : string.Create(CultureInfo.InvariantCulture, $"{Files.Count} files");
 
     /// <summary>Reads the migration result (or else the dry run) from the session.</summary>
     public override Task OnNavigatedToAsync()
@@ -112,6 +151,22 @@ public sealed partial class DiffViewModel : PageViewModel
     [RelayCommand(CanExecute = nameof(HasMarkers))]
     private void PreviousMarker() => GoToMarker(CurrentMarkerIndex <= 0 ? Markers.Count - 1 : CurrentMarkerIndex - 1);
 
+    /// <summary>Shows the two-pane view.</summary>
+    [RelayCommand]
+    private void ShowSideBySide() => IsUnified = false;
+
+    /// <summary>Shows the single-pane view with removed and added rows in order.</summary>
+    [RelayCommand]
+    private void ShowUnified() => IsUnified = true;
+
+    /// <summary>Shows only files of one kind. Choosing the active kind again shows all files.</summary>
+    [RelayCommand]
+    private void FilterByKind(ChangeKind kind) => FilterKind = FilterKind == kind ? null : kind;
+
+    /// <summary>Shows all files.</summary>
+    [RelayCommand]
+    private void ClearFilter() => FilterKind = null;
+
     /// <summary>Goes back to Migration setup, for example to run a dry run for real.</summary>
     [RelayCommand]
     private void BackToSetup() => Navigator.GoTo(WorkflowStep.MigrationSetup);
@@ -126,17 +181,43 @@ public sealed partial class DiffViewModel : PageViewModel
         ShowFile(value);
     }
 
-    partial void OnFilesChanged(IReadOnlyList<DiffFileItem> value) => OnPropertyChanged(nameof(FilesSummary));
+    partial void OnFilesChanged(IReadOnlyList<DiffFileItem> value) => ApplyFilter();
+
+    partial void OnFilterKindChanged(ChangeKind? value)
+    {
+        OnPropertyChanged(nameof(IsFiltered));
+        ApplyFilter();
+    }
+
+    partial void OnCurrentDiffChanged(FileDiff? value) => OnPropertyChanged(nameof(DiffStats));
+
+    private void ApplyFilter()
+    {
+        VisibleFiles = FilterKind is { } kind ? Files.Where(f => f.Kind == kind).ToList() : Files;
+        KindCounts = KindCounts.Select(c => c with { IsActive = FilterKind == c.Kind }).ToList();
+        OnPropertyChanged(nameof(FilesSummary));
+        if (SelectedFile is null || !VisibleFiles.Contains(SelectedFile))
+        {
+            SelectedFile = VisibleFiles.FirstOrDefault();
+        }
+    }
 
     partial void OnMarkersChanged(IReadOnlyList<DiffMarker> value)
     {
         OnPropertyChanged(nameof(HasMarkers));
         OnPropertyChanged(nameof(MarkerStatus));
+        OnPropertyChanged(nameof(CurrentMarkerText));
+        OnPropertyChanged(nameof(HasCurrentMarker));
         NextMarkerCommand.NotifyCanExecuteChanged();
         PreviousMarkerCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnCurrentMarkerIndexChanged(int value) => OnPropertyChanged(nameof(MarkerStatus));
+    partial void OnCurrentMarkerIndexChanged(int value)
+    {
+        OnPropertyChanged(nameof(MarkerStatus));
+        OnPropertyChanged(nameof(CurrentMarkerText));
+        OnPropertyChanged(nameof(HasCurrentMarker));
+    }
 
     partial void OnIsDryRunChanged(bool value) => NotifyContinue();
 
@@ -168,6 +249,7 @@ public sealed partial class DiffViewModel : PageViewModel
             .ToList();
         Markers = items.SelectMany(i => MarkersIn(i.Change)).ToList();
         CurrentMarkerIndex = -1;
+        FilterKind = null;
         Files = items;
 
         // Select by value so a reload keeps working when the first item did not change.
@@ -179,6 +261,12 @@ public sealed partial class DiffViewModel : PageViewModel
     {
         var marker = Markers[index];
         var file = Files.FirstOrDefault(f => string.Equals(f.Path, marker.Path, StringComparison.Ordinal));
+        if (file is not null && !VisibleFiles.Contains(file))
+        {
+            // A marker hidden by the kind filter: show all files so the jump lands somewhere visible.
+            FilterKind = null;
+        }
+
         if (file is not null && !Equals(file, SelectedFile))
         {
             SelectedFile = file;

@@ -77,7 +77,7 @@ public sealed class KeyboardAccessTests
 
         // The text panes swallow Tab by default; the order must go on past the first pane to the second and to the buttons.
         Assert.Equal(
-            ["PreviousMarker", "NextMarker", "ListBoxItem", "Resize file list", "DiffOldEditor", "Resize panes", "DiffNewEditor", "DiffBack", "DiffContinue"],
+            ["Show only Modified, 2 files, off", "Show only New, 2 files, off", "Show only Manual work, 1 file, off", "Show only Copied, 1 file, off", "Show only Skipped, 1 file, off", "ViewSideBySide", "ViewUnified", "ListBoxItem", "Resize file list", "PreviousMarker", "NextMarker", "DiffOldEditor", "Resize panes", "DiffNewEditor", "DiffBack", "DiffContinue"],
             PageStops(window));
         AssertAllNamed(window);
     }
@@ -92,7 +92,7 @@ public sealed class KeyboardAccessTests
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(
-            ["DiffBackToSetup", "PreviousMarker", "NextMarker", "ListBoxItem", "Resize file list", "DiffOldEditor", "Resize panes", "DiffNewEditor"],
+            ["DiffBackToSetup", "Show only Modified, 2 files, off", "Show only New, 2 files, off", "Show only Manual work, 1 file, off", "Show only Copied, 1 file, off", "Show only Skipped, 1 file, off", "ViewSideBySide", "ViewUnified", "ListBoxItem", "Resize file list", "PreviousMarker", "NextMarker", "DiffOldEditor", "Resize panes", "DiffNewEditor"],
             PageStops(window));
         AssertAllNamed(window);
     }
@@ -113,7 +113,7 @@ public sealed class KeyboardAccessTests
         Dispatcher.UIThread.RunJobs();
 
         var focused = Assert.IsAssignableFrom<Control>(window.FocusManager!.GetFocusedElement());
-        Assert.Equal("Resize file list", AccessibilityProbe.Label(focused));
+        Assert.Equal("NextMarker", AccessibilityProbe.Label(focused));
     }
 
     [AvaloniaFact]
