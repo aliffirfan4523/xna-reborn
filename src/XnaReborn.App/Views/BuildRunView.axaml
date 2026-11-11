@@ -36,11 +36,10 @@
 
   <Grid Margin="{StaticResource PagePadding}" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="8">
 
-    <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Classes="headline"
                AutomationProperties.HeadingLevel="1" />
 
-    <Border Grid.Row="1" BorderThickness="1" CornerRadius="4" Padding="12"
-            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+    <Border Grid.Row="1" Classes="card compact"
             AutomationProperties.AutomationId="EnvironmentPanel"
             AutomationProperties.Name="Environment status">
       <StackPanel Spacing="{StaticResource SpacingSmall}">
@@ -57,11 +56,11 @@
                                AutomationProperties.AutomationId="EnvironmentProblem" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-          <Button Content="Open download page" Click="OnOpenLink"
+          <Button Classes="secondary" Content="Open download page" Click="OnOpenLink"
                   IsVisible="{Binding HasEnvironmentLink}"
                   AutomationProperties.AutomationId="OpenSdkLink"
                   AutomationProperties.Name="Open the .NET SDK download page" />
-          <Button Content="Check again" Command="{Binding RefreshEnvironmentCommand}"
+          <Button Classes="secondary" Content="Check again" Command="{Binding RefreshEnvironmentCommand}"
                   AutomationProperties.AutomationId="RecheckButton"
                   AutomationProperties.Name="Check the environment again" />
         </StackPanel>
@@ -69,19 +68,19 @@
     </Border>
 
     <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-      <Button Content="Build" Command="{Binding BuildCommand}"
+      <Button Classes="secondary" Content="Build" Command="{Binding BuildCommand}"
               AutomationProperties.AutomationId="BuildButton"
               AutomationProperties.Name="Build the migrated project" />
-      <Button Content="Build and Run" Command="{Binding BuildAndRunCommand}"
+      <Button Classes="secondary" Content="Build and Run" Command="{Binding BuildAndRunCommand}"
               AutomationProperties.AutomationId="BuildAndRunButton"
               AutomationProperties.Name="Build the migrated project and run the game" />
-      <Button Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True"
+      <Button Classes="secondary" Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True"
               AutomationProperties.AutomationId="CancelButton"
               AutomationProperties.Name="Cancel the running check or build" />
-      <Button Content="Stop" Command="{Binding StopCommand}"
+      <Button Classes="secondary" Content="Stop" Command="{Binding StopCommand}"
               AutomationProperties.AutomationId="StopButton"
               AutomationProperties.Name="Stop the game" />
-      <Button Content="Go to Summary" Command="{Binding GoToSummaryCommand}"
+      <Button Classes="secondary" Content="Go to Summary" Command="{Binding GoToSummaryCommand}"
               AutomationProperties.AutomationId="SummaryButton"
               AutomationProperties.Name="Go to the summary" />
     </StackPanel>
@@ -98,9 +97,8 @@
     </StackPanel>
 
     <!-- Publish: one self-contained program per platform. No publish logic lives in this view. -->
-    <Border Grid.Row="4" BorderThickness="1" CornerRadius="4" Padding="12"
+    <Border Grid.Row="4" Classes="card compact"
             DataContext="{Binding Publish}" x:DataType="vm:PublishPanelViewModel"
-            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
             AutomationProperties.AutomationId="PublishPanel"
             AutomationProperties.Name="Publish">
       <StackPanel Spacing="{StaticResource SpacingSmall}">
@@ -118,13 +116,13 @@
               </DataTemplate>
             </ComboBox.ItemTemplate>
           </ComboBox>
-          <Button Content="Publish" Command="{Binding PublishCommand}"
+          <Button Classes="secondary" Content="Publish" Command="{Binding PublishCommand}"
                   AutomationProperties.AutomationId="PublishButton"
                   AutomationProperties.Name="Publish the migrated project as one program" />
-          <Button Content="Cancel publish" Command="{Binding CancelCommand}"
+          <Button Classes="secondary" Content="Cancel publish" Command="{Binding CancelCommand}"
                   AutomationProperties.AutomationId="CancelPublishButton"
                   AutomationProperties.Name="Cancel the running publish" />
-          <Button Content="Open folder" Command="{Binding OpenFolderCommand}"
+          <Button Classes="secondary" Content="Open folder" Command="{Binding OpenFolderCommand}"
                   AutomationProperties.AutomationId="OpenPublishFolderButton"
                   AutomationProperties.Name="Open the folder of the published program" />
         </StackPanel>
@@ -192,7 +190,7 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Border IsVisible="{Binding HasStartupFailure}" BorderThickness="1" CornerRadius="4" Padding="12"
+          <Border IsVisible="{Binding HasStartupFailure}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="12" Background="{DynamicResource ErrorSoftBrush}"
                   BorderBrush="{DynamicResource SeverityErrorBrush}"
                   AutomationProperties.AutomationId="StartupFailurePanel"
                   AutomationProperties.Name="Startup failure">

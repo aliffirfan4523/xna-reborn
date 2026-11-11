@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XnaReborn.App.Controls.ProgressLabel"
+             Focusable="False">
+  <!-- A progress bar with its label on the left and the percent on the right. The numbers repeat what the bar shows. -->
+  <StackPanel Spacing="6">
+    <Grid ColumnDefinitions="*,Auto">
+      <TextBlock x:Name="LabelView" TextTrimming="CharacterEllipsis" />
+      <TextBlock x:Name="PercentView" Grid.Column="1" Classes="muted" />
+    </Grid>
+    <ProgressBar x:Name="Bar" Minimum="0" Maximum="100" AutomationProperties.AccessibilityView="Raw" />
+  </StackPanel>
+</UserControl>

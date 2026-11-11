@@ -1,0 +1,113 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!--
+    Design tokens. Use these keys in views instead of literal colors, sizes or fonts. See docs/ui-design-system.md.
+    Colors live in ThemeDictionaries (Light and Dark); everything else is theme independent.
+    Contrast (WCAG AA, 4.5:1 for text): TextBrush, TextMutedBrush, AccentTextBrush and the *TextBrush status colors were
+    chosen against SurfaceBrush and BackgroundBrush in both themes. OnAccentBrush is for text on AccentBrush.
+  -->
+
+  <!-- Spacing scale (4 pt grid). -->
+  <x:Double x:Key="Space1">4</x:Double>
+  <x:Double x:Key="Space2">8</x:Double>
+  <x:Double x:Key="Space3">12</x:Double>
+  <x:Double x:Key="Space4">16</x:Double>
+  <x:Double x:Key="Space5">24</x:Double>
+  <x:Double x:Key="Space6">32</x:Double>
+  <x:Double x:Key="Space7">48</x:Double>
+  <Thickness x:Key="CardPadding">20</Thickness>
+  <x:Double x:Key="ContentMaxWidth">1080</x:Double>
+  <x:Double x:Key="MinTarget">32</x:Double>
+
+  <!-- Corner radius. -->
+  <CornerRadius x:Key="RadiusSmall">6</CornerRadius>
+  <CornerRadius x:Key="RadiusMedium">10</CornerRadius>
+  <CornerRadius x:Key="RadiusLarge">16</CornerRadius>
+  <CornerRadius x:Key="RadiusPill">999</CornerRadius>
+
+  <!-- Typography scale. Font family is Inter (WithInterFont in Program.cs). -->
+  <x:Double x:Key="FontSizeCaption">12</x:Double>
+  <x:Double x:Key="FontSizeBody">14</x:Double>
+  <x:Double x:Key="FontSizeSubtitle">16</x:Double>
+  <x:Double x:Key="FontSizeTitle">20</x:Double>
+  <x:Double x:Key="FontSizeHeadline">28</x:Double>
+  <x:Double x:Key="FontSizeDisplay">40</x:Double>
+
+  <!-- Elevation. Cards use ElevationLow, popups and the header use ElevationHigh. -->
+  <BoxShadows x:Key="ElevationLow">0 1 2 0 #1A000000, 0 1 1 0 #0F000000</BoxShadows>
+  <BoxShadows x:Key="ElevationHigh">0 8 24 0 #33000000, 0 2 6 0 #1A000000</BoxShadows>
+
+  <!-- Motion. Page and control transitions stay at or below 200 ms. -->
+  <x:TimeSpan x:Key="MotionFast">0:0:0.12</x:TimeSpan>
+  <x:TimeSpan x:Key="MotionNormal">0:0:0.18</x:TimeSpan>
+
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="AccentColorValue">#5B2EB8</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="#5B2EB8" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="#4B2399" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="#3C1B7A" />
+      <SolidColorBrush x:Key="AccentSoftBrush" Color="#EDE7FA" />
+      <SolidColorBrush x:Key="AccentTextBrush" Color="#5B2EB8" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+
+      <SolidColorBrush x:Key="BackgroundBrush" Color="#F5F4F9" />
+      <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="SurfaceAltBrush" Color="#EFEDF6" />
+      <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#E6E2F2" />
+      <SolidColorBrush x:Key="RailBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="BorderBrushSubtle" Color="#DDD9EA" />
+      <SolidColorBrush x:Key="BorderBrushStrong" Color="#8A85A3" />
+      <SolidColorBrush x:Key="TextBrush" Color="#1C1A2E" />
+      <SolidColorBrush x:Key="TextMutedBrush" Color="#55516B" />
+      <SolidColorBrush x:Key="FocusRingBrush" Color="#1C1A2E" />
+
+      <SolidColorBrush x:Key="SuccessTextBrush" Color="#17663A" />
+      <SolidColorBrush x:Key="SuccessSoftBrush" Color="#E3F4EA" />
+      <SolidColorBrush x:Key="InfoSoftBrush" Color="#E5EFFA" />
+      <SolidColorBrush x:Key="WarningSoftBrush" Color="#FFF3D6" />
+      <SolidColorBrush x:Key="ErrorSoftBrush" Color="#FDECEA" />
+
+      <SolidColorBrush x:Key="SeverityInfoBrush" Color="#1B5E9E" />
+      <SolidColorBrush x:Key="SeverityWarningBrush" Color="#8A5A00" />
+      <SolidColorBrush x:Key="SeverityErrorBrush" Color="#B3261E" />
+      <SolidColorBrush x:Key="SeverityBlockerBrush" Color="#7A0F2E" />
+      <SolidColorBrush x:Key="ErrorBannerBackgroundBrush" Color="#FDECEA" />
+      <SolidColorBrush x:Key="ErrorBannerBorderBrush" Color="#B3261E" />
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Dark">
+      <Color x:Key="AccentColorValue">#B9A1FF</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="#B9A1FF" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="#C9B6FF" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="#A58BF2" />
+      <SolidColorBrush x:Key="AccentSoftBrush" Color="#2E2650" />
+      <SolidColorBrush x:Key="AccentTextBrush" Color="#C5B2FF" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#160F2B" />
+
+      <SolidColorBrush x:Key="BackgroundBrush" Color="#121118" />
+      <SolidColorBrush x:Key="SurfaceBrush" Color="#1D1B27" />
+      <SolidColorBrush x:Key="SurfaceAltBrush" Color="#26233A" />
+      <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#302C48" />
+      <SolidColorBrush x:Key="RailBrush" Color="#17151F" />
+      <SolidColorBrush x:Key="BorderBrushSubtle" Color="#37334A" />
+      <SolidColorBrush x:Key="BorderBrushStrong" Color="#8F8AAA" />
+      <SolidColorBrush x:Key="TextBrush" Color="#EEECF8" />
+      <SolidColorBrush x:Key="TextMutedBrush" Color="#B4B0CB" />
+      <SolidColorBrush x:Key="FocusRingBrush" Color="#FFFFFF" />
+
+      <SolidColorBrush x:Key="SuccessTextBrush" Color="#78D8A0" />
+      <SolidColorBrush x:Key="SuccessSoftBrush" Color="#14301F" />
+      <SolidColorBrush x:Key="InfoSoftBrush" Color="#152638" />
+      <SolidColorBrush x:Key="WarningSoftBrush" Color="#33290E" />
+      <SolidColorBrush x:Key="ErrorSoftBrush" Color="#3B1C1A" />
+
+      <SolidColorBrush x:Key="SeverityInfoBrush" Color="#7FB5E8" />
+      <SolidColorBrush x:Key="SeverityWarningBrush" Color="#E6B450" />
+      <SolidColorBrush x:Key="SeverityErrorBrush" Color="#F2857D" />
+      <SolidColorBrush x:Key="SeverityBlockerBrush" Color="#FF9DB8" />
+      <SolidColorBrush x:Key="ErrorBannerBackgroundBrush" Color="#3B1C1A" />
+      <SolidColorBrush x:Key="ErrorBannerBorderBrush" Color="#F2857D" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

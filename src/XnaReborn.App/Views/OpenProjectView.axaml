@@ -6,25 +6,26 @@
              x:DataType="vm:OpenProjectViewModel">
   <ScrollViewer>
     <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}">
-      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+      <TextBlock Text="{Binding Title}" Classes="headline"
                  AutomationProperties.HeadingLevel="1" />
 
       <Border x:Name="DropZone"
               DragDrop.AllowDrop="True"
-              Padding="32"
+              Padding="40,36"
               BorderThickness="2"
-              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-              CornerRadius="8"
+              BorderBrush="{DynamicResource AccentBrush}"
+              Background="{DynamicResource AccentSoftBrush}"
+              CornerRadius="{DynamicResource RadiusLarge}"
               AutomationProperties.AutomationId="DropZone"
               AutomationProperties.Name="Drop a folder, .sln or .csproj here">
         <StackPanel Spacing="{StaticResource SpacingMedium}" HorizontalAlignment="Center">
           <TextBlock Text="Drop an XNA project folder, .sln or .csproj here" HorizontalAlignment="Center" />
           <TextBlock Text="or" HorizontalAlignment="Center" />
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" HorizontalAlignment="Center">
-            <Button Content="Browse folder..." Command="{Binding BrowseFolderCommand}" IsEnabled="{Binding IsIdle}"
+            <Button Classes="secondary" Content="Browse folder..." Command="{Binding BrowseFolderCommand}" IsEnabled="{Binding IsIdle}"
                     AutomationProperties.AutomationId="BrowseFolder"
                     AutomationProperties.Name="Browse for a project folder" />
-            <Button Content="Browse .sln or .csproj..." Command="{Binding BrowseFileCommand}" IsEnabled="{Binding IsIdle}"
+            <Button Classes="secondary" Content="Browse .sln or .csproj..." Command="{Binding BrowseFileCommand}" IsEnabled="{Binding IsIdle}"
                     AutomationProperties.AutomationId="BrowseFile"
                     AutomationProperties.Name="Browse for a solution or project file" />
           </StackPanel>
@@ -35,7 +36,7 @@
         <TextBlock Text="{Binding ProgressText}" AutomationProperties.Name="Analysis progress" />
         <ProgressBar IsIndeterminate="{Binding !IsProgressKnown}" Value="{Binding ProgressPercent}" Minimum="0" Maximum="100"
                      AutomationProperties.Name="Analysis progress bar" />
-        <Button Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Left" IsCancel="True"
+        <Button Classes="secondary" Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Left" IsCancel="True"
                 AutomationProperties.AutomationId="CancelOpen"
                 AutomationProperties.Name="Cancel the analysis" />
       </StackPanel>
@@ -45,13 +46,13 @@
                  AutomationProperties.AutomationId="OpenMessage" />
 
       <StackPanel Spacing="{StaticResource SpacingMedium}">
-        <TextBlock Text="Recent projects" FontSize="18" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
+        <TextBlock Text="Recent projects" Classes="subtitle" AutomationProperties.HeadingLevel="2" />
         <TextBlock Text="No recent projects yet." IsVisible="{Binding !HasRecentProjects}" />
         <ItemsControl ItemsSource="{Binding RecentProjects}" IsVisible="{Binding HasRecentProjects}"
                       AutomationProperties.Name="Recent projects">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="svc:RecentProject">
-              <Button Command="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).OpenRecentCommand}"
+              <Button Classes="secondary" Command="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).OpenRecentCommand}"
                       CommandParameter="{Binding}"
                       IsEnabled="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).IsIdle}"
                       HorizontalAlignment="Stretch"

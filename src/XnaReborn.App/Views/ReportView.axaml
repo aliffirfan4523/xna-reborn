@@ -12,19 +12,19 @@
 
     <!-- Title and page actions -->
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource SpacingLarge}">
-      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"
+      <TextBlock Text="{Binding Title}" Classes="headline" VerticalAlignment="Center"
                  AutomationProperties.HeadingLevel="1" />
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-        <Button Content="Export Markdown" Command="{Binding ExportMarkdownCommand}"
+        <Button Classes="secondary" Content="Export Markdown" Command="{Binding ExportMarkdownCommand}"
                 AutomationProperties.AutomationId="ExportMarkdown"
                 AutomationProperties.Name="Export report as Markdown" />
-        <Button Content="Export JSON" Command="{Binding ExportJsonCommand}"
+        <Button Classes="secondary" Content="Export JSON" Command="{Binding ExportJsonCommand}"
                 AutomationProperties.AutomationId="ExportJson"
                 AutomationProperties.Name="Export report as JSON" />
-        <Button Content="Copy report" Command="{Binding CopyReportCommand}"
+        <Button Classes="secondary" Content="Copy report" Command="{Binding CopyReportCommand}"
                 AutomationProperties.AutomationId="CopyReport"
                 AutomationProperties.Name="Copy report as Markdown" />
-        <Button Content="Continue to migration setup" Classes="accent" Command="{Binding ContinueCommand}"
+        <Button Content="Continue to migration setup" Classes="primary" Command="{Binding ContinueCommand}"
                 AutomationProperties.AutomationId="ContinueButton"
                 AutomationProperties.Name="Continue to migration setup" />
       </StackPanel>
@@ -41,18 +41,19 @@
               VerticalAlignment="Top"
               Padding="16"
               BorderThickness="1"
-              CornerRadius="4"
+              CornerRadius="{DynamicResource RadiusMedium}"
+              Background="{DynamicResource WarningSoftBrush}"
               BorderBrush="{DynamicResource SeverityWarningBrush}"
               AutomationProperties.AutomationId="NoProjectPanel"
               AutomationProperties.Name="No XNA project found">
         <StackPanel Spacing="{StaticResource SpacingMedium}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
             <TextBlock Text="{DynamicResource SeverityWarningIcon}" Foreground="{DynamicResource SeverityWarningBrush}" />
-            <TextBlock Text="No XNA project found" FontSize="18" FontWeight="SemiBold"
+            <TextBlock Text="No XNA project found" Classes="subtitle"
                        AutomationProperties.HeadingLevel="2" />
           </StackPanel>
           <TextBlock Text="{Binding NoProjectReason}" TextWrapping="Wrap" />
-          <Button Content="Choose another project" Command="{Binding ChooseAnotherProjectCommand}"
+          <Button Classes="secondary" Content="Choose another project" Command="{Binding ChooseAnotherProjectCommand}"
                   HorizontalAlignment="Left"
                   AutomationProperties.AutomationId="ChooseAnotherProject"
                   AutomationProperties.Name="Choose another project" />
@@ -99,7 +100,7 @@
                     <DataTemplate x:DataType="vm:StartHereStep">
                       <Panel>
                         <TextBlock Text="{Binding NumberedText}" TextWrapping="Wrap" IsVisible="{Binding IsText}" Margin="0,2" />
-                        <Button Content="{Binding NumberedText}" IsVisible="{Binding IsButton}"
+                        <Button Classes="secondary" Content="{Binding NumberedText}" IsVisible="{Binding IsButton}"
                                 Command="{Binding $parent[UserControl].((vm:ReportViewModel)DataContext).ShowClassificationCommand}"
                                 CommandParameter="{Binding FilterTo}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
@@ -127,7 +128,8 @@
                 <TextBlock Text="{Binding EntryClassText}" TextWrapping="Wrap" FontWeight="SemiBold" AutomationProperties.AutomationId="FlashEntryClass" />
                 <TextBlock Text="{Binding FlixelText}" TextWrapping="Wrap" AutomationProperties.AutomationId="FlashFlixelVersion" />
                 <Border IsVisible="{Binding Explanation, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Padding="12" BorderThickness="1" CornerRadius="4"
+                        Padding="12" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}"
+                        Background="{DynamicResource ErrorSoftBrush}"
                         BorderBrush="{DynamicResource SeverityBlockerBrush}"
                         AutomationProperties.AutomationId="FlashExplanation"
                         AutomationProperties.Name="Why this Flash project cannot be converted">
@@ -186,7 +188,7 @@
               </ComboBox>
             </Grid>
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-              <Button Content="Clear filters" Command="{Binding ClearFiltersCommand}"
+              <Button Classes="secondary" Content="Clear filters" Command="{Binding ClearFiltersCommand}"
                       AutomationProperties.AutomationId="ClearFilters"
                       AutomationProperties.Name="Clear filters" />
               <TextBlock Text="{Binding FilterSummary}" VerticalAlignment="Center"
@@ -232,7 +234,7 @@
         </DockPanel>
 
         <DockPanel Grid.Column="2">
-          <Button DockPanel.Dock="Bottom" Content="Copy finding" Command="{Binding CopyFindingCommand}"
+          <Button Classes="secondary" DockPanel.Dock="Bottom" Content="Copy finding" Command="{Binding CopyFindingCommand}"
                   Margin="0,8,0,0" HorizontalAlignment="Left"
                   AutomationProperties.AutomationId="CopyFinding"
                   AutomationProperties.Name="Copy the selected finding" />

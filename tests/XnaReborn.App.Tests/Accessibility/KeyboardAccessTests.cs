@@ -160,7 +160,7 @@ public sealed class KeyboardAccessTests
         var labels = AccessibilityProbe.TabOrder(window).Select(AccessibilityProbe.Label).ToList();
 
         // The banner comes after the stepper and before the page, so the error is the first thing a keyboard user reaches.
-        Assert.Equal(["ErrorDetailsExpander", "ErrorCopy", "ErrorDismiss", "BrowseFolder"], labels.Where(l => !l.StartsWith("Step_", StringComparison.Ordinal)).Take(4));
+        Assert.Equal(["ErrorDetailsExpander", "ErrorCopy", "ErrorDismiss", "BrowseFolder"], labels.Where(IsShellStop).Take(4));
         AssertAllNamed(window);
     }
 
@@ -188,11 +188,15 @@ public sealed class KeyboardAccessTests
         return window;
     }
 
-    /// <summary>The tab stops of the page: everything Tab visits except the stepper buttons.</summary>
+    /// <summary>The navigation rail (step buttons and the theme toggle) is not part of a page, so page checks skip it.</summary>
+    private static bool IsShellStop(string label) =>
+        !label.StartsWith("Step_", StringComparison.Ordinal) && label != "ThemeToggle";
+
+    /// <summary>The tab stops of the page: everything Tab visits except the navigation rail.</summary>
     private static List<string> PageStops(MainWindow window) =>
         AccessibilityProbe.TabOrder(window)
             .Select(AccessibilityProbe.Label)
-            .Where(l => !l.StartsWith("Step_", StringComparison.Ordinal))
+            .Where(IsShellStop)
             .ToList();
 
     private static void AssertAllNamed(MainWindow window)

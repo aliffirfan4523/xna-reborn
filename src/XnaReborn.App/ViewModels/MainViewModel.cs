@@ -52,6 +52,23 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     /// <summary>The page view model for <see cref="CurrentStep"/>. Resolved from the container once and then kept.</summary>
     public PageViewModel CurrentPage => GetPage(CurrentStep);
 
+    /// <summary>Name of the opened project (folder or file name without extension), or null before a project is opened.</summary>
+    public string? ProjectName => Session.SourcePath is { Length: > 0 } path
+        ? Path.GetFileNameWithoutExtension(path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+        : null;
+
+    /// <summary>True when a project is open, so the header can show its name.</summary>
+    public bool HasProject => !string.IsNullOrEmpty(ProjectName);
+
+    /// <summary>True when the analysis has a score to show in the header.</summary>
+    public bool HasScore => Session.Report is { NoProjectReason: null };
+
+    /// <summary>The compatibility score text for the header chip, such as "Score 72".</summary>
+    public string ScoreText => $"Score {Session.Report?.Score ?? 0}";
+
+    /// <summary>The text of the status bar: where the user is in the flow.</summary>
+    public string StatusText => $"Step {Steps.Single(s => s.IsCurrent).Number} of {Steps.Count}: {Steps.Single(s => s.IsCurrent).Label}";
+
     /// <summary>The short error message, or null.</summary>
     public string? ErrorMessage => Session.ErrorMessage;
 
@@ -150,6 +167,7 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     {
         OnPropertyChanged(nameof(CurrentPage));
         RefreshSteps();
+        OnPropertyChanged(nameof(StatusText));
     }
 
     private PageViewModel GetPage(WorkflowStep step)
@@ -167,6 +185,14 @@ public sealed partial class MainViewModel : ViewModelBase, INavigator
     private void OnSessionChanged(object? sender, PropertyChangedEventArgs e)
     {
         RefreshSteps();
+        if (e.PropertyName is nameof(WorkflowSession.SourcePath) or nameof(WorkflowSession.Report))
+        {
+            OnPropertyChanged(nameof(ProjectName));
+            OnPropertyChanged(nameof(HasProject));
+            OnPropertyChanged(nameof(HasScore));
+            OnPropertyChanged(nameof(ScoreText));
+        }
+
         if (e.PropertyName is nameof(WorkflowSession.ErrorMessage) or nameof(WorkflowSession.ErrorDetails))
         {
             IsDetailsExpanded = false;

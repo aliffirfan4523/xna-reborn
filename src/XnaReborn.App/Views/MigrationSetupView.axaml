@@ -6,7 +6,7 @@
   <ScrollViewer>
     <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}" MaxWidth="900"
                 HorizontalAlignment="Left">
-      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="SemiBold"
+      <TextBlock Text="{Binding Title}" Classes="headline"
                  AutomationProperties.HeadingLevel="1" />
 
       <!-- Output folder -->
@@ -18,7 +18,7 @@
                    PlaceholderText="Folder for the migrated copy"
                    AutomationProperties.AutomationId="OutputFolderBox"
                    AutomationProperties.Name="Output folder" />
-          <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseCommand}"
+          <Button Classes="secondary" Grid.Column="1" Content="Browse..." Command="{Binding BrowseCommand}"
                   AutomationProperties.AutomationId="BrowseButton"
                   AutomationProperties.Name="Browse for the output folder" />
         </Grid>
@@ -98,15 +98,15 @@
       <!-- Actions -->
       <StackPanel Spacing="{StaticResource SpacingMedium}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-          <Button Content="Preview" Command="{Binding PreviewCommand}"
+          <Button Classes="secondary" Content="Preview" Command="{Binding PreviewCommand}"
                   AutomationProperties.AutomationId="PreviewButton"
                   AutomationProperties.Name="Preview the changes without writing anything"
                   ToolTip.Tip="Shows the changes without writing anything." />
-          <Button Content="Migrate" Classes="accent" Command="{Binding MigrateCommand}"
+          <Button Content="Migrate" Classes="primary" Command="{Binding MigrateCommand}"
                   AutomationProperties.AutomationId="MigrateButton"
                   AutomationProperties.Name="Migrate and write the copy to the output folder"
                   ToolTip.Tip="Writes the migrated copy to the output folder." />
-          <Button Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}" IsCancel="True"
+          <Button Classes="secondary" Content="Cancel" Command="{Binding CancelRunCommand}" IsVisible="{Binding CanCancel}" IsCancel="True"
                   AutomationProperties.AutomationId="CancelButton"
                   AutomationProperties.Name="Cancel the running preview or migration" />
         </StackPanel>
