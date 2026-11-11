@@ -87,9 +87,9 @@ public sealed class ProjectMigratorTests : IDisposable
         Assert.Single(result.Changes, c => c.RelativePath == path);
 
     [Fact]
-    public void Default_rewriters_register_the_entry_point_the_four_rules_and_the_platform_folding()
+    public void Default_rewriters_register_the_entry_point_the_source_rules_and_the_device_rules()
     {
-        Assert.Equal(["ENTRYPOINT", "XNA022", "XNA024", "XNA039", "XNA040", "XNA053"], DefaultRewriters.Create().RuleIds);
+        Assert.Equal(["DEVICEINPUT", "ENTRYPOINT", "XNA022", "XNA024", "XNA039", "XNA040", "XNA053", "XNA056", "XNA059", "XNA062", "XNA063"], DefaultRewriters.Create().RuleIds);
     }
 
     [Fact]

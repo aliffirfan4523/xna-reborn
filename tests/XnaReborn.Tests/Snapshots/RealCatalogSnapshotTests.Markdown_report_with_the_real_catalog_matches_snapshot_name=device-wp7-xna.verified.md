@@ -53,15 +53,15 @@ Classification: AutoFixable 17, Manual 0, Unsupported 1
   - Code: `XnaFrameworkVersion=v4.0`
 - **[Info] XNA057** Phone application service (tombstoning)
   - Project: `Wp7Xna.csproj`
-  - Location: `Game1.cs:53:17`
+  - Location: `Game1.cs:54:17`
   - Code: `if (PhoneApplicationService.Current.State.ContainsKey("score"))`
 - **[Info] XNA057** Phone application service (tombstoning)
   - Project: `Wp7Xna.csproj`
-  - Location: `Game1.cs:55:30`
+  - Location: `Game1.cs:56:30`
   - Code: `score = (int)PhoneApplicationService.Current.State["score"];`
 - **[Info] XNA057** Phone application service (tombstoning)
   - Project: `Wp7Xna.csproj`
-  - Location: `Game1.cs:70:13`
+  - Location: `Game1.cs:71:13`
   - Code: `PhoneApplicationService.Current.State["score"] = score;`
 - **[Info] XNA060** Accelerometer
   - Project: `Wp7Xna.csproj`
@@ -69,7 +69,7 @@ Classification: AutoFixable 17, Manual 0, Unsupported 1
   - Code: `private Accelerometer accelerometer;`
 - **[Info] XNA060** Accelerometer
   - Project: `Wp7Xna.csproj`
-  - Location: `Game1.cs:42:33`
+  - Location: `Game1.cs:43:33`
   - Code: `accelerometer = new Accelerometer();`
 - **[Info] XNA061** TouchPanel and gestures
   - Project: `Wp7Xna.csproj`
