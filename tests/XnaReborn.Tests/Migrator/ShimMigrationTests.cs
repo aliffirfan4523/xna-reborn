@@ -63,6 +63,32 @@ public sealed class ShimMigrationTests
     }
 
     [Fact]
+    public async Task Shims_off_marks_the_storage_and_gamerservices_usings()
+    {
+        var result = await MigrationTestSupport.MigrateAsync(FixturePaths.Of("xna40-gamerservices"), Options(false));
+
+        var game = result.Changes.Single(c => c.RelativePath == "Game1.cs").NewText!;
+        Assert.Contains("// XNAREBORN: XNA009:", game, StringComparison.Ordinal);
+        Assert.Contains("// XNAREBORN: XNA012:", game, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Shims_on_adds_no_fallback_markers()
+    {
+        var result = await MigrationTestSupport.MigrateAsync(FixturePaths.Of("xna40-gamerservices"), Options(true));
+
+        Assert.Equal(ChangeKind.Copied, result.Changes.Single(c => c.RelativePath == "Game1.cs").Kind);
+    }
+
+    [Fact]
+    public async Task Shims_off_leaves_a_game_without_storage_use_unmarked()
+    {
+        var result = await MigrationTestSupport.MigrateAsync(FixturePaths.Of("xna40-basic"), Options(false));
+
+        Assert.DoesNotContain(result.Changes, c => c.NewText is not null && (c.NewText.Contains("XNA009:", StringComparison.Ordinal) || c.NewText.Contains("XNA012:", StringComparison.Ordinal)));
+    }
+
+    [Fact]
     public async Task Shims_off_changes_nothing()
     {
         var result = await MigrationTestSupport.MigrateAsync(FixturePaths.Of("xna40-gamerservices"), Options(false));

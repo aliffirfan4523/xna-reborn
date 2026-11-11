@@ -72,7 +72,7 @@
 - [ ] 12. Dead API shims (stretch)
   - [x] 12.1 Generate `XnaReborn.Compat` with storage and profile stand-ins
   - [x] 12.2 Rewrite references and record shim use in the manifest
-  - [ ] 12.3 Fallback markers when shims are disabled
+  - [x] 12.3 Fallback markers when shims are disabled (XNA009 and XNA012 markers above each GamerServices and Storage using, only when no shims are generated)
   - _Requirements: R7_
 
 - [ ] 13. Final checkpoint

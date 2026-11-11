@@ -54,7 +54,7 @@ Order: 1 → 2 → 3 → 4 (analyzer, can overlap after 2) → 5 → 6 → 7 and
   - [x] 7.2 Add `PhoneShell.cs` and `PhoneTasks.cs` (`PhoneApplicationService`, launchers that log, choosers that throw `NotSupportedException` with the rule ID)
   - [x] 7.3 Extend the `Guide` stand-in with `IsTrialMode`, `ShowMarketplace`; add marketplace task types and `LicenseInformation`
   - [x] 7.4 (Result: type NOT confirmed, so no Zune adapter and Zune accelerometer use stays a Manual case. Sources name the XNA 3.1 classes Accelerometer, AccelerometerCapabilities and AccelerometerState but give no namespace or members.) Research gate: find the XNA 3.1 Zune HD accelerometer type in the documentation archive and record its shape in this file. If found, add a Zune adapter with a test; if not, leave Zune accelerometer use as a Manual marker and note it here
-  - [ ] 7.5 (NOT done: no check was run) Verify `IsolatedStorageFile.GetUserStoreForApplication` in a net8.0 test project; if it fails, add a wrapper to the storage stand-in
+  - [x] 7.5 (Checked in a net8.0 console project: GetUserStoreForApplication creates a file and FileExists is true, so no wrapper is needed) Verify `IsolatedStorageFile.GetUserStoreForApplication` in a net8.0 test project; if it fails, add a wrapper to the storage stand-in
   - [x] 7.6 Test that the generated library compiles with the same method the existing task 12 shim tests use, and that namespaces match R5.5
   - _Requirements: R5, R6.2 to R6.5, R6.11_
 
