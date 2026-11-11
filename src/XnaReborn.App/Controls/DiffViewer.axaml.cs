@@ -17,8 +17,6 @@ namespace XnaReborn.App.Controls;
 /// </summary>
 public sealed partial class DiffViewer : UserControl
 {
-    private const string _markerText = "// XNAREBORN:";
-
     /// <summary>Identifies <see cref="Diff"/>.</summary>
     public static readonly StyledProperty<FileDiff?> DiffProperty =
         AvaloniaProperty.Register<DiffViewer, FileDiff?>(nameof(Diff));
@@ -80,7 +78,7 @@ public sealed partial class DiffViewer : UserControl
 
     /// <summary>True when the line is a manual-work marker line.</summary>
     internal static bool IsMarker(DiffLine line) =>
-        line.Kind != DiffLineKind.Imaginary && line.Text.Contains(_markerText, StringComparison.Ordinal);
+        line.Kind != DiffLineKind.Imaginary && MarkerPrefixes.ContainsMarker(line.Text);
 
     /// <inheritdoc />
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)

@@ -1,0 +1,43 @@
+﻿{
+  MsBuild: [
+    {
+      Severity: Error,
+      Code: BC30451,
+      Message: 'My' is not declared. It may be inaccessible due to its protection level.,
+      File: C:\work\VbGame\Game1.vb,
+      Line: 24,
+      Column: 13,
+      Project: C:\work\VbGame\VbGame.vbproj
+    },
+    {
+      Severity: Error,
+      Code: BC30451,
+      Message: 'SpriteBlendMode' is not declared. It may be inaccessible due to its protection level.,
+      File: C:\work\VbGame\Game1.vb,
+      Line: 31,
+      Project: C:\work\VbGame\VbGame.vbproj
+    },
+    {
+      Severity: Error,
+      Code: BC30002,
+      Message: Type 'Global.Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase' is not defined.,
+      File: C:\work\VbGame\My Project\Application.Designer.vb,
+      Line: 6,
+      Column: 17,
+      Project: C:\work\VbGame\VbGame.vbproj
+    },
+    {
+      Severity: Error,
+      Code: BC30420,
+      Message: 'Sub Main' was not found in 'VbGame.Program'.,
+      Project: C:\work\VbGame\VbGame.vbproj
+    },
+    {
+      Severity: Warning,
+      Code: BC40056,
+      Message: Namespace or type specified in the Imports 'Microsoft.Xna.Framework.Net' doesn't contain any public member or cannot be found.,
+      Project: C:\work\VbGame\VbGame.vbproj
+    }
+  ],
+  Mgcb: []
+}

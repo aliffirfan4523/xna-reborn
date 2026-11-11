@@ -517,3 +517,8 @@ Content was paraphrased from these sources, not quoted at length.
 - Task 19.6: the migrated `vb-xna40-basic` builds with 0 errors (integration test, `XNAREBORN_INTEGRATION=1`).
 - Task 20: the coverage test checks that the Visual Basic rewriters are exactly ENTRYPOINT, XNA022 (autofix `vb`) and the marker-only XNA024, XNA039, XNA040. The three marker rules have `autoFixLanguages ["csharp"]`, so the "exactly the autoFixLanguages rules" wording of 20.5 is relaxed for them. They are enabled for VB projects through their findings, because those findings count as Manual and have no plan item.
 - The VB `SpriteBatch.Begin` rewriter handles 1, 3 and 4 positional arguments and a single named argument. `Namespace`-less project-level imports and the case-insensitive spelling of the members are handled.
+
+## Implementation notes (runner and app)
+
+- Task 21: `GameLocator` and `MigratedCopyGuard` also list `*.vbproj`; the guard messages keep the ".csproj" wording. `MsBuildOutputParser` already read `BC` codes and `vbc : error` lines without a file, so no parser change was needed; a hand-written sample (`build-vb-errors.txt`) covers the forms. Two hints were added with the ids H501 (`BC30002` on application model types) and H502 (`BC30451` on `My`), both linked to XNA112. The ids H409 to H411 were already taken by other hints. The planned hint for `BC30451` on a removed XNA name already exists as H007 and the other H0xx hints (they match the message text without a code), so none was added.
+- Task 22: the project list shows a "Visual Basic" badge text (and the screen reader name says so). `DiffViewer` and `DiffViewModel` find markers through `MarkerPrefixes`. The existing `Summary` line is unchanged for C# projects.

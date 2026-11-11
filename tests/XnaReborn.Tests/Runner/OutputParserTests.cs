@@ -18,6 +18,7 @@ public sealed class OutputParserTests
         ["build-mgcb-source-missing"],
         ["build-mgcb-xml-error"],
         ["build-restore-error"],
+        ["build-vb-errors"],
     ];
 
     private static string ReadSample(string name) => File.ReadAllText(Path.Combine(SamplesFolder, name + ".txt"));

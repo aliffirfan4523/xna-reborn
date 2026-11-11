@@ -1,0 +1,9 @@
+Restore complete (0.4s)
+  XnaReborn.Vb succeeded (0.3s)
+C:\work\VbGame\Game1.vb(24,13): error BC30451: 'My' is not declared. It may be inaccessible due to its protection level. [C:\work\VbGame\VbGame.vbproj]
+C:\work\VbGame\Game1.vb(31) : error BC30451: 'SpriteBlendMode' is not declared. It may be inaccessible due to its protection level. [C:\work\VbGame\VbGame.vbproj]
+C:\work\VbGame\My Project\Application.Designer.vb(6,17): error BC30002: Type 'Global.Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase' is not defined. [C:\work\VbGame\VbGame.vbproj]
+vbc : error BC30420: 'Sub Main' was not found in 'VbGame.Program'. [C:\work\VbGame\VbGame.vbproj]
+vbc : warning BC40056: Namespace or type specified in the Imports 'Microsoft.Xna.Framework.Net' doesn't contain any public member or cannot be found. [C:\work\VbGame\VbGame.vbproj]
+
+Build FAILED.

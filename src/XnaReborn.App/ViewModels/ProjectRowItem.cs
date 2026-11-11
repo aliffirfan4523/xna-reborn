@@ -20,8 +20,15 @@ public sealed class ProjectRowItem
             _ => ("XNA", info.XnaVersion == XnaVersion.Unknown ? "Version unknown" : "XNA " + XnaVersionText(info.XnaVersion), info.Platform.ToString()),
         };
         IsNotMigrated = info.Family == ProjectFamily.MonoGameLegacy && MigrationScope.IsPlatformProject(info.MonoGamePlatform);
-        AutomationName = $"{Path}, {FamilyText}, {VersionText}, {PlatformText}" + (IsNotMigrated ? ", not migrated, see manual work" : string.Empty);
+        IsVisualBasic = info.Language == SourceLanguage.VisualBasic;
+        AutomationName = $"{Path}, {FamilyText}, {VersionText}, {PlatformText}" + (IsVisualBasic ? ", " + LanguageBadgeText : string.Empty) + (IsNotMigrated ? ", not migrated, see manual work" : string.Empty);
     }
+
+    /// <summary>True for a Visual Basic project, which gets a language badge.</summary>
+    public bool IsVisualBasic { get; }
+
+    /// <summary>The text of the language badge.</summary>
+    public string LanguageBadgeText => "Visual Basic";
 
     /// <summary>Relative path of the project file.</summary>
     public string Path { get; }
