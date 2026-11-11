@@ -2,27 +2,54 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:XnaReborn.App.ViewModels"
              xmlns:svc="using:XnaReborn.App.Services"
+             xmlns:controls="using:XnaReborn.App.Controls"
              x:Class="XnaReborn.App.Views.OpenProjectView"
              x:DataType="vm:OpenProjectViewModel">
+  <UserControl.Styles>
+    <!-- Drop zone: calm at rest, stronger on hover, strongest while a file is dragged over it. -->
+    <Style Selector="Border#DropZone">
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushStrong}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    </Style>
+    <Style Selector="Border#DropZone:pointerover">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+    </Style>
+    <Style Selector="Border#DropZone.dragover">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+      <Setter Property="BorderThickness" Value="3" />
+    </Style>
+  </UserControl.Styles>
+
   <ScrollViewer>
-    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}">
-      <TextBlock Text="{Binding Title}" Classes="headline"
-                 AutomationProperties.HeadingLevel="1" />
+    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{DynamicResource Space5}" MaxWidth="{DynamicResource ContentMaxWidth}">
+      <StackPanel Spacing="{DynamicResource Space1}">
+        <TextBlock Text="{Binding Title}" Classes="headline"
+                   AutomationProperties.HeadingLevel="1" />
+        <TextBlock Classes="muted" TextWrapping="Wrap"
+                   Text="Bring an old XNA game back to life. Your original files are never changed. Everything happens in a copy." />
+      </StackPanel>
 
       <Border x:Name="DropZone"
               DragDrop.AllowDrop="True"
-              Padding="40,36"
+              Classes.dragover="{Binding IsDragOver}"
+              Padding="32"
               BorderThickness="2"
-              BorderBrush="{DynamicResource AccentBrush}"
-              Background="{DynamicResource AccentSoftBrush}"
               CornerRadius="{DynamicResource RadiusLarge}"
               AutomationProperties.AutomationId="DropZone"
               AutomationProperties.Name="Drop a folder, .sln or .csproj here">
-        <StackPanel Spacing="{StaticResource SpacingMedium}" HorizontalAlignment="Center">
-          <TextBlock Text="Drop an XNA project folder, .sln or .csproj here" HorizontalAlignment="Center" />
-          <TextBlock Text="or" HorizontalAlignment="Center" />
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" HorizontalAlignment="Center">
-            <Button Classes="secondary" Content="Browse folder..." Command="{Binding BrowseFolderCommand}" IsEnabled="{Binding IsIdle}"
+        <StackPanel Spacing="{DynamicResource Space3}" HorizontalAlignment="Center">
+          <PathIcon Data="{StaticResource IconFolderOpen}" Width="48" Height="48" HorizontalAlignment="Center"
+                    Foreground="{DynamicResource AccentTextBrush}" />
+          <TextBlock Classes="title" HorizontalAlignment="Center" TextAlignment="Center"
+                     Text="Drop an XNA project here" IsVisible="{Binding !IsDragOver}" />
+          <TextBlock Classes="title" HorizontalAlignment="Center" TextAlignment="Center"
+                     Text="Release to analyze this project" IsVisible="{Binding IsDragOver}" />
+          <TextBlock Classes="muted" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                     Text="A project folder, a .sln file or a .csproj file. Or choose one below." />
+          <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}" HorizontalAlignment="Center">
+            <Button Classes="primary" Content="Browse folder..." Command="{Binding BrowseFolderCommand}" IsEnabled="{Binding IsIdle}"
                     AutomationProperties.AutomationId="BrowseFolder"
                     AutomationProperties.Name="Browse for a project folder" />
             <Button Classes="secondary" Content="Browse .sln or .csproj..." Command="{Binding BrowseFileCommand}" IsEnabled="{Binding IsIdle}"
@@ -32,37 +59,73 @@
         </StackPanel>
       </Border>
 
-      <StackPanel IsVisible="{Binding IsBusy}" Spacing="{StaticResource SpacingMedium}">
-        <TextBlock Text="{Binding ProgressText}" AutomationProperties.Name="Analysis progress" />
-        <ProgressBar IsIndeterminate="{Binding !IsProgressKnown}" Value="{Binding ProgressPercent}" Minimum="0" Maximum="100"
-                     AutomationProperties.Name="Analysis progress bar" />
-        <Button Classes="secondary" Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Left" IsCancel="True"
-                AutomationProperties.AutomationId="CancelOpen"
-                AutomationProperties.Name="Cancel the analysis" />
-      </StackPanel>
+      <Border Classes="card" IsVisible="{Binding IsBusy}">
+        <StackPanel Spacing="{DynamicResource Space3}">
+          <controls:ProgressLabel Label="{Binding ProgressText}" Value="{Binding ProgressPercent}"
+                                  IsIndeterminate="{Binding !IsProgressKnown}"
+                                  AutomationProperties.AutomationId="OpenProgress" />
+          <TextBlock Classes="muted" Text="Reading your project. Nothing is written yet." />
+          <Button Classes="secondary" Content="Cancel" Command="{Binding CancelCommand}" HorizontalAlignment="Left" IsCancel="True"
+                  AutomationProperties.AutomationId="CancelOpen"
+                  AutomationProperties.Name="Cancel the analysis" />
+        </StackPanel>
+      </Border>
 
-      <TextBlock Text="{Binding Message}" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                 TextWrapping="Wrap"
-                 AutomationProperties.AutomationId="OpenMessage" />
+      <controls:Banner Kind="Error" Title="Could not open this project" Message="{Binding Message}"
+                       IsVisible="{Binding IsMessageError}"
+                       AutomationProperties.AutomationId="OpenMessage">
+        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+          <Button Classes="secondary" Content="Choose another folder..." Command="{Binding BrowseFolderCommand}"
+                  IsEnabled="{Binding IsIdle}"
+                  AutomationProperties.Name="Choose another project folder" />
+        </StackPanel>
+      </controls:Banner>
+      <controls:Banner Kind="Info" Title="Stopped" Message="{Binding Message}"
+                       IsVisible="{Binding IsNotice}"
+                       AutomationProperties.AutomationId="OpenNotice" />
 
-      <StackPanel Spacing="{StaticResource SpacingMedium}">
+      <StackPanel Spacing="{DynamicResource Space3}">
         <TextBlock Text="Recent projects" Classes="subtitle" AutomationProperties.HeadingLevel="2" />
-        <TextBlock Text="No recent projects yet." IsVisible="{Binding !HasRecentProjects}" />
+        <controls:EmptyState Title="No recent projects yet"
+                             Message="Projects you open show up here, with their last score, so you can pick up where you left off."
+                             IsVisible="{Binding !HasRecentProjects}" />
         <ItemsControl ItemsSource="{Binding RecentProjects}" IsVisible="{Binding HasRecentProjects}"
                       AutomationProperties.Name="Recent projects">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="{DynamicResource Space2}" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="svc:RecentProject">
-              <Button Classes="secondary" Command="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).OpenRecentCommand}"
-                      CommandParameter="{Binding}"
-                      IsEnabled="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).IsIdle}"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Left"
-                      AutomationProperties.Name="{Binding Path, StringFormat='Open {0}'}">
-                <StackPanel>
-                  <TextBlock Text="{Binding Path}" TextTrimming="CharacterEllipsis" />
-                  <TextBlock Text="{Binding LastOpened, StringFormat='Last opened {0:g}'}" FontSize="12" Opacity="0.7" />
-                </StackPanel>
-              </Button>
+              <Border Classes="card compact">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{DynamicResource Space3}">
+                  <PathIcon Data="{StaticResource IconFolderOpen}" Width="24" Height="24"
+                            Foreground="{DynamicResource AccentTextBrush}" />
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}" Classes="subtitle" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Path}" Classes="caption muted" TextTrimming="CharacterEllipsis"
+                               ToolTip.Tip="{Binding Path}" />
+                    <TextBlock Text="{Binding LastOpened, StringFormat='Last opened {0:g}'}" Classes="caption muted" />
+                  </StackPanel>
+                  <controls:Chip Grid.Column="2" Kind="Accent" Icon="{StaticResource IconChart}" Text="{Binding ScoreText}"
+                                 IsVisible="{Binding HasScore}" VerticalAlignment="Center" />
+                  <controls:Chip Grid.Column="2" Kind="Neutral" Text="{Binding ScoreText}"
+                                 IsVisible="{Binding !HasScore}" VerticalAlignment="Center" />
+                  <Button Grid.Column="3" Classes="primary" Content="Open" VerticalAlignment="Center"
+                          Command="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).OpenRecentCommand}"
+                          CommandParameter="{Binding}"
+                          IsEnabled="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).IsIdle}"
+                          AutomationProperties.Name="{Binding Path, StringFormat='Open {0}'}" />
+                  <Button Grid.Column="4" Classes="subtle" VerticalAlignment="Center"
+                          Command="{Binding $parent[ItemsControl].((vm:OpenProjectViewModel)DataContext).RemoveRecentCommand}"
+                          CommandParameter="{Binding}"
+                          AutomationProperties.Name="{Binding Path, StringFormat='Remove {0} from recent projects'}"
+                          ToolTip.Tip="Remove from this list. The project is not deleted.">
+                    <PathIcon Data="{StaticResource IconClose}" Width="14" Height="14" />
+                  </Button>
+                </Grid>
+              </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

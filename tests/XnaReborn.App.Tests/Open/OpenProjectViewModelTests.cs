@@ -22,7 +22,9 @@ public sealed class OpenProjectViewModelTests
         Assert.Equal([_folder], t.Analysis.AnalyzedPaths);
         Assert.Equal(_folder, t.Session.SourcePath);
         Assert.Same(t.Analysis.Report, t.Session.Report);
-        Assert.Equal(_folder, Assert.Single(t.Recent.Items).Path);
+        var stored = Assert.Single(t.Recent.Items);
+        Assert.Equal(_folder, stored.Path);
+        Assert.Equal(t.Analysis.Report.Score, stored.LastScore);
         Assert.Equal(WorkflowStep.Report, t.Main.CurrentStep);
         Assert.False(t.Session.HasError);
         Assert.False(vm.IsBusy);
@@ -177,4 +179,29 @@ public sealed class OpenProjectViewModelTests
         gate.SetResult();
         Assert.True(await running);
     }
+
+    [Theory]
+    [InlineData("C:/games/Pong", "Pong")]
+    [InlineData("C:/games/Pong/", "Pong")]
+    [InlineData("C:/games/My.Game", "My.Game")]
+    [InlineData("C:/games/Pong/Pong.sln", "Pong")]
+    [InlineData("C:/games/Pong/Pong.csproj", "Pong")]
+    public void A_recent_project_shows_a_short_name(string path, string name) =>
+        Assert.Equal(name, new RecentProject(path, DateTimeOffset.UtcNow).Name);
+
+    [Fact]
+    public async Task Removing_a_recent_project_forgets_only_that_entry()
+    {
+        using var t = TestServices.Create();
+        t.Recent.Add("C:/a");
+        t.Recent.Add("C:/b");
+        var vm = t.Get<OpenProjectViewModel>();
+        await vm.OnNavigatedToAsync();
+
+        vm.RemoveRecentCommand.Execute(vm.RecentProjects.Single(r => r.Path == "C:/a"));
+
+        Assert.Equal(["C:/b"], vm.RecentProjects.Select(r => r.Path));
+        Assert.True(vm.HasRecentProjects);
+    }
 }
+
