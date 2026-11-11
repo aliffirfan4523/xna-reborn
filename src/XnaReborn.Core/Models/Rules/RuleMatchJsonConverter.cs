@@ -16,6 +16,7 @@ public sealed class RuleMatchJsonConverter : JsonConverter<RuleMatch>
         ["namespace"] = typeof(NamespaceMatch),
         ["type"] = typeof(TypeMatch),
         ["member"] = typeof(MemberMatch),
+        ["methodDeclaration"] = typeof(MethodDeclarationMatch),
         ["projectProperty"] = typeof(ProjectPropertyMatch),
         ["projectItem"] = typeof(ProjectItemMatch),
         ["filePattern"] = typeof(FilePatternMatch),

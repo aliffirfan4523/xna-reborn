@@ -16,6 +16,8 @@ public sealed class XnaVersionDetectorTests
     [InlineData("v3.1", XnaVersion.V31)]
     [InlineData("v3.0", XnaVersion.V30)]
     [InlineData("4.0", XnaVersion.V40)]
+    [InlineData("v2.0", XnaVersion.V20)]
+    [InlineData("v1.0", XnaVersion.V10)]
     public void PropertyAloneDetectsVersion(string propertyValue, XnaVersion expected)
     {
         var result = XnaVersionDetector.Detect(Props(propertyValue), NoItems(), _projectPath);
@@ -92,7 +94,7 @@ public sealed class XnaVersionDetectorTests
     [Fact]
     public void UnsupportedPropertyValueReturnsUnknownWithoutGuessing()
     {
-        var result = XnaVersionDetector.Detect(Props("v2.0"), NoItems(), _projectPath);
+        var result = XnaVersionDetector.Detect(Props("v5.0"), NoItems(), _projectPath);
 
         Assert.Equal(XnaVersion.Unknown, result.Version);
         Assert.Null(result.Conflict);
@@ -141,6 +143,38 @@ public sealed class XnaVersionDetectorTests
         Assert.Equal(XnaVersion.V31, result.Version);
         Assert.NotNull(result.Conflict);
         Assert.Equal("ANA002", result.Conflict.Code);
+    }
+
+    [Theory]
+    [InlineData(@"$(MSBuildExtensionsPath)\Microsoft\XNA\Game Studio Express\v1.0\Microsoft.Xna.Common.targets", XnaVersion.V10)]
+    [InlineData(@"$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\v2.0\Microsoft.Xna.GameStudio.Common.targets", XnaVersion.V20)]
+    public void ExpressAndV20TargetsImportsDetectTheVersion(string import, XnaVersion expected)
+    {
+        var result = XnaVersionDetector.Detect(NoProps(), [Import(import)], _projectPath);
+
+        Assert.Equal(expected, result.Version);
+        Assert.Null(result.Conflict);
+    }
+
+    [Fact]
+    public void ExpressProjectTypeGuidIsAFallbackThatNeverConflicts()
+    {
+        var guid = new Dictionary<string, string> { ["ProjectTypeGuids"] = "{9F340DF3-2AED-4330-AC16-78AC2D9B4738};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}" };
+
+        var alone = XnaVersionDetector.Detect(guid, NoItems(), _projectPath);
+        var withProperty = XnaVersionDetector.Detect(new Dictionary<string, string>(guid) { ["XnaFrameworkVersion"] = "v2.0" }, NoItems(), _projectPath);
+
+        Assert.Equal(XnaVersion.V10, alone.Version);
+        Assert.Equal(XnaVersion.V20, withProperty.Version);
+        Assert.Null(withProperty.Conflict);
+    }
+
+    [Fact]
+    public void PlainCSharpTargetsAreStillIgnored()
+    {
+        var result = XnaVersionDetector.Detect(NoProps(), [Import(@"$(MSBuildBinPath)\Microsoft.CSharp.targets")], _projectPath);
+
+        Assert.Equal(XnaVersion.Unknown, result.Version);
     }
 
     private static IReadOnlyDictionary<string, string> NoProps() => new Dictionary<string, string>();

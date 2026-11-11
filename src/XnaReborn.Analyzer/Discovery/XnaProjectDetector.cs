@@ -1,5 +1,7 @@
 using System.Xml.Linq;
 
+using XnaReborn.Analyzer.Reading;
+
 namespace XnaReborn.Analyzer.Discovery;
 
 /// <summary>Decides from project XML whether a project uses XNA.</summary>
@@ -18,7 +20,14 @@ internal static class XnaProjectDetector
             }
 
             if (name.Equals("Import", StringComparison.OrdinalIgnoreCase)
-                && ((string?)element.Attribute("Project"))?.Contains("Microsoft.Xna.GameStudio", StringComparison.OrdinalIgnoreCase) == true)
+                && ((string?)element.Attribute("Project")) is { } import
+                && (import.Contains("Microsoft.Xna.GameStudio", StringComparison.OrdinalIgnoreCase) || IsXnaTargets(import)))
+            {
+                return true;
+            }
+
+            if (name.Equals("ProjectTypeGuids", StringComparison.OrdinalIgnoreCase)
+                && element.Value.Contains(XnaVersionDetector.ExpressProjectTypeGuid, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -32,4 +41,8 @@ internal static class XnaProjectDetector
 
         return false;
     }
+
+    // Express 1.0 and 2.0 name their targets Microsoft.Xna.Common.targets, Microsoft.Xna.ContentPipeline.targets and similar.
+    private static bool IsXnaTargets(string import) =>
+        import.Contains("Microsoft.Xna.", StringComparison.OrdinalIgnoreCase) && import.EndsWith(".targets", StringComparison.OrdinalIgnoreCase);
 }

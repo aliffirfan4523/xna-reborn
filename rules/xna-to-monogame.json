@@ -22,8 +22,8 @@
       "severity": "Error",
       "classification": "AutoFixable",
       "category": "Project",
-      "match": { "type": "projectItem", "itemType": "Import", "include": "*Microsoft.Xna.GameStudio*" },
-      "explanation": "The project file imports the XNA Game Studio MSBuild targets. They exist only on machines with XNA Game Studio 4.0 and Visual Studio 2010 installed. Without them the build stops at once with MSB4019 (imported project not found), as it did for Pirate-Treasure-Hunter.",
+      "match": { "type": "projectItem", "itemType": "Import", "include": "*Microsoft.Xna.*.targets" },
+      "explanation": "The project file imports the XNA Game Studio MSBuild targets (Microsoft.Xna.GameStudio.targets from 3.0 on, Microsoft.Xna.Common.targets and Microsoft.Xna.ContentPipeline.targets in Game Studio Express 1.0). They exist only on machines with the matching XNA Game Studio and Visual Studio installed. Without them the build stops at once with MSB4019 (imported project not found), as it did for Pirate-Treasure-Hunter.",
       "resolution": "The migrator writes an SDK-style project for .NET 8 that does not import the XNA targets.",
       "migratorTask": "project-migrator:4.1"
     },
@@ -34,7 +34,7 @@
       "classification": "AutoFixable",
       "category": "Project",
       "match": { "type": "projectProperty", "name": "XnaFrameworkVersion" },
-      "explanation": "The project sets XnaFrameworkVersion, a property that only the XNA Game Studio targets understand. The same project usually also sets ProjectTypeGuids (the XNA game GUID), XnaPlatform, XnaProfile, XnaOutputType, and XnaCrossPlatformGroupID. None has an MSBuild equivalent in MonoGame.",
+      "explanation": "The project sets XnaFrameworkVersion, a property that only the XNA Game Studio targets understand. The same project usually also sets ProjectTypeGuids (the XNA game GUID), XnaPlatform, XnaProfile, XnaOutputType, XnaCrossPlatformGroupID, and in Game Studio Express 1.0 XNAGlobalContentPipelineAssemblies and XNAProjectContentPipelineAssemblies. None has an MSBuild equivalent in MonoGame.",
       "resolution": "The migrator drops XNA-specific properties and project type GUIDs when it generates the SDK-style project. The graphics profile is carried into Content.mgcb as /profile.",
       "migratorTask": "project-migrator:4.1"
     },
@@ -240,7 +240,7 @@
       "severity": "Error",
       "classification": "AutoFixable",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "type", "name": "SpriteBlendMode", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "SpriteBlendMode and the SpriteBatch.Begin overloads that take it were removed in XNA 4.0 and are not in MonoGame. Uses outside a Begin call cannot be rewritten safely.",
       "resolution": "The migrator rewrites Begin(SpriteBlendMode.X) to Begin(SpriteSortMode.Deferred, BlendState.X) and marks other uses for manual work.",
@@ -252,7 +252,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "type", "name": "SaveStateMode", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "SaveStateMode, used in SpriteBatch.Begin and Effect.Begin, was removed in XNA 4.0 together with StateBlock. Graphics state is no longer saved and restored for you.",
       "resolution": "Delete the argument and set the blend, depth, rasterizer, and sampler state explicitly before each draw."
@@ -263,7 +263,7 @@
       "severity": "Error",
       "classification": "AutoFixable",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "RenderState", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 4.0 replaced RenderState with BlendState, DepthStencilState, and RasterizerState. A user type with a member named RenderState would also match.",
       "resolution": "The migrator replaces known RenderState assignments with state objects and marks combinations it cannot map with confidence.",
@@ -275,7 +275,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "type", "name": "StateBlock", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "StateBlock saved and restored device state. It was removed in XNA 4.0 because it was very slow.",
       "resolution": "Set every state you depend on before drawing, or keep the previous state objects in local variables and assign them back."
@@ -286,7 +286,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "MagFilter", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 4.0 merged the three filter properties of a sampler into one Filter property and made sampler states immutable objects. The rule detects MagFilter only; code that sets MinFilter or MipFilter alone is missed.",
       "resolution": "Pick a built-in SamplerState such as LinearClamp or PointWrap, or create a SamplerState with the Filter you need and assign it to GraphicsDevice.SamplerStates[n]."
@@ -297,7 +297,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "type", "name": "ResolveTexture2D", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "ResolveTexture2D copied the back buffer into a texture. XNA 4.0 removed it, and MonoGame has no back buffer resolve.",
       "resolution": "Draw the scene into a RenderTarget2D and use that render target as a texture."
@@ -308,7 +308,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "ResolveBackBuffer", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation" },
       "explanation": "ResolveBackBuffer was removed in XNA 4.0. Any method with the same name in a game class would also match.",
       "resolution": "Call SetRenderTarget with a RenderTarget2D before drawing the scene, then SetRenderTarget(null) and draw the render target."
@@ -319,7 +319,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "type", "name": "DepthStencilBuffer", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "XNA 4.0 removed DepthStencilBuffer and GraphicsDevice.DepthStencilBuffer. The depth format is now part of each render target.",
       "resolution": "Pass a DepthFormat to the RenderTarget2D constructor and delete the code that creates, sets, and restores depth buffers."
@@ -330,7 +330,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "GetTexture", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 0} },
       "explanation": "RenderTarget2D now derives from Texture2D, so GetTexture was removed. Parameterless GetTexture methods on other types also match.",
       "resolution": "Use the render target itself wherever a Texture2D is expected. Create a new render target per saved frame instead of reusing one."
@@ -341,7 +341,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "SetRenderTarget", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 2, "max": 2} },
       "explanation": "XNA 4.0 sets all render targets in one call and has no index argument. The two-argument form still exists for cube map targets, so a valid call such as SetRenderTarget(cube, CubeMapFace.PositiveX) also matches.",
       "resolution": "Use SetRenderTarget(target) for one target, SetRenderTarget(null) to return to the back buffer, and SetRenderTargets(a, b, c) for several."
@@ -352,7 +352,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "MultiSampleType", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "PresentationParameters.MultiSampleType and MultiSampleQuality were replaced by an integer MultiSampleCount in XNA 4.0. Render targets take the count in their constructor.",
       "resolution": "Use MultiSampleCount (0 for none, 4 for 4x) and remove MultiSampleQuality."
@@ -363,7 +363,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "AutoDepthStencilFormat", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 4.0 removed EnableAutoDepthStencil and AutoDepthStencilFormat. PresentationParameters now has DepthStencilFormat, and DepthFormat.None disables the depth buffer.",
       "resolution": "Set DepthStencilFormat, or GraphicsDeviceManager.PreferredDepthStencilFormat, and delete EnableAutoDepthStencil."
@@ -374,7 +374,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "VertexDeclaration", "receiver": "GraphicsDevice", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 4.0 removed the device property because every vertex buffer now carries its declaration. Known limit: the receiver must be named GraphicsDevice, so code that uses another variable name is missed. The name is needed to avoid the valid static VertexDeclaration property of the 4.0 vertex types.",
       "resolution": "Delete the assignment and create the VertexBuffer with a vertex type or a VertexDeclaration."
@@ -385,7 +385,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "SetSource", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 3, "max": 3} },
       "explanation": "XNA 4.0 removed GraphicsDevice.Vertices. Vertex buffers are set with SetVertexBuffer, and buffer sizes are counted in vertices instead of bytes.",
       "resolution": "Replace the call with GraphicsDevice.SetVertexBuffer(buffer). Use SetVertexBuffers for several streams. Change buffer sizes from bytes to vertex counts."
@@ -396,7 +396,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "VertexElements", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 3.x vertex structs exposed a VertexElements array. In 4.0 they expose a VertexDeclaration, and the VertexDeclaration constructor no longer takes a GraphicsDevice.",
       "resolution": "Use VertexPositionColor.VertexDeclaration, or new VertexDeclaration(new VertexElement(...)) for custom vertex types, and implement IVertexType on custom structs."
@@ -407,7 +407,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "VertexStride", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 4.0 moved the vertex and index buffers from ModelMesh to ModelMeshPart and removed VertexStride, StreamOffset, and VertexDeclaration from the part. Custom model drawing code breaks.",
       "resolution": "Set meshPart.VertexBuffer and meshPart.IndexBuffer on the device and read the layout from VertexBuffer.VertexDeclaration."
@@ -418,7 +418,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "Points", "receiver": "BufferUsage", "namespaces": ["Microsoft.Xna.Framework.Graphics"], "kind": "Access" },
       "explanation": "XNA 4.0 dropped point sprites. The point-size render states are gone with them, and MonoGame has no BufferUsage.Points. Known limit: the receiver is matched by the name BufferUsage, so an alias or a using static import is missed.",
       "resolution": "Draw each point as a textured quad, or draw billboards with SpriteBatch or an instanced quad."
@@ -429,7 +429,7 @@
       "severity": "Error",
       "classification": "AutoFixable",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "Begin", "receiver": "pass", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 0} },
       "explanation": "XNA 4.0 replaced EffectPass.Begin and End with EffectPass.Apply. Known limit: the rule only sees calls on a variable named pass, which is the usual loop variable, so passes held in variables with other names are missed.",
       "resolution": "The migrator rewrites the Begin/End pattern to pass.Apply() and marks patterns it cannot rewrite with confidence.",
@@ -441,7 +441,7 @@
       "severity": "Error",
       "classification": "AutoFixable",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "Begin", "receiver": "effect", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 1} },
       "explanation": "XNA 4.0 removed Effect.Begin and End. Known limit: the rule only sees calls on a variable named effect, so effects held in other variables (basicEffect, shader, and so on) are missed.",
       "resolution": "The migrator replaces the Begin/End pattern with a loop over CurrentTechnique.Passes that calls Apply, and marks patterns it cannot rewrite with confidence.",
@@ -453,7 +453,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "CommitChanges", "namespaces": ["Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics"], "kind": "Invocation", "arguments": {"min": 0, "max": 0} },
       "explanation": "XNA 4.0 removed Effect.CommitChanges. Parameter values are sent to the device when EffectPass.Apply runs.",
       "resolution": "Delete the call and make sure EffectPass.Apply runs after the last parameter change and before the draw call."
@@ -464,7 +464,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "member", "name": "TotalRealTime", "namespaces": ["Microsoft.Xna.Framework"], "kind": "Access" },
       "explanation": "XNA 4.0 removed the real-time members of GameTime. Only game time remains. The rule detects TotalRealTime; ElapsedRealTime is missed.",
       "resolution": "Use TotalGameTime and ElapsedGameTime. If wall-clock time is needed, use a Stopwatch."
@@ -475,7 +475,7 @@
       "severity": "Error",
       "classification": "Manual",
       "category": "Api",
-      "xnaVersions": ["3.0", "3.1"],
+      "xnaVersions": ["1.0", "2.0", "3.0", "3.1"],
       "match": { "type": "type", "name": "ShaderProfile", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "GraphicsDeviceManager.MinimumPixelShaderProfile and MinimumVertexShaderProfile were replaced in XNA 4.0 by GraphicsProfile (Reach or HiDef). MonoGame has no ShaderProfile.",
       "resolution": "Delete the shader profile settings. Set GraphicsProfile to Reach or HiDef if the game needs to choose."
@@ -682,6 +682,74 @@
       "match": { "type": "reference", "name": "Microsoft.Advertising.*" },
       "explanation": "The project references an advertising assembly made for Windows Phone. It has no desktop version.",
       "resolution": "Remove the reference and the code that uses it, or replace it with a desktop service."
+    },
+    {
+      "id": "XNA100",
+      "title": "XNA 1.0 or 2.0 project",
+      "severity": "Info",
+      "classification": "Manual",
+      "category": "Project",
+      "xnaVersions": ["1.0", "2.0"],
+      "match": { "type": "projectProperty", "name": "XnaFrameworkVersion", "matches": "^v[12]\\.0$" },
+      "explanation": "The project targets XNA Game Studio Express 1.0 or XNA Game Studio 2.0. Both are older than the 3.x line. Everything in XNA 4.0 and MonoGame that changed since 3.1 changed since these versions too. Defaults also differ: premultiplied alpha is the default from 4.0 on, and from 2.0 on Draw is called once per Update with a fixed time step, so a frame counter that counted Draw calls reads differently. Visual Basic projects are covered by a separate group of rules.",
+      "resolution": "Fix the findings from the XNA 1.0 and 2.0 rules and the XNA 3.x rules, then compare the rendered result of the migrated game with the original, especially alpha-blended sprites and anything that depends on frame timing."
+    },
+    {
+      "id": "XNA101",
+      "title": "Content built inside the game project",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "projectItem", "itemType": "Content", "metadata": { "name": "XNAUseContentPipeline", "equals": "true" } },
+      "explanation": "XNA Game Studio Express 1.0 lists content files as Content items inside the game project (marked XNAUseContentPipeline), with the importer and processor on each item. Later versions use a separate content project. MonoGame builds content from a Content.mgcb file.",
+      "resolution": "The migrator reads these items like a content project and writes a Content.mgcb file for them.",
+      "migratorTask": "older-and-vb:8"
+    },
+    {
+      "id": "XNA102",
+      "title": "LoadGraphicsContent (replaced by LoadContent)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "xnaVersions": ["1.0"],
+      "match": { "type": "methodDeclaration", "name": "LoadGraphicsContent", "namespaces": ["Microsoft.Xna.Framework"], "overrides": true },
+      "explanation": "XNA 1.0 called LoadGraphicsContent(bool loadAllContent) when the graphics device was created or reset. XNA 2.0 replaced it by LoadContent(), which runs once. The override does not exist in MonoGame, so the game does not compile. The check is by name and the override modifier only.",
+      "resolution": "The migrator renames the override to LoadContent, drops the parameter and adds a constant with the old parameter name set to true, so the body keeps compiling. Calls by name and unusual signatures are marked for manual work.",
+      "migratorTask": "older-and-vb:9"
+    },
+    {
+      "id": "XNA103",
+      "title": "UnloadGraphicsContent (replaced by UnloadContent)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "xnaVersions": ["1.0"],
+      "match": { "type": "methodDeclaration", "name": "UnloadGraphicsContent", "namespaces": ["Microsoft.Xna.Framework"], "overrides": true },
+      "explanation": "XNA 1.0 called UnloadGraphicsContent(bool unloadAllContent) when the graphics device was lost. XNA 2.0 replaced it by UnloadContent(). The override does not exist in MonoGame. The check is by name and the override modifier only.",
+      "resolution": "The migrator renames the override to UnloadContent, drops the parameter and adds a constant with the old parameter name set to true. Calls by name and unusual signatures are marked for manual work.",
+      "migratorTask": "older-and-vb:9"
+    },
+    {
+      "id": "XNA104",
+      "title": "ResourceManagementMode (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0"],
+      "match": { "type": "type", "name": "ResourceManagementMode", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "XNA 1.0 let a game choose whether the framework or the game reloaded textures and vertex buffers after a device reset. The device was virtualized in 2.0, so the type is gone and MonoGame does not have it. Constructor overloads that take it fail to compile.",
+      "resolution": "Use the overload without a ResourceManagementMode and load the resources in LoadContent."
+    },
+    {
+      "id": "XNA105",
+      "title": "ResourceUsage (removed)",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "xnaVersions": ["1.0", "2.0"],
+      "match": { "type": "type", "name": "ResourceUsage", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
+      "explanation": "XNA 1.0 resource constructors took a ResourceUsage value. It was removed together with the resource management modes, and MonoGame does not have it. Which exact version dropped it was not confirmed, so the rule runs on 1.0 and 2.0.",
+      "resolution": "Use the overload without a ResourceUsage argument. Pass BufferUsage where the new overload asks for it."
     },
     {
       "id": "XNA064",

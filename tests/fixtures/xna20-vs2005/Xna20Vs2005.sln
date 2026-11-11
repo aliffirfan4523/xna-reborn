@@ -1,0 +1,13 @@
+
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "Game\Game.csproj", "{6B1D4E83-7A25-4C90-9E3F-D1A4C6E8F201}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game (360)", "Game360\Game360.csproj", "{6B1D4E83-7A25-4C90-9E3F-D1A4C6E8F202}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Debug|Xbox 360 = Debug|Xbox 360
+	EndGlobalSection
+EndGlobal
