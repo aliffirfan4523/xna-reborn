@@ -11,6 +11,9 @@ public interface IFlxRenderer
     /// <summary>Draws a solid rectangle in game pixels.</summary>
     void DrawQuad(double x, double y, double width, double height, uint argb);
 
+    /// <summary>Draws a line of text with a sprite font. <paramref name="scale"/> 1 is the size the font was built at.</summary>
+    void DrawText(AssetRef font, string text, double x, double y, double scale, uint argb);
+
     /// <summary>Draws part of an embedded texture.</summary>
     void DrawFrame(AssetRef texture, int srcX, int srcY, int srcWidth, int srcHeight, double x, double y, double width, double height, uint tintRgb, double alpha, bool flipHorizontal);
 }
@@ -23,6 +26,9 @@ public interface IFlxAssets
 
     /// <summary>Makes a sound that can be played, paused and stopped. Textures and sounds are loaded from the Content folder.</summary>
     IFlxSoundInstance CreateSound(AssetRef sound);
+
+    /// <summary>Size of a line of text in a sprite font at scale 1, or null when the font cannot be found.</summary>
+    (double Width, double Height)? MeasureText(AssetRef font, string text);
 
     /// <summary>Reads an embedded data file as bytes.</summary>
     byte[] ReadData(AssetRef data);
@@ -192,6 +198,8 @@ public static class FlxG
         public void Clear(uint argb) => inner.Clear(argb);
 
         public void DrawQuad(double x, double y, double width, double height, uint argb) => inner.DrawQuad(x + dx, y + dy, width, height, argb);
+
+        public void DrawText(AssetRef font, string text, double x, double y, double scale, uint argb) => inner.DrawText(font, text, x + dx, y + dy, scale, argb);
 
         public void DrawFrame(AssetRef texture, int srcX, int srcY, int srcWidth, int srcHeight, double x, double y, double width, double height, uint tintRgb, double alpha, bool flipHorizontal) =>
             inner.DrawFrame(texture, srcX, srcY, srcWidth, srcHeight, x + dx, y + dy, width, height, tintRgb, alpha, flipHorizontal);

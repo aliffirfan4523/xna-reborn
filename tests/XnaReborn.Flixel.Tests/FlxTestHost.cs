@@ -62,6 +62,14 @@ public sealed class FlxTestHost : IFlxRenderer, IFlxAssets, IFlxKeyState, IFlxMo
 
     public void DrawQuad(double x, double y, double width, double height, uint argb) => Drawn.Add($"quad {x},{y},{width},{height} {argb:x8}");
 
+    /// <summary>Sprite fonts by content name: width of one character and height of a line, at scale 1.</summary>
+    public Dictionary<string, (double CharWidth, double LineHeight)> Fonts { get; } = new();
+
+    public void DrawText(AssetRef font, string text, double x, double y, double scale, uint argb) => Drawn.Add($"text {font.Name} '{text}' at={x},{y} scale={scale} {argb:x8}");
+
+    public (double Width, double Height)? MeasureText(AssetRef font, string text) =>
+        Fonts.TryGetValue(font.Name, out var f) ? (text.Length * f.CharWidth, f.LineHeight) : null;
+
     public void DrawFrame(AssetRef texture, int srcX, int srcY, int srcWidth, int srcHeight, double x, double y, double width, double height, uint tintRgb, double alpha, bool flipHorizontal) =>
         Drawn.Add($"frame {texture.Name} src={srcX},{srcY},{srcWidth},{srcHeight} at={x},{y},{width},{height}{(flipHorizontal ? " flip" : string.Empty)}");
 

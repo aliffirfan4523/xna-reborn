@@ -56,7 +56,7 @@ public class FlxSprite : FlxObject
     public string? currentAnimation => _current?.Name;
 
     /// <summary>Loads an embedded picture. With <paramref name="Animated"/> the picture is a sheet of equal frames.</summary>
-    public FlxSprite loadGraphic(AsClass Graphic, bool Animated = false, bool Reverse = false, int Width = 0, int Height = 0, bool Unique = false)
+    public virtual FlxSprite loadGraphic(AsClass Graphic, bool Animated = false, bool Reverse = false, int Width = 0, int Height = 0, bool Unique = false)
     {
         _graphic = Graphic.Asset;
         _fill = 0;
@@ -241,10 +241,15 @@ public class FlxTileblock : FlxSprite
     }
 }
 
-/// <summary>Text drawn with a built-in 5 by 7 pixel font. Letters are shown in capitals.</summary>
+/// <summary>
+/// Text drawn with a sprite font (<see cref="font"/>), or with a built-in 5 by 7 pixel font when none is set. The built-in font
+/// shows letters in capitals. A sprite font is scaled so a line is <see cref="size"/> pixels high, which only approximates a Flash text field.
+/// </summary>
 public class FlxText : FlxSprite
 {
     private string _text;
+    private AssetRef? _font;
+    private double _size = 8;
 
     /// <summary>Creates a text object.</summary>
     public FlxText(double X, double Y, double Width, string? Text = null, bool EmbeddedFont = true)
@@ -252,13 +257,31 @@ public class FlxText : FlxSprite
     {
         this.width = Width;
         _text = Text ?? string.Empty;
-        size = 8;
         alignment = "left";
         updateHeight();
     }
 
     /// <summary>Text size in pixels. The built-in font is drawn at whole multiples of 8.</summary>
-    public double size { get; set; }
+    public double size
+    {
+        get => _size;
+        set
+        {
+            _size = value;
+            updateHeight();
+        }
+    }
+
+    /// <summary>The sprite font asset, or null for the built-in font.</summary>
+    public AsClass? font
+    {
+        get => _font is null ? null : AsClass.FromAsset(_font.Name, _font.Kind);
+        set
+        {
+            _font = value?.Asset;
+            updateHeight();
+        }
+    }
 
     /// <summary>"left", "center" or "right".</summary>
     public string alignment { get; set; }
@@ -286,13 +309,14 @@ public class FlxText : FlxSprite
         }
 
         var scaleFactor = PixelFont.ScaleFor(size);
-        var lineHeight = PixelFont.LineHeight * scaleFactor;
+        var fontScale = FontScale();
+        var lineHeight = fontScale is { } fs ? LineHeight(fs) : PixelFont.LineHeight * scaleFactor;
         var argb = ((uint)Math.Round(255 * Math.Clamp(alpha, 0, 1)) << 24) | (color & 0xffffff);
         var originX = x - (FlxG.camera.scroll.x * scrollFactor.x);
         var py = y - (FlxG.camera.scroll.y * scrollFactor.y);
         foreach (var line in _text.Split('\n'))
         {
-            var lineWidth = PixelFont.Measure(line, scaleFactor);
+            var lineWidth = fontScale is { } s ? Measure(line, s) : PixelFont.Measure(line, scaleFactor);
             var px = alignment switch
             {
                 "center" => originX + ((width - lineWidth) / 2),
@@ -301,13 +325,34 @@ public class FlxText : FlxSprite
             };
             if (shadow != 0)
             {
-                PixelFont.Draw(r, line, px + 1, py + 1, scaleFactor, (argb & 0xff000000) | (shadow & 0xffffff));
+                DrawLine(r, line, px + 1, py + 1, scaleFactor, fontScale, (argb & 0xff000000) | (shadow & 0xffffff));
             }
 
-            PixelFont.Draw(r, line, px, py, scaleFactor, argb);
+            DrawLine(r, line, px, py, scaleFactor, fontScale, argb);
             py += lineHeight;
         }
     }
 
-    private void updateHeight() => height = _text.Split('\n').Length * PixelFont.LineHeight * PixelFont.ScaleFor(size);
+    private void DrawLine(IFlxRenderer r, string line, double px, double py, int scaleFactor, double? fontScale, uint argb)
+    {
+        if (fontScale is { } s && _font is not null)
+        {
+            r.DrawText(_font, line, px, py, s, argb);
+        }
+        else
+        {
+            PixelFont.Draw(r, line, px, py, scaleFactor, argb);
+        }
+    }
+
+    // The scale that makes one line of the sprite font <size> pixels high, or null when there is no usable font.
+    private double? FontScale() =>
+        _font is not null && FlxG.assets?.MeasureText(_font, "Ag") is { Height: > 0 } probe ? size / probe.Height : null;
+
+    private double LineHeight(double scale) => size > 0 && _font is not null && FlxG.assets?.MeasureText(_font, "Ag") is { } probe ? probe.Height * scale : 0;
+
+    private double Measure(string line, double scale) => line.Length == 0 || _font is null ? 0 : (FlxG.assets?.MeasureText(_font, line)?.Width ?? 0) * scale;
+
+    private void updateHeight() =>
+        height = _text.Split('\n').Length * (FontScale() is { } s ? LineHeight(s) : PixelFont.LineHeight * PixelFont.ScaleFor(size));
 }

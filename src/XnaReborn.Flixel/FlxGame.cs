@@ -32,7 +32,8 @@ public class FlxGame : Game
     /// <param name="GameFramerate">Updates per second.</param>
     /// <param name="FlashFramerate">Accepted and ignored: drawing happens once per frame.</param>
     /// <param name="UseSystemCursor">True shows the system mouse cursor.</param>
-    public FlxGame(int GameSizeX, int GameSizeY, AsClass InitialState, int Zoom = 2, int GameFramerate = 60, int FlashFramerate = 30, bool UseSystemCursor = false)
+    /// <param name="WindowTitle">The window title. The class name when null.</param>
+    public FlxGame(int GameSizeX, int GameSizeY, AsClass InitialState, int Zoom = 2, int GameFramerate = 60, int FlashFramerate = 30, bool UseSystemCursor = false, string? WindowTitle = null)
     {
         _gameWidth = GameSizeX;
         _gameHeight = GameSizeY;
@@ -48,7 +49,8 @@ public class FlxGame : Game
         IsFixedTimeStep = true;
         TargetElapsedTime = TimeSpan.FromSeconds(_step);
         IsMouseVisible = UseSystemCursor;
-        Window.Title = GetType().Name;
+        Window.Title = WindowTitle ?? GetType().Name;
+        Window.AllowUserResizing = false;
     }
 
     /// <inheritdoc />
@@ -97,6 +99,7 @@ public class FlxGame : Game
         private readonly SpriteBatch _batch;
         private readonly Texture2D _pixel;
         private readonly Dictionary<string, Texture2D> _textures = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, SpriteFont> _fonts = new(StringComparer.Ordinal);
         private readonly Dictionary<string, SoundEffect> _sounds = new(StringComparer.Ordinal);
 
         public Adapter(FlxGame game, SpriteBatch batch)
@@ -141,6 +144,22 @@ public class FlxGame : Game
                 0);
         }
 
+        public void DrawText(AssetRef font, string text, double x, double y, double scale, uint argb) =>
+            _batch.DrawString(LoadFont(font), text, new Vector2((float)x, (float)y), ToColor(argb), 0, Vector2.Zero, (float)scale, SpriteEffects.None, 0);
+
+        public (double Width, double Height)? MeasureText(AssetRef font, string text)
+        {
+            try
+            {
+                var size = LoadFont(font).MeasureString(text.Length == 0 ? " " : text);
+                return (size.X, size.Y);
+            }
+            catch (ContentLoadException)
+            {
+                return null;
+            }
+        }
+
         public (int Width, int Height)? GetTextureSize(AssetRef texture)
         {
             try
@@ -178,6 +197,16 @@ public class FlxGame : Game
 
         private static Color ToColor(uint argb) =>
             Color.FromNonPremultiplied((int)((argb >> 16) & 0xff), (int)((argb >> 8) & 0xff), (int)(argb & 0xff), (int)((argb >> 24) & 0xff));
+
+        private SpriteFont LoadFont(AssetRef font)
+        {
+            if (!_fonts.TryGetValue(font.Name, out var f))
+            {
+                _fonts[font.Name] = f = _game.Content.Load<SpriteFont>(font.Name);
+            }
+
+            return f;
+        }
 
         private Texture2D Load(AssetRef texture)
         {
