@@ -38,6 +38,17 @@ public class ToolManifestGeneratorTests
     }
 
     [Fact]
+    public void Content_also_pins_the_effect_compiler_to_the_same_version()
+    {
+        using var doc = JsonDocument.Parse(_generator.Generate("3.8.6.1").NewText!);
+
+        var tool = doc.RootElement.GetProperty("tools").GetProperty("dotnet-mgfxc");
+        Assert.Equal("3.8.6.1", tool.GetProperty("version").GetString());
+        Assert.Equal("mgfxc", tool.GetProperty("commands")[0].GetString());
+        Assert.False(tool.GetProperty("rollForward").GetBoolean());
+    }
+
+    [Fact]
     public void Text_uses_lf_and_one_trailing_newline()
     {
         var text = _generator.Generate("3.8.6.1").NewText!;

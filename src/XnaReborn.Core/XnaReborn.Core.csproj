@@ -7,6 +7,7 @@
   <ItemGroup>
     <EmbeddedResource Include="..\..\rules\importer-map.json" LogicalName="XnaReborn.Core.Content.importer-map.json" />
     <EmbeddedResource Include="..\..\rules\xact-features.json" LogicalName="XnaReborn.Core.Content.xact-features.json" />
+    <EmbeddedResource Include="..\..\rules\effect-profiles.json" LogicalName="XnaReborn.Core.Content.effect-profiles.json" />
   </ItemGroup>
 
 </Project>

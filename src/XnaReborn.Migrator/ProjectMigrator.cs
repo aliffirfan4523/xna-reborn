@@ -183,7 +183,7 @@ public sealed class ProjectMigrator
 
         var converting = projects.Where(p => p.ContentRules.Count > 0 && p.Read.Info.ContentProjects.Count > 0).ToList();
         var converter = new ContentConverter(_fileSystem);
-        var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts);
+        var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts, options.RewriteEffects);
         for (var i = 0; i < converting.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();

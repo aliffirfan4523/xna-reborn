@@ -3,11 +3,11 @@ using XnaReborn.Migrator.Output;
 
 namespace XnaReborn.Migrator.Projects;
 
-/// <summary>Writes <c>.config/dotnet-tools.json</c>, which pins <c>dotnet-mgcb</c> for the MonoGame content builder.</summary>
+/// <summary>Writes <c>.config/dotnet-tools.json</c>, which pins <c>dotnet-mgcb</c> (the MonoGame content builder) and <c>dotnet-mgfxc</c> (the effect compiler) to one version.</summary>
 public sealed class ToolManifestGenerator
 {
     /// <summary>Creates the tool manifest.</summary>
-    /// <param name="dotnetMgcbVersion">Version of dotnet-mgcb, equal to the content builder package version.</param>
+    /// <param name="dotnetMgcbVersion">Version of dotnet-mgcb and dotnet-mgfxc, equal to the content builder package version.</param>
     /// <returns>A <see cref="ChangeKind.Created"/> change for <c>.config/dotnet-tools.json</c>.</returns>
     /// <exception cref="ArgumentException">The version is empty.</exception>
     public FileChange Generate(string dotnetMgcbVersion)
@@ -28,6 +28,13 @@ public sealed class ToolManifestGenerator
             $"      \"version\": {version},",
             "      \"commands\": [",
             "        \"mgcb\"",
+            "      ],",
+            "      \"rollForward\": false",
+            "    },",
+            "    \"dotnet-mgfxc\": {",
+            $"      \"version\": {version},",
+            "      \"commands\": [",
+            "        \"mgfxc\"",
             "      ],",
             "      \"rollForward\": false",
             "    }",
