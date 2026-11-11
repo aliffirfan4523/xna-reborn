@@ -85,3 +85,5 @@ Sample projects are included under their original licenses with attribution in `
 ## License
 
 [Choose an OSI-approved license, for example MIT, and add a LICENSE file.]
+
+- Flash to MonoGame (Flixel 2.x source projects): see specs/flash-to-monogame (requirements, design, tasks, implementation notes).

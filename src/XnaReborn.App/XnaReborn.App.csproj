@@ -11,6 +11,7 @@
     <ProjectReference Include="..\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
     <ProjectReference Include="..\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
     <ProjectReference Include="..\XnaReborn.Runner\XnaReborn.Runner.csproj" />
+    <ProjectReference Include="..\XnaReborn.Flash.Converter\XnaReborn.Flash.Converter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

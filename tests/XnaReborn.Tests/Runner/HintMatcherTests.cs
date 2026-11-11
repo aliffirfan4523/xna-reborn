@@ -57,7 +57,9 @@ public class HintMatcherTests
         ("H406", "CS1061", "'EffectParameter' does not contain a definition for 'SetResource' and no accessible extension method 'SetResource' accepting a first argument of type 'EffectParameter' could be found (are you missing a using directive or an assembly reference?)", "'EffectParameter' does not contain a definition for 'SetValue2' and no accessible extension method 'SetValue2' accepting a first argument of type 'EffectParameter' could be found (are you missing a using directive or an assembly reference?)"),
         ("H407", "MGFX0001", "Tint.fx(17,9) : Unexpected token 'P' found. Expected Compile", "Tint.fx(17,9) : Unexpected token 'P' found. Expected Semicolon"),
         ("H408", "MGFX0001", "Tint.fx(5,14) : Unexpected token 'M' found. Expected None, Linear, Point, or Anisotropic.", "Tint.fx(5,14) : Unexpected token 'M' found. Expected Semicolon"),
-    ];
+        ("F001", "CS1061", "'FlxSprite' does not contain a definition for 'loadRotatedGraphic' and no accessible extension method 'loadRotatedGraphic' accepting a first argument of type 'FlxSprite' could be found (are you missing a using directive or an assembly reference?)", "'Player' does not contain a definition for 'loadRotatedGraphic' and no accessible extension method 'loadRotatedGraphic' accepting a first argument of type 'Player' could be found (are you missing a using directive or an assembly reference?)"),
+        ("F002", "CS1503", "Argument 3: cannot convert from 'method group' to 'AsFunction'", "Argument 3: cannot convert from 'method group' to 'AsArray'"),
+        ("F003", "CS0266", "Cannot implicitly convert type 'double' to 'int'. An explicit conversion exists (are you missing a cast?)", "Cannot implicitly convert type 'long' to 'int'. An explicit conversion exists (are you missing a cast?)"),    ];
 
     /// <summary>Codes whose near-miss differs only by code: the same message must not match under another code.</summary>
     private static readonly string[] _codeOnlyHints = ["H021", "H022", "H023", "H104", "H304", "H305", "H308", "H309"];
