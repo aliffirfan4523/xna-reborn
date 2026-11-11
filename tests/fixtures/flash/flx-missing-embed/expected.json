@@ -1,0 +1,11 @@
+{
+  "kind": "Flash",
+  "projectFile": null,
+  "sourceRoots": ["."],
+  "sourceFiles": ["src/MissingGame.as", "src/MissingState.as"],
+  "entryClasses": ["MissingGame"],
+  "usesFlixel": true,
+  "bundlesFlixel": false,
+  "flixelVersion": null,
+  "diagnostics": 0
+}

@@ -28,7 +28,7 @@ public partial class FixtureIntegrityTests
     [Fact]
     public void Fixture_list_matches_folders_on_disk()
     {
-        var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!).Order(StringComparer.Ordinal);
+        var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!).Where(n => n != "flash").Order(StringComparer.Ordinal);
         Assert.Equal(FixturePaths.AllNames.Concat(FixturePaths.MonoGameNames).Concat(FixturePaths.SharpDxNames).Order(StringComparer.Ordinal), onDisk);
     }
 

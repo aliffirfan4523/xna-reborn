@@ -28,14 +28,14 @@ Suggested waves (parallel inside a wave):
   - [ ] 2.4 Language-gap and embed-variant fixtures: `flx-gaps` (one file per FL020 to FL031 construct, each small, each with a known expected marker), `flx-embeds` (image, audio, csv map, xml, font, symbol embed). (H)
   - _Requirements: R12.1, R12.2_
 
-- [ ] 3. AS3 lexer (MVP)
+- [x] 3. AS3 lexer (MVP)
   - [ ] 3.1 Define `As3Token`, `As3TokenKind`, `Trivia`, `SourceSpan` records. (L)
   - [ ] 3.2 Implement `As3Lexer`: identifiers, keywords, numbers (hex, exponent), strings with escapes, comments as trivia, operators including `>>>`, `===`, `!==`, `...`, `::`, `.<`, `..`, `@`. (H)
   - [ ] 3.3 Regex versus division by previous token; XML literal as one opaque token run. (H)
   - [ ] 3.4 Tests: token tables, trivia round trip (concatenating tokens and trivia reproduces the input exactly), regex/division cases, error tokens for unterminated strings. Fuzz-style test: random bytes never throw. (L)
   - _Requirements: R3.3, R3.4, R3.5_
 
-- [ ] 4. AS3 parser (MVP)
+- [x] 4. AS3 parser (MVP)
   - [ ] 4.1 Syntax tree records (compilation unit, package, import, class, interface, member, metadata, statements, expressions, `As3Unsupported`). Every node has a span. (L)
   - [ ] 4.2 Parse declarations: package, imports, classes, interfaces, fields, methods, getters and setters, constructors, modifiers, metadata (`[Embed(...)]`, `[SWF(...)]`), `const`, `static`, `override`, rest and default parameters, `include` as unsupported. (H)
   - [ ] 4.3 Parse statements and expressions: all control flow including `for each`, `for in`, `switch`, `try`; precedence climbing; `as`, `is`, `new`, `delete`, `typeof`, `in`; object, array and function literals; `Vector.<T>`. (H)
@@ -43,7 +43,7 @@ Suggested waves (parallel inside a wave):
   - [ ] 4.5 Tests and checkpoint: Verify snapshots of the tree for every fixture; negative tests per recovery path; if `XNAREBORN_FLASH_SAMPLES` is set, parse every `.as` file of Mode, FlxCollisions and Revenge with zero diagnostics (skipped when unset). (L)
   - _Requirements: R3_
 
-- [ ] 5. Project detection and reading (MVP)
+- [x] 5. Project detection and reading (MVP)
   - [ ] 5.1 `FlashProjectDetector`: `.as3proj`, `.actionScriptProperties`, `org.flixel` imports, `.swf`-only and `.fla` cases. Returns `ProjectKind`. Uses `IReadOnlyFileSystem`. (L)
   - [ ] 5.2 `FlashProjectReader`: source roots, entry class (`[SWF]` or the `FlxGame` subclass), Flixel version probe, bundled `org/flixel` source detection (skip converting it). (H)
   - [ ] 5.3 Combined detection: a folder matching both XNA and Flash returns a conflict result for the UI. XNA tests stay green. (L)

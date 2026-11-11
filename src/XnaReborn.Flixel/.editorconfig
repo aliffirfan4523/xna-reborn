@@ -1,0 +1,5 @@
+# The Flixel runtime keeps the AS3 member names (lower camel case public members, underscore-prefixed
+# fields that are public in AS3), so the repo-wide naming rules do not apply here.
+[*.cs]
+dotnet_naming_rule.interfaces_start_with_i.severity = none
+dotnet_naming_rule.private_fields_camel.severity = none
