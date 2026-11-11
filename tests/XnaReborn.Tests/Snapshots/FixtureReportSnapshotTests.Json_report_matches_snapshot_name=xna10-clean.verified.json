@@ -1,0 +1,48 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "XnaExpress10Clean.csproj",
+      "assemblyName": "XnaExpress10Clean",
+      "isXna": true,
+      "xnaVersion": "1.0",
+      "platform": "Windows",
+      "profile": null,
+      "targetFramework": null,
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "System"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    }
+  ],
+  "findings": [],
+  "triggeredRules": [],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}

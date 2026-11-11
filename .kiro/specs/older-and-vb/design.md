@@ -472,3 +472,11 @@ Content was paraphrased from these sources, not quoted at length.
 - [VisualBasicParseOptions constructor](https://learn.microsoft.com/en-us/dotnet/api/microsoft.codeanalysis.visualbasic.visualbasicparseoptions.-ctor)
 - [Microsoft.CodeAnalysis.VisualBasic 4.14.0 on NuGet](https://www.nuget.org/packages/Microsoft.CodeAnalysis.VisualBasic/4.14.0)
 - [MonoGame: Migrating from XNA](https://github.com/MonoGame/docs.monogame.github.io/blob/main/articles/migration/migrate_xna.md/)
+
+## Implementation notes (part A analysis)
+
+- Task 4 needed no change: `ProjectItemMatch.Metadata` already exists as a single `MetadataFilter` (name plus equals, notEquals or matches). XNA101 needs one pair, so the multi-pair dictionary in the design was not added.
+- `xnaVersions` is only checked for project-level rules. Source rules (XNA022 to XNA043, XNA102 to XNA105) run on every version, so widening the list is documentation, and a "4.0 negative" case for the widened source rules would test nothing. Task 6.4 therefore adds one positive and one negative case per new rule only.
+- Task 7.3: the default parameters of the 1.0 texture processors were not confirmed. The alias note in `rules/importer-map.json` says so ("check the result").
+- `ContentItem.InProject` is left out of report JSON when false, so existing report snapshots keep their shape.
+- `languages` on XNA102, XNA103, XNA104 and XNA105 is added in Part B (task 12.2), when the field exists.

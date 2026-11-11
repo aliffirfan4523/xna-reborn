@@ -20,6 +20,15 @@ public static partial class XnaVersionDetector
     [GeneratedRegex(@"Version\s*=\s*(?<v>\d+\.\d+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex ReferenceVersion();
 
+    /// <summary>The project type GUID of an XNA Game Studio Express 1.0 game project.</summary>
+    internal const string ExpressProjectTypeGuid = "{9F340DF3-2AED-4330-AC16-78AC2D9B4738}";
+
+    /// <summary>Tells whether an import path is an XNA targets file ("XNA Game Studio" and "Game Studio Express" folders, ending in .targets).</summary>
+    /// <param name="importPath">The Project attribute of an Import.</param>
+    internal static bool IsGameStudioTargets(string importPath) =>
+        importPath.Contains("Game Studio", StringComparison.OrdinalIgnoreCase)
+        && importPath.EndsWith(".targets", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Detects the version of one project.</summary>
     /// <param name="properties">Project properties by name (first value wins).</param>
     /// <param name="items">Project items, including Import and Reference.</param>
@@ -37,7 +46,7 @@ public static partial class XnaVersionDetector
             signals.Add(("XnaFrameworkVersion", fromProperty));
         }
 
-        foreach (var import in items.Where(i => i.ItemType == "Import" && i.Include.Contains("XNA Game Studio", StringComparison.OrdinalIgnoreCase)))
+        foreach (var import in items.Where(i => i.ItemType == "Import" && IsGameStudioTargets(i.Include)))
         {
             var match = ImportVersion().Match(import.Include);
             if (match.Success && Parse(match.Groups["v"].Value) is { } fromImport)
@@ -58,6 +67,14 @@ public static partial class XnaVersionDetector
             signals.Add(("the framework references", version));
         }
 
+        // Lowest priority: the Express 1.0 project type GUID. It only decides when nothing else does, so it never causes ANA002.
+        if (signals.Count == 0
+            && properties.TryGetValue("ProjectTypeGuids", out var guids)
+            && guids.Contains(ExpressProjectTypeGuid, StringComparison.OrdinalIgnoreCase))
+        {
+            return new XnaVersionResult(XnaVersion.V10, null);
+        }
+
         if (signals.Count == 0)
         {
             return new XnaVersionResult(XnaVersion.Unknown, null);
@@ -76,6 +93,8 @@ public static partial class XnaVersionDetector
 
     private static XnaVersion? Parse(string text) => text.Trim() switch
     {
+        "1.0" => XnaVersion.V10,
+        "2.0" => XnaVersion.V20,
         "3.0" => XnaVersion.V30,
         "3.1" => XnaVersion.V31,
         "4.0" => XnaVersion.V40,
@@ -84,6 +103,8 @@ public static partial class XnaVersionDetector
 
     private static string Format(XnaVersion version) => version switch
     {
+        XnaVersion.V10 => "1.0",
+        XnaVersion.V20 => "2.0",
         XnaVersion.V30 => "3.0",
         XnaVersion.V31 => "3.1",
         XnaVersion.V40 => "4.0",
