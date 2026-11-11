@@ -16,6 +16,7 @@ internal sealed class SourceRuleIndex
     private readonly List<IndexedRule<NamespaceMatch>> _namespaces = [];
     private readonly Dictionary<string, List<IndexedRule<TypeMatch>>> _types = new(StringComparer.Ordinal);
     private readonly Dictionary<string, List<IndexedRule<MemberMatch>>> _members = new(StringComparer.Ordinal);
+    private readonly List<IndexedRule<PreprocessorSymbolMatch>> _symbols = [];
 
     private SourceRuleIndex()
     {
@@ -30,8 +31,11 @@ internal sealed class SourceRuleIndex
     /// <summary>Gets the member rules by member name.</summary>
     internal IReadOnlyDictionary<string, List<IndexedRule<MemberMatch>>> MembersByName => _members;
 
+    /// <summary>Gets the preprocessor symbol rules in rule order.</summary>
+    internal IReadOnlyList<IndexedRule<PreprocessorSymbolMatch>> Symbols => _symbols;
+
     /// <summary>Gets a value indicating whether no rule in the list is a source rule.</summary>
-    internal bool IsEmpty => _namespaces.Count == 0 && _types.Count == 0 && _members.Count == 0;
+    internal bool IsEmpty => _namespaces.Count == 0 && _types.Count == 0 && _members.Count == 0 && _symbols.Count == 0;
 
     /// <summary>Builds the index. Rules of other match types and repeated rule instances are skipped.</summary>
     /// <param name="rules">The rules passed to the matcher.</param>
@@ -54,7 +58,14 @@ internal sealed class SourceRuleIndex
                     index._namespaces.Add(new IndexedRule<NamespaceMatch>(i, rule, ns));
                     break;
                 case TypeMatch type:
-                    Add(index._types, type.Name, new IndexedRule<TypeMatch>(i, rule, type));
+                    foreach (var name in (type.AlsoNames ?? []).Prepend(type.Name).Distinct(StringComparer.Ordinal))
+                    {
+                        Add(index._types, name, new IndexedRule<TypeMatch>(i, rule, type));
+                    }
+
+                    break;
+                case PreprocessorSymbolMatch symbol:
+                    index._symbols.Add(new IndexedRule<PreprocessorSymbolMatch>(i, rule, symbol));
                     break;
                 case MemberMatch member:
                     Add(index._members, member.Name, new IndexedRule<MemberMatch>(i, rule, member));

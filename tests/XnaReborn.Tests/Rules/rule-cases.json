@@ -287,5 +287,83 @@
     "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <ProjectReference Include=\"..\\GameContent\\GameContent.contentproj\">\n      <Name>GameContent</Name>\n      <XnaReferenceType>Content</XnaReferenceType>\n    </ProjectReference>\n  </ItemGroup>\n</Project>\n",
     "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <ProjectReference Include=\"..\\Library\\Library.csproj\" />\n  </ItemGroup>\n</Project>\n"
   },
-  {"ruleId":"XNA050","kind":"content","positive":"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Textures\\ship.png\">\n      <Importer>TextureImporter</Importer>\n      <Processor>OutlineProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n","negative":"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Textures\\hero.png\">\n      <Importer>TextureImporter</Importer>\n      <Processor>TextureProcessor</Processor>\n    </Compile>\n    <Compile Include=\"Audio\\Sounds.xap\">\n      <Importer>XactImporter</Importer>\n      <Processor>XactProcessor</Processor>\n    </Compile>\n    <Compile Include=\"Shaders\\Glow.fx\">\n      <Importer>EffectImporter</Importer>\n      <Processor>EffectProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n"}
+  {"ruleId":"XNA050","kind":"content","positive":"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Textures\\ship.png\">\n      <Importer>TextureImporter</Importer>\n      <Processor>OutlineProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n","negative":"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <XnaOutputType>Content</XnaOutputType>\n  </PropertyGroup>\n  <ItemGroup>\n    <Compile Include=\"Textures\\hero.png\">\n      <Importer>TextureImporter</Importer>\n      <Processor>TextureProcessor</Processor>\n    </Compile>\n    <Compile Include=\"Audio\\Sounds.xap\">\n      <Importer>XactImporter</Importer>\n      <Processor>XactProcessor</Processor>\n    </Compile>\n    <Compile Include=\"Shaders\\Glow.fx\">\n      <Importer>EffectImporter</Importer>\n      <Processor>EffectProcessor</Processor>\n    </Compile>\n  </ItemGroup>\n</Project>\n"},
+  {
+    "ruleId": "XNA051",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <SilverlightApplication>true</SilverlightApplication>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n    <SilverlightApplication>false</SilverlightApplication>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA052",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Compile Include=\"..\\Game\\Game1.cs\">\n      <Link>Game1.cs</Link>\n    </Compile>\n    <Compile Include=\"..\\Game\\Program.cs\">\n      <Link>Program.cs</Link>\n    </Compile>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Compile Include=\"Game1.cs\" />\n    <Compile Include=\"Program.cs\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA053",
+    "kind": "source",
+    "positive": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n#if XBOX\n            int pad = 1;\n#else\n            int pad = 2;\n#endif\n        }\n    }\n}\n",
+    "negative": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n#if WINDOWS_PHONE_7\n            int pad = 1;\n#endif\n            // #if XBOX is only a comment\n            string text = \"#if XBOX\";\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA054",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.GamerServices;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            bool trial = Guide.IsTrialMode;\n        }\n    }\n}\n",
+    "negative": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            bool trial = Guide.IsTrialMode;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA055",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Phone.Tasks;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            MarketplaceDetailTask task = new MarketplaceDetailTask();\n        }\n    }\n}\n",
+    "negative": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            MarketplaceDetailTask task = new MarketplaceDetailTask();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA056",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Media;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            MediaLibrary library = new MediaLibrary();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework.Media;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Song song = null;\n            MediaPlayer.Play(song);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA057",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Phone.Shell;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PhoneApplicationService service = PhoneApplicationService.Current;\n        }\n    }\n}\n",
+    "negative": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PhoneApplicationService service = PhoneApplicationService.Current;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA058",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Phone.Tasks;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            WebBrowserTask task = new WebBrowserTask();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Phone.Tasks;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PhotoChooserTask task = new PhotoChooserTask();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA059",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Phone.Tasks;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            PhotoChooserTask task = new PhotoChooserTask();\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Phone.Tasks;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            WebBrowserTask task = new WebBrowserTask();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA060",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Devices.Sensors;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Accelerometer sensor = new Accelerometer();\n        }\n    }\n}\n",
+    "negative": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            Accelerometer sensor = new Accelerometer();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA061",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Input.Touch;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            TouchPanel.EnabledGestures = GestureType.Tap;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework.Input;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            KeyboardState keys = Keyboard.GetState();\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA062",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Input;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            GamePadState state = GamePad.GetState(PlayerIndex.One);\n        }\n    }\n}\n",
+    "negative": "using System;\n\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            bool state = GamePad.GetState(1);\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA063",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Reference Include=\"Microsoft.Advertising.Mobile, Version=6.1.0.0\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Reference Include=\"Microsoft.Xna.Framework.Game, Version=4.0.0.0\" />\n  </ItemGroup>\n</Project>\n"
+  }
 ]

@@ -40,6 +40,6 @@ public class RepositoryLayoutTests
 
         Assert.True(defs.TryGetProperty("rule", out _));
         Assert.True(defs.TryGetProperty("match", out _));
-        Assert.Equal(9, defs.GetProperty("match").GetProperty("oneOf").GetArrayLength());
+        Assert.Equal(11, defs.GetProperty("match").GetProperty("oneOf").GetArrayLength());
     }
 }

@@ -80,7 +80,7 @@ public static class MarkdownReportWriter
             };
             sb.Append("\n| ").Append(Cell(p.Path))
                 .Append(" | ").Append(version)
-                .Append(" | ").Append(p.Platform)
+                .Append(" | ").Append(p.Platform).Append(p.PlatformInferred ? " (inferred)" : string.Empty)
                 .Append(" | ").Append(Cell(p.Profile))
                 .Append(" | ").Append(Cell(p.TargetFramework))
                 .Append(" |");

@@ -23,10 +23,10 @@ public sealed class RuleEngine
         ArgumentNullException.ThrowIfNull(fileSystem);
         _rules = catalog.Rules;
         _fileSystem = fileSystem;
-        SourceRules = _rules.Where(r => r.Match is NamespaceMatch or TypeMatch or MemberMatch).ToList();
+        SourceRules = _rules.Where(r => r.Match is NamespaceMatch or TypeMatch or MemberMatch or PreprocessorSymbolMatch).ToList();
     }
 
-    /// <summary>Rules whose match is a namespace, type, or member. The source scanner uses these.</summary>
+    /// <summary>Rules whose match is a namespace, type, member, or preprocessor symbol. The source scanner uses these.</summary>
     public IReadOnlyList<Rule> SourceRules { get; }
 
     /// <summary>Evaluates the project-level rules for one project. Gives at most one finding per rule, in catalog order.</summary>
@@ -67,6 +67,7 @@ public sealed class RuleEngine
         FilePatternMatch m => FilePatternMatcher.Match(m, _fileSystem, projectDirectory, token),
         ContentItemMatch m => ContentItemMatcher.Match(m, project),
         SpriteFontFamilyMatch m => SpriteFontMatcher.Match(m, project, _fileSystem, projectDirectory, token),
+        ProjectLinksMatch m => ProjectLinksMatcher.Match(m, project),
         _ => [],
     };
 

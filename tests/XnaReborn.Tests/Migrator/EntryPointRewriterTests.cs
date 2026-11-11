@@ -384,7 +384,7 @@ public class EntryPointRewriterTests
 
             var result = _rewriter.Rewrite(text, _windows);
 
-            if (fixtureName == "xna31-rewritable")
+            if (fixtureName is "xna31-rewritable" or "device-xbox360-copy-solution")
             {
                 // The demo fixture keeps the #if WINDOWS || XBOX wrapper on purpose, so it is unwrapped.
                 Assert.Equal(EntryPointStatus.Unwrapped, result.Status);
