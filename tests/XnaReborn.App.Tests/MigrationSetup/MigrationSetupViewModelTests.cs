@@ -67,6 +67,20 @@ public sealed class MigrationSetupViewModelTests
     }
 
     [Fact]
+    public async Task A_toolkit_source_starts_on_WindowsDX_and_the_user_can_still_pick_DesktopGL()
+    {
+        using var s = new Setup("XNA022");
+        var toolkit = s.Session.Report! with { Projects = [.. s.Session.Report.Projects, SetupReports.ToolkitProject()] };
+        s.Session.Report = toolkit;
+        var vm = await s.OpenAsync();
+
+        Assert.Equal(MonoGameTarget.WindowsDX, vm.Target);
+        Assert.False(vm.IsDesktopGL);
+        vm.IsDesktopGL = true;
+        Assert.Equal(MonoGameTarget.DesktopGL, vm.Target);
+    }
+
+    [Fact]
     public async Task Migrating_without_touching_the_extras_sends_them_all_off()
     {
         using var s = new Setup();

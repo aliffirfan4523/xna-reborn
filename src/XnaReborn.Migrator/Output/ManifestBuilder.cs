@@ -15,6 +15,8 @@ public static class ManifestBuilder
     /// <param name="content">Content conversion totals, or null when no content was converted.</param>
     /// <param name="shims">The shim library and its uses, or null when shims were off.</param>
     /// <param name="modern">The opt-in window extras, or null when all were off.</param>
+    /// <param name="sourceFrameworks">The source frameworks when the source had a SharpDX Toolkit project, otherwise null.</param>
+    /// <param name="rulesFired">Rule ids with a finding, shown together with <paramref name="sourceFrameworks"/>, otherwise null.</param>
     /// <returns>The manifest.</returns>
     public static Manifest Build(
         string catalogName,
@@ -25,7 +27,9 @@ public static class ManifestBuilder
         string migratorVersion,
         ManifestContent? content = null,
         ManifestShims? shims = null,
-        ManifestModern? modern = null)
+        ManifestModern? modern = null,
+        IReadOnlyList<string>? sourceFrameworks = null,
+        IReadOnlyList<string>? rulesFired = null)
     {
         ArgumentNullException.ThrowIfNull(catalogName);
         ArgumentNullException.ThrowIfNull(changes);
@@ -43,7 +47,7 @@ public static class ManifestBuilder
             .OrderBy(e => e.Path, StringComparer.Ordinal)
             .ToList();
 
-        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content, shims, modern);
+        return new Manifest(_formatVersion, migratorVersion, catalogName, completed, entries, SortedBuild(build), content, shims, modern, sourceFrameworks, rulesFired);
     }
 
     private static ManifestBuild? SortedBuild(ManifestBuild? build) =>

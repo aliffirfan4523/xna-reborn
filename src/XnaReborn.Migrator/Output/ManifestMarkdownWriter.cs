@@ -19,6 +19,7 @@ public static class ManifestMarkdownWriter
             "# XNA Reborn migration manifest",
             manifest.Completed ? "Status: Completed" : "Status: Incomplete: the migration did not finish",
             $"Rule catalog: {manifest.CatalogName}. Migrator {manifest.Migrator}. Manifest format {manifest.Version}.",
+            SourceBlock(manifest),
             CountsBlock(manifest),
             ManualBlock(manifest, manualNotes),
             ChangedBlock(manifest),
@@ -45,7 +46,21 @@ public static class ManifestMarkdownWriter
             blocks.Add(BuildBlock(manifest.Build));
         }
 
+        blocks.RemoveAll(string.IsNullOrEmpty);
         return string.Join("\n\n", blocks).Replace("\r\n", "\n", StringComparison.Ordinal) + "\n";
+    }
+
+    // Only a source with a SharpDX Toolkit project gets this block, so XNA manifests stay as they were.
+    private static string SourceBlock(Manifest manifest)
+    {
+        if (manifest.SourceFrameworks is null)
+        {
+            return string.Empty;
+        }
+
+        var names = manifest.SourceFrameworks.Select(f => f == "SharpDxToolkit" ? "SharpDX Toolkit" : f == "Xna" ? "XNA" : f);
+        var rules = manifest.RulesFired is { Count: > 0 } fired ? string.Join(", ", fired) : "none";
+        return $"Source framework: {string.Join(", ", names)}.\n\nRules that fired: {rules}.";
     }
 
     private static string CountsBlock(Manifest manifest)
