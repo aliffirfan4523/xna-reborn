@@ -36,10 +36,13 @@ public class HintMatcherTests
         ("H021", "NU1101", "Unable to find package Does.Not.Exist.Xna. No packages exist with this id in source(s): nuget.org", "Unable to find package Does.Not.Exist.Xna. No packages exist with this id in source(s): nuget.org"),
         ("H022", "MSB3073", "The command \"dotnet mgcb /@:Content.mgcb\" exited with code 1.", "The command \"dotnet mgcb /@:Content.mgcb\" exited with code 1."),
         ("H023", "CS5001", "Program does not contain a static 'Main' method suitable for an entry point", "Program does not contain a static 'Main' method suitable for an entry point"),
-    ];
+        ("H102", "CS0117", "'Color' does not contain a definition for 'TransparentBlack'", "'Color' does not contain a definition for 'TransparentWhite'"),
+        ("H103", "CS0246", "The type or namespace name 'OpenTK' could not be found (are you missing a using directive or an assembly reference?)", "The type or namespace name 'OpenTKish' could not be found (are you missing a using directive or an assembly reference?)"),
+        ("H104", "NETSDK1100", "To build a project targeting Windows on this operating system, set the EnableWindowsTargeting property to true.", "To build a project targeting Windows on this operating system, set the EnableWindowsTargeting property to true."),
+        ("H105", "MGCB", "Failed to load assembly 'C:/game/Content/Pipeline/GlowPipeline.dll'", "Failed to build asset 'C:/game/Content/hero.png'"),    ];
 
     /// <summary>Codes whose near-miss differs only by code: the same message must not match under another code.</summary>
-    private static readonly string[] _codeOnlyHints = ["H021", "H022", "H023"];
+    private static readonly string[] _codeOnlyHints = ["H021", "H022", "H023", "H104"];
 
     public static IEnumerable<object[]> PositiveRows() => BuildCases.Select(c => new object[] { c.Id, c.Code, c.Positive });
 
