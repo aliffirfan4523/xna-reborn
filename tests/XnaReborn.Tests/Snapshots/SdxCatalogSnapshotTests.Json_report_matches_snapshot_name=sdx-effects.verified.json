@@ -1,0 +1,253 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + sharpdx-toolkit-to-monogame",
+  "projects": [
+    {
+      "path": "SdxEffects.csproj",
+      "assemblyName": "SdxEffects",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "v4.5",
+      "references": [
+        "SharpDX",
+        "SharpDX.Toolkit",
+        "SharpDX.Toolkit.Game",
+        "SharpDX.Toolkit.Graphics",
+        "SharpDX.Toolkit.Input",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "SharpDxToolkit"
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "SDX001",
+      "title": "SharpDX assembly reference",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": null,
+      "snippet": "SharpDX, SharpDX.Toolkit, SharpDX.Toolkit.Game +2 more"
+    },
+    {
+      "ruleId": "SDX002",
+      "title": "SharpDX build targets import",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": null,
+      "snippet": "..\\packages\\SharpDX.2.6.3\\build\\SharpDX.targets, ..\\packages\\SharpDX.Toolkit.2.6.3\\build\\SharpDX.Toolkit.targets"
+    },
+    {
+      "ruleId": "SDX013",
+      "title": "Toolkit effect (ToolkitFxc)",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "SdxEffects.csproj",
+      "location": null,
+      "snippet": "Content\\Tint.fx"
+    },
+    {
+      "ruleId": "SDX020",
+      "title": "Toolkit game namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 2,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit;"
+    },
+    {
+      "ruleId": "SDX021",
+      "title": "Toolkit graphics namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 3,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit.Graphics;"
+    },
+    {
+      "ruleId": "SDX023",
+      "title": "SharpDX math namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 1,
+        "column": 1
+      },
+      "snippet": "using SharpDX;"
+    },
+    {
+      "ruleId": "SDX010",
+      "title": "Toolkit font (ToolkitFont)",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": null,
+      "snippet": "Content\\Arial16.xml"
+    },
+    {
+      "ruleId": "SDX046",
+      "title": "Texture2D.New",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": "SdxEffects.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 27,
+        "column": 21
+      },
+      "snippet": "pixel = Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8.UNorm);"
+    },
+    {
+      "ruleId": "SDX049",
+      "title": "Effect parameter SetResource",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": "SdxEffects.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 34,
+        "column": 13
+      },
+      "snippet": "tint.Parameters[\"Texture\"].SetResource(pixel);"
+    },
+    {
+      "ruleId": "SDX051",
+      "title": "SpriteBatch.Begin(sortMode, effect)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "project": "SdxEffects.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 35,
+        "column": 13
+      },
+      "snippet": "spriteBatch.Begin(SpriteSortMode.Deferred, tint);"
+    },
+    {
+      "ruleId": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "SdxEffects.csproj",
+      "location": null,
+      "snippet": "TargetFrameworkVersion=v4.5"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "SDX001",
+      "title": "SharpDX assembly reference",
+      "explanation": "The project references SharpDX assemblies (SharpDX, SharpDX.Toolkit.*, SharpDX.Direct3D11 and others). They come from the SharpDX 2.x NuGet packages, which target .NET Framework 4.x and need the SharpDX build targets. They are not part of MonoGame.",
+      "resolution": "The migrator writes an SDK-style project that drops every SharpDX reference and references MonoGame instead. Code that used SharpDX types directly is reported by the SDX005 to SDX008 and SDX034 to SDX035 rules.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX002",
+      "title": "SharpDX build targets import",
+      "explanation": "The project imports SharpDX.targets or SharpDX.Toolkit.targets from the NuGet packages folder. Those files set the reference paths and run the Toolkit content compilers. They exist only after a NuGet restore of the old packages, and a build without them stops with MSB4019.",
+      "resolution": "The migrator drops the imports, the NuGet restore guard target and the import stamp from the SDK-style project it writes.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "explanation": "The project targets .NET Framework 4.x (for example v4.5). MonoGame 3.8.6.1 desktop projects target net8.0.",
+      "resolution": "The migrator writes an SDK-style project for net8.0 (or the Windows variant for WindowsDX).",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX010",
+      "title": "Toolkit font (ToolkitFont)",
+      "explanation": "The project builds fonts with the ToolkitFont build action. The source is a TkFont XML file that the Toolkit compiles to .tkb. MonoGame cannot read .tkb files and uses .spritefont files instead.",
+      "resolution": "The migrator converts each TkFont file to a .spritefont file and adds it to Content.mgcb. Line spacing and premultiply settings have no MonoGame field and are listed in the content report.",
+      "migratorTask": "sharpdx-toolkit:9.2"
+    },
+    {
+      "id": "SDX013",
+      "title": "Toolkit effect (ToolkitFxc)",
+      "explanation": "The project builds effects with the ToolkitFxc build action (the tkfxc compiler). Toolkit effects use a syntax that the MonoGame effect compiler does not take: technique passes name their shaders with Profile and PixelShader settings instead of the compile keyword, and use Texture2D<float4> with a separate SamplerState. The Toolkit can also generate wrapper classes that are not in source control.",
+      "resolution": "Rewrite each .fx file in the MonoGame effect syntax by hand and add it to Content.mgcb. The migrator copies the original and flags it. Code that used a generated wrapper class needs the wrapper removed.",
+      "migratorTask": null
+    },
+    {
+      "id": "SDX020",
+      "title": "Toolkit game namespace",
+      "explanation": "The code imports SharpDX.Toolkit, which holds Game, GameTime and GraphicsDeviceManager. The same names live in Microsoft.Xna.Framework in MonoGame. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX021",
+      "title": "Toolkit graphics namespace",
+      "explanation": "The code imports SharpDX.Toolkit.Graphics (SpriteBatch, Texture2D, SpriteFont, BasicEffect). MonoGame keeps these names in Microsoft.Xna.Framework.Graphics. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.Graphics.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX023",
+      "title": "SharpDX math namespace",
+      "explanation": "The code imports SharpDX for its math types (Vector2, Vector3, Matrix, Color, Rectangle). MonoGame keeps these names in Microsoft.Xna.Framework. Types that exist only in SharpDX are reported by SDX034 and SDX035. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX046",
+      "title": "Texture2D.New",
+      "explanation": "Texture2D.New is a static factory that takes a DXGI PixelFormat. MonoGame uses new Texture2D(device, width, height) with a SurfaceFormat. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "Use the Texture2D constructor and set the pixels with SetData.",
+      "migratorTask": null
+    },
+    {
+      "id": "SDX049",
+      "title": "Effect parameter SetResource",
+      "explanation": "SetResource sets a texture or sampler on an effect parameter. MonoGame sets textures with SetValue(Texture) and sets samplers on the device. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "Use EffectParameter.SetValue(texture) and GraphicsDevice.SamplerStates.",
+      "migratorTask": null
+    },
+    {
+      "id": "SDX051",
+      "title": "SpriteBatch.Begin(sortMode, effect)",
+      "explanation": "The Toolkit has a Begin(SpriteSortMode, Effect) overload that XNA and MonoGame lack. The rule looks for any two-argument call on a variable named spriteBatch, so it also finds Begin(SpriteSortMode, BlendState), which MonoGame accepts. It misses a SpriteBatch field with another name. Matching is by syntax only.",
+      "resolution": "Pass the effect in the long overload: Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect).",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 1,
+    "Warning": 4,
+    "Error": 6,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 7,
+    "Manual": 4,
+    "Unsupported": 0
+  },
+  "score": 72,
+  "projectedScore": 83,
+  "diagnostics": [],
+  "noProjectReason": null
+}

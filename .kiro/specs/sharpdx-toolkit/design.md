@@ -418,4 +418,17 @@ Written as the work lands. Gaps and deviations are recorded here.
 - `member` match: `name` became nullable and `names` was added (`MemberMatch.AllNames`). The schema requires `type` and `namespaces` and the validator checks exactly one of `name` or `names`, because a JSON-schema `oneOf` there produces unreadable errors.
 - `ProjectAnalyzer.AnalyzeAsync(path, catalogs, catalogDiagnostics, ...)` is new so the app can pass a "Toolkit catalog skipped" diagnostic (ANA021) into the report. The existing overloads delegate to it.
 - The XNA-catalog snapshot tests do not cover the Toolkit fixtures. They are in `FixturePaths.SharpDxNames` and `EveryNameRows` only. Toolkit snapshots with the real SDX catalog arrive with task 4.
-- Not done in task 3.2 yet: `AnalysisService` loading the Toolkit catalog file and the "broken Toolkit catalog must not stop XNA analysis" diagnostic. Both need the catalog file, so they land with task 4. Task 3.2 stays unticked until then.
+- Task 3.2 was finished with task 4 (see below), because the app wiring needs the catalog file.
+
+### Task 4 (rule catalog)
+
+- `rules/sharpdx-toolkit-to-monogame.json` has the 45 rules of the design table (20 AutoFixable, 18 Manual, 7 Unsupported). `tests/XnaReborn.Tests/Sdx/sdx-rule-cases.json` holds one positive and one negative snippet per rule. Every case is a Toolkit project (a `packages.config` with a Toolkit package is the only Toolkit signal, which no rule reads).
+- `AnalysisService` loads the XNA catalog (required) and then the Toolkit catalog. A missing or invalid Toolkit catalog adds diagnostic `ANA021` to the report and leaves XNA analysis alone. The App project copies the Toolkit catalog next to the app.
+- SDX004: the two GUID prefixes were checked against `ProjectTemplate.csproj` in the Toolkit repository: WinRT `{BC8A1FFA-BEE3-4634-8014-F334798102B3}` and Windows Phone 8 `{C089C8C0-30E0-4E22-80C0-CE093F111A43}`. The desktop template sets no `ProjectTypeGuids`.
+- SDX060 (`ToDisposeContent`) is a `type` match, not a `member` match as the design table says. The call is almost always a bare call of an inherited method, and the member matcher only sees `a.b` calls. Changing the member matcher to see bare calls would change XNA rules. A `ToDisposeContent` written as `this.ToDisposeContent(...)` is not found (known limit).
+- SDX030 uses `kind: Invocation` so `Matrix.Translation` as a property never matches. SDX040 and SDX044 use `kind: Access`.
+- SDX035 also lists `Color3`, SDX062 also lists `GameSystemCollection`, and SDX063 also lists `GameContext`, through `alsoNames`, as the design text for those rows describes.
+- SDX051 (`spriteBatch.Begin` with exactly two arguments) also finds `Begin(SpriteSortMode, BlendState)`, which MonoGame accepts. The match cannot see argument types. The explanation says so. Task 13 counts how often this is a false positive.
+- Source rule explanations end with a sentence that matching is by syntax only (R2.8). A test checks it.
+- Known limit: member rules gate on `using` directives. A file that uses `GraphicsDevice` without importing `SharpDX.Toolkit` or `SharpDX.Toolkit.Graphics` is not matched.
+- Snapshots: `sdx-negative` reports "Found 1 MonoGame project(s), but no rule catalog for them was loaded", because the MonoGame catalog is not part of the Toolkit snapshot test. No SDX rule fires.

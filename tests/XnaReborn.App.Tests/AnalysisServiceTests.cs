@@ -55,6 +55,49 @@ public sealed class AnalysisServiceTests
     }
 
     [Fact]
+    public async Task A_toolkit_fixture_is_analyzed_with_the_toolkit_catalog_and_the_report_names_both_catalogs()
+    {
+        var report = await new AnalysisService().AnalyzeAsync(RepoPaths.Fixture("sdx-basic"), null, TestContext.Current.CancellationToken);
+
+        Assert.Null(report.NoProjectReason);
+        Assert.Equal("xna-to-monogame + sharpdx-toolkit-to-monogame", report.CatalogName);
+        Assert.Contains(report.Findings, f => f.RuleId == "SDX020");
+        Assert.DoesNotContain(report.Findings, f => f.RuleId.StartsWith("XNA", StringComparison.Ordinal));
+        Assert.DoesNotContain(report.Diagnostics, d => d.Code == "ANA021");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task A_missing_or_broken_toolkit_catalog_does_not_stop_xna_analysis_and_is_reported(bool broken)
+    {
+        var toolkitPath = Path.Combine(Path.GetTempPath(), "sdx-catalog-" + Guid.NewGuid().ToString("N") + ".json");
+        if (broken)
+        {
+            await File.WriteAllTextAsync(toolkitPath, "{ \"version\": 1, \"name\": \"x\", \"rules\": [ { \"id\": \"BAD\" } ] }", TestContext.Current.CancellationToken);
+        }
+
+        try
+        {
+            var service = new AnalysisService(toolkitCatalogPath: toolkitPath);
+
+            var xna = await service.AnalyzeAsync(RepoPaths.Fixture("xna40-basic"), null, TestContext.Current.CancellationToken);
+            var toolkit = await service.AnalyzeAsync(RepoPaths.Fixture("sdx-basic"), null, TestContext.Current.CancellationToken);
+
+            Assert.NotEmpty(xna.Findings);
+            Assert.Equal("xna-to-monogame", xna.CatalogName);
+            var note = Assert.Single(xna.Diagnostics, d => d.Code == "ANA021");
+            Assert.Contains("Toolkit", note.Message, StringComparison.Ordinal);
+            Assert.Empty(toolkit.Projects);
+            Assert.Equal("Found 1 SharpDX Toolkit project(s), but no rule catalog for them was loaded.", toolkit.NoProjectReason);
+        }
+        finally
+        {
+            File.Delete(toolkitPath);
+        }
+    }
+
+    [Fact]
     public async Task A_cancelled_token_stops_the_analysis()
     {
         using var cts = new CancellationTokenSource();
