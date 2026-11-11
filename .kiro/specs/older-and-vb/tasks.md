@@ -136,7 +136,7 @@ Rules for every task:
   - [x] 18.4 Tests: two rewriters for one rule ID with different languages register; same pair throws; engine skips the wrong language; all existing rewriter tests pass with no edit
   - _Requirements: R9, R13_
 
-- [x] 19. VB project generation (`Migrator`)
+- [ ] 19. VB project generation (`Migrator`)
   - [x] 19.1 Rename `SdkCsprojGenerator` to `SdkProjectGenerator` with a language seam; keep a thin `SdkCsprojGenerator` alias only if tests need it
   - [x] 19.2 VB output: `MyType Empty`, `Option*` copy, `NamespaceImport` back to `<Import>`, `StartupObject` filter, no `Nullable`/`ImplicitUsings`, `GenerateAssemblyInfo=false` when `My Project/AssemblyInfo.vb` is kept
   - [x] 19.3 Omit `My Project` designer compile items and list each in the manifest; do not copy `.myapp` and `.settings` files silently (copy as manual work)

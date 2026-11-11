@@ -13,15 +13,4 @@ public static class VisualBasicProjectItems
         return path.EndsWith(".Designer.vb", StringComparison.OrdinalIgnoreCase)
             && path.Split('/').SkipLast(1).Any(s => s.Equals("My Project", StringComparison.OrdinalIgnoreCase));
     }
-
-    /// <summary>Tells whether a file is a My application model settings file (<c>.myapp</c> or <c>.settings</c>) in a <c>My Project</c> folder.</summary>
-    /// <param name="relativePath">The path relative to the project folder.</param>
-    /// <returns>True for a <c>.myapp</c> or <c>.settings</c> file below a <c>My Project</c> folder.</returns>
-    public static bool IsMyApplicationFile(string relativePath)
-    {
-        ArgumentNullException.ThrowIfNull(relativePath);
-        var path = relativePath.Replace('\\', '/');
-        return (path.EndsWith(".myapp", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".settings", StringComparison.OrdinalIgnoreCase))
-            && path.Split('/').SkipLast(1).Any(s => s.Equals("My Project", StringComparison.OrdinalIgnoreCase));
-    }
 }
