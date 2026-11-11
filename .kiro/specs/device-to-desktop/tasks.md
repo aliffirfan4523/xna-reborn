@@ -83,5 +83,5 @@ Order: 1 → 2 → 3 → 4 (analyzer, can overlap after 2) → 5 → 6 → 7 and
 
 - [ ] 12. Checkpoint
   - [ ] 12.1 All rules have positive and negative tests; `dotnet build`, `dotnet test` and `dotnet format --verify-no-changes` pass on master
-  - [ ] 12.2 Demo: open the Phone fixture, analyze (score), migrate, build, run, show the controls file; record any gap as a new task
+  - [x] 12.2 Demo: open the Phone fixture, analyze (score), migrate, build, run, show the controls file; record any gap as a new task (Ran headless as Migrated_phone_fixture_launches_and_writes_the_controls_file. Two gaps found and fixed: the Runner refused a copy with the game next to XnaReborn.Compat, and a Windows Phone game marked Library was built as a library so there was nothing to launch.)
   - [ ] 12.3 Review unverified items in the design ("Not verified") and mark each one as confirmed or still open

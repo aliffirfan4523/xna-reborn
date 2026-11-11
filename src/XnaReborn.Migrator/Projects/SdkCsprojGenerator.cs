@@ -270,7 +270,14 @@ public sealed class SdkCsprojGenerator
 
     private static string OutputType(IReadOnlyDictionary<string, string> properties)
     {
-        if (properties.TryGetValue("OutputType", out var value)
+        // Device game projects (Windows Phone, Xbox 360, Zune) are marked Library because the device packaging made the app; on the desktop they must be an exe.
+        var deviceGame = !(properties.TryGetValue("XnaOutputType", out var xnaOutput) && xnaOutput.Trim().Equals("Library", StringComparison.OrdinalIgnoreCase))
+            && properties.TryGetValue("XnaPlatform", out var platform)
+            && (platform.Trim().Equals("Windows Phone", StringComparison.OrdinalIgnoreCase)
+                || platform.Trim().Equals("Xbox 360", StringComparison.OrdinalIgnoreCase)
+                || platform.Trim().Equals("Zune", StringComparison.OrdinalIgnoreCase));
+        if (!deviceGame
+            && properties.TryGetValue("OutputType", out var value)
             && string.Equals(value.Trim(), "Library", StringComparison.OrdinalIgnoreCase))
         {
             return "Library";

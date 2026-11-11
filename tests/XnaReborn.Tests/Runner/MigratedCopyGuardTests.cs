@@ -42,6 +42,29 @@ public sealed class MigratedCopyGuardTests : IDisposable
     }
 
     [Fact]
+    public void PicksTheGameProjectNextToTheShimLibrary()
+    {
+        Manifest(1, true);
+        File.WriteAllText(Path.Combine(_dir, "Game.csproj"), "<Project/>");
+        Directory.CreateDirectory(Path.Combine(_dir, "XnaReborn.Compat"));
+        File.WriteAllText(Path.Combine(_dir, "XnaReborn.Compat", "XnaReborn.Compat.csproj"), "<Project/>");
+        var v = MigratedCopyGuard.Check(_dir);
+        Assert.True(v.Allowed);
+        Assert.Equal(Path.Combine(_dir, "Game.csproj"), v.ProjectOrSolutionPath);
+    }
+
+    [Fact]
+    public void StillRefusesTwoGameProjectsNextToTheShimLibrary()
+    {
+        Manifest(1, true);
+        File.WriteAllText(Path.Combine(_dir, "Game.csproj"), "<Project/>");
+        File.WriteAllText(Path.Combine(_dir, "Other.csproj"), "<Project/>");
+        Directory.CreateDirectory(Path.Combine(_dir, "XnaReborn.Compat"));
+        File.WriteAllText(Path.Combine(_dir, "XnaReborn.Compat", "XnaReborn.Compat.csproj"), "<Project/>");
+        Refused(MigratedCopyGuard.Check(_dir));
+    }
+
+    [Fact]
     public void IgnoresBinAndObj()
     {
         Manifest(1, true);
