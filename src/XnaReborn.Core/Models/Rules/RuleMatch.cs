@@ -99,6 +99,16 @@ public sealed record SpriteFontFamilyMatch(IReadOnlyList<string> Families) : Rul
 /// <param name="MinLinkedRatio">Smallest share of Compile items that must be links, from 0 to 1.</param>
 public sealed record ProjectLinksMatch(double MinLinkedRatio = 0.5) : RuleMatch;
 
+/// <summary>The text of files that match a glob. Comments are blanked first for .fx and .fxh files.</summary>
+/// <param name="Glob">The glob pattern, for example **/*.fx.</param>
+/// <param name="Regex">.NET regular expression that must match somewhere in the file text.</param>
+/// <param name="MaxBytes">Files larger than this are skipped. Defaults to 1 MiB.</param>
+public sealed record FileContentMatch(string Glob, string Regex, int MaxBytes = FileContentMatch.DefaultMaxBytes) : RuleMatch
+{
+    /// <summary>The default size limit in bytes (1 MiB).</summary>
+    public const int DefaultMaxBytes = 1_048_576;
+}
+
 /// <summary>A conditional compilation symbol named in an <c>#if</c> or <c>#elif</c> directive, including inactive branches.</summary>
 /// <param name="Names">Symbols to look for. Whole identifiers are compared, so WINDOWS_PHONE_7 does not match WINDOWS.</param>
 public sealed record PreprocessorSymbolMatch(IReadOnlyList<string> Names) : RuleMatch;

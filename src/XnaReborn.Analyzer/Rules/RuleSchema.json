@@ -104,7 +104,8 @@
         { "$ref": "#/$defs/matchSpriteFontFamily" },
         { "$ref": "#/$defs/matchProjectLinks" },
         { "$ref": "#/$defs/matchPreprocessorSymbol" },
-        { "$ref": "#/$defs/matchMgcbSetting" }
+        { "$ref": "#/$defs/matchMgcbSetting" },
+        { "$ref": "#/$defs/matchFileContent" }
       ]
     },
     "matchReference": {
@@ -261,6 +262,18 @@
       "properties": {
         "type": { "const": "projectLinks" },
         "minLinkedRatio": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.5 }
+      }
+    },
+    "matchFileContent": {
+      "description": "The text of files under the project folder that match a glob. Comments are blanked first for .fx and .fxh files. The regex is a .NET regular expression.",
+      "type": "object",
+      "required": ["type", "glob", "regex"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "fileContent" },
+        "glob": { "type": "string", "minLength": 1 },
+        "regex": { "type": "string", "minLength": 1, "description": ".NET regular expression." },
+        "maxBytes": { "type": "integer", "minimum": 1, "default": 1048576 }
       }
     },
     "matchPreprocessorSymbol": {
