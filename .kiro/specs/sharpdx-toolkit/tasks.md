@@ -33,21 +33,21 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - [x] 4.7 Catalog test: 45 rules, ids unique, every AutoFixable rule has a `migratorTask` that points at a task in this file, every Manual and Unsupported rule has a resolution text, and the catalog validates against the schema.
   - _Requirements: R2_
 
-- [ ] 5. Rename map and namespace rewriter
-  - [ ] 5.1 Create `rules/sharpdx-toolkit-map.json` (namespaces, `Matrix` factories, `MathUtil` members, state collection names) with sources listed. Confirm every MonoGame name against the 3.8.6.1 API docs and note any that do not exist. Loader in Core, with a schema test.
-  - [ ] 5.2 Implement `ToolkitNamespaceRewriter` for SDX020 to SDX024: `using`, aliases, fully qualified names, duplicate merge. Before/after tests, an idempotence test (a second run changes nothing), a trivia-preservation test, and a negative test that leaves `using SharpDX.Direct3D11;` alone.
-  - [ ] 5.3 Register it in `DefaultRewriters`.
+- [x] 5. Rename map and namespace rewriter
+  - [x] 5.1 Create `rules/sharpdx-toolkit-map.json` (namespaces, `Matrix` factories, `MathUtil` members, state collection names) with sources listed. Confirm every MonoGame name against the 3.8.6.1 API docs and note any that do not exist. Loader in Core, with a schema test.
+  - [x] 5.2 Implement `ToolkitNamespaceRewriter` for SDX020 to SDX024: `using`, aliases, fully qualified names, duplicate merge. Before/after tests, an idempotence test (a second run changes nothing), a trivia-preservation test, and a negative test that leaves `using SharpDX.Direct3D11;` alone.
+  - [x] 5.3 Register it in `DefaultRewriters`.
   - _Requirements: R4_
 
-- [ ] 6. Math and graphics rewriters
-  - [ ] 6.1 `ToolkitMathRewriter` (SDX030, SDX031). Before/after tests per renamed member. Negative: instance receivers, LH factories (left alone and marked), `Matrix.Translation` as a property.
-  - [ ] 6.2 `ToolkitGraphicsRewriter` (SDX040 to SDX044, SDX060). Before/after tests for each pattern. Marker tests for names that do not map (`BlendStates.Default`, `RasterizerStates.*`, `BackBuffer` used other than `.Width`/`.Height`). Negative: two-argument `SetRenderTargets` is not touched. Note the `ToDisposeContent` behavior change in the manifest text.
-  - [ ] 6.3 Marker coverage: every Manual rule produces a `// XNAREBORN: SDXnnn:` marker at the first match, on `sdx-lowlevel`.
+- [x] 6. Math and graphics rewriters
+  - [x] 6.1 `ToolkitMathRewriter` (SDX030, SDX031). Before/after tests per renamed member. Negative: instance receivers, LH factories (left alone and marked), `Matrix.Translation` as a property.
+  - [x] 6.2 `ToolkitGraphicsRewriter` (SDX040 to SDX044, SDX060). Before/after tests for each pattern. Marker tests for names that do not map (`BlendStates.Default`, `RasterizerStates.*`, `BackBuffer` used other than `.Width`/`.Height`). Negative: two-argument `SetRenderTargets` is not touched. Note the `ToDisposeContent` behavior change in the manifest text.
+  - [x] 6.3 Marker coverage: every Manual rule produces a `// XNAREBORN: SDXnnn:` marker at the first match, on `sdx-lowlevel`.
   - _Requirements: R4_
 
-- [ ] 7. Input rewriter
-  - [ ] 7.1 `ToolkitInputRewriter` (SDX025): remove the `KeyboardManager` field and construction, replace `GetState()` with `Keyboard.GetState()`. Negative and marker tests when the manager is passed elsewhere. MouseManager and PointerManager are not rewritten (markers only, SDX026/SDX027).
-  - [ ] 7.2 Compile test: the migrated `sdx-basic` input code compiles against MonoGame 3.8.6.1.
+- [x] 7. Input rewriter
+  - [x] 7.1 `ToolkitInputRewriter` (SDX025): remove the `KeyboardManager` field and construction, replace `GetState()` with `Keyboard.GetState()`. Negative and marker tests when the manager is passed elsewhere. MouseManager and PointerManager are not rewritten (markers only, SDX026/SDX027).
+  - [x] 7.2 Compile test: the migrated `sdx-basic` input code compiles against MonoGame 3.8.6.1.
   - _Requirements: R4_
 
 - [ ] 8. Project generation

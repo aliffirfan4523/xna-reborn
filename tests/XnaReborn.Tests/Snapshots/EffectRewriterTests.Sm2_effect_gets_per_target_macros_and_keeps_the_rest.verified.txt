@@ -1,0 +1,43 @@
+﻿// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define VS_SHADERMODEL vs_2_0
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define VS_SHADERMODEL vs_4_0_level_9_1
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4x4 WorldViewProjection;
+texture Tex;
+sampler2D TexSampler = sampler_state
+{
+    Texture = <Tex>;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
+struct VSInput { float4 Position : POSITION0; float2 UV : TEXCOORD0; };
+struct VSOutput { float4 Position : POSITION0; float2 UV : TEXCOORD0; };
+
+VSOutput MainVS(VSInput input)
+{
+    VSOutput output;
+    output.Position = mul(input.Position, WorldViewProjection);
+    output.UV = input.UV;
+    return output;
+}
+float4 MainPS(VSOutput input) : COLOR0
+{
+    return tex2D(TexSampler, input.UV);
+}
+
+technique Sm2
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}

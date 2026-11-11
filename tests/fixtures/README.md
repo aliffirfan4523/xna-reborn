@@ -2,6 +2,16 @@
 
 Small synthetic sample projects. Each folder has its own `README.md` that says it is original code under the repository license. Fixtures are never built or run.
 
+## Older XNA fixtures
+
+Fixtures for the `older-and-vb` spec (rules `XNA100` to `XNA105`). Each README lists the expected findings.
+
+| Fixture | Shape |
+|---|---|
+| `xna10-express-basic` | Game Studio Express 1.0 C# game: Express project type GUID, `Game Studio Express\v1.0` targets, content listed inside the game project, `LoadGraphicsContent`, `ResourceManagementMode`, `SpriteBlendMode` |
+| `xna10-clean` | Express 1.0 project that uses none of the removed APIs (negative) |
+| `xna20-vs2005` | 2.0 solution in format 9.00: Windows game, Xbox 360 project, nested `Content.contentproj`, `RenderState`, `Effect.Begin` |
+
 ## MonoGame upgrade fixtures
 
 Fixtures for the `monogame-upgrade` spec (rules `MG001` to `MG032`). The "Positive for" column lists the rules the fixture must trigger. `mg38-current` is the default negative and scores 100. A test checks that every folder is listed here with the same rules as `FixturePaths.MonoGamePositives`.

@@ -56,7 +56,9 @@ public sealed class ContentProjectReader
             [],
             [new Diagnostic("ANA001", $"Content project could not be read: {reason}", relative)]);
 
-    private static ContentItem ToContentItem(ProjectItem item)
+    internal static ContentItem ToContentItem(ProjectItem item) => ToContentItem(item, inProject: false);
+
+    internal static ContentItem ToContentItem(ProjectItem item, bool inProject)
     {
         var parameters = new Dictionary<string, string>();
         foreach (var (name, value) in item.Metadata)
@@ -72,7 +74,8 @@ public sealed class ContentProjectReader
             Meta(item, "Name"),
             Meta(item, "Importer"),
             Meta(item, "Processor"),
-            parameters);
+            parameters,
+            inProject);
     }
 
     private static string? Meta(ProjectItem item, string name) =>

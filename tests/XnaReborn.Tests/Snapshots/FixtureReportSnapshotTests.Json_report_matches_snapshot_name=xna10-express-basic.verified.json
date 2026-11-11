@@ -1,0 +1,88 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "XnaExpress10Basic.csproj",
+      "assemblyName": "XnaExpress10Basic",
+      "isXna": true,
+      "xnaVersion": "1.0",
+      "platform": "Windows",
+      "profile": null,
+      "targetFramework": null,
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "System",
+        "System.Xml"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [],
+      "contentItems": [
+        {
+          "sourcePath": "Content/ship.png",
+          "nameOverride": "ship",
+          "importer": "TextureImporter",
+          "processor": "SpriteTextureProcessor",
+          "processorParams": {},
+          "inProject": true
+        },
+        {
+          "sourcePath": "Content/backdrop.png",
+          "nameOverride": "backdrop",
+          "importer": "TextureImporter",
+          "processor": "TextureProcessor",
+          "processorParams": {},
+          "inProject": true
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA905",
+      "title": "SpriteBlendMode",
+      "severity": "Error",
+      "classification": "Manual",
+      "project": "XnaExpress10Basic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 55,
+        "column": 31
+      },
+      "snippet": "spriteBatch.Begin(SpriteBlendMode.AlphaBlend);"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA905",
+      "title": "SpriteBlendMode",
+      "explanation": "SpriteBlendMode was replaced by BlendState.",
+      "resolution": "Use BlendState.AlphaBlend or Additive.",
+      "migratorTask": null
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 1,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 1,
+    "Unsupported": 0
+  },
+  "score": 92,
+  "projectedScore": 92,
+  "diagnostics": [],
+  "noProjectReason": null
+}

@@ -365,5 +365,41 @@
     "kind": "project",
     "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Reference Include=\"Microsoft.Advertising.Mobile, Version=6.1.0.0\" />\n  </ItemGroup>\n</Project>\n",
     "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"4.0\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553\" />\n    <Reference Include=\"Microsoft.Xna.Framework.Game, Version=4.0.0.0\" />\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA100",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v1.0</XnaFrameworkVersion>\n  </PropertyGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v3.1</XnaFrameworkVersion>\n  </PropertyGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA101",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v1.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Content Include=\"Content\\ship.png\">\n      <Importer>TextureImporter</Importer>\n      <Processor>TextureProcessor</Processor>\n      <XNAUseContentPipeline>true</XNAUseContentPipeline>\n    </Content>\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <PropertyGroup>\n    <XnaFrameworkVersion>v1.0</XnaFrameworkVersion>\n  </PropertyGroup>\n  <ItemGroup>\n    <Content Include=\"readme.txt\">\n      <XNAUseContentPipeline>false</XNAUseContentPipeline>\n    </Content>\n  </ItemGroup>\n</Project>\n"
+  },
+  {
+    "ruleId": "XNA102",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nnamespace Cases\n{\n    public class Case\n    {\n        protected override void LoadGraphicsContent(bool flag)\n        {\n        }\n    }\n}\n",
+    "negative": "using System;\nusing Microsoft.Xna.Framework;\nnamespace Cases\n{\n    public class Case\n    {\n        protected override void LoadContent(bool flag)\n        {\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA103",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework;\nnamespace Cases\n{\n    public class Case\n    {\n        protected override void UnloadGraphicsContent(bool flag)\n        {\n        }\n    }\n}\n",
+    "negative": "using System;\nusing System.IO;\nnamespace Cases\n{\n    public class Case\n    {\n        protected override void UnloadGraphicsContent(bool flag)\n        {\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA104",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Graphics;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            var value = ResourceManagementMode.Manual;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing System.IO;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            var value = ResourceManagementMode.Manual;\n        }\n    }\n}\n"
+  },
+  {
+    "ruleId": "XNA105",
+    "kind": "source",
+    "positive": "using System;\nusing Microsoft.Xna.Framework.Graphics;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            var value = ResourceUsage.None;\n        }\n    }\n}\n",
+    "negative": "using System;\nusing System.IO;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            var value = ResourceUsage.None;\n        }\n    }\n}\n"
   }
 ]

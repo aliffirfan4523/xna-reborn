@@ -5,7 +5,7 @@ namespace XnaReborn.Migrator.Source;
 /// <summary>Builds the registry of every source rewriter the migrator ships.</summary>
 public static class DefaultRewriters
 {
-    /// <summary>Creates a registry with ENTRYPOINT, DEVICEINPUT, XNA022, XNA024, XNA039, XNA040, XNA053, XNA056, XNA059, XNA062, XNA063 and MG028 to MG032.</summary>
+    /// <summary>Creates a registry with ENTRYPOINT, DEVICEINPUT, XNA022, XNA024, XNA039, XNA040, XNA053, XNA056, XNA059, XNA062, XNA063, MG028 to MG032 and the SharpDX Toolkit rules SDX005 to SDX063 that have a rewriter or a marker.</summary>
     /// <returns>A new registry.</returns>
     public static RewriterRegistry Create()
     {
@@ -26,6 +26,24 @@ public static class DefaultRewriters
         registry.Register(new NamespaceMarkerRewriter("MG029", ["Microsoft.Xna.Framework.GamerServices"], "MonoGame 3.8 has no Microsoft.Xna.Framework.GamerServices. Replace the code or remove the feature."));
         registry.Register(new NamespaceMarkerRewriter("MG030", ["OpenTK"], "OpenTK is not part of MonoGame 3.8.6.1. Port the OpenGL code by hand or remove it."));
         registry.Register(new NamespaceMarkerRewriter("MG031", ["Windows.UI.Xaml", "Windows.ApplicationModel"], "This is a UWP API. It does not exist in the desktop project. Replace it by hand or remove it."));
+        foreach (var ruleId in ToolkitNamespaceRewriter.RuleIds())
+        {
+            registry.Register(new ToolkitNamespaceRewriter(ruleId));
+        }
+
+        registry.Register(new ToolkitInputRewriter());
+        registry.Register(ToolkitMathRewriter.ForMatrix());
+        registry.Register(ToolkitMathRewriter.ForMathUtil());
+        foreach (var ruleId in ToolkitGraphicsRewriter.RuleIds)
+        {
+            registry.Register(new ToolkitGraphicsRewriter(ruleId));
+        }
+
+        foreach (var marker in ToolkitMarkerRewriter.CreateAll())
+        {
+            registry.Register(marker);
+        }
+
         return registry;
     }
 }

@@ -17,11 +17,18 @@ public sealed class ImporterMap
     private readonly HashSet<string> _processors = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<(string, string)> _allPairs = new(PairComparer.Instance);
     private readonly Dictionary<(string, string), ImporterPair> _pairIndex = new(PairComparer.Instance);
+    private readonly Dictionary<(string, string), ImporterAlias> _aliasIndex = new(PairComparer.Instance);
 
-    private ImporterMap(IReadOnlyList<ImporterPair> pairs, IReadOnlyList<ImporterPair> stockUnsupported)
+    private ImporterMap(IReadOnlyList<ImporterPair> pairs, IReadOnlyList<ImporterPair> stockUnsupported, IReadOnlyList<ImporterAlias> aliases)
     {
         Pairs = pairs;
         StockUnsupported = stockUnsupported;
+        Aliases = aliases;
+        foreach (var alias in aliases)
+        {
+            _aliasIndex.TryAdd((alias.Importer, alias.Processor), alias);
+        }
+
         foreach (var pair in pairs)
         {
             _pairIndex.TryAdd((pair.Importer, pair.Processor), pair);
@@ -44,6 +51,9 @@ public sealed class ImporterMap
     /// <summary>Stock XNA pairs that MonoGame cannot build.</summary>
     public IReadOnlyList<ImporterPair> StockUnsupported { get; }
 
+    /// <summary>Processors of XNA Game Studio 1.0 that were merged into a current one. They count as stock; <see cref="Resolve"/> gives the replacement.</summary>
+    public IReadOnlyList<ImporterAlias> Aliases { get; }
+
     /// <summary>Reads a map from JSON text.</summary>
     /// <param name="json">The JSON text of an importer map, version 1.</param>
     /// <returns>The parsed map.</returns>
@@ -65,7 +75,7 @@ public sealed class ImporterMap
                 throw new FormatException("Importer map 'version' must be 1.");
             }
 
-            return new ImporterMap(ReadPairs(root, "pairs", required: true), ReadPairs(root, "stockUnsupported", required: false));
+            return new ImporterMap(ReadPairs(root, "pairs", required: true), ReadPairs(root, "stockUnsupported", required: false), ReadAliases(root));
         }
         catch (JsonException exception)
         {
@@ -86,10 +96,21 @@ public sealed class ImporterMap
 
         if (importer is not null && processor is not null)
         {
-            return _allPairs.Contains((importer, processor));
+            return _allPairs.Contains((importer, processor)) || _aliasIndex.ContainsKey((importer, processor));
         }
 
-        return importer is not null ? _importers.Contains(importer) : _processors.Contains(processor!);
+        return importer is not null ? _importers.Contains(importer) : _processors.Contains(processor!) || _aliasIndex.Keys.Any(k => string.Equals(k.Item2, processor, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>Replaces a legacy XNA 1.0 processor name by the one that merged it. Any other pair is returned unchanged.</summary>
+    /// <param name="importer">The importer name.</param>
+    /// <param name="processor">The processor name.</param>
+    /// <param name="alias">The alias that applied, or null when the pair is not an alias.</param>
+    /// <returns>The processor name to use.</returns>
+    public string Resolve(string importer, string processor, out ImporterAlias? alias)
+    {
+        alias = _aliasIndex.GetValueOrDefault((importer, processor));
+        return alias?.MapsTo ?? processor;
     }
 
     /// <summary>Tells whether the item comes from a custom pipeline assembly. An item with neither name is never custom.</summary>
@@ -139,6 +160,37 @@ public sealed class ImporterMap
             result.Add(new ImporterPair(
                 ReadString(item, "importer", where, required: true)!,
                 ReadString(item, "processor", where, required: true)!,
+                ReadString(item, "note", where, required: false)));
+        }
+
+        return result;
+    }
+
+    private static List<ImporterAlias> ReadAliases(JsonElement root)
+    {
+        var result = new List<ImporterAlias>();
+        if (!root.TryGetProperty("aliases", out var array))
+        {
+            return result;
+        }
+
+        if (array.ValueKind != JsonValueKind.Array)
+        {
+            throw new FormatException("Importer map 'aliases' must be an array.");
+        }
+
+        foreach (var item in array.EnumerateArray())
+        {
+            var where = $"aliases[{result.Count}]";
+            if (item.ValueKind != JsonValueKind.Object)
+            {
+                throw new FormatException($"Importer map '{where}' must be an object.");
+            }
+
+            result.Add(new ImporterAlias(
+                ReadString(item, "importer", where, required: true)!,
+                ReadString(item, "processor", where, required: true)!,
+                ReadString(item, "mapsTo", where, required: true)!,
                 ReadString(item, "note", where, required: false)));
         }
 
