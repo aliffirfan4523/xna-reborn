@@ -24,6 +24,7 @@ public sealed class RuleMatchJsonConverter : JsonConverter<RuleMatch>
         ["projectLinks"] = typeof(ProjectLinksMatch),
         ["preprocessorSymbol"] = typeof(PreprocessorSymbolMatch),
         ["mgcbSetting"] = typeof(MgcbSettingMatch),
+        ["fileContent"] = typeof(FileContentMatch),
     };
 
     private static readonly Dictionary<Type, string> _namesByType = _typesByName.ToDictionary(p => p.Value, p => p.Key);
