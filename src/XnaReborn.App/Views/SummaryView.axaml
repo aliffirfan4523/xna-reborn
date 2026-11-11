@@ -1,69 +1,122 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:XnaReborn.App.Controls"
              xmlns:vm="using:XnaReborn.App.ViewModels"
              x:Class="XnaReborn.App.Views.SummaryView"
              x:DataType="vm:SummaryViewModel">
   <ScrollViewer>
     <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource SpacingLarge}">
-      <TextBlock Text="{Binding Title}" Classes="headline"
-                 AutomationProperties.HeadingLevel="1" />
+      <StackPanel Spacing="4">
+        <TextBlock Text="{Binding Title}" Classes="headline"
+                   AutomationProperties.HeadingLevel="1" />
+        <TextBlock Text="{Binding HeadlineText}" Classes="subtitle"
+                   AutomationProperties.AutomationId="Headline" />
+      </StackPanel>
 
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Compatibility score" FontWeight="SemiBold"
-                   AutomationProperties.HeadingLevel="2" />
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingLarge}">
-          <StackPanel>
-            <TextBlock Text="Before" />
-            <TextBlock Text="{Binding BeforeScore}" FontSize="40" FontWeight="Bold"
-                       AutomationProperties.AutomationId="BeforeScore"
-                       AutomationProperties.Name="Score before migration" />
+      <!-- Failure variant: calm, says what to do next. -->
+      <controls:Banner Kind="Warning" Title="The build did not succeed"
+                       Message="{Binding BuildText}"
+                       IsVisible="{Binding BuildFailed}"
+                       AutomationProperties.AutomationId="BuildFailedBanner" />
+
+      <!-- Hero: score before and after. The animation is run from SummaryView.axaml.cs. -->
+      <Border x:Name="Hero" Classes="card" AutomationProperties.Name="Compatibility score result">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Compatibility score" Classes="section"
+                     AutomationProperties.HeadingLevel="2" />
+          <StackPanel Orientation="Horizontal" Spacing="24" VerticalAlignment="Center">
+            <StackPanel>
+              <TextBlock Text="Before" Classes="caption muted" />
+              <TextBlock Text="{Binding BeforeScore}" Classes="display" Foreground="{DynamicResource TextMutedBrush}"
+                         AutomationProperties.AutomationId="BeforeScore"
+                         AutomationProperties.Name="Score before migration" />
+            </StackPanel>
+            <PathIcon Data="{StaticResource IconPlay}" Width="20" Height="20" VerticalAlignment="Bottom"
+                      Foreground="{DynamicResource TextMutedBrush}" AutomationProperties.AccessibilityView="Raw" />
+            <StackPanel>
+              <TextBlock Text="After" Classes="caption muted" />
+              <TextBlock x:Name="AfterScoreText" Text="{Binding AfterScore}" Classes="display"
+                         Foreground="{DynamicResource AccentTextBrush}"
+                         AutomationProperties.AutomationId="AfterScore"
+                         AutomationProperties.Name="Score after migration" />
+            </StackPanel>
+            <controls:Chip Kind="Success" Text="{Binding GainText}" VerticalAlignment="Bottom" />
           </StackPanel>
-          <TextBlock Text="to" VerticalAlignment="Bottom" />
-          <StackPanel>
-            <TextBlock Text="After" />
-            <TextBlock Text="{Binding AfterScore}" FontSize="40" FontWeight="Bold"
-                       AutomationProperties.AutomationId="AfterScore"
-                       AutomationProperties.Name="Score after migration" />
-          </StackPanel>
+          <TextBlock Text="{Binding ScoreText}" Classes="muted"
+                     AutomationProperties.AutomationId="ScoreText" />
+          <TextBlock Text="{Binding BuildText}" Classes="muted" TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="BuildText" />
         </StackPanel>
-        <TextBlock Text="{Binding ScoreText}" AutomationProperties.AutomationId="ScoreText" />
-      </StackPanel>
+      </Border>
 
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Build" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <TextBlock Text="{Binding BuildText}" TextWrapping="Wrap" AutomationProperties.AutomationId="BuildText" />
-      </StackPanel>
+      <!-- Big actions. -->
+      <WrapPanel Orientation="Horizontal">
+        <Button Classes="primary" Content="Run game" Command="{Binding RunGameCommand}"
+                IsVisible="{Binding !BuildFailed}" Margin="0,0,8,8"
+                AutomationProperties.AutomationId="RunGame"
+                AutomationProperties.Name="Run the migrated game" />
+        <Button Classes="primary" Content="Back to Build and run" Command="{Binding RunGameCommand}"
+                IsVisible="{Binding BuildFailed}" Margin="0,0,8,8"
+                AutomationProperties.AutomationId="BackToBuild"
+                AutomationProperties.Name="Go back to Build and run" />
+        <Button Classes="secondary" Content="Open output folder" Command="{Binding OpenOutputFolderCommand}" Margin="0,0,8,8"
+                AutomationProperties.AutomationId="OpenOutputFolder"
+                AutomationProperties.Name="Open the output folder" />
+        <Button Classes="secondary" Content="Open manifest" Command="{Binding OpenManifestCommand}" Margin="0,0,8,8"
+                AutomationProperties.AutomationId="OpenManifest"
+                AutomationProperties.Name="Open the migration manifest" />
+        <Button Classes="subtle" Content="Start over" Command="{Binding StartOverCommand}" Margin="0,0,8,8"
+                AutomationProperties.AutomationId="StartOver"
+                AutomationProperties.Name="Start over with another project" />
+      </WrapPanel>
 
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Findings" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <TextBlock Text="{Binding AutoFixedCount, StringFormat='Fixed automatically: {0}'}"
-                   AutomationProperties.AutomationId="AutoFixedCount" />
-        <TextBlock Text="{Binding ManualCount, StringFormat='Need manual work: {0}'}"
-                   AutomationProperties.AutomationId="ManualCount" />
-        <TextBlock Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
-                   AutomationProperties.AutomationId="UnsupportedCount" />
-      </StackPanel>
+      <!-- Stat tiles. -->
+      <UniformGrid Columns="4" AutomationProperties.Name="Results">
+        <controls:StatTile Kind="Success" Label="Fixed automatically" Value="{Binding AutoFixedCount}" Margin="0,0,8,0"
+                           AutomationProperties.AutomationId="AutoFixedCount" />
+        <controls:StatTile Kind="Warning" Label="Needs hand work" Value="{Binding ManualCount}" Margin="0,0,8,0"
+                           AutomationProperties.AutomationId="ManualCount" />
+        <controls:StatTile Kind="Info" Icon="{StaticResource IconChart}" Label="Assets built" Value="{Binding AssetsBuiltCount}" Margin="0,0,8,0"
+                           AutomationProperties.AutomationId="AssetsBuiltCount" />
+        <controls:StatTile Kind="Neutral" Icon="{StaticResource IconDiff}" Label="Fonts swapped" Value="{Binding FontsSwappedCount}"
+                           AutomationProperties.AutomationId="FontsSwappedCount" />
+      </UniformGrid>
+      <TextBlock Text="{Binding UnsupportedCount, StringFormat='Unsupported (cannot be migrated): {0}'}" Classes="caption muted"
+                 AutomationProperties.AutomationId="UnsupportedCount" />
 
-      <StackPanel Spacing="{StaticResource SpacingSmall}">
-        <TextBlock Text="Manual work left" FontWeight="SemiBold" AutomationProperties.HeadingLevel="2" />
-        <TextBlock Text="None." IsVisible="{Binding !HasManualItems}" />
-        <ItemsControl ItemsSource="{Binding ManualItems}"
-                      IsVisible="{Binding HasManualItems}"
-                      AutomationProperties.Name="Manual work left">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:SummaryManualItem">
-              <StackPanel Margin="0,0,0,8">
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-                  <TextBlock Text="{Binding Kind, StringFormat='[{0}]'}" FontWeight="SemiBold" />
-                  <TextBlock Text="{Binding Path}" />
+      <!-- To-do list. -->
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Manual work left" Classes="section" AutomationProperties.HeadingLevel="2" />
+          <controls:Banner Kind="Success" Title="Nothing left to do by hand"
+                           IsVisible="{Binding !HasManualItems}" />
+          <ItemsControl ItemsSource="{Binding ManualItems}"
+                        IsVisible="{Binding HasManualItems}"
+                        AutomationProperties.Name="Manual work left">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:SummaryManualItem">
+                <StackPanel Margin="0,0,0,12" Spacing="2">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource IconFlag}" Width="14" Height="14"
+                              Foreground="{DynamicResource TextMutedBrush}" AutomationProperties.AccessibilityView="Raw" />
+                    <TextBlock Text="{Binding Kind, StringFormat='[{0}]'}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Path}" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                  <TextBlock Text="{Binding Reason}" Classes="muted" TextWrapping="Wrap" Margin="22,0,0,0" />
                 </StackPanel>
-                <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" />
-              </StackPanel>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </StackPanel>
-
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <WrapPanel IsVisible="{Binding HasManualItems}">
+            <Button Classes="secondary" Content="See changes in Diff" Command="{Binding GoToDiffCommand}" Margin="0,0,8,0"
+                    AutomationProperties.AutomationId="GoToDiff"
+                    AutomationProperties.Name="Go to the Diff page" />
+            <Button Classes="secondary" Content="Back to Report" Command="{Binding GoToReportCommand}"
+                    AutomationProperties.AutomationId="GoToReport"
+                    AutomationProperties.Name="Go to the Report page" />
+          </WrapPanel>
+        </StackPanel>
+      </Border>
       <!-- Flash conversion: markers left in the code, by rule, each a link to the converted file. Built from the manifest. -->
       <StackPanel Spacing="{StaticResource SpacingSmall}" IsVisible="{Binding IsFlash}"
                   AutomationProperties.AutomationId="FlashMarkersPanel">
@@ -105,17 +158,6 @@
         </ItemsControl>
       </StackPanel>
 
-      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
-        <Button Classes="secondary" Content="Open output folder" Command="{Binding OpenOutputFolderCommand}"
-                AutomationProperties.AutomationId="OpenOutputFolder"
-                AutomationProperties.Name="Open the output folder" />
-        <Button Classes="secondary" Content="Open manifest" Command="{Binding OpenManifestCommand}"
-                AutomationProperties.AutomationId="OpenManifest"
-                AutomationProperties.Name="Open the migration manifest" />
-        <Button Classes="secondary" Content="Start over" Command="{Binding StartOverCommand}"
-                AutomationProperties.AutomationId="StartOver"
-                AutomationProperties.Name="Start over with another project" />
-      </StackPanel>
     </StackPanel>
   </ScrollViewer>
 </UserControl>
