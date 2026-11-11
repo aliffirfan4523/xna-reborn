@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Verify.Xunit" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\XnaReborn.Core\XnaReborn.Core.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Flash.Analyzer\XnaReborn.Flash.Analyzer.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Flash.Converter\XnaReborn.Flash.Converter.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Flixel\XnaReborn.Flixel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

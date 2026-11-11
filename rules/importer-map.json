@@ -33,6 +33,10 @@
     { "importer": "WmaImporter", "processor": "SoundEffectProcessor" },
     { "importer": "WmvImporter", "processor": "VideoProcessor" }
   ],
+  "aliases": [
+    { "importer": "TextureImporter", "processor": "SpriteTextureProcessor", "mapsTo": "TextureProcessor", "note": "XNA 1.0 processor, merged into TextureProcessor in 2.0. The 1.0 default parameters were not confirmed, so check the result." },
+    { "importer": "TextureImporter", "processor": "ModelTextureProcessor", "mapsTo": "TextureProcessor", "note": "XNA 1.0 processor, merged into TextureProcessor in 2.0. The 1.0 default parameters were not confirmed, so check the result." }
+  ],
   "stockUnsupported": [
     { "importer": "XactImporter", "processor": "XactProcessor", "note": "XACT projects (.xap) have no MonoGame pipeline equivalent." }
   ]

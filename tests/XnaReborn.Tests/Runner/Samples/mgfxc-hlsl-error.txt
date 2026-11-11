@@ -1,0 +1,3 @@
+probe/vpos.fx(12,19,12,21): error X4576: Input signature parameter 'VPOS' is not supported
+probe/vpos.fx(20,5): warning X3206: implicit truncation of vector type
+Failed to compile 'probe/vpos.fx'!

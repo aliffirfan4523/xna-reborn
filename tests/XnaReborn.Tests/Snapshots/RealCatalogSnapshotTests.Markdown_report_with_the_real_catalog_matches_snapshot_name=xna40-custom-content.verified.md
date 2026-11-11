@@ -63,7 +63,7 @@ Classification: AutoFixable 6, Manual 4, Unsupported 0
 
 ### XNA001 XNA Game Studio build targets import
 
-The project file imports the XNA Game Studio MSBuild targets. They exist only on machines with XNA Game Studio 4.0 and Visual Studio 2010 installed. Without them the build stops at once with MSB4019 (imported project not found), as it did for Pirate-Treasure-Hunter.
+The project file imports the XNA Game Studio MSBuild targets (Microsoft.Xna.GameStudio.targets from 3.0 on, Microsoft.Xna.Common.targets and Microsoft.Xna.ContentPipeline.targets in Game Studio Express 1.0). They exist only on machines with the matching XNA Game Studio and Visual Studio installed. Without them the build stops at once with MSB4019 (imported project not found), as it did for Pirate-Treasure-Hunter.
 
 **Resolution:** The migrator writes an SDK-style project for .NET 8 that does not import the XNA targets.
 
@@ -71,7 +71,7 @@ Migrator task: project-migrator:4.1
 
 ### XNA002 XNA-specific project properties
 
-The project sets XnaFrameworkVersion, a property that only the XNA Game Studio targets understand. The same project usually also sets ProjectTypeGuids (the XNA game GUID), XnaPlatform, XnaProfile, XnaOutputType, and XnaCrossPlatformGroupID. None has an MSBuild equivalent in MonoGame.
+The project sets XnaFrameworkVersion, a property that only the XNA Game Studio targets understand. The same project usually also sets ProjectTypeGuids (the XNA game GUID), XnaPlatform, XnaProfile, XnaOutputType, XnaCrossPlatformGroupID, and in Game Studio Express 1.0 XNAGlobalContentPipelineAssemblies and XNAProjectContentPipelineAssemblies. None has an MSBuild equivalent in MonoGame.
 
 **Resolution:** The migrator drops XNA-specific properties and project type GUIDs when it generates the SDK-style project. The graphics profile is carried into Content.mgcb as /profile.
 
@@ -115,9 +115,9 @@ The project contains an XACT authoring file. XACT is a Windows-only tool that is
 
 ### XNA017 Effect file (.fx) needs shader review
 
-XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently.
+XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently. The migrator fixes shader models and two sampler state names, marks the constructs it cannot fix, and copies included files; a person still has to check the look.
 
-**Resolution:** Build the effect with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits.
+**Resolution:** Read the notes and marker comments the migrator left in the copied effect, build it with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits.
 
 ### XNA046 Properties/AssemblyInfo.cs duplicates SDK attributes
 

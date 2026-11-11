@@ -74,45 +74,45 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - Review the catalog snapshot and the generated shim diff by eye. Decide the default for `StreamingWavesAsSong` from the results (design risk 2).
   - _Requirements: R2 to R7_
 
-- [ ] 11. Effect scanner and include collector
-  - [ ] 11.1 Implement `FxScanner` and `FxDocument` in `XnaReborn.Migrator/Effects` (tokenizer, top-level split, technique and pass reading, sampler forms, conditional depth, parameter usage).
-  - [ ] 11.2 Implement `FxIncludeCollector` with cycle protection and missing-include findings.
-  - [ ] 11.3 Tests per construct from `xna40-effects`: comments hide matches, `#if` depth, sampler forms listed in R10.3, several passes, missing include (positive) and a file with no techniques (negative).
-  - [ ] 11.4 Add the `shortcut:` comment for the not-a-full-parser limit.
+- [x] 11. Effect scanner and include collector
+  - [x] 11.1 Implement `FxScanner` and `FxDocument` in `XnaReborn.Migrator/Effects` (tokenizer, top-level split, technique and pass reading, sampler forms, conditional depth, parameter usage).
+  - [x] 11.2 Implement `FxIncludeCollector` with cycle protection and missing-include findings.
+  - [x] 11.3 Tests per construct from `xna40-effects`: comments hide matches, `#if` depth, sampler forms listed in R10.3, several passes, missing include (positive) and a file with no techniques (negative).
+  - [x] 11.4 Add the `shortcut:` comment for the not-a-full-parser limit.
   - _Requirements: R8, R12.1, R12.3_
 
-- [ ] 12. Profile rewriter and profile data
-  - [ ] 12.1 Create `rules/effect-profiles.json` (profile mapping, escalation ladder, pass state allow list) with sources, and a loader in Core.
-  - [ ] 12.2 Implement `FxProfileRewriter` (R9). Confirm the `_2_a`/`_2_b` OpenGL mapping with `mgfxc` on a small fixture; if it fails, change the data, not the code.
-  - [ ] 12.3 Tests: SM2 effect, SM3 effect, template-style unconditional `#define`, mixed models (per-model macros), unknown model (marker), already portable (no change), idempotence, rest of file byte identical, snapshot.
-  - [ ] 12.4 Slow test (skipped without `mgfxc`): the rewritten SM2 fixtures pass on OpenGL and on DirectX where the machine can run it.
+- [x] 12. Profile rewriter and profile data
+  - [x] 12.1 Create `rules/effect-profiles.json` (profile mapping, escalation ladder, pass state allow list) with sources, and a loader in Core.
+  - [x] 12.2 Implement `FxProfileRewriter` (R9). Confirm the `_2_a`/`_2_b` OpenGL mapping with `mgfxc` on a small fixture; if it fails, change the data, not the code.
+  - [x] 12.3 Tests: SM2 effect, SM3 effect, template-style unconditional `#define`, mixed models (per-model macros), unknown model (marker), already portable (no change), idempotence, rest of file byte identical, snapshot.
+  - [x] 12.4 Slow test (skipped without `mgfxc`): the rewritten SM2 fixtures pass on OpenGL and on DirectX where the machine can run it.
   - _Requirements: R9_
 
-- [ ] 13. Sampler rewriter and markers
-  - [ ] 13.1 Implement `FxSamplerRewriter` (R10) and `FxMarkers` (R11) using the scanner and the pass state allow list.
-  - [ ] 13.2 Tests: each rule with a positive and a negative fixture effect; a marker is not inserted twice; notes carry the right `NeedsManualWork`; plain sampler forms are untouched (negative); marker text snapshot.
-  - [ ] 13.3 Slow test: the sampler-rewritten fixtures compile with `mgfxc`.
+- [x] 13. Sampler rewriter and markers
+  - [x] 13.1 Implement `FxSamplerRewriter` (R10) and `FxMarkers` (R11) using the scanner and the pass state allow list.
+  - [x] 13.2 Tests: each rule with a positive and a negative fixture effect; a marker is not inserted twice; notes carry the right `NeedsManualWork`; plain sampler forms are untouched (negative); marker text snapshot.
+  - [x] 13.3 Slow test: the sampler-rewritten fixtures compile with `mgfxc`.
   - _Requirements: R10, R11_
 
-- [ ] 14. Migrator integration for effects
-  - [ ] 14.1 Add `RewriteEffects` to `MigrationOptions`; add `EffectRewriteStep` called by `ContentConverter` where `.fx` items are copied; copy `#include` files (R12); notes into `ContentReport` and the manifest.
-  - [ ] 14.2 Pin `dotnet-mgfxc` 3.8.6.1 in `ToolManifestGenerator`, next to `dotnet-mgcb`.
-  - [ ] 14.3 Tests: migrated `xna40-effects` copy has rewritten effects and included files, original folder hashes unchanged, `RewriteEffects = false` copies unchanged, the tool manifest lists both tools.
+- [x] 14. Migrator integration for effects
+  - [x] 14.1 Add `RewriteEffects` to `MigrationOptions`; add `EffectRewriteStep` called by `ContentConverter` where `.fx` items are copied; copy `#include` files (R12); notes into `ContentReport` and the manifest.
+  - [x] 14.2 Pin `dotnet-mgfxc` 3.8.6.1 in `ToolManifestGenerator`, next to `dotnet-mgcb`.
+  - [x] 14.3 Tests: migrated `xna40-effects` copy has rewritten effects and included files, original folder hashes unchanged, `RewriteEffects = false` copies unchanged, the tool manifest lists both tools.
   - _Requirements: R9, R12, R16_
 
-- [ ] 15. Runner effect check
-  - [ ] 15.1 Implement `MgfxcOutputParser` with the patterns from the design; record the real outputs from the research runs as text fixtures under the runner tests (parse errors, HLSL errors, profile errors, summary lines).
-  - [ ] 15.2 Implement `EffectBuildCheck` and `ProfileEscalator` (R13), using `IProcessRunner` and `MigratedCopyGuard`.
-  - [ ] 15.3 Tests with a fake runner: pass, fail with hint, escalation 9_1 to 9_3 to `_4_0` with the HiDef warning, no escalation without the macro block, skip reasons (tool missing, no `.fx`), results in input order, no network access.
-  - [ ] 15.4 Slow test (skipped without the tool): run on the rewritten `xna40-effects` for the current target.
+- [x] 15. Runner effect check
+  - [x] 15.1 Implement `MgfxcOutputParser` with the patterns from the design; record the real outputs from the research runs as text fixtures under the runner tests (parse errors, HLSL errors, profile errors, summary lines).
+  - [x] 15.2 Implement `EffectBuildCheck` and `ProfileEscalator` (R13), using `IProcessRunner` and `MigratedCopyGuard`.
+  - [x] 15.3 Tests with a fake runner: pass, fail with hint, escalation 9_1 to 9_3 to `_4_0` with the HiDef warning, no escalation without the macro block, skip reasons (tool missing, no `.fx`), results in input order, no network access.
+  - [x] 15.4 Slow test (skipped without the tool): run on the rewritten `xna40-effects` for the current target.
   - _Requirements: R13_
 
-- [ ] 16. Effect hints
-  - [ ] 16.1 Add the hints in the design table to `hints.json`.
-  - [ ] 16.2 Tests: every hint has one message that matches and one that does not; the empty-profile message matches `fx-sm-too-low`.
+- [x] 16. Effect hints
+  - [x] 16.1 Add the hints in the design table to `hints.json`.
+  - [x] 16.2 Tests: every hint has one message that matches and one that does not; the empty-profile message matches `fx-sm-too-low`.
   - _Requirements: R14_
 
-- [ ] 17. Catalog rule changes
+- [ ] 17. Catalog rule changes (partly done: the shader rules `NEW-B1` to `NEW-B6` are XNA064 to XNA069 and XNA017 has new text; the XACT rules and the XNA015/XNA016 edits wait for the converter and shim)
   - [ ] 17.1 Apply the rule change table in `design.md` to `rules/xna-to-monogame.json`: the three edits (XNA015, XNA016, XNA017) and the new rules (`NEW-A1` to `NEW-B6`), taking the next free `XNAnnn` IDs at the time of the task. Replace the `NEW-` labels in markers, rewriters and tests with the real IDs.
   - [ ] 17.2 Link every AutoFixable rule to its migrator task in `migratorTask` (`audio-and-shaders:N`).
   - [ ] 17.3 For each rule a positive and a negative fixture test; update the snapshot reports and review the diff; the analyzer score on `xna40-xact` and `xna40-effects` is recorded.

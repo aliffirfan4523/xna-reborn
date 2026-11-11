@@ -186,6 +186,58 @@
       "advice": "Content.mgcb names a custom pipeline assembly that is missing or was built for an older MonoGame or XNA. Rebuild it against MonoGame 3.8.6.1 and check the /reference path in Content.mgcb.",
       "ruleId": "MG025"
     },    {
+      "id": "H301",
+      "match": { "code": "MGFX0002", "messageContains": "SM 4.0 level 9.1" },
+      "title": "Shader model too low for DirectX",
+      "advice": "The effect names a Shader Model 2 or 3 profile, which the DirectX compiler rejects. Choose the profile with the OPENGL macro (vs_2_0 on OpenGL, vs_4_0_level_9_1 on DirectX); migration does this for compile statements. The profile name in the message can be empty for a pixel shader."
+    },
+    {
+      "id": "H302",
+      "match": { "code": "MGFX0002", "messageContains": "SM 3.0 or lower" },
+      "title": "Shader model too high for OpenGL",
+      "advice": "OpenGL targets support up to Shader Model 3. Use ps_3_0 and vs_3_0 on OpenGL, or build for the DirectX target."
+    },
+    {
+      "id": "H303",
+      "match": { "messageRegex": "too many .*slots" },
+      "title": "Shader too big for level 9.1",
+      "advice": "The shader is too big for the Shader Model 4 level 9.1 profile. Use _4_0_level_9_3, or _4_0 with GraphicsProfile.HiDef."
+    },
+    {
+      "id": "H304",
+      "match": { "code": "MGFX0001" },
+      "title": "Effect syntax not supported by MonoGame",
+      "advice": "MonoGame's effect parser is stricter than XNA's. Check the line for an unsupported pass state (such as AlphaTestEnable), an annotation, or arguments in a compile statement."
+    },
+    {
+      "id": "H305",
+      "match": { "code": "X4576" },
+      "title": "VPOS is not available",
+      "advice": "VPOS is not supported. Use SV_Position as a pixel shader input on DirectX and compute the screen position from the vertex shader output on OpenGL."
+    },
+    {
+      "id": "H306",
+      "match": { "messageRegex": "ffprobe|ffmpeg" },
+      "title": "ffmpeg is needed to build audio",
+      "advice": "The audio importers need ffmpeg and ffprobe on the path, even for WAV files. Install ffmpeg, restart the terminal, and build again."
+    },    {
+      "id": "H307",
+      "match": { "messageRegex": "input semantic 'VPOS'" },
+      "title": "VPOS is not available",
+      "advice": "VPOS is not supported on OpenGL. Compute the screen position from the vertex shader output, or build for the DirectX target and use SV_Position."
+    },
+    {
+      "id": "H308",
+      "match": { "code": "X4505" },
+      "title": "Shader too big for level 9.1",
+      "advice": "The shader is too big for the Shader Model 4 level 9.1 profile. Use _4_0_level_9_3, or _4_0 with GraphicsProfile.HiDef."
+    },
+    {
+      "id": "H309",
+      "match": { "code": "X5426" },
+      "title": "Shader too big for level 9.1",
+      "advice": "The shader is too big for the Shader Model 4 level 9.1 profile. Use _4_0_level_9_3, or _4_0 with GraphicsProfile.HiDef."
+    },    {
       "id": "R001",
       "match": { "runtimeRegex": "could not find (file|a part of the path)[^\\r\\n]*\\.xnb|content file was not found|ContentLoadException:[^\\r\\n]*not found" },
       "title": "Compiled content (.xnb) was not found",

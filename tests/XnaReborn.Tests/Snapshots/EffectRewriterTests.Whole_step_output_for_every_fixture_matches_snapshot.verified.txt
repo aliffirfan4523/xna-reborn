@@ -1,0 +1,372 @@
+=== AlphaTest.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4 MainPS() : COLOR0
+{
+    return float4(1, 1, 1, 0.5);
+}
+
+technique AlphaTest
+{
+    pass P0
+    {
+        AlphaBlendEnable = true;
+        SrcBlend = SrcAlpha;
+        DestBlend = InvSrcAlpha;
+        // XNA Reborn [XNA065]: AlphaTestEnable is not supported by the MonoGame effect compiler. Set alpha testing in C# (AlphaTestEffect) or discard in the pixel shader.
+        AlphaTestEnable = true;
+        // XNA Reborn [XNA065]: AlphaFunc is not supported by the MonoGame effect compiler. Set alpha testing in C# (AlphaTestEffect) or discard in the pixel shader.
+        AlphaFunc = Greater;
+        // XNA Reborn [XNA065]: AlphaRef is not supported by the MonoGame effect compiler. Set alpha testing in C# (AlphaTestEffect) or discard in the pixel shader.
+        AlphaRef = 128;
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+# XNA065 (manual) Line 20: AlphaTestEnable is not supported by the MonoGame effect compiler. Set alpha testing in C# (AlphaTestEffect) or discard in the pixel shader.
+# XNA065 (manual) Line 21: AlphaFunc is not supported by the MonoGame effect compiler. Set alpha testing in C# (AlphaTestEffect) or discard in the pixel shader.
+# XNA065 (manual) Line 22: AlphaRef is not supported by the MonoGame effect compiler. Set alpha testing in C# (AlphaTestEffect) or discard in the pixel shader.
+=== Annotated.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+// XNA Reborn [XNA066]: Annotations (< ... >) are not supported by the MonoGame effect compiler. Remove the annotation block.
+float4x4 World < string UIName = "World"; >;
+float Strength = 1;
+
+float4 MainPS(uniform bool useStrength) : COLOR0
+{
+    return useStrength ? float4(Strength, 0, 0, 1) : float4(0, 0, 0, 1);
+}
+
+technique Annotated
+{
+    pass P0
+    {
+        // XNA Reborn [XNA066]: Arguments in a compile statement are not supported by the MonoGame effect compiler. Remove the arguments from the call to MainPS and move them into the function.
+        PixelShader = compile PS_SHADERMODEL MainPS(true);
+    }
+}
+
+technique Legacy
+{
+    pass P0
+    {
+        // XNA Reborn [XNA066]: SetPixelShader is Direct3D 10 syntax and is not supported by the MonoGame effect compiler. Use 'VertexShader = compile <model> <function>();' or 'PixelShader = compile <model> <function>();'.
+        SetPixelShader(CompileShader(ps_2_0, MainPS(false)));
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+# XNA069 Line 8: parameter 'World' is never used. The MonoGame effect compiler removes unused parameters, so setting it from code will fail.
+# XNA069 Line 9: parameter 'Strength' has a default value, which OpenGL targets ignore. Set it from code.
+# XNA066 (manual) Line 8: Annotations (< ... >) are not supported by the MonoGame effect compiler. Remove the annotation block.
+# XNA066 (manual) Line 20: Arguments in a compile statement are not supported by the MonoGame effect compiler. Remove the arguments from the call to MainPS and move them into the function.
+# XNA066 (manual) Line 28: SetPixelShader is Direct3D 10 syntax and is not supported by the MonoGame effect compiler. Use 'VertexShader = compile <model> <function>();' or 'PixelShader = compile <model> <function>();'.
+=== Defaults.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4 Color = float4(0.2, 0.4, 0.6, 1);
+float Unused;
+float4x4 AlsoUnused;
+
+float4 MainPS() : COLOR0
+{
+    return Color;
+}
+
+technique Defaults
+{
+    pass P0
+    {
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+# XNA069 Line 8: parameter 'Color' has a default value, which OpenGL targets ignore. Set it from code.
+# XNA069 Line 9: parameter 'Unused' is never used. The MonoGame effect compiler removes unused parameters, so setting it from code will fail.
+# XNA069 Line 10: parameter 'AlsoUnused' is never used. The MonoGame effect compiler removes unused parameters, so setting it from code will fail.
+=== Gaussian.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+texture Tex;
+sampler2D TexSampler = sampler_state
+{
+    Texture = <Tex>;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+float4 MainPS(float2 uv : TEXCOORD0) : COLOR0
+{
+    return tex2D(TexSampler, uv);
+}
+
+technique Gaussian
+{
+    pass P0
+    {
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+# XNA068 Line 12: filter 'GaussianQuad' does not exist in MonoGame, so it was replaced by 'Linear'. Check the look.
+# XNA068 Line 13: filter 'PyramidalQuad' does not exist in MonoGame, so it was replaced by 'Linear'. Check the look.
+=== MipBias.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+texture Tex;
+sampler2D TexSampler = sampler_state
+{
+    Texture = <Tex>;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = Linear;
+    MipLodBias = -1;
+};
+
+float4 MainPS(float2 uv : TEXCOORD0) : COLOR0
+{
+    return tex2D(TexSampler, uv);
+}
+
+technique MipBias
+{
+    pass P0
+    {
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+# XNA068 Line 15: sampler state 'MipMapLodBias' was renamed to 'MipLodBias'.
+=== Portable.fx ===
+#if OPENGL
+    #define VS_SHADERMODEL vs_3_0
+    #define PS_SHADERMODEL ps_3_0
+#else
+    #define VS_SHADERMODEL vs_4_0_level_9_1
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4x4 WorldViewProjection;
+
+float4 MainVS(float4 position : POSITION0) : POSITION0
+{
+    return mul(position, WorldViewProjection);
+}
+
+float4 MainPS() : COLOR0
+{
+    return float4(0, 1, 0, 1);
+}
+
+technique Portable
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+=== Sm2.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define VS_SHADERMODEL vs_2_0
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define VS_SHADERMODEL vs_4_0_level_9_1
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4x4 WorldViewProjection;
+texture Tex;
+sampler2D TexSampler = sampler_state
+{
+    Texture = <Tex>;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
+struct VSInput { float4 Position : POSITION0; float2 UV : TEXCOORD0; };
+struct VSOutput { float4 Position : POSITION0; float2 UV : TEXCOORD0; };
+
+VSOutput MainVS(VSInput input)
+{
+    VSOutput output;
+    output.Position = mul(input.Position, WorldViewProjection);
+    output.UV = input.UV;
+    return output;
+}
+float4 MainPS(VSOutput input) : COLOR0
+{
+    return tex2D(TexSampler, input.UV);
+}
+
+technique Sm2
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: VS_SHADERMODEL (vs_2_0 on OpenGL, vs_4_0_level_9_1 on DirectX), PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+=== Sm3.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define VS_SHADERMODEL vs_3_0
+    #define PS_SHADERMODEL ps_3_0
+#else
+    #define VS_SHADERMODEL vs_4_0_level_9_3
+    #define PS_SHADERMODEL ps_4_0_level_9_3
+#endif
+
+float4x4 WorldViewProjection;
+texture Tex;
+sampler2D TexSampler = sampler_state
+{
+    Texture = <Tex>;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
+struct VSInput { float4 Position : POSITION0; float2 UV : TEXCOORD0; };
+struct VSOutput { float4 Position : POSITION0; float2 UV : TEXCOORD0; };
+
+VSOutput MainVS(VSInput input)
+{
+    VSOutput output;
+    output.Position = mul(input.Position, WorldViewProjection);
+    output.UV = input.UV;
+    return output;
+}
+float4 MainPS(VSOutput input) : COLOR0
+{
+    return tex2D(TexSampler, input.UV) * 0.5;
+}
+
+technique Sm3
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: VS_SHADERMODEL (vs_3_0 on OpenGL, vs_4_0_level_9_3 on DirectX), PS_SHADERMODEL (ps_3_0 on OpenGL, ps_4_0_level_9_3 on DirectX). Check the rendered result.
+=== Template.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define VS_SHADERMODEL vs_2_0
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define VS_SHADERMODEL vs_4_0_level_9_1
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4x4 WorldViewProjection;
+float4 Tint = float4(1, 1, 1, 1);
+
+float4 MainVS(float4 position : POSITION0) : POSITION0
+{
+    return mul(position, WorldViewProjection);
+}
+
+float4 MainPS() : COLOR0
+{
+    return Tint;
+}
+
+technique Template
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: VS_SHADERMODEL (vs_2_0 on OpenGL, vs_4_0_level_9_1 on DirectX), PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.
+# XNA069 Line 11: parameter 'Tint' has a default value, which OpenGL targets ignore. Set it from code.
+=== Vpos.fx ===
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define PS_SHADERMODEL ps_3_0
+#else
+    #define PS_SHADERMODEL ps_4_0_level_9_3
+#endif
+
+// XNA Reborn [XNA067]: VPOS is not available. Use SV_Position as a pixel shader input on DirectX and compute the screen position from the vertex shader output on OpenGL.
+float4 MainPS(float2 screen : VPOS) : COLOR0
+{
+    return float4(screen.x / 800.0, screen.y / 600.0, 0, 1);
+}
+
+technique Vpos
+{
+    pass P0
+    {
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: PS_SHADERMODEL (ps_3_0 on OpenGL, ps_4_0_level_9_3 on DirectX). Check the rendered result.
+# XNA067 (manual) Line 8: VPOS is not available. Use SV_Position as a pixel shader input on DirectX and compute the screen position from the vertex shader output on OpenGL.
+=== WithInclude.fx ===
+#include "Common.fxh"
+
+// XNA Reborn: shader models set per target (OpenGL keeps the original; DirectX needs Shader Model 4 level 9).
+#if OPENGL
+    #define VS_SHADERMODEL vs_2_0
+    #define PS_SHADERMODEL ps_2_0
+#else
+    #define VS_SHADERMODEL vs_4_0_level_9_1
+    #define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
+
+float4 MainVS(float4 position : POSITION0) : POSITION0
+{
+    return Transform(position);
+}
+
+float4 MainPS() : COLOR0
+{
+    return float4(1, 0, 1, 1);
+}
+
+technique WithInclude
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL MainPS();
+    }
+}
+# XNA064 Shader models were replaced by per-target macros: VS_SHADERMODEL (vs_2_0 on OpenGL, vs_4_0_level_9_1 on DirectX), PS_SHADERMODEL (ps_2_0 on OpenGL, ps_4_0_level_9_1 on DirectX). Check the rendered result.

@@ -560,3 +560,26 @@ Kept up to date by the worker that implements the tasks. Each entry names the ta
   - The reader reports `ANA070` (unbalanced braces) and `ANA071` (malformed line, unreadable file). The spec reserved `ANA050` to `ANA059` for another spec, so these two were picked outside that block.
   - The reader lists unsupported items by looking for the `unsupported` terms in `xact-features.json` inside block names and keys (case-insensitive substring). Values are not searched. A block that matches is reported once and not searched further.
   - `fileContent` returns `path:line` for up to three matching lines per file. It skips files with a NUL byte and files over `maxBytes`. Comments are blanked only for `.fx` and `.fxh`.
+
+- **Tasks 11 to 14 (effect scanner, rewriters, migrator step).**
+  - Data is in `rules/effect-profiles.json` (embedded in Core as `EffectProfiles`). `vs_2_a`/`ps_2_b` to `vs_3_0`/`ps_3_0` on OpenGL is now confirmed by a real `dotnet-mgfxc` 3.8.6.1 run (both profiles). Deviation from the design table: `vs_1_1` and `ps_1_x` map to `vs_2_0`/`ps_2_0` on OpenGL, not "same", because the OpenGL compiler only accepts models 2 and 3. Those rows stay `expected, unverified`.
+  - The model regex is `(vs|ps)_N_[0-4ab]`, so `vs_2_a` and `ps_2_b` are literals. A model that matches the shape but is not in the table gets a manual note and is left as written.
+  - `VPOS` is detected only as a semantic (an identifier after `:`), because a technique can be named `Vpos`.
+  - Parameter "unused" means the name appears nowhere outside its declaration (the design said function bodies only); a texture used only by a `sampler_state` is therefore not reported.
+  - Marker notes carry line numbers of the migrated file, because markers run after the profile block is inserted. The file note in the report names the migrated path.
+  - `FxRuleIds` use the provisional `NEW-B1` to `NEW-B6` labels until task 17. `NEW-B7` is not used.
+  - `EffectRewriteStep` copies `#include` files only when the effect itself is rewritten (option `RewriteEffects`). A file that is not UTF-8 is copied unchanged with a note.
+  - Verified with the real tool (slow tests, `XNAREBORN_INTEGRATION=1`): all rewritten fixtures that should be portable compile on OpenGL and DirectX_11; the unrewritten SM2 fixture fails on DirectX with the level 9.1 message; `AlphaTest` and `Annotated` still fail after the rewrite, with a marker on each offending line. Rendered output was not compared (task 18 needs a person).
+
+- **Tasks 15 and 16 (effect build check, hints).**
+  - `MgfxcOutputParser`, `ProfileEscalator`, `EffectBuildCheck` are in `XnaReborn.Runner/Effects`. The check takes a compiler profile (`OpenGL` or `DirectX11`) instead of `MonoGameTarget`, because the Runner does not reference the Migrator. It is not yet called by `ProjectRunner` or the UI; wiring it into the build flow is a follow-up.
+  - Recorded outputs under `tests/XnaReborn.Tests/Runner/Samples/mgfxc-*.txt`: the parse error, both profile errors and the success line come from real `dotnet-mgfxc` 3.8.6.1 runs (paths shortened). The HLSL error sample is shaped after the format seen in the research runs and its message text is illustrative, not a recorded output; no real HLSL error output was captured.
+  - A real run showed that `mgfxc` does not create the output folder, so the check creates `obj/xnareborn-fx` first. The slow test `Build_check_runs_the_pinned_tool_in_a_migrated_copy` restores the pinned tools in a temp migrated copy and runs the real check.
+  - Hint ids are `H301` to `H309` (the design's names are `fx-*`; the catalog uses `H` ids). The limit hint is split over a message regex and two codes, and VPOS over a code and a message regex, because the matcher tests the code and the message separately. The audio hint is `H306`.
+  - The shader that needs a level above `_4_0_level_9_1` is never tested here: no real shader was found that triggers X4505/X5608 within the fixtures, so escalation is tested with a fake runner only.
+
+- **Task 17 (catalog rules), shader part only.**
+  - New rules `XNA064` to `XNA069` use the `fileContent` match on `**/*.fx` (labels `NEW-B1` to `NEW-B6`; `NEW-B7` was never used). `XNA064` and `XNA068` are AutoFixable and link `audio-and-shaders:12` and `:13`. `XNA017` keeps Manual with new text. The rule ids in markers, notes and tests are now these ids.
+  - `XNA065` lists common old state names by regex; it is not the complete allow list the migrator uses, so the migrator can mark more than the analyzer reports. `XNA064` does not see a template-style `#define VS_SHADERMODEL vs_2_0`, because the same text inside `#if OPENGL` in an already portable effect would be a false positive.
+  - Analyzer scores recorded in the real-catalog snapshots: `xna40-effects` 59/100 (72 after automatic fixes).
+  - Not done: rules `NEW-A1` to `NEW-A3`, and the XNA015/XNA016 changes. They need the XACT planner, catalog writer and shim, which are not implemented.

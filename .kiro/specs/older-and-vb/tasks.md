@@ -11,49 +11,49 @@ Rules for every task:
 
 ## Part A: XNA 1.0 and 2.0
 
-- [ ] 1. Fixtures for older projects (`tests/fixtures`)
-  - [ ] 1.1 `xna10-express-basic`: Express 1.0 C# game (type GUID `{9F340DF3-...}`, `v1.0`, Express targets, no `TargetFrameworkVersion`, in-project `Content` items with `XNAUseContentPipeline`, `SpriteTextureProcessor`, `LoadGraphicsContent`/`UnloadGraphicsContent` with `if (loadAllContent)`, `ResourceManagementMode`, `SpriteBlendMode`)
-  - [ ] 1.2 `xna20-vs2005`: 2.0 game with `NestedContentProject`, `Content.contentproj` (GUID `{96E2B04D-...}`), `.sln` format 9.00, a Windows and an Xbox 360 game project, uses `LoadContent`, `RenderState`, `Effect.Begin`
-  - [ ] 1.3 `xna10-clean`: Express 1.0 project that uses none of the removed APIs
-  - [ ] 1.4 One `README.md` per fixture ("Original synthetic code written for this repository") and the list of expected findings
+- [x] 1. Fixtures for older projects (`tests/fixtures`)
+  - [x] 1.1 `xna10-express-basic`: Express 1.0 C# game (type GUID `{9F340DF3-...}`, `v1.0`, Express targets, no `TargetFrameworkVersion`, in-project `Content` items with `XNAUseContentPipeline`, `SpriteTextureProcessor`, `LoadGraphicsContent`/`UnloadGraphicsContent` with `if (loadAllContent)`, `ResourceManagementMode`, `SpriteBlendMode`)
+  - [x] 1.2 `xna20-vs2005`: 2.0 game with `NestedContentProject`, `Content.contentproj` (GUID `{96E2B04D-...}`), `.sln` format 9.00, a Windows and an Xbox 360 game project, uses `LoadContent`, `RenderState`, `Effect.Begin`
+  - [x] 1.3 `xna10-clean`: Express 1.0 project that uses none of the removed APIs
+  - [x] 1.4 One `README.md` per fixture ("Original synthetic code written for this repository") and the list of expected findings
   - _Requirements: R1, R2, R3, R14_
 
-- [ ] 2. Version model (`XnaReborn.Core`, `XnaReborn.Analyzer`)
-  - [ ] 2.1 Add `V10` and `V20` to `XnaVersion` after `V40`. Update `XnaVersionJsonConverter` (read, write, error text) and `RuleSchema.json` `xnaVersion` enum
-  - [ ] 2.2 Update `XnaVersionDetector.Parse` and `Format`
-  - [ ] 2.3 Tests: JSON round trip for all five versions, schema accepts "1.0" and "2.0", old reports still load
+- [x] 2. Version model (`XnaReborn.Core`, `XnaReborn.Analyzer`)
+  - [x] 2.1 Add `V10` and `V20` to `XnaVersion` after `V40`. Update `XnaVersionJsonConverter` (read, write, error text) and `RuleSchema.json` `xnaVersion` enum
+  - [x] 2.2 Update `XnaVersionDetector.Parse` and `Format`
+  - [x] 2.3 Tests: JSON round trip for all five versions, schema accepts "1.0" and "2.0", old reports still load
   - _Requirements: R1_
 
-- [ ] 3. Detection signals (`XnaReborn.Analyzer`)
-  - [ ] 3.1 Change the import filter to `Game Studio` and `.targets`; add the Express GUID fallback (lowest priority, never a conflict)
-  - [ ] 3.2 `XnaProjectDetector.IsXna`: accept `Microsoft.Xna.*.targets` imports and the Express GUID
-  - [ ] 3.3 Tests on `xna10-express-basic`, `xna20-vs2005`, `xna10-clean`: version, `IsXna`, no ANA002, weak hints give no conflict; a 3.1 and a 4.0 fixture still detect as before
+- [x] 3. Detection signals (`XnaReborn.Analyzer`)
+  - [x] 3.1 Change the import filter to `Game Studio` and `.targets`; add the Express GUID fallback (lowest priority, never a conflict)
+  - [x] 3.2 `XnaProjectDetector.IsXna`: accept `Microsoft.Xna.*.targets` imports and the Express GUID
+  - [x] 3.3 Tests on `xna10-express-basic`, `xna20-vs2005`, `xna10-clean`: version, `IsXna`, no ANA002, weak hints give no conflict; a 3.1 and a 4.0 fixture still detect as before
   - _Requirements: R1, R2_
 
-- [ ] 4. `projectItem` metadata match (`Core`, `Analyzer`)
-  - [ ] 4.1 Add optional `Metadata` to `ProjectItemMatch`; update converter, schema, `ProjectItemMatcher` (case-insensitive value compare, all pairs must match)
-  - [ ] 4.2 Unit tests: match, missing key, wrong value, no metadata field (old behavior)
+- [x] 4. `projectItem` metadata match (`Core`, `Analyzer`)
+  - [x] 4.1 Add optional `Metadata` to `ProjectItemMatch`; update converter, schema, `ProjectItemMatcher` (case-insensitive value compare, all pairs must match)
+  - [x] 4.2 Unit tests: match, missing key, wrong value, no metadata field (old behavior)
   - _Requirements: R3_
 
-- [ ] 5. `methodDeclaration` match type (`Core`, `Analyzer`)
-  - [ ] 5.1 Add `MethodDeclarationMatch`, converter case, schema entry, `SourceRuleIndex` support
-  - [ ] 5.2 Implement in the current C# `SourceWalker` (task 14 moves it behind the fact sink): declaration name, `override` modifier, namespace gate
-  - [ ] 5.3 Tests: override found, non-override with `overrides: true` not found, same name without the gate, same name in another class
+- [x] 5. `methodDeclaration` match type (`Core`, `Analyzer`)
+  - [x] 5.1 Add `MethodDeclarationMatch`, converter case, schema entry, `SourceRuleIndex` support
+  - [x] 5.2 Implement in the current C# `SourceWalker` (task 14 moves it behind the fact sink): declaration name, `override` modifier, namespace gate
+  - [x] 5.3 Tests: override found, non-override with `overrides: true` not found, same name without the gate, same name in another class
   - _Requirements: R3_
 
-- [ ] 6. Part A catalog (`rules/xna-to-monogame.json`, `rule-cases.json`)
-  - [ ] 6.1 XNA001 `include` to `*Microsoft.Xna.*.targets`; XNA002 explanation text
-  - [ ] 6.2 Widen XNA022 to XNA043 to `["1.0","2.0","3.0","3.1"]`
-  - [ ] 6.3 Add XNA100 to XNA105 as in the design table (XNA102 and XNA103 link to `older-and-vb:9`, XNA101 to `older-and-vb:8`)
-  - [ ] 6.4 Positive and negative cases for every row of the table, including the 4.0 negative for each widened rule (the coverage test must still pass)
-  - [ ] 6.5 Update analyzer snapshot reports and review the diff by hand
+- [x] 6. Part A catalog (`rules/xna-to-monogame.json`, `rule-cases.json`)
+  - [x] 6.1 XNA001 `include` to `*Microsoft.Xna.*.targets`; XNA002 explanation text
+  - [x] 6.2 Widen XNA022 to XNA043 to `["1.0","2.0","3.0","3.1"]`
+  - [x] 6.3 Add XNA100 to XNA105 as in the design table (XNA102 and XNA103 link to `older-and-vb:9`, XNA101 to `older-and-vb:8`)
+  - [x] 6.4 Positive and negative cases for every row of the table, including the 4.0 negative for each widened rule (the coverage test must still pass)
+  - [x] 6.5 Update analyzer snapshot reports and review the diff by hand
   - _Requirements: R3_
 
-- [ ] 7. In-project content and legacy processors (`Analyzer`, `Core`)
-  - [ ] 7.1 Add `ContentItem.InProject` (default false); add `InProjectContentReader`; call it from `ProjectReader`
-  - [ ] 7.2 Add `aliases` to `rules/importer-map.json` and the `ImporterMap` loader (`Resolve`, standard-pair check treats aliases as standard)
-  - [ ] 7.3 Check the default parameters of the 1.0 texture processors against a real 1.0 candidate or archived docs before writing the note text; if they cannot be confirmed, write the note as "defaults may differ"
-  - [ ] 7.4 Tests: Express fixture gives content items with importer, processor, name; XNA050 does not fire for the two legacy processors; XNA050 still fires for a real custom processor
+- [x] 7. In-project content and legacy processors (`Analyzer`, `Core`)
+  - [x] 7.1 Add `ContentItem.InProject` (default false); add `InProjectContentReader`; call it from `ProjectReader`
+  - [x] 7.2 Add `aliases` to `rules/importer-map.json` and the `ImporterMap` loader (`Resolve`, standard-pair check treats aliases as standard)
+  - [x] 7.3 Check the default parameters of the 1.0 texture processors against a real 1.0 candidate or archived docs before writing the note text; if they cannot be confirmed, write the note as "defaults may differ"
+  - [x] 7.4 Tests: Express fixture gives content items with importer, processor, name; XNA050 does not fire for the two legacy processors; XNA050 still fires for a real custom processor
   - _Requirements: R2, R4_
 
 - [ ] 8. Content conversion and project file for in-project content (`Migrator`)

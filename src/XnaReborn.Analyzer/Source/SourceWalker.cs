@@ -100,6 +100,9 @@ internal sealed class SourceWalker
                 case SimpleNameSyntax name when !IsInNamespaceName(name):
                     MatchType(name);
                     break;
+                case MethodDeclarationSyntax method:
+                    MatchMethod(method);
+                    break;
             }
         }
     }
@@ -227,6 +230,23 @@ internal sealed class SourceWalker
             if (IsGateOpen(match.Namespaces, leftText) && IsShapeMatch(match, invocation, receiver))
             {
                 AddHit(access.SpanStart, candidate.Order, candidate.Rule);
+            }
+        }
+    }
+
+    private void MatchMethod(MethodDeclarationSyntax method)
+    {
+        if (!_index.MethodsByName.TryGetValue(method.Identifier.ValueText, out var candidates))
+        {
+            return;
+        }
+
+        var isOverride = method.Modifiers.Any(SyntaxKind.OverrideKeyword);
+        foreach (var candidate in candidates)
+        {
+            if ((!candidate.Match.Overrides || isOverride) && candidate.Match.Namespaces.Any(_imports.Contains))
+            {
+                AddHit(method.Identifier.SpanStart, candidate.Order, candidate.Rule);
             }
         }
     }

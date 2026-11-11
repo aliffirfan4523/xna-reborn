@@ -39,10 +39,19 @@ public class HintMatcherTests
         ("H102", "CS0117", "'Color' does not contain a definition for 'TransparentBlack'", "'Color' does not contain a definition for 'TransparentWhite'"),
         ("H103", "CS0246", "The type or namespace name 'OpenTK' could not be found (are you missing a using directive or an assembly reference?)", "The type or namespace name 'OpenTKish' could not be found (are you missing a using directive or an assembly reference?)"),
         ("H104", "NETSDK1100", "To build a project targeting Windows on this operating system, set the EnableWindowsTargeting property to true.", "To build a project targeting Windows on this operating system, set the EnableWindowsTargeting property to true."),
-        ("H105", "MGCB", "Failed to load assembly 'C:/game/Content/Pipeline/GlowPipeline.dll'", "Failed to build asset 'C:/game/Content/hero.png'"),    ];
+        ("H105", "MGCB", "Failed to load assembly 'C:/game/Content/Pipeline/GlowPipeline.dll'", "Failed to build asset 'C:/game/Content/hero.png'"),
+        ("H301", "MGFX0002", "Invalid profile ''. Pixel shader 'MainPS' must be SM 4.0 level 9.1 or higher!", "Invalid profile 'ps_4_0'. Pixel shader 'P' must be SM 3.0 or lower!"),
+        ("H302", "MGFX0002", "Invalid profile 'ps_4_0'. Pixel shader 'P' must be SM 3.0 or lower!", "Invalid profile 'ps_2_0'. Pixel shader 'P' must be SM 4.0 level 9.1 or higher!"),
+        ("H303", "X5608", "Compiled shader code uses too many arithmetic instruction slots (72). Max. allowed is 64.", "syntax error: unexpected token"),
+        ("H304", "MGFX0001", "Unexpected token 'A' found. Expected CloseBracket", "Unexpected token 'A' found. Expected CloseBracket"),
+        ("H305", "X4576", "Input signature mismatch", "Input signature mismatch"),
+        ("H306", "MGCB", "Could not run ffprobe: no such file", "Could not find file hero.png"),
+        ("H307", "X4502", "invalid ps_2_0 input semantic 'VPOS'", "invalid ps_2_0 input semantic 'COLOR3'"),
+        ("H308", "X4505", "anything", "anything"),
+        ("H309", "X5426", "anything", "anything"),    ];
 
     /// <summary>Codes whose near-miss differs only by code: the same message must not match under another code.</summary>
-    private static readonly string[] _codeOnlyHints = ["H021", "H022", "H023", "H104"];
+    private static readonly string[] _codeOnlyHints = ["H021", "H022", "H023", "H104", "H304", "H305", "H308", "H309"];
 
     public static IEnumerable<object[]> PositiveRows() => BuildCases.Select(c => new object[] { c.Id, c.Code, c.Positive });
 
