@@ -33,7 +33,7 @@ public class FlashProjectReaderTests
     }
 
     [Theory]
-    [MemberData(nameof(FlashFixtures.NameRows), MemberType = typeof(FlashFixtures))]
+    [MemberData(nameof(FlashFixtures.ExpectedRows), MemberType = typeof(FlashFixtures))]
     public void Reading_a_fixture_matches_its_expected_file(string name)
     {
         var folder = FlashFixtures.Of(name);
