@@ -1,0 +1,38 @@
+﻿== src/ThreeGame.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="ThreeGame" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:33 Name="FlxGame"
+      Members[]:
+        As3Method @7:3 Kind=Constructor Name="ThreeGame" Modifiers=Public
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3ExpressionStatement @9:4
+                  Expression:
+                    As3Call @9:4
+                      Target:
+                        As3Identifier @9:4 Name="super"
+                      Arguments[]:
+                        As3Literal @9:10 Kind=Number Text="320"
+                        As3Literal @9:15 Kind=Number Text="240"
+                        As3Identifier @9:20 Name="FlxState"
+
+== src/org/flixel/FlxG.as
+As3CompilationUnit @1:1 PackageName="org.flixel"
+  Members[]:
+    As3TypeDeclaration @4:2 Kind=Class Name="FlxG" Modifiers=Public
+      Members[]:
+        As3Field @6:3 IsConst=False Name="LIBRARY_MAJOR_VERSION" Modifiers=Public, Static
+          Type:
+            As3TypeRef @6:43 Name="uint"
+          Initializer:
+            As3Literal @6:50 Kind=Number Text="3"
+        As3Field @7:3 IsConst=False Name="LIBRARY_MINOR_VERSION" Modifiers=Public, Static
+          Type:
+            As3TypeRef @7:43 Name="uint"
+          Initializer:
+            As3Literal @7:50 Kind=Number Text="0"

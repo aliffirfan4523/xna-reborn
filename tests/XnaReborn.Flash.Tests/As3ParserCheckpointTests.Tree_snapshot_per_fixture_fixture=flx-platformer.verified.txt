@@ -1,0 +1,1400 @@
+﻿== src/Bullet.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="Bullet" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:30 Name="FlxSprite"
+      Members[]:
+        As3Method @7:3 Kind=Constructor Name="Bullet" Modifiers=Public
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3ExpressionStatement @9:4
+                  Expression:
+                    As3Call @9:4
+                      Target:
+                        As3Identifier @9:4 Name="super"
+                      Arguments[]:
+                        As3Literal @9:10 Kind=Number Text="0"
+                        As3Literal @9:13 Kind=Number Text="0"
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Call @10:4
+                      Target:
+                        As3Identifier @10:4 Name="makeGraphic"
+                      Arguments[]:
+                        As3Literal @10:16 Kind=Number Text="4"
+                        As3Literal @10:19 Kind=Number Text="2"
+                        As3Literal @10:22 Kind=Number Text="0xffffffff"
+                As3ExpressionStatement @11:4
+                  Expression:
+                    As3Assignment @11:4 Operator="="
+                      Target:
+                        As3Identifier @11:4 Name="exists"
+                      Value:
+                        As3Literal @11:13 Kind=Boolean Text="false"
+        As3Method @14:3 Kind=Normal Name="shoot" Modifiers=Public
+          Parameters[]:
+            As3Parameter @14:25 Name="X" IsRest=False
+              Type:
+                As3TypeRef @14:27 Name="Number"
+            As3Parameter @14:35 Name="Y" IsRest=False
+              Type:
+                As3TypeRef @14:37 Name="Number"
+            As3Parameter @14:45 Name="VelocityX" IsRest=False
+              Type:
+                As3TypeRef @14:55 Name="Number"
+          ReturnType:
+            As3TypeRef @14:63 Name="void"
+          Body:
+            As3Block @15:3
+              Statements[]:
+                As3ExpressionStatement @16:4
+                  Expression:
+                    As3Call @16:4
+                      Target:
+                        As3Identifier @16:4 Name="reset"
+                      Arguments[]:
+                        As3Identifier @16:10 Name="X"
+                        As3Identifier @16:13 Name="Y"
+                As3ExpressionStatement @17:4
+                  Expression:
+                    As3Assignment @17:4 Operator="="
+                      Target:
+                        As3MemberAccess @17:4 Name="x"
+                          Target:
+                            As3Identifier @17:4 Name="velocity"
+                      Value:
+                        As3Identifier @17:17 Name="VelocityX"
+        As3Method @20:3 Kind=Normal Name="update" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @20:37 Name="void"
+          Body:
+            As3Block @21:3
+              Statements[]:
+                As3ExpressionStatement @22:4
+                  Expression:
+                    As3Call @22:4
+                      Target:
+                        As3MemberAccess @22:4 Name="update"
+                          Target:
+                            As3Identifier @22:4 Name="super"
+                As3IfStatement @23:4
+                  Condition:
+                    As3Unary @23:8 Operator="!" IsPrefix=True
+                      Operand:
+                        As3Call @23:9
+                          Target:
+                            As3Identifier @23:9 Name="onScreen"
+                  Then:
+                    As3Block @24:4
+                      Statements[]:
+                        As3ExpressionStatement @25:5
+                          Expression:
+                            As3Call @25:5
+                              Target:
+                                As3Identifier @25:5 Name="kill"
+
+== src/Enemy.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="Enemy" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:29 Name="FlxSprite"
+      Members[]:
+        As3Field @7:3 IsConst=False Name="_speed" Modifiers=Private
+          Type:
+            As3TypeRef @7:22 Name="Number"
+          Initializer:
+            As3Literal @7:31 Kind=Number Text="30"
+        As3Field @8:3 IsConst=False Name="_target" Modifiers=Private
+          Type:
+            As3TypeRef @8:23 Name="FlxSprite"
+        As3Method @10:3 Kind=Constructor Name="Enemy" Modifiers=Public
+          Parameters[]:
+            As3Parameter @10:25 Name="X" IsRest=False
+              Type:
+                As3TypeRef @10:27 Name="Number"
+            As3Parameter @10:35 Name="Y" IsRest=False
+              Type:
+                As3TypeRef @10:37 Name="Number"
+            As3Parameter @10:45 Name="Target" IsRest=False
+              Type:
+                As3TypeRef @10:52 Name="FlxSprite"
+          Body:
+            As3Block @11:3
+              Statements[]:
+                As3ExpressionStatement @12:4
+                  Expression:
+                    As3Call @12:4
+                      Target:
+                        As3Identifier @12:4 Name="super"
+                      Arguments[]:
+                        As3Identifier @12:10 Name="X"
+                        As3Identifier @12:13 Name="Y"
+                As3ExpressionStatement @13:4
+                  Expression:
+                    As3Call @13:4
+                      Target:
+                        As3Identifier @13:4 Name="makeGraphic"
+                      Arguments[]:
+                        As3Literal @13:16 Kind=Number Text="12"
+                        As3Literal @13:20 Kind=Number Text="12"
+                        As3Literal @13:24 Kind=Number Text="0xffcc3030"
+                As3ExpressionStatement @14:4
+                  Expression:
+                    As3Assignment @14:4 Operator="="
+                      Target:
+                        As3Identifier @14:4 Name="_target"
+                      Value:
+                        As3Identifier @14:14 Name="Target"
+                As3ExpressionStatement @15:4
+                  Expression:
+                    As3Assignment @15:4 Operator="="
+                      Target:
+                        As3MemberAccess @15:4 Name="y"
+                          Target:
+                            As3Identifier @15:4 Name="acceleration"
+                      Value:
+                        As3Literal @15:21 Kind=Number Text="420"
+                As3ExpressionStatement @16:4
+                  Expression:
+                    As3Assignment @16:4 Operator="="
+                      Target:
+                        As3Identifier @16:4 Name="health"
+                      Value:
+                        As3Literal @16:13 Kind=Number Text="2"
+        As3Method @19:3 Kind=Normal Name="update" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @19:37 Name="void"
+          Body:
+            As3Block @20:3
+              Statements[]:
+                As3VarStatement @21:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @21:8 Name="dx"
+                      Type:
+                        As3TypeRef @21:11 Name="Number"
+                      Initializer:
+                        As3Binary @21:20 Operator="-"
+                          Left:
+                            As3MemberAccess @21:20 Name="x"
+                              Target:
+                                As3Identifier @21:20 Name="_target"
+                          Right:
+                            As3Identifier @21:32 Name="x"
+                As3ExpressionStatement @22:4
+                  Expression:
+                    As3Assignment @22:4 Operator="="
+                      Target:
+                        As3MemberAccess @22:4 Name="x"
+                          Target:
+                            As3Identifier @22:4 Name="velocity"
+                      Value:
+                        As3Conditional @22:17
+                          Condition:
+                            As3Binary @22:17 Operator=">"
+                              Left:
+                                As3Identifier @22:17 Name="dx"
+                              Right:
+                                As3Literal @22:22 Kind=Number Text="0"
+                          WhenTrue:
+                            As3Identifier @22:26 Name="_speed"
+                          WhenFalse:
+                            As3Unary @22:35 Operator="-" IsPrefix=True
+                              Operand:
+                                As3Identifier @22:36 Name="_speed"
+                As3ExpressionStatement @23:4
+                  Expression:
+                    As3Call @23:4
+                      Target:
+                        As3MemberAccess @23:4 Name="update"
+                          Target:
+                            As3Identifier @23:4 Name="super"
+        As3Method @26:3 Kind=Normal Name="hurt" Modifiers=Public, Override
+          Parameters[]:
+            As3Parameter @26:33 Name="Damage" IsRest=False
+              Type:
+                As3TypeRef @26:40 Name="Number"
+          ReturnType:
+            As3TypeRef @26:48 Name="void"
+          Body:
+            As3Block @27:3
+              Statements[]:
+                As3ExpressionStatement @28:4
+                  Expression:
+                    As3Call @28:4
+                      Target:
+                        As3Identifier @28:4 Name="flicker"
+                      Arguments[]:
+                        As3Literal @28:12 Kind=Number Text="0.1"
+                As3ExpressionStatement @29:4
+                  Expression:
+                    As3Call @29:4
+                      Target:
+                        As3MemberAccess @29:4 Name="hurt"
+                          Target:
+                            As3Identifier @29:4 Name="super"
+                      Arguments[]:
+                        As3Identifier @29:15 Name="Damage"
+
+== src/MenuState.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="MenuState" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:33 Name="FlxState"
+      Members[]:
+        As3Method @7:3 Kind=Normal Name="create" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @7:37 Name="void"
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3VarStatement @9:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @9:8 Name="title"
+                      Type:
+                        As3TypeRef @9:14 Name="FlxText"
+                      Initializer:
+                        As3New @9:24
+                          Target:
+                            As3Identifier @9:28 Name="FlxText"
+                          Arguments[]:
+                            As3Literal @9:36 Kind=Number Text="0"
+                            As3Binary @9:39 Operator="-"
+                              Left:
+                                As3Binary @9:39 Operator="/"
+                                  Left:
+                                    As3MemberAccess @9:39 Name="height"
+                                      Target:
+                                        As3Identifier @9:39 Name="FlxG"
+                                  Right:
+                                    As3Literal @9:53 Kind=Number Text="2"
+                              Right:
+                                As3Literal @9:57 Kind=Number Text="10"
+                            As3MemberAccess @9:61 Name="width"
+                              Target:
+                                As3Identifier @9:61 Name="FlxG"
+                            As3Literal @9:73 Kind=String Text=""XNA REBORN PLATFORMER""
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Assignment @10:4 Operator="="
+                      Target:
+                        As3MemberAccess @10:4 Name="alignment"
+                          Target:
+                            As3Identifier @10:4 Name="title"
+                      Value:
+                        As3Literal @10:22 Kind=String Text=""center""
+                As3ExpressionStatement @11:4
+                  Expression:
+                    As3Call @11:4
+                      Target:
+                        As3Identifier @11:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @11:8 Name="title"
+                As3VarStatement @12:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @12:8 Name="prompt"
+                      Type:
+                        As3TypeRef @12:15 Name="FlxText"
+                      Initializer:
+                        As3New @12:25
+                          Target:
+                            As3Identifier @12:29 Name="FlxText"
+                          Arguments[]:
+                            As3Literal @12:37 Kind=Number Text="0"
+                            As3Binary @12:40 Operator="+"
+                              Left:
+                                As3Binary @12:40 Operator="/"
+                                  Left:
+                                    As3MemberAccess @12:40 Name="height"
+                                      Target:
+                                        As3Identifier @12:40 Name="FlxG"
+                                  Right:
+                                    As3Literal @12:54 Kind=Number Text="2"
+                              Right:
+                                As3Literal @12:58 Kind=Number Text="10"
+                            As3MemberAccess @12:62 Name="width"
+                              Target:
+                                As3Identifier @12:62 Name="FlxG"
+                            As3Literal @12:74 Kind=String Text=""PRESS X TO START""
+                As3ExpressionStatement @13:4
+                  Expression:
+                    As3Assignment @13:4 Operator="="
+                      Target:
+                        As3MemberAccess @13:4 Name="alignment"
+                          Target:
+                            As3Identifier @13:4 Name="prompt"
+                      Value:
+                        As3Literal @13:23 Kind=String Text=""center""
+                As3ExpressionStatement @14:4
+                  Expression:
+                    As3Call @14:4
+                      Target:
+                        As3Identifier @14:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @14:8 Name="prompt"
+        As3Method @17:3 Kind=Normal Name="update" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @17:37 Name="void"
+          Body:
+            As3Block @18:3
+              Statements[]:
+                As3ExpressionStatement @19:4
+                  Expression:
+                    As3Call @19:4
+                      Target:
+                        As3MemberAccess @19:4 Name="update"
+                          Target:
+                            As3Identifier @19:4 Name="super"
+                As3IfStatement @20:4
+                  Condition:
+                    As3Call @20:8
+                      Target:
+                        As3MemberAccess @20:8 Name="justPressed"
+                          Target:
+                            As3MemberAccess @20:8 Name="keys"
+                              Target:
+                                As3Identifier @20:8 Name="FlxG"
+                      Arguments[]:
+                        As3Literal @20:30 Kind=String Text=""X""
+                  Then:
+                    As3Block @21:4
+                      Statements[]:
+                        As3ExpressionStatement @22:5
+                          Expression:
+                            As3Call @22:5
+                              Target:
+                                As3MemberAccess @22:5 Name="switchState"
+                                  Target:
+                                    As3Identifier @22:5 Name="FlxG"
+                              Arguments[]:
+                                As3New @22:22
+                                  Target:
+                                    As3Identifier @22:26 Name="PlayState"
+
+== src/PlatformerGame.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="PlatformerGame" Modifiers=Public
+      BaseType:
+        As3TypeRef @6:38 Name="FlxGame"
+      Members[]:
+        As3Method @8:3 Kind=Constructor Name="PlatformerGame" Modifiers=Public
+          Body:
+            As3Block @9:3
+              Statements[]:
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Call @10:4
+                      Target:
+                        As3Identifier @10:4 Name="super"
+                      Arguments[]:
+                        As3Literal @10:10 Kind=Number Text="320"
+                        As3Literal @10:15 Kind=Number Text="240"
+                        As3Identifier @10:20 Name="MenuState"
+                        As3Literal @10:31 Kind=Number Text="2"
+      Metadata[]:
+        As3Metadata @5:2 Name="SWF"
+          Arguments[]:
+            As3MetadataArgument @5:7 Key="width" Value="640"
+            As3MetadataArgument @5:20 Key="height" Value="480"
+            As3MetadataArgument @5:34 Key="backgroundColor" Value="#000000"
+
+== src/PlayState.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="PlayState" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:33 Name="FlxState"
+      Members[]:
+        As3Field @7:3 IsConst=False Name="ImgTiles" Modifiers=Protected
+          Type:
+            As3TypeRef @7:64 Name="Class"
+          Metadata[]:
+            As3Metadata @7:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @7:10 Key="source" Value="../data/sprites.png"
+        As3Field @9:3 IsConst=False Name="_player" Modifiers=Private
+          Type:
+            As3TypeRef @9:23 Name="Player"
+        As3Field @10:3 IsConst=False Name="_enemies" Modifiers=Private
+          Type:
+            As3TypeRef @10:24 Name="FlxGroup"
+        As3Field @11:3 IsConst=False Name="_bullets" Modifiers=Private
+          Type:
+            As3TypeRef @11:24 Name="FlxGroup"
+        As3Field @12:3 IsConst=False Name="_floor" Modifiers=Private
+          Type:
+            As3TypeRef @12:22 Name="FlxTileblock"
+        As3Field @13:3 IsConst=False Name="_hud" Modifiers=Private
+          Type:
+            As3TypeRef @13:20 Name="FlxText"
+        As3Field @14:3 IsConst=False Name="_score" Modifiers=Private
+          Type:
+            As3TypeRef @14:22 Name="Score"
+        As3Field @15:3 IsConst=False Name="_spawnTimer" Modifiers=Private
+          Type:
+            As3TypeRef @15:27 Name="Number"
+        As3Field @16:3 IsConst=False Name="_wave" Modifiers=Private
+          Type:
+            As3TypeRef @16:21 Name="int"
+        As3Field @17:3 IsConst=False Name="_tracked" Modifiers=Private
+          Type:
+            As3TypeRef @17:24 Name="Vector"
+              TypeArguments[]:
+                As3TypeRef @17:32 Name="FlxSprite"
+        As3Method @19:3 Kind=Normal Name="create" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @19:37 Name="void"
+          Body:
+            As3Block @20:3
+              Statements[]:
+                As3ExpressionStatement @21:4
+                  Expression:
+                    As3Assignment @21:4 Operator="="
+                      Target:
+                        As3Identifier @21:4 Name="_score"
+                      Value:
+                        As3New @21:13
+                          Target:
+                            As3Identifier @21:17 Name="Score"
+                As3ExpressionStatement @22:4
+                  Expression:
+                    As3Call @22:4
+                      Target:
+                        As3MemberAccess @22:4 Name="addListener"
+                          Target:
+                            As3Identifier @22:4 Name="_score"
+                      Arguments[]:
+                        As3FunctionExpression @22:23
+                          Parameters[]:
+                            As3Parameter @22:32 Name="v" IsRest=False
+                              Type:
+                                As3TypeRef @22:34 Name="int"
+                          ReturnType:
+                            As3TypeRef @22:39 Name="void"
+                          Body:
+                            As3Block @23:4
+                              Statements[]:
+                                As3ExpressionStatement @24:5
+                                  Expression:
+                                    As3Assignment @24:5 Operator="="
+                                      Target:
+                                        As3MemberAccess @24:5 Name="text"
+                                          Target:
+                                            As3Identifier @24:5 Name="_hud"
+                                      Value:
+                                        As3Binary @24:17 Operator="+"
+                                          Left:
+                                            As3Literal @24:17 Kind=String Text=""SCORE ""
+                                          Right:
+                                            As3Identifier @24:28 Name="v"
+                As3ExpressionStatement @27:4
+                  Expression:
+                    As3Assignment @27:4 Operator="="
+                      Target:
+                        As3Identifier @27:4 Name="_bullets"
+                      Value:
+                        As3New @27:15
+                          Target:
+                            As3Identifier @27:19 Name="FlxGroup"
+                As3ForStatement @28:4
+                  Initializer:
+                    As3VarStatement @28:9 IsConst=False
+                      Declarators[]:
+                        As3Declarator @28:13 Name="i"
+                          Type:
+                            As3TypeRef @28:15 Name="int"
+                          Initializer:
+                            As3Literal @28:21 Kind=Number Text="0"
+                  Condition:
+                    As3Binary @28:24 Operator="<"
+                      Left:
+                        As3Identifier @28:24 Name="i"
+                      Right:
+                        As3Literal @28:28 Kind=Number Text="8"
+                  Increment:
+                    As3Unary @28:31 Operator="++" IsPrefix=False
+                      Operand:
+                        As3Identifier @28:31 Name="i"
+                  Body:
+                    As3Block @29:4
+                      Statements[]:
+                        As3ExpressionStatement @30:5
+                          Expression:
+                            As3Call @30:5
+                              Target:
+                                As3MemberAccess @30:5 Name="add"
+                                  Target:
+                                    As3Identifier @30:5 Name="_bullets"
+                              Arguments[]:
+                                As3New @30:18
+                                  Target:
+                                    As3Identifier @30:22 Name="Bullet"
+                As3ExpressionStatement @32:4
+                  Expression:
+                    As3Call @32:4
+                      Target:
+                        As3Identifier @32:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @32:8 Name="_bullets"
+                As3ExpressionStatement @34:4
+                  Expression:
+                    As3Assignment @34:4 Operator="="
+                      Target:
+                        As3Identifier @34:4 Name="_floor"
+                      Value:
+                        As3New @34:13
+                          Target:
+                            As3Identifier @34:17 Name="FlxTileblock"
+                          Arguments[]:
+                            As3Literal @34:30 Kind=Number Text="0"
+                            As3Literal @34:33 Kind=Number Text="216"
+                            As3Literal @34:38 Kind=Number Text="320"
+                            As3Literal @34:43 Kind=Number Text="24"
+                As3ExpressionStatement @35:4
+                  Expression:
+                    As3Call @35:4
+                      Target:
+                        As3MemberAccess @35:4 Name="loadTiles"
+                          Target:
+                            As3Identifier @35:4 Name="_floor"
+                      Arguments[]:
+                        As3Identifier @35:21 Name="ImgTiles"
+                        As3Literal @35:31 Kind=Number Text="16"
+                        As3Literal @35:35 Kind=Number Text="16"
+                        As3Literal @35:39 Kind=Number Text="0"
+                As3ExpressionStatement @36:4
+                  Expression:
+                    As3Call @36:4
+                      Target:
+                        As3Identifier @36:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @36:8 Name="_floor"
+                As3ExpressionStatement @38:4
+                  Expression:
+                    As3Assignment @38:4 Operator="="
+                      Target:
+                        As3Identifier @38:4 Name="_player"
+                      Value:
+                        As3New @38:14
+                          Target:
+                            As3Identifier @38:18 Name="Player"
+                          Arguments[]:
+                            As3Literal @38:25 Kind=Number Text="40"
+                            As3Literal @38:29 Kind=Number Text="100"
+                            As3Identifier @38:34 Name="_bullets"
+                As3ExpressionStatement @39:4
+                  Expression:
+                    As3Call @39:4
+                      Target:
+                        As3Identifier @39:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @39:8 Name="_player"
+                As3ExpressionStatement @41:4
+                  Expression:
+                    As3Assignment @41:4 Operator="="
+                      Target:
+                        As3Identifier @41:4 Name="_enemies"
+                      Value:
+                        As3New @41:15
+                          Target:
+                            As3Identifier @41:19 Name="FlxGroup"
+                As3ExpressionStatement @42:4
+                  Expression:
+                    As3Call @42:4
+                      Target:
+                        As3Identifier @42:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @42:8 Name="_enemies"
+                As3ExpressionStatement @44:4
+                  Expression:
+                    As3Assignment @44:4 Operator="="
+                      Target:
+                        As3Identifier @44:4 Name="_hud"
+                      Value:
+                        As3New @44:11
+                          Target:
+                            As3Identifier @44:15 Name="FlxText"
+                          Arguments[]:
+                            As3Literal @44:23 Kind=Number Text="4"
+                            As3Literal @44:26 Kind=Number Text="4"
+                            As3Literal @44:29 Kind=Number Text="200"
+                            As3Literal @44:34 Kind=String Text=""SCORE 0""
+                As3ExpressionStatement @45:4
+                  Expression:
+                    As3Call @45:4
+                      Target:
+                        As3Identifier @45:4 Name="add"
+                      Arguments[]:
+                        As3Identifier @45:8 Name="_hud"
+                As3ExpressionStatement @47:4
+                  Expression:
+                    As3Assignment @47:4 Operator="="
+                      Target:
+                        As3Identifier @47:4 Name="_spawnTimer"
+                      Value:
+                        As3Literal @47:18 Kind=Number Text="1"
+                As3ExpressionStatement @48:4
+                  Expression:
+                    As3Assignment @48:4 Operator="="
+                      Target:
+                        As3Identifier @48:4 Name="_tracked"
+                      Value:
+                        As3New @48:15
+                          Target:
+                            As3GenericExpression @48:19
+                              Target:
+                                As3Identifier @48:19 Name="Vector"
+                              TypeArguments[]:
+                                As3TypeRef @48:27 Name="FlxSprite"
+                As3ExpressionStatement @49:4
+                  Expression:
+                    As3Call @49:4
+                      Target:
+                        As3MemberAccess @49:4 Name="push"
+                          Target:
+                            As3Identifier @49:4 Name="_tracked"
+                      Arguments[]:
+                        As3Identifier @49:18 Name="_player"
+        As3Method @52:3 Kind=Normal Name="update" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @52:37 Name="void"
+          Body:
+            As3Block @53:3
+              Statements[]:
+                As3ExpressionStatement @54:4
+                  Expression:
+                    As3Assignment @54:4 Operator="-="
+                      Target:
+                        As3Identifier @54:4 Name="_spawnTimer"
+                      Value:
+                        As3MemberAccess @54:19 Name="elapsed"
+                          Target:
+                            As3Identifier @54:19 Name="FlxG"
+                As3IfStatement @55:4
+                  Condition:
+                    As3Binary @55:8 Operator="<="
+                      Left:
+                        As3Identifier @55:8 Name="_spawnTimer"
+                      Right:
+                        As3Literal @55:23 Kind=Number Text="0"
+                  Then:
+                    As3Block @56:4
+                      Statements[]:
+                        As3ExpressionStatement @57:5
+                          Expression:
+                            As3Call @57:5
+                              Target:
+                                As3MemberAccess @57:5 Name="add"
+                                  Target:
+                                    As3Identifier @57:5 Name="_enemies"
+                              Arguments[]:
+                                As3New @57:18
+                                  Target:
+                                    As3Identifier @57:22 Name="Enemy"
+                                  Arguments[]:
+                                    As3Literal @57:28 Kind=Number Text="300"
+                                    As3Literal @57:33 Kind=Number Text="100"
+                                    As3Identifier @57:38 Name="_player"
+                        As3ExpressionStatement @58:5
+                          Expression:
+                            As3Assignment @58:5 Operator="="
+                              Target:
+                                As3Identifier @58:5 Name="_spawnTimer"
+                              Value:
+                                As3Binary @58:19 Operator="-"
+                                  Left:
+                                    As3Literal @58:19 Kind=Number Text="3"
+                                  Right:
+                                    As3Binary @58:23 Operator="*"
+                                      Left:
+                                        As3Identifier @58:23 Name="_wave"
+                                      Right:
+                                        As3Literal @58:31 Kind=Number Text="0.1"
+                        As3ExpressionStatement @59:5
+                          Expression:
+                            As3Unary @59:5 Operator="++" IsPrefix=False
+                              Operand:
+                                As3Identifier @59:5 Name="_wave"
+                As3ExpressionStatement @62:4
+                  Expression:
+                    As3Call @62:4
+                      Target:
+                        As3MemberAccess @62:4 Name="update"
+                          Target:
+                            As3Identifier @62:4 Name="super"
+                As3ExpressionStatement @64:4
+                  Expression:
+                    As3Call @64:4
+                      Target:
+                        As3MemberAccess @64:4 Name="collide"
+                          Target:
+                            As3Identifier @64:4 Name="FlxG"
+                      Arguments[]:
+                        As3Identifier @64:17 Name="_floor"
+                        As3Identifier @64:25 Name="_player"
+                As3ExpressionStatement @65:4
+                  Expression:
+                    As3Call @65:4
+                      Target:
+                        As3MemberAccess @65:4 Name="collide"
+                          Target:
+                            As3Identifier @65:4 Name="FlxG"
+                      Arguments[]:
+                        As3Identifier @65:17 Name="_floor"
+                        As3Identifier @65:25 Name="_enemies"
+                As3ExpressionStatement @66:4
+                  Expression:
+                    As3Call @66:4
+                      Target:
+                        As3MemberAccess @66:4 Name="overlap"
+                          Target:
+                            As3Identifier @66:4 Name="FlxG"
+                      Arguments[]:
+                        As3Identifier @66:17 Name="_bullets"
+                        As3Identifier @66:27 Name="_enemies"
+                        As3Identifier @66:37 Name="hitEnemy"
+                As3ExpressionStatement @67:4
+                  Expression:
+                    As3Call @67:4
+                      Target:
+                        As3MemberAccess @67:4 Name="overlap"
+                          Target:
+                            As3Identifier @67:4 Name="FlxG"
+                      Arguments[]:
+                        As3Identifier @67:17 Name="_player"
+                        As3Identifier @67:26 Name="_enemies"
+                        As3Identifier @67:36 Name="hitPlayer"
+        As3Method @70:3 Kind=Normal Name="hitEnemy" Modifiers=Private
+          Parameters[]:
+            As3Parameter @70:29 Name="B" IsRest=False
+              Type:
+                As3TypeRef @70:31 Name="FlxObject"
+            As3Parameter @70:42 Name="E" IsRest=False
+              Type:
+                As3TypeRef @70:44 Name="FlxObject"
+          ReturnType:
+            As3TypeRef @70:55 Name="void"
+          Body:
+            As3Block @71:3
+              Statements[]:
+                As3ExpressionStatement @72:4
+                  Expression:
+                    As3Call @72:4
+                      Target:
+                        As3MemberAccess @72:4 Name="kill"
+                          Target:
+                            As3Identifier @72:4 Name="B"
+                As3ExpressionStatement @73:4
+                  Expression:
+                    As3Call @73:4
+                      Target:
+                        As3MemberAccess @73:4 Name="hurt"
+                          Target:
+                            As3Identifier @73:4 Name="E"
+                      Arguments[]:
+                        As3Literal @73:11 Kind=Number Text="1"
+                As3IfStatement @74:4
+                  Condition:
+                    As3Unary @74:8 Operator="!" IsPrefix=True
+                      Operand:
+                        As3MemberAccess @74:9 Name="alive"
+                          Target:
+                            As3Identifier @74:9 Name="E"
+                  Then:
+                    As3Block @75:4
+                      Statements[]:
+                        As3ExpressionStatement @76:5
+                          Expression:
+                            As3Assignment @76:5 Operator="+="
+                              Target:
+                                As3MemberAccess @76:5 Name="value"
+                                  Target:
+                                    As3Identifier @76:5 Name="_score"
+                              Value:
+                                As3Literal @76:21 Kind=Number Text="10"
+        As3Method @80:3 Kind=Normal Name="hitPlayer" Modifiers=Private
+          Parameters[]:
+            As3Parameter @80:30 Name="P" IsRest=False
+              Type:
+                As3TypeRef @80:32 Name="FlxObject"
+            As3Parameter @80:43 Name="E" IsRest=False
+              Type:
+                As3TypeRef @80:45 Name="FlxObject"
+          ReturnType:
+            As3TypeRef @80:56 Name="void"
+          Body:
+            As3Block @81:3
+              Statements[]:
+                As3ExpressionStatement @82:4
+                  Expression:
+                    As3Call @82:4
+                      Target:
+                        As3MemberAccess @82:4 Name="switchState"
+                          Target:
+                            As3Identifier @82:4 Name="FlxG"
+                      Arguments[]:
+                        As3New @82:21
+                          Target:
+                            As3Identifier @82:25 Name="MenuState"
+
+== src/Player.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="Player" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:30 Name="FlxSprite"
+      Members[]:
+        As3Field @7:3 IsConst=False Name="ImgPlayer" Modifiers=Private
+          Type:
+            As3TypeRef @7:63 Name="Class"
+          Metadata[]:
+            As3Metadata @7:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @7:10 Key="source" Value="../data/sprites.png"
+        As3Field @8:3 IsConst=False Name="SndJump" Modifiers=Private
+          Type:
+            As3TypeRef @8:58 Name="Class"
+          Metadata[]:
+            As3Metadata @8:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @8:10 Key="source" Value="../data/jump.wav"
+        As3Field @10:3 IsConst=False Name="runSpeed" Modifiers=Public
+          Type:
+            As3TypeRef @10:23 Name="Number"
+        As3Field @11:3 IsConst=False Name="_shotTimer" Modifiers=Private
+          Type:
+            As3TypeRef @11:26 Name="Number"
+          Initializer:
+            As3Literal @11:35 Kind=Number Text="0"
+        As3Field @12:3 IsConst=False Name="_bullets" Modifiers=Private
+          Type:
+            As3TypeRef @12:24 Name="FlxGroup"
+        As3Method @14:3 Kind=Constructor Name="Player" Modifiers=Public
+          Parameters[]:
+            As3Parameter @14:26 Name="X" IsRest=False
+              Type:
+                As3TypeRef @14:28 Name="Number"
+            As3Parameter @14:36 Name="Y" IsRest=False
+              Type:
+                As3TypeRef @14:38 Name="Number"
+            As3Parameter @14:46 Name="Bullets" IsRest=False
+              Type:
+                As3TypeRef @14:54 Name="FlxGroup"
+          Body:
+            As3Block @15:3
+              Statements[]:
+                As3ExpressionStatement @16:4
+                  Expression:
+                    As3Call @16:4
+                      Target:
+                        As3Identifier @16:4 Name="super"
+                      Arguments[]:
+                        As3Identifier @16:10 Name="X"
+                        As3Identifier @16:13 Name="Y"
+                As3ExpressionStatement @17:4
+                  Expression:
+                    As3Call @17:4
+                      Target:
+                        As3Identifier @17:4 Name="loadGraphic"
+                      Arguments[]:
+                        As3Identifier @17:16 Name="ImgPlayer"
+                        As3Literal @17:27 Kind=Boolean Text="true"
+                        As3Literal @17:33 Kind=Boolean Text="true"
+                        As3Literal @17:39 Kind=Number Text="16"
+                        As3Literal @17:43 Kind=Number Text="16"
+                As3ExpressionStatement @18:4
+                  Expression:
+                    As3Assignment @18:4 Operator="="
+                      Target:
+                        As3Identifier @18:4 Name="width"
+                      Value:
+                        As3Literal @18:12 Kind=Number Text="10"
+                As3ExpressionStatement @19:4
+                  Expression:
+                    As3Assignment @19:4 Operator="="
+                      Target:
+                        As3Identifier @19:4 Name="height"
+                      Value:
+                        As3Literal @19:13 Kind=Number Text="14"
+                As3ExpressionStatement @20:4
+                  Expression:
+                    As3Assignment @20:4 Operator="="
+                      Target:
+                        As3MemberAccess @20:4 Name="x"
+                          Target:
+                            As3Identifier @20:4 Name="offset"
+                      Value:
+                        As3Literal @20:15 Kind=Number Text="3"
+                As3ExpressionStatement @21:4
+                  Expression:
+                    As3Assignment @21:4 Operator="="
+                      Target:
+                        As3MemberAccess @21:4 Name="y"
+                          Target:
+                            As3Identifier @21:4 Name="offset"
+                      Value:
+                        As3Literal @21:15 Kind=Number Text="2"
+                As3ExpressionStatement @22:4
+                  Expression:
+                    As3Assignment @22:4 Operator="="
+                      Target:
+                        As3Identifier @22:4 Name="runSpeed"
+                      Value:
+                        As3Literal @22:15 Kind=Number Text="80"
+                As3ExpressionStatement @23:4
+                  Expression:
+                    As3Assignment @23:4 Operator="="
+                      Target:
+                        As3MemberAccess @23:4 Name="x"
+                          Target:
+                            As3Identifier @23:4 Name="drag"
+                      Value:
+                        As3Binary @23:13 Operator="*"
+                          Left:
+                            As3Identifier @23:13 Name="runSpeed"
+                          Right:
+                            As3Literal @23:24 Kind=Number Text="8"
+                As3ExpressionStatement @24:4
+                  Expression:
+                    As3Assignment @24:4 Operator="="
+                      Target:
+                        As3MemberAccess @24:4 Name="y"
+                          Target:
+                            As3Identifier @24:4 Name="acceleration"
+                      Value:
+                        As3Literal @24:21 Kind=Number Text="420"
+                As3ExpressionStatement @25:4
+                  Expression:
+                    As3Assignment @25:4 Operator="="
+                      Target:
+                        As3MemberAccess @25:4 Name="x"
+                          Target:
+                            As3Identifier @25:4 Name="maxVelocity"
+                      Value:
+                        As3Identifier @25:20 Name="runSpeed"
+                As3ExpressionStatement @26:4
+                  Expression:
+                    As3Assignment @26:4 Operator="="
+                      Target:
+                        As3MemberAccess @26:4 Name="y"
+                          Target:
+                            As3Identifier @26:4 Name="maxVelocity"
+                      Value:
+                        As3Literal @26:20 Kind=Number Text="200"
+                As3ExpressionStatement @27:4
+                  Expression:
+                    As3Call @27:4
+                      Target:
+                        As3Identifier @27:4 Name="addAnimation"
+                      Arguments[]:
+                        As3Literal @27:17 Kind=String Text=""idle""
+                        As3ArrayLiteral @27:25
+                          Elements[]:
+                            As3Literal @27:26 Kind=Number Text="0"
+                As3ExpressionStatement @28:4
+                  Expression:
+                    As3Call @28:4
+                      Target:
+                        As3Identifier @28:4 Name="addAnimation"
+                      Arguments[]:
+                        As3Literal @28:17 Kind=String Text=""walk""
+                        As3ArrayLiteral @28:25
+                          Elements[]:
+                            As3Literal @28:26 Kind=Number Text="1"
+                            As3Literal @28:29 Kind=Number Text="2"
+                            As3Literal @28:32 Kind=Number Text="3"
+                            As3Literal @28:35 Kind=Number Text="2"
+                        As3Literal @28:39 Kind=Number Text="10"
+                        As3Literal @28:43 Kind=Boolean Text="true"
+                As3ExpressionStatement @29:4
+                  Expression:
+                    As3Assignment @29:4 Operator="="
+                      Target:
+                        As3Identifier @29:4 Name="_bullets"
+                      Value:
+                        As3Identifier @29:15 Name="Bullets"
+        As3Method @32:3 Kind=Normal Name="update" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @32:37 Name="void"
+          Body:
+            As3Block @33:3
+              Statements[]:
+                As3ExpressionStatement @34:4
+                  Expression:
+                    As3Assignment @34:4 Operator="="
+                      Target:
+                        As3MemberAccess @34:4 Name="x"
+                          Target:
+                            As3Identifier @34:4 Name="acceleration"
+                      Value:
+                        As3Literal @34:21 Kind=Number Text="0"
+                As3IfStatement @35:4
+                  Condition:
+                    As3MemberAccess @35:8 Name="LEFT"
+                      Target:
+                        As3MemberAccess @35:8 Name="keys"
+                          Target:
+                            As3Identifier @35:8 Name="FlxG"
+                  Then:
+                    As3Block @36:4
+                      Statements[]:
+                        As3ExpressionStatement @37:5
+                          Expression:
+                            As3Assignment @37:5 Operator="="
+                              Target:
+                                As3Identifier @37:5 Name="facing"
+                              Value:
+                                As3Identifier @37:14 Name="LEFT"
+                        As3ExpressionStatement @38:5
+                          Expression:
+                            As3Assignment @38:5 Operator="="
+                              Target:
+                                As3MemberAccess @38:5 Name="x"
+                                  Target:
+                                    As3Identifier @38:5 Name="acceleration"
+                              Value:
+                                As3Unary @38:22 Operator="-" IsPrefix=True
+                                  Operand:
+                                    As3MemberAccess @38:23 Name="x"
+                                      Target:
+                                        As3Identifier @38:23 Name="drag"
+                  Else:
+                    As3IfStatement @40:9
+                      Condition:
+                        As3MemberAccess @40:13 Name="RIGHT"
+                          Target:
+                            As3MemberAccess @40:13 Name="keys"
+                              Target:
+                                As3Identifier @40:13 Name="FlxG"
+                      Then:
+                        As3Block @41:4
+                          Statements[]:
+                            As3ExpressionStatement @42:5
+                              Expression:
+                                As3Assignment @42:5 Operator="="
+                                  Target:
+                                    As3Identifier @42:5 Name="facing"
+                                  Value:
+                                    As3Identifier @42:14 Name="RIGHT"
+                            As3ExpressionStatement @43:5
+                              Expression:
+                                As3Assignment @43:5 Operator="="
+                                  Target:
+                                    As3MemberAccess @43:5 Name="x"
+                                      Target:
+                                        As3Identifier @43:5 Name="acceleration"
+                                  Value:
+                                    As3MemberAccess @43:22 Name="x"
+                                      Target:
+                                        As3Identifier @43:22 Name="drag"
+                As3IfStatement @46:4
+                  Condition:
+                    As3Binary @46:8 Operator="&&"
+                      Left:
+                        As3Call @46:8
+                          Target:
+                            As3MemberAccess @46:8 Name="justPressed"
+                              Target:
+                                As3MemberAccess @46:8 Name="keys"
+                                  Target:
+                                    As3Identifier @46:8 Name="FlxG"
+                          Arguments[]:
+                            As3Literal @46:30 Kind=String Text=""UP""
+                      Right:
+                        As3Call @46:39
+                          Target:
+                            As3Identifier @46:39 Name="isTouching"
+                          Arguments[]:
+                            As3Identifier @46:50 Name="FLOOR"
+                  Then:
+                    As3Block @47:4
+                      Statements[]:
+                        As3ExpressionStatement @48:5
+                          Expression:
+                            As3Assignment @48:5 Operator="="
+                              Target:
+                                As3MemberAccess @48:5 Name="y"
+                                  Target:
+                                    As3Identifier @48:5 Name="velocity"
+                              Value:
+                                As3Unary @48:18 Operator="-" IsPrefix=True
+                                  Operand:
+                                    As3Literal @48:19 Kind=Number Text="200"
+                        As3ExpressionStatement @49:5
+                          Expression:
+                            As3Call @49:5
+                              Target:
+                                As3MemberAccess @49:5 Name="play"
+                                  Target:
+                                    As3Identifier @49:5 Name="FlxG"
+                              Arguments[]:
+                                As3Identifier @49:15 Name="SndJump"
+                As3ExpressionStatement @52:4
+                  Expression:
+                    As3Assignment @52:4 Operator="-="
+                      Target:
+                        As3Identifier @52:4 Name="_shotTimer"
+                      Value:
+                        As3MemberAccess @52:18 Name="elapsed"
+                          Target:
+                            As3Identifier @52:18 Name="FlxG"
+                As3IfStatement @53:4
+                  Condition:
+                    As3Binary @53:8 Operator="&&"
+                      Left:
+                        As3MemberAccess @53:8 Name="X"
+                          Target:
+                            As3MemberAccess @53:8 Name="keys"
+                              Target:
+                                As3Identifier @53:8 Name="FlxG"
+                      Right:
+                        As3Binary @53:23 Operator="<="
+                          Left:
+                            As3Identifier @53:23 Name="_shotTimer"
+                          Right:
+                            As3Literal @53:37 Kind=Number Text="0"
+                  Then:
+                    As3Block @54:4
+                      Statements[]:
+                        As3ExpressionStatement @55:5
+                          Expression:
+                            As3Call @55:5
+                              Target:
+                                As3Identifier @55:5 Name="shoot"
+                As3IfStatement @58:4
+                  Condition:
+                    As3Binary @58:8 Operator="!="
+                      Left:
+                        As3MemberAccess @58:8 Name="x"
+                          Target:
+                            As3Identifier @58:8 Name="velocity"
+                      Right:
+                        As3Literal @58:22 Kind=Number Text="0"
+                  Then:
+                    As3Block @59:4
+                      Statements[]:
+                        As3ExpressionStatement @60:5
+                          Expression:
+                            As3Call @60:5
+                              Target:
+                                As3Identifier @60:5 Name="play"
+                              Arguments[]:
+                                As3Literal @60:10 Kind=String Text=""walk""
+                  Else:
+                    As3Block @63:4
+                      Statements[]:
+                        As3ExpressionStatement @64:5
+                          Expression:
+                            As3Call @64:5
+                              Target:
+                                As3Identifier @64:5 Name="play"
+                              Arguments[]:
+                                As3Literal @64:10 Kind=String Text=""idle""
+                As3ExpressionStatement @67:4
+                  Expression:
+                    As3Call @67:4
+                      Target:
+                        As3MemberAccess @67:4 Name="update"
+                          Target:
+                            As3Identifier @67:4 Name="super"
+        As3Method @70:3 Kind=Normal Name="shoot" Modifiers=Private
+          ReturnType:
+            As3TypeRef @70:28 Name="void"
+          Body:
+            As3Block @71:3
+              Statements[]:
+                As3VarStatement @72:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @72:8 Name="b"
+                      Type:
+                        As3TypeRef @72:10 Name="Bullet"
+                      Initializer:
+                        As3Binary @72:19 Operator="as"
+                          Left:
+                            As3Call @72:19
+                              Target:
+                                As3MemberAccess @72:19 Name="recycle"
+                                  Target:
+                                    As3Identifier @72:19 Name="_bullets"
+                              Arguments[]:
+                                As3Identifier @72:36 Name="Bullet"
+                          Right:
+                            As3Identifier @72:47 Name="Bullet"
+                As3ExpressionStatement @73:4
+                  Expression:
+                    As3Call @73:4
+                      Target:
+                        As3MemberAccess @73:4 Name="shoot"
+                          Target:
+                            As3Identifier @73:4 Name="b"
+                      Arguments[]:
+                        As3Binary @73:12 Operator="+"
+                          Left:
+                            As3Identifier @73:12 Name="x"
+                          Right:
+                            As3Binary @73:16 Operator="/"
+                              Left:
+                                As3Identifier @73:16 Name="width"
+                              Right:
+                                As3Literal @73:24 Kind=Number Text="2"
+                        As3Binary @73:27 Operator="+"
+                          Left:
+                            As3Identifier @73:27 Name="y"
+                          Right:
+                            As3Literal @73:31 Kind=Number Text="4"
+                        As3Conditional @73:34
+                          Condition:
+                            As3Binary @73:34 Operator="=="
+                              Left:
+                                As3Identifier @73:34 Name="facing"
+                              Right:
+                                As3Identifier @73:44 Name="LEFT"
+                          WhenTrue:
+                            As3Unary @73:51 Operator="-" IsPrefix=True
+                              Operand:
+                                As3Literal @73:52 Kind=Number Text="160"
+                          WhenFalse:
+                            As3Literal @73:58 Kind=Number Text="160"
+                As3ExpressionStatement @74:4
+                  Expression:
+                    As3Assignment @74:4 Operator="="
+                      Target:
+                        As3Identifier @74:4 Name="_shotTimer"
+                      Value:
+                        As3Literal @74:17 Kind=Number Text="0.25"
+
+== src/Score.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="Score" Modifiers=Public
+      Members[]:
+        As3Field @5:3 IsConst=False Name="_value" Modifiers=Private
+          Type:
+            As3TypeRef @5:22 Name="int"
+        As3Field @6:3 IsConst=False Name="_listeners" Modifiers=Private
+          Type:
+            As3TypeRef @6:26 Name="Vector"
+              TypeArguments[]:
+                As3TypeRef @6:34 Name="Function"
+        As3Method @8:3 Kind=Constructor Name="Score" Modifiers=Public
+          Body:
+            As3Block @9:3
+              Statements[]:
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Assignment @10:4 Operator="="
+                      Target:
+                        As3Identifier @10:4 Name="_value"
+                      Value:
+                        As3Literal @10:13 Kind=Number Text="0"
+                As3ExpressionStatement @11:4
+                  Expression:
+                    As3Assignment @11:4 Operator="="
+                      Target:
+                        As3Identifier @11:4 Name="_listeners"
+                      Value:
+                        As3New @11:17
+                          Target:
+                            As3GenericExpression @11:21
+                              Target:
+                                As3Identifier @11:21 Name="Vector"
+                              TypeArguments[]:
+                                As3TypeRef @11:29 Name="Function"
+        As3Method @14:3 Kind=Getter Name="value" Modifiers=Public
+          ReturnType:
+            As3TypeRef @14:31 Name="int"
+          Body:
+            As3Block @15:3
+              Statements[]:
+                As3ReturnStatement @16:4
+                  Value:
+                    As3Identifier @16:11 Name="_value"
+        As3Method @19:3 Kind=Setter Name="value" Modifiers=Public
+          Parameters[]:
+            As3Parameter @19:29 Name="v" IsRest=False
+              Type:
+                As3TypeRef @19:31 Name="int"
+          ReturnType:
+            As3TypeRef @19:36 Name="void"
+          Body:
+            As3Block @20:3
+              Statements[]:
+                As3ExpressionStatement @21:4
+                  Expression:
+                    As3Assignment @21:4 Operator="="
+                      Target:
+                        As3Identifier @21:4 Name="_value"
+                      Value:
+                        As3Identifier @21:13 Name="v"
+                As3ForInStatement @22:4 IsEach=True
+                  Variable:
+                    As3Declarator @22:18 Name="f"
+                      Type:
+                        As3TypeRef @22:20 Name="Function"
+                  Collection:
+                    As3Identifier @22:32 Name="_listeners"
+                  Body:
+                    As3Block @23:4
+                      Statements[]:
+                        As3ExpressionStatement @24:5
+                          Expression:
+                            As3Call @24:5
+                              Target:
+                                As3Identifier @24:5 Name="f"
+                              Arguments[]:
+                                As3Identifier @24:7 Name="_value"
+        As3Method @28:3 Kind=Normal Name="addListener" Modifiers=Public
+          Parameters[]:
+            As3Parameter @28:31 Name="f" IsRest=False
+              Type:
+                As3TypeRef @28:33 Name="Function"
+          ReturnType:
+            As3TypeRef @28:43 Name="void"
+          Body:
+            As3Block @29:3
+              Statements[]:
+                As3ExpressionStatement @30:4
+                  Expression:
+                    As3Call @30:4
+                      Target:
+                        As3MemberAccess @30:4 Name="push"
+                          Target:
+                            As3Identifier @30:4 Name="_listeners"
+                      Arguments[]:
+                        As3Identifier @30:20 Name="f"
+        As3Method @33:3 Kind=Normal Name="ratio" Modifiers=Public, Static
+          Parameters[]:
+            As3Parameter @33:32 Name="a" IsRest=False
+              Type:
+                As3TypeRef @33:34 Name="int"
+            As3Parameter @33:39 Name="b" IsRest=False
+              Type:
+                As3TypeRef @33:41 Name="int"
+          ReturnType:
+            As3TypeRef @33:46 Name="Number"
+          Body:
+            As3Block @34:3
+              Statements[]:
+                As3ReturnStatement @35:4
+                  Value:
+                    As3Binary @35:11 Operator="/"
+                      Left:
+                        As3Identifier @35:11 Name="a"
+                      Right:
+                        As3Identifier @35:15 Name="b"

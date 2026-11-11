@@ -1,0 +1,33 @@
+﻿== src/Counter.as
+As3CompilationUnit @1:1 PackageName="game"
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="Counter" Modifiers=Public
+      Members[]:
+        As3Field @5:3 IsConst=False Name="_count" Modifiers=Private
+          Type:
+            As3TypeRef @5:22 Name="int"
+          Initializer:
+            As3Literal @5:28 Kind=Number Text="0"
+        As3Method @7:3 Kind=Constructor Name="Counter" Modifiers=Public
+          Body:
+            As3Block @8:3
+        As3Method @11:3 Kind=Getter Name="count" Modifiers=Public
+          ReturnType:
+            As3TypeRef @11:31 Name="int"
+          Body:
+            As3Block @12:3
+              Statements[]:
+                As3ReturnStatement @13:4
+                  Value:
+                    As3Identifier @13:11 Name="_count"
+        As3Method @16:3 Kind=Normal Name="increment" Modifiers=Public
+          ReturnType:
+            As3TypeRef @16:31 Name="void"
+          Body:
+            As3Block @17:3
+              Statements[]:
+                As3ExpressionStatement @18:4
+                  Expression:
+                    As3Unary @18:4 Operator="++" IsPrefix=False
+                      Operand:
+                        As3Identifier @18:4 Name="_count"

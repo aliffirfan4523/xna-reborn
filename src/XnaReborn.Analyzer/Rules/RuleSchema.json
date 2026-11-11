@@ -10,7 +10,7 @@
     "version": { "const": 1, "description": "Catalog schema version." },
     "name": { "type": "string", "minLength": 1 },
     "appliesTo": {
-      "enum": ["xna", "monogame", "SharpDxToolkit"],
+      "enum": ["xna", "monogame", "SharpDxToolkit", "flash"],
       "default": "xna",
       "description": "Project family the catalog runs against. Omit for XNA projects."
     },
@@ -63,7 +63,7 @@
       "required": ["id", "title", "severity", "classification", "match", "explanation", "resolution"],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^(XNA|MG|SDX)[0-9]{3}$" },
+        "id": { "type": "string", "pattern": "^(XNA|MG|SDX|FL)[0-9]{3}$" },
         "title": { "type": "string", "minLength": 1, "maxLength": 100 },
         "severity": { "$ref": "#/$defs/severity" },
         "classification": { "$ref": "#/$defs/classification" },
@@ -121,7 +121,11 @@
         { "$ref": "#/$defs/matchProjectLinks" },
         { "$ref": "#/$defs/matchPreprocessorSymbol" },
         { "$ref": "#/$defs/matchMgcbSetting" },
-        { "$ref": "#/$defs/matchFileContent" }
+        { "$ref": "#/$defs/matchFileContent" },
+        { "$ref": "#/$defs/matchAs3Import" },
+        { "$ref": "#/$defs/matchAs3Syntax" },
+        { "$ref": "#/$defs/matchAs3Metadata" },
+        { "$ref": "#/$defs/matchAs3Api" }
       ]
     },
     "matchReference": {
@@ -292,7 +296,49 @@
         "minLinkedRatio": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.5 }
       }
     },
-    "matchFileContent": {
+    "matchAs3Import": {
+      "description": "An ActionScript 3 import. A trailing .* matches the package and the packages below it.",
+      "type": "object",
+      "required": ["type", "pattern"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "as3Import" },
+        "pattern": { "type": "string", "minLength": 1 }
+      }
+    },
+    "matchAs3Syntax": {
+      "description": "A named ActionScript 3 language construct.",
+      "type": "object",
+      "required": ["type", "construct"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "as3Syntax" },
+        "construct": { "type": "string", "minLength": 1 }
+      }
+    },
+    "matchAs3Metadata": {
+      "description": "An ActionScript 3 metadata tag. With Embed, embedKind narrows the match.",
+      "type": "object",
+      "required": ["type", "tag"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "as3Metadata" },
+        "tag": { "type": "string", "minLength": 1 },
+        "embedKind": { "enum": ["image", "audio", "data", "font", "symbol", "missing"] }
+      }
+    },
+    "matchAs3Api": {
+      "description": "A member or identifier used in ActionScript 3 code. Exactly one of names or qualified is required.",
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "oneOf": [{ "required": ["names"] }, { "required": ["qualified"] }],
+      "properties": {
+        "type": { "const": "as3Api" },
+        "names": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "qualified": { "type": "string", "minLength": 1 }
+      }
+    },    "matchFileContent": {
       "description": "The text of files under the project folder that match a glob. Comments are blanked first for .fx and .fxh files. The regex is a .NET regular expression.",
       "type": "object",
       "required": ["type", "glob", "regex"],

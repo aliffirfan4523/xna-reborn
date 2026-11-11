@@ -1,0 +1,69 @@
+﻿== src/EmbedGame.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="EmbedGame" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:33 Name="FlxGame"
+      Members[]:
+        As3Field @7:3 IsConst=False Name="ImgPicture" Modifiers=Private
+          Type:
+            As3TypeRef @7:64 Name="Class"
+          Metadata[]:
+            As3Metadata @7:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @7:10 Key="source" Value="../data/picture.png"
+        As3Field @8:3 IsConst=False Name="SndSound" Modifiers=Private
+          Type:
+            As3TypeRef @8:60 Name="Class"
+          Metadata[]:
+            As3Metadata @8:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @8:10 Key="source" Value="../data/sound.mp3"
+        As3Field @9:3 IsConst=False Name="DataMap" Modifiers=Private
+          Type:
+            As3TypeRef @9:94 Name="Class"
+          Metadata[]:
+            As3Metadata @9:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @9:10 Key="source" Value="../data/map.csv"
+                As3MetadataArgument @9:36 Key="mimeType" Value="application/octet-stream"
+        As3Field @10:3 IsConst=False Name="DataInfo" Modifiers=Private
+          Type:
+            As3TypeRef @10:96 Name="Class"
+          Metadata[]:
+            As3Metadata @10:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @10:10 Key="source" Value="../data/info.xml"
+                As3MetadataArgument @10:37 Key="mimeType" Value="application/octet-stream"
+        As3Field @11:3 IsConst=False Name="FontFace" Modifiers=Private
+          Type:
+            As3TypeRef @11:98 Name="Class"
+          Metadata[]:
+            As3Metadata @11:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @11:10 Key="source" Value="../data/face.ttf"
+                As3MetadataArgument @11:37 Key="fontFamily" Value="Face"
+                As3MetadataArgument @11:56 Key="embedAsCFF" Value="false"
+        As3Field @12:3 IsConst=False Name="SymbolHero" Modifiers=Private
+          Type:
+            As3TypeRef @12:71 Name="Class"
+          Metadata[]:
+            As3Metadata @12:3 Name="Embed"
+              Arguments[]:
+                As3MetadataArgument @12:10 Key="source" Value="library.swf"
+                As3MetadataArgument @12:32 Key="symbol" Value="Hero"
+        As3Method @14:3 Kind=Constructor Name="EmbedGame" Modifiers=Public
+          Body:
+            As3Block @15:3
+              Statements[]:
+                As3ExpressionStatement @16:4
+                  Expression:
+                    As3Call @16:4
+                      Target:
+                        As3Identifier @16:4 Name="super"
+                      Arguments[]:
+                        As3Literal @16:10 Kind=Number Text="320"
+                        As3Literal @16:15 Kind=Number Text="240"
+                        As3Identifier @16:20 Name="FlxState"
