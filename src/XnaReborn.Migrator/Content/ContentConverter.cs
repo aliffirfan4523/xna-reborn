@@ -1,10 +1,14 @@
 using System.Text;
 using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
+using XnaReborn.Analyzer.Xact;
 using XnaReborn.Core.Content;
 using XnaReborn.Core.Models;
+using XnaReborn.Core.Models.Xact;
+using XnaReborn.Migrator.Audio;
 using XnaReborn.Migrator.Effects;
 using XnaReborn.Migrator.Output;
+using XnaReborn.Migrator.Projects;
 
 namespace XnaReborn.Migrator.Content;
 
@@ -15,7 +19,9 @@ namespace XnaReborn.Migrator.Content;
 /// False to list such an asset as manual work and leave it out of <c>Content.mgcb</c>.
 /// </param>
 /// <param name="RewriteEffects">True to rewrite <c>.fx</c> files (shader model macros, sampler fixes, markers) and copy the files they include. False to copy them unchanged.</param>
-public sealed record ContentOptions(MonoGameTarget Target, bool SubstituteFonts, bool RewriteEffects = true);
+/// <param name="Xact">What to do with XACT audio projects and compiled banks.</param>
+/// <param name="StreamingWavesAsSong">True to build the waves of streaming XACT wave banks as songs.</param>
+public sealed record ContentOptions(MonoGameTarget Target, bool SubstituteFonts, bool RewriteEffects = true, XactMode Xact = XactMode.Auto, bool StreamingWavesAsSong = true);
 
 /// <summary>The outcome of converting the content of one game project.</summary>
 /// <param name="Changes">
@@ -24,11 +30,13 @@ public sealed record ContentOptions(MonoGameTarget Target, bool SubstituteFonts,
 /// <param name="Report">The assets with their final status, and the counts.</param>
 /// <param name="ManualNotes">Plain sentences for the manifest, sorted and distinct.</param>
 /// <param name="MgcbRelativePath">Path of <c>Content.mgcb</c> relative to the output root, with '/' separators, or null when the project has no content.</param>
+/// <param name="Xact">The XACT projects that were converted, for the catalog and the stand-in. Empty or null when none was.</param>
 public sealed record ContentConversionResult(
     IReadOnlyList<FileChange> Changes,
     ContentReport Report,
     IReadOnlyList<string> ManualNotes,
-    string? MgcbRelativePath);
+    string? MgcbRelativePath,
+    IReadOnlyList<XactProjectPlan>? Xact = null);
 
 /// <summary>
 /// Converts the content of one game project: reads its content projects, classifies every item, writes <c>Content.mgcb</c>
@@ -39,6 +47,8 @@ public sealed class ContentConverter
     private const string _mgcbFileName = "Content.mgcb";
     private const string _defaultContentRoot = "Content";
     private const string _externalFolder = "_external";
+
+    private static readonly string[] _compiledBankExtensions = [".xgs", ".xwb", ".xsb"];
 
     private readonly IReadOnlyFileSystem _fileSystem;
     private readonly ImporterMap _map;
@@ -225,13 +235,16 @@ public sealed class ContentConverter
             CheckFont(slot, options, notes);
         }
 
+        // XACT: turn each readable .xap into wave assets (audio-and-shaders R2, R3).
+        var xact = ConvertXact(slots, folder, options, notes, ct);
+
         // Steps 7 and 8: the MGCB document.
-        var entries = new List<MgcbEntry>();
+        var entries = new List<MgcbEntry>(xact.Entries);
         var copyPaths = new List<string>();
         foreach (var slot in slots)
         {
             ct.ThrowIfCancellationRequested();
-            if (slot.Asset.Status == AssetStatus.Converted)
+            if (slot.Asset.Status == AssetStatus.Converted && !slot.IsXap)
             {
                 AddEntry(slot, folder, entries, notes);
             }
@@ -285,6 +298,15 @@ public sealed class ContentConverter
             }
         }
 
+        // XACT wave files that the .xap names. A path that a content item already copied stays as it is.
+        foreach (var copy in xact.Copies)
+        {
+            if (used.Add(copy.RelativePath))
+            {
+                changes.Add(copy);
+            }
+        }
+
         // Effects: rewrite the copied .fx text and copy the files it includes.
         if (options.RewriteEffects)
         {
@@ -306,12 +328,155 @@ public sealed class ContentConverter
         }
 
         var sortedNotes = notes.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
-        var report = ContentReport.Create(slots.Select(s => s.Asset), sortedNotes);
+        var report = ContentReport.Create(slots.Select(s => s.Asset), sortedNotes, xact.Projects.Count == 0 ? null : AudioReport.Create(xact.Projects, sortedNotes.Where(n => n.Contains("[XNA07", StringComparison.Ordinal) || n.Contains("[XNA016]", StringComparison.Ordinal))));
         return new ContentConversionResult(
             changes.OrderBy(c => c.RelativePath, StringComparer.Ordinal).ToList(),
             report,
             sortedNotes,
-            mgcbPath);
+            mgcbPath,
+            xact.Projects);
+    }
+
+    /// <summary>
+    /// Converts the XACT projects in the content: each readable <c>.xap</c> becomes wave assets (entries for <c>Content.mgcb</c> and copies of the
+    /// wave files) plus a plan for the catalog. Compiled banks are copied unchanged either way and are only ignored or warned about.
+    /// </summary>
+    private XactStep ConvertXact(List<Slot> slots, string folder, ContentOptions options, List<string> notes, CancellationToken ct)
+    {
+        var step = new XactStep([], [], []);
+        if (options.Xact == XactMode.CopyOnly)
+        {
+            return step;
+        }
+
+        foreach (var slot in slots.Where(s => s.Asset.Status == AssetStatus.ManualWork && Extension(s.Asset.Item.SourcePath).Equals(".xap", StringComparison.OrdinalIgnoreCase)).ToList())
+        {
+            ct.ThrowIfCancellationRequested();
+            ConvertXap(slot, folder, options, notes, step, ct);
+        }
+
+        var banks = slots.Where(s => s.Asset.Status == AssetStatus.ManualWork && _compiledBankExtensions.Contains(Extension(s.Asset.Item.SourcePath), StringComparer.OrdinalIgnoreCase)).ToList();
+        if (banks.Count > 0 && step.Projects.Count > 0)
+        {
+            foreach (var bank in banks)
+            {
+                notes.Add($"{bank.OutputPath}: [{XactPlanner.XapRuleId}] This compiled XACT bank is copied unchanged and is not used, because the converted .xap provides the same sounds.");
+            }
+        }
+        else if (banks.Count > 0)
+        {
+            notes.Add($"{banks[0].OutputPath}: [{XactPlanner.CompiledRuleId}] {banks.Count} compiled XACT file(s) were copied unchanged and no .xap was converted, so no XACT stand-in was generated. MonoGame {PackageVersions.Default.MonoGame} plays compiled banks only when they are not streaming wave banks and use PCM or ADPCM; streaming wave banks throw NotImplementedException on desktop.");
+        }
+
+        return step;
+    }
+
+    private void ConvertXap(Slot slot, string folder, ContentOptions options, List<string> notes, XactStep step, CancellationToken ct)
+    {
+        string Failure(string reason) =>
+            $"{slot.OutputPath}: [{XactPlanner.XapRuleId}] {reason} It was copied unchanged and not converted."
+            + (options.Xact == XactMode.ConvertOnly ? " ERROR: the XACT mode is ConvertOnly, so this is not skipped silently." : string.Empty);
+
+        string text;
+        try
+        {
+            text = ReadText(slot.SourceFullPath).Text;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            notes.Add(Failure($"The .xap could not be read: {e.Message}"));
+            return;
+        }
+
+        var read = XapReader.Read(slot.SourceFullPath, text, ct);
+        if (read.Project is null)
+        {
+            notes.Add(Failure("The .xap could not be parsed: " + string.Join(" ", read.Diagnostics.Select(d => $"{d.Code} {d.Message}"))));
+            return;
+        }
+
+        var projectDirectory = Path.GetDirectoryName(slot.Project.FullPath) ?? string.Empty;
+        var xapDirectory = Path.GetRelativePath(projectDirectory, Path.GetDirectoryName(slot.SourceFullPath) ?? projectDirectory).Replace('\\', '/');
+        var plan = XactPlanner.Plan(
+            read.Project,
+            xapDirectory == "." ? string.Empty : xapDirectory,
+            relative => _fileSystem.FileExists(Path.GetFullPath(Path.Combine(projectDirectory, ToNative(relative)))),
+            options.StreamingWavesAsSong);
+
+        var assets = new List<WaveAsset>();
+        var waveNotes = new List<string>();
+        foreach (var asset in plan.Assets)
+        {
+            if (!asset.Exists)
+            {
+                assets.Add(asset);
+                continue;
+            }
+
+            var buildable = TryBuildWave(asset, projectDirectory, folder, out var entry, out var copy, out var problem);
+            assets.Add(buildable ? asset : asset with { Exists = false });
+            if (buildable)
+            {
+                step.Entries.Add(entry!);
+                step.Copies.Add(copy!);
+            }
+            else
+            {
+                waveNotes.Add($"{slot.OutputPath}: [{XactPlanner.XapRuleId}] {problem}");
+            }
+        }
+
+        var finalPlan = plan with { Assets = assets };
+        step.Projects.Add(new XactProjectPlan(read.Project, finalPlan));
+        notes.AddRange(waveNotes);
+        notes.AddRange(finalPlan.Findings.Select(f => $"{slot.OutputPath}: [{f.RuleId}] {f.Message}"));
+        var built = assets.Count(a => a.Exists);
+        var sentence = $"XACT project converted: {built} wave file(s) become SoundEffect or Song assets, and a generated stand-in keeps the AudioEngine, WaveBank, SoundBank and Cue code working.";
+        slot.IsXap = true;
+        slot.Asset = slot.Asset with { Status = AssetStatus.Converted, Note = sentence };
+        notes.Add($"{slot.OutputPath}: [{XactPlanner.XapRuleId}] {sentence}");
+    }
+
+    /// <summary>Makes the <c>Content.mgcb</c> entry and the copy of one wave file. Returns false, with a sentence, when the pipeline cannot build it.</summary>
+    private static bool TryBuildWave(WaveAsset asset, string projectDirectory, string folder, out MgcbEntry? entry, out FileChange? copy, out string problem)
+    {
+        entry = null;
+        copy = null;
+        problem = string.Empty;
+        var relative = Collapse(asset.SourceRelativePath);
+        var extension = Extension(relative).ToLowerInvariant();
+        var importer = extension switch
+        {
+            ".wav" => "WavImporter",
+            ".mp3" => "Mp3Importer",
+            ".ogg" => "OggImporter",
+            ".wma" => "WmaImporter",
+            _ => null,
+        };
+        if (importer is null)
+        {
+            problem = $"The wave file '{asset.SourceRelativePath}' has the format '{extension}', which the MonoGame content pipeline does not read. Convert it to WAV, MP3 or OGG; its cues are silent until then.";
+            return false;
+        }
+
+        var full = Path.GetFullPath(Path.Combine(projectDirectory, ToNative(relative)));
+        var inFolder = Escapes(relative) ? Join(_externalFolder, Path.GetFileName(full)) : relative;
+        var candidate = new MgcbEntry(
+            inFolder,
+            asset.AssetName + extension,
+            importer,
+            asset.Kind == XactWaveKind.Song ? "SongProcessor" : "SoundEffectProcessor",
+            [new KeyValuePair<string, string>("Quality", "Best")]);
+        var problems = MgcbWriter.FindProblems(candidate);
+        if (problems.Count > 0)
+        {
+            problem = string.Join(" ", problems) + " Its cues are silent until the file is renamed.";
+            return false;
+        }
+
+        entry = candidate;
+        copy = new FileChange(Join(folder, inFolder), ChangeKind.Copied, null, null, $"XACT wave source of the asset '{asset.AssetName}'.", full);
+        return true;
     }
 
     /// <summary>A content project that could not be read: every file below it is kept as manual work so nothing is lost.</summary>
@@ -601,5 +766,9 @@ public sealed class ContentConverter
         public string? FontNewText { get; set; }
 
         public string? FontReason { get; set; }
+
+        public bool IsXap { get; set; }
     }
+
+    private sealed record XactStep(List<MgcbEntry> Entries, List<FileChange> Copies, List<XactProjectPlan> Projects);
 }

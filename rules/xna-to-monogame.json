@@ -167,21 +167,23 @@
       "id": "XNA015",
       "title": "XACT audio engine (AudioEngine, WaveBank, SoundBank, Cue)",
       "severity": "Warning",
-      "classification": "Manual",
+      "classification": "AutoFixable",
       "category": "Api",
       "match": { "type": "type", "name": "AudioEngine", "namespaces": ["Microsoft.Xna.Framework.Audio"] },
-      "explanation": "Code uses the XACT runtime. MonoGame can load compiled XACT files (.xgs, .xwb, .xsb) but the content builder cannot compile XACT projects, and some features such as ADPCM and streaming wave banks are limited.",
-      "resolution": "Ship the compiled XACT files unchanged and load them by path, or move sounds to SoundEffect and Song assets and drop XACT."
+      "explanation": "Code uses the XACT runtime. MonoGame cannot build XACT projects, and it plays compiled banks only if they are not streaming and use PCM or ADPCM. When a .xap is present the migrator converts it to SoundEffect and Song assets and a generated stand-in; without a .xap only the compiled files can be copied (see XNA070).",
+      "resolution": "The migrator points AudioEngine, WaveBank, SoundBank, Cue and AudioCategory at the generated XnaReborn.Compat.Xact stand-in with using aliases when it converted a .xap. Check that the cues sound right; the stand-in does not apply fades, filters, reverb or DSP.",
+      "migratorTask": "audio-and-shaders:7"
     },
     {
       "id": "XNA016",
       "title": "XACT project file (.xap)",
       "severity": "Warning",
-      "classification": "Manual",
+      "classification": "AutoFixable",
       "category": "Content",
       "match": { "type": "filePattern", "glob": "**/*.xap" },
       "explanation": "The project contains an XACT authoring file. XACT is a Windows-only tool that is no longer updated, and the MonoGame content builder does not compile .xap files.",
-      "resolution": "Compile the project in XACT and copy the .xgs, .xwb, and .xsb outputs, or export the sounds as wav or ogg files and use SoundEffect and Song."
+      "resolution": "The migrator reads the .xap, builds each wave as a SoundEffect or Song asset in Content.mgcb, and generates a catalog and stand-in for the cues. Features it cannot convert are listed as notes. Needs ffmpeg and ffprobe on the path at content build time.",
+      "migratorTask": "audio-and-shaders:4"
     },
     {
       "id": "XNA017",
@@ -880,6 +882,38 @@
       "explanation": "The project has a My Project/AssemblyInfo.vb file with assembly attributes. An SDK-style project generates the same attributes, so the build fails with duplicate attribute errors.",
       "resolution": "The migrator keeps the file and turns off the generated assembly information (GenerateAssemblyInfo false), as it does for AssemblyInfo.cs.",
       "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA070",
+      "title": "Compiled XACT banks (.xwb)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "filePattern", "glob": "**/*.xwb" },
+      "explanation": "The project has compiled XACT banks. The migrator copies them unchanged. MonoGame plays compiled banks only when they are not streaming wave banks (those throw NotImplementedException on desktop) and use PCM or ADPCM. When the .xap is also present, the migrator converts it and ignores the compiled files.",
+      "resolution": "Keep the .xap next to the compiled files so the migrator can convert it, or export the sounds as wav or ogg files and use SoundEffect and Song."
+    },
+    {
+      "id": "XNA071",
+      "title": "Streaming XACT wave bank",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.xap", "regex": "(?m)^\\s*Streaming\\s*=\\s*1\\s*;" },
+      "explanation": "A wave bank streams its waves. MonoGame cannot stream XACT banks on desktop, so the migrator builds those waves as Song assets. Only one song plays at a time, through MediaPlayer, and pitch is ignored.",
+      "resolution": "Nothing to do unless the game plays two streaming cues at once or also uses MediaPlayer. Turn off the streaming-as-song option to build the waves as sound effects instead.",
+      "migratorTask": "audio-and-shaders:4"
+    },
+    {
+      "id": "XNA072",
+      "title": "XACT features that are not converted",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "fileContent", "glob": "**/*.xap", "regex": "(?m)^\\s*(DSP|Reverb|Filter|Stop Event|Volume Event|Pitch Event|Marker Event|Set Variable Event|Transition|Interactive|Occlusion|Obstruction)\\b" },
+      "explanation": "The .xap uses effects, DSP, filters, reverb, extra event types or interactive audio that the generated stand-in does not play. The cues still play without them.",
+      "resolution": "Read the notes the migrator wrote for each cue and add the effect in code if it matters."
     }
+
   ]
 }

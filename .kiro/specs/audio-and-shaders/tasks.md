@@ -24,12 +24,12 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 3.3 Tests: positive (a regex that matches `xna40-effects`), negative (a regex that matches only inside a comment, and a file over `maxBytes`), loader rejects a missing `regex`, hash-unchanged test. Do not add catalog rules in this task.
   - _Requirements: R15.3, R16.2_
 
-- [ ] 4. Planner, conversion mode and compiled-bank fallback (only 4.2 is done: `XactPlanner` exists but nothing calls it yet)
-  - [ ] 4.1 Add `XactMode` and `StreamingWavesAsSong` to `MigrationOptions` (defaults per design).
+- [x] 4. Planner, conversion mode and compiled-bank fallback
+  - [x] 4.1 Add `XactMode` and `StreamingWavesAsSong` to `MigrationOptions` (defaults per design).
   - [x] 4.2 Implement `XactPlanner` in `XnaReborn.Migrator/Audio`: asset names, shared files, kinds, missing waves, compression preset notes, findings.
-  - [ ] 4.3 Change `ContentConverter` classification as described in the design: convert when a parsable `.xap` exists; otherwise copy and mark manual work. In `Auto` with compiled banks and no `.xap`, add the Warning with the MonoGame limits (PCM and ADPCM only, no streaming). When both exist, copy compiled files and say they are ignored.
-  - [ ] 4.4 Tests for each mode and each case in R2 (positive and negative); planner tests for R3 (including the shared file and the missing file).
-  - [ ] 4.5 Link catalog rule `NEW-A1` in the rule change table to this task (the catalog edit itself is task 17).
+  - [x] 4.3 Change `ContentConverter` classification as described in the design: convert when a parsable `.xap` exists; otherwise copy and mark manual work. In `Auto` with compiled banks and no `.xap`, add the Warning with the MonoGame limits (PCM and ADPCM only, no streaming). When both exist, copy compiled files and say they are ignored.
+  - [x] 4.4 Tests for each mode and each case in R2 (positive and negative); planner tests for R3 (including the shared file and the missing file).
+  - [x] 4.5 Link catalog rule `NEW-A1` in the rule change table to this task (the catalog edit itself is task 17).
   - _Requirements: R2, R3_
 
 - [x] 5. Catalog generator
@@ -40,17 +40,17 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - _Requirements: R4, R16.6_
 
 - [ ] 6. Content entries and audio tool check
-  - [ ] 6.1 Add the wave entries to the `Content.mgcb` generation (`WavImporter` with `SoundEffectProcessor` or `SongProcessor`, `Quality=Best`, `source;destination` form). Confirm `MgcbWriter.FindProblems` accepts the pairs; if not, add an allowed-pairs list.
-  - [ ] 6.2 Add the audio section to `ContentReport` and the manifest (R7.1, R7.2); expose it as structured data.
-  - [ ] 6.3 Runner: detect `ffmpeg` and `ffprobe` on the path when `Content.mgcb` has audio entries; add the Warning and the `audio-no-ffmpeg` hint (R7.3). Fake `IProcessRunner` tests: found, missing, no audio entries (no warning).
+  - [x] 6.1 Add the wave entries to the `Content.mgcb` generation (`WavImporter` with `SoundEffectProcessor` or `SongProcessor`, `Quality=Best`, `source;destination` form). Confirm `MgcbWriter.FindProblems` accepts the pairs; if not, add an allowed-pairs list.
+  - [x] 6.2 Add the audio section to `ContentReport` and the manifest (R7.1, R7.2); expose it as structured data.
+  - [x] 6.3 Runner: detect `ffmpeg` and `ffprobe` on the path when `Content.mgcb` has audio entries; add the Warning and the `audio-no-ffmpeg` hint (R7.3). Fake `IProcessRunner` tests: found, missing, no audio entries (no warning).
   - [ ] 6.4 Slow integration test (skipped without the tools): convert `xna40-xact`, run `dotnet-mgcb`, expect the wave assets to build.
   - _Requirements: R3, R7_
 
-- [ ] 7. Source aliasing
-  - [ ] 7.1 Implement `XactAliasRewriter` (rule `XNA015`) with Roslyn, position-based edits, alias placement, qualified names, existing aliases, local type conflict note.
-  - [ ] 7.2 Extend `ShimProjectGenerator.Scan` and the project reference logic with the `Microsoft.Xna.Framework.Audio` types (R6.5).
-  - [ ] 7.3 Register the rewriter; do nothing in `CopyOnly` mode.
-  - [ ] 7.4 Tests: positive (uses `AudioEngine` and `Cue`), negative (uses only `SoundEffect`), alias with `using Microsoft.Xna.Framework.Audio;` still compiles when both the alias and the using are present against MonoGame DesktopGL and WindowsDX packages, idempotence, snapshot, local type declaration.
+- [x] 7. Source aliasing
+  - [x] 7.1 Implement `XactAliasRewriter` (rule `XNA015`) with Roslyn, position-based edits, alias placement, qualified names, existing aliases, local type conflict note.
+  - [x] 7.2 Extend `ShimProjectGenerator.Scan` and the project reference logic with the `Microsoft.Xna.Framework.Audio` types (R6.5).
+  - [x] 7.3 Register the rewriter; do nothing in `CopyOnly` mode.
+  - [x] 7.4 Tests: positive (uses `AudioEngine` and `Cue`), negative (uses only `SoundEffect`), alias with `using Microsoft.Xna.Framework.Audio;` still compiles when both the alias and the using are present against MonoGame DesktopGL and WindowsDX packages, idempotence, snapshot, local type declaration.
   - _Requirements: R6_
 
 - [x] 8. Shim core
@@ -112,10 +112,10 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 16.2 Tests: every hint has one message that matches and one that does not; the empty-profile message matches `fx-sm-too-low`.
   - _Requirements: R14_
 
-- [ ] 17. Catalog rule changes (partly done: the shader rules `NEW-B1` to `NEW-B6` are XNA064 to XNA069 and XNA017 has new text; the XACT rules and the XNA015/XNA016 edits wait for the converter and shim)
-  - [ ] 17.1 Apply the rule change table in `design.md` to `rules/xna-to-monogame.json`: the three edits (XNA015, XNA016, XNA017) and the new rules (`NEW-A1` to `NEW-B6`), taking the next free `XNAnnn` IDs at the time of the task. Replace the `NEW-` labels in markers, rewriters and tests with the real IDs.
-  - [ ] 17.2 Link every AutoFixable rule to its migrator task in `migratorTask` (`audio-and-shaders:N`).
-  - [ ] 17.3 For each rule a positive and a negative fixture test; update the snapshot reports and review the diff; the analyzer score on `xna40-xact` and `xna40-effects` is recorded.
+- [x] 17. Catalog rule changes (the shader rules `NEW-B1` to `NEW-B6` are XNA064 to XNA069 and XNA017 has new text; the XACT rules `NEW-A1` to `NEW-A3` are XNA070 to XNA072 and XNA015/XNA016 are changed)
+  - [x] 17.1 Apply the rule change table in `design.md` to `rules/xna-to-monogame.json`: the three edits (XNA015, XNA016, XNA017) and the new rules (`NEW-A1` to `NEW-B6`), taking the next free `XNAnnn` IDs at the time of the task. Replace the `NEW-` labels in markers, rewriters and tests with the real IDs.
+  - [x] 17.2 Link every AutoFixable rule to its migrator task in `migratorTask` (`audio-and-shaders:N`).
+  - [x] 17.3 For each rule a positive and a negative fixture test; update the snapshot reports and review the diff; the analyzer score on `xna40-xact` and `xna40-effects` is recorded.
   - _Requirements: R15_
 
 - [ ] 18. Checkpoint: shaders end to end
