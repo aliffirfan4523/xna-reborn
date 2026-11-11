@@ -129,28 +129,28 @@ Rules for every task:
   - [x] 17.4 Update snapshots and review the diff
   - _Requirements: R8, R13_
 
-- [ ] 18. Rewriter contracts (`Migrator`)
-  - [ ] 18.1 `SourceRewriteContext.Language` (default C#), `ISourceRewriter.Language` default member, registry key `(RuleId, Language)`, `SourceRewriteEngine` language argument
-  - [ ] 18.2 `ProjectMigrator.CompileFiles` and the rewrite call pick language by extension
-  - [ ] 18.3 `IMarkerInserter`, `CSharpMarkerInserter` (current class), `MarkerPrefixes.All`; grep every user of `MarkerInserter.Prefix` (manifest, diff viewer, App) and switch it to `MarkerPrefixes.All`
-  - [ ] 18.4 Tests: two rewriters for one rule ID with different languages register; same pair throws; engine skips the wrong language; all existing rewriter tests pass with no edit
+- [x] 18. Rewriter contracts (`Migrator`)
+  - [x] 18.1 `SourceRewriteContext.Language` (default C#), `ISourceRewriter.Language` default member, registry key `(RuleId, Language)`, `SourceRewriteEngine` language argument
+  - [x] 18.2 `ProjectMigrator.CompileFiles` and the rewrite call pick language by extension
+  - [x] 18.3 `IMarkerInserter`, `CSharpMarkerInserter` (current class), `MarkerPrefixes.All`; grep every user of `MarkerInserter.Prefix` (manifest, diff viewer, App) and switch it to `MarkerPrefixes.All`
+  - [x] 18.4 Tests: two rewriters for one rule ID with different languages register; same pair throws; engine skips the wrong language; all existing rewriter tests pass with no edit
   - _Requirements: R9, R13_
 
-- [ ] 19. VB project generation (`Migrator`)
-  - [ ] 19.1 Rename `SdkCsprojGenerator` to `SdkProjectGenerator` with a language seam; keep a thin `SdkCsprojGenerator` alias only if tests need it
-  - [ ] 19.2 VB output: `MyType Empty`, `Option*` copy, `NamespaceImport` back to `<Import>`, `StartupObject` filter, no `Nullable`/`ImplicitUsings`, `GenerateAssemblyInfo=false` when `My Project/AssemblyInfo.vb` is kept
-  - [ ] 19.3 Omit `My Project` designer compile items and list each in the manifest; do not copy `.myapp` and `.settings` files silently (copy as manual work)
-  - [ ] 19.4 `SolutionGenerator`: VB project type GUID for `.vbproj`
-  - [ ] 19.5 Verify snapshots of `.vbproj` and `.sln` for `vb-xna40-basic`, `vb-xna31-handmade`, `mixed-cs-vb-sln`
-  - [ ] 19.6 Integration test (`XNAREBORN_INTEGRATION=1`): migrate `vb-xna40-basic` and run `dotnet build`; expect 0 errors once task 20 is merged; before that, record the entry point error
+- [x] 19. VB project generation (`Migrator`)
+  - [x] 19.1 Rename `SdkCsprojGenerator` to `SdkProjectGenerator` with a language seam; keep a thin `SdkCsprojGenerator` alias only if tests need it
+  - [x] 19.2 VB output: `MyType Empty`, `Option*` copy, `NamespaceImport` back to `<Import>`, `StartupObject` filter, no `Nullable`/`ImplicitUsings`, `GenerateAssemblyInfo=false` when `My Project/AssemblyInfo.vb` is kept
+  - [x] 19.3 Omit `My Project` designer compile items and list each in the manifest; do not copy `.myapp` and `.settings` files silently (copy as manual work)
+  - [x] 19.4 `SolutionGenerator`: VB project type GUID for `.vbproj`
+  - [x] 19.5 Verify snapshots of `.vbproj` and `.sln` for `vb-xna40-basic`, `vb-xna31-handmade`, `mixed-cs-vb-sln`
+  - [x] 19.6 Integration test (`XNAREBORN_INTEGRATION=1`): migrate `vb-xna40-basic` and run `dotnet build`; expect 0 errors once task 20 is merged; before that, record the entry point error
   - _Requirements: R10_
 
-- [ ] 20. VB rewriters (`Migrator`)
-  - [ ] 20.1 `VisualBasicMarkerInserter` (comment `'`, statement-start placement, multi-line statements)
-  - [ ] 20.2 VB entry point rewriter (`#If ... OrElse ... Then`, `Shared Sub Main` and `Module` `Sub Main`)
-  - [ ] 20.3 `BlendModeMap` shared by both languages; VB `SpriteBatchBeginRewriter` (positional and named arguments)
-  - [ ] 20.4 `VisualBasicMarkerRewriter` for XNA024, XNA039, XNA040
-  - [ ] 20.5 Register in `DefaultRewriters`; before and after tests; preservation test; `autoFixLanguages` coverage test (a VB rewriter exists exactly for the rules whose `autoFixLanguages` includes `vb`, ignoring ENTRYPOINT)
+- [x] 20. VB rewriters (`Migrator`)
+  - [x] 20.1 `VisualBasicMarkerInserter` (comment `'`, statement-start placement, multi-line statements)
+  - [x] 20.2 VB entry point rewriter (`#If ... OrElse ... Then`, `Shared Sub Main` and `Module` `Sub Main`)
+  - [x] 20.3 `BlendModeMap` shared by both languages; VB `SpriteBatchBeginRewriter` (positional and named arguments)
+  - [x] 20.4 `VisualBasicMarkerRewriter` for XNA024, XNA039, XNA040
+  - [x] 20.5 Register in `DefaultRewriters`; before and after tests; preservation test; `autoFixLanguages` coverage test (a VB rewriter exists exactly for the rules whose `autoFixLanguages` includes `vb`, ignoring ENTRYPOINT)
   - _Requirements: R11_
 
 - [ ] 21. Runner (`Runner`)
