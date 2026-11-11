@@ -190,6 +190,14 @@ public sealed class ProjectMigrator
             enabled.UnionWith(report.Findings
                 .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal))
                 .Select(f => f.RuleId));
+            if (state.Shims is null && read.Info.Language == SourceLanguage.CSharp)
+            {
+                // Without the shims the dead APIs stay in the code, so each using gets a marker (project-migrator 12.3).
+                enabled.UnionWith(report.Findings
+                    .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && DefaultRewriters.ShimFallbackIds.Contains(f.RuleId, StringComparer.Ordinal))
+                    .Select(f => f.RuleId));
+            }
+
             if (read.Info.Language == SourceLanguage.VisualBasic)
             {
                 // The Visual Basic rewriters for these rules only add markers; their findings are Manual, so no plan item enables them.
