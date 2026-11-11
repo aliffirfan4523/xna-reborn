@@ -23,9 +23,9 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 2. Fixtures (MVP)
   - [x] 2.1 `tests/fixtures/flash/flx-hello`: FlashDevelop project (`.as3proj`), entry class extending `FlxGame`, one `FlxState` with `FlxText`, no embeds. Expected results file (detector output, score range, no FL errors). (L)
-  - [ ] 2.2 `tests/fixtures/flash/flx-platformer`: the demo game. Menu state, play state, player (`FlxSprite` with animations and input), enemies in a `FlxGroup`, bullets with `recycle`, a hand-written tile layer from `FlxTileblock` first (tilemap comes in task 17), one generated png (drawn by a test helper, 16 by 16 sprite sheet), one short wav written by a test helper. `[Embed]` for each, `[SWF]` metadata with zoom 2. Uses `Number` fields without initializers, `int / int`, closures, getters/setters, `for each`, `super()` first, a `Vector.<FlxSprite>`. (H)
+  - [x] 2.2 `tests/fixtures/flash/flx-platformer`: the demo game. Menu state, play state, player (`FlxSprite` with animations and input), enemies in a `FlxGroup`, bullets with `recycle`, a hand-written tile layer from `FlxTileblock` first (tilemap comes in task 17), one generated png (drawn by a test helper, 16 by 16 sprite sheet), one short wav written by a test helper. `[Embed]` for each, `[SWF]` metadata with zoom 2. Uses `Number` fields without initializers, `int / int`, closures, getters/setters, `for each`, `super()` first, a `Vector.<FlxSprite>`. (H)
   - [x] 2.3 Negative and edge fixtures: `flx-swf-only` (a text file named `game.swf`, never decoded), `flx-fla-only` (a stub `.fla`), `flx-plain-as3` (AS3 without Flixel), `flx-two-entries`, `flx-missing-embed`, `flx-not-flash` (C# only). Expected results for each. (L)
-  - [ ] 2.4 Language-gap and embed-variant fixtures: `flx-gaps` (one file per FL020 to FL031 construct, each small, each with a known expected marker), `flx-embeds` (image, audio, csv map, xml, font, symbol embed). (H)
+  - [x] 2.4 Language-gap and embed-variant fixtures: `flx-gaps` (one file per FL020 to FL031 construct, each small, each with a known expected marker), `flx-embeds` (image, audio, csv map, xml, font, symbol embed). (H)
   - _Requirements: R12.1, R12.2_
 
 - [x] 3. AS3 lexer (MVP)
@@ -52,10 +52,10 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 6. Rules and analyzer (MVP)
   - [ ] 6.1 Add the four match types (`as3Import`, `as3Syntax`, `as3Metadata`, `as3Api`) to the Core rule model, the JSON converter and the rule schema. Existing XNA catalog tests stay green. (H)
-  - [ ] 6.2 Implement the four matchers over the syntax tree. (H)
-  - [ ] 6.3 Write `rules/flash-to-monogame.json` with the rules in design.md (FL001 to FL060). Each AutoFixable rule links its converter task (see 11 to 13). (H)
-  - [ ] 6.4 Positive and negative fixture test for every rule id; Verify snapshots of the reports. Review the snapshot diff in the PR. (L)
-  - [ ] 6.5 `FlashProjectAnalyzer` facade: progress, cancellation, deterministic JSON and markdown report, score. Hash-unchanged test on every fixture. (H)
+  - [x] 6.2 Implement the four matchers over the syntax tree. (H)
+  - [x] 6.3 Write `rules/flash-to-monogame.json` with the rules in design.md (FL001 to FL060). Each AutoFixable rule links its converter task (see 11 to 13). (H)
+  - [x] 6.4 Positive and negative fixture test for every rule id; Verify snapshots of the reports. Review the snapshot diff in the PR. (L)
+  - [x] 6.5 `FlashProjectAnalyzer` facade: progress, cancellation, deterministic JSON and markdown report, score. Hash-unchanged test on every fixture. (H)
   - [ ] 6.6 Checkpoint: analyze the three candidate games locally (when `XNAREBORN_FLASH_SAMPLES` is set) and record scores and the top findings in the task notes. (L)
   - _Requirements: R2, R4_
 
@@ -85,8 +85,8 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 10. Type resolver and API map (MVP)
   - [ ] 10.1 Roslyn-based generator that builds `flixel-api.json` (member names, parameter and return types, static flags) from the runtime sources, and a test that fails when the checked-in file is out of date. (H)
-  - [ ] 10.2 `TypeResolver`: declared types, literals, member access on project classes and runtime types, `unknown` fallback. (H)
-  - [ ] 10.3 Tests: table of expressions with expected types, including int/int, Number to int, `Vector` element types, `unknown` cases. (L)
+  - [x] 10.2 `TypeResolver`: declared types, literals, member access on project classes and runtime types, `unknown` fallback. (H)
+  - [x] 10.3 Tests: table of expressions with expected types, including int/int, Number to int, `Vector` element types, `unknown` cases. (L)
   - _Requirements: R5.4 to R5.6_
 
 - [ ] 11. Converter: emitters (MVP)
