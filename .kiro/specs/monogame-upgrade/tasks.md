@@ -61,7 +61,7 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 9.3 Update snapshot reports and review the diff
   - _Requirements: R4, R5, R12_
 
-- [ ] 10. Checkpoint: analyzer
+- [x] 10. Checkpoint: analyzer
   - Full test suite, `dotnet build`, `dotnet format --verify-no-changes`
   - Every rule has a positive and a negative test; `mg38-current` scores 100; fixture B projected score is above its score
   - Hash-unchanged test over fixtures A to I; write-API scan passes
