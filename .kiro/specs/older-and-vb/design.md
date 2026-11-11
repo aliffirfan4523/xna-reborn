@@ -498,3 +498,13 @@ Content was paraphrased from these sources, not quoted at length.
 - `ProjectReadResult.ImplicitImports` is set for Visual Basic projects only. `NamespaceImport` is the item type for `ItemGroup` `Import` elements in every project, which cannot collide with the MSBuild `Import` item.
 - The C# source scanner still reads only `.cs` files. Visual Basic source is scanned from task 16.
 - Real-VB candidate scans of checkpoint B (task 23) need network clones and are left for the owner.
+
+## Implementation notes (part B matcher and catalog)
+
+- `SourceWalker` became `CSharpSourceWalker`; the rule logic moved to `RuleHitCollector` (an `ISourceFactSink`). The 14.3 check held: the C# source tests and all C# analyzer snapshots passed before and after, with no edit.
+- Alias resolution (task 15) is applied to type and member names (`Xna.Graphics.Texture2D`). It is not applied to namespace chains, because the import statement already hits and a second hit at every alias use would change existing C# reports (`Namespace_alias_using_matches_on_its_target`).
+- The sink also takes `MethodDeclaration` and `PreprocessorSymbol` facts, so XNA102 to XNA105 style rules and `#If` symbol rules work in both languages.
+- `autoFixLanguages`: XNA022 `["csharp","vb"]` (a VB `SpriteBatch.Begin` rewriter follows in task 20); XNA024, XNA039, XNA040, XNA053, XNA062 `["csharp"]`. XNA053 and XNA062 were added beyond the spec list, because their only rewriters are C# only and a VB project would otherwise count them as fixable. XNA102 to XNA105 got `languages ["csharp"]`.
+- XNA111, XNA113 and XNA114 link `older-and-vb:19` and `project-migrator:4.1`. Until task 19 lands, a VB project shows them as AutoFixable although the migrator does not write VB projects yet.
+- `rule-cases.json` has an optional `language` field (default `csharp`). Changed rules (XNA022, XNA024, XNA039, XNA040) are covered for VB by the `vb-xna31-handmade` snapshot and `VisualBasicSourceWalkerTests`, not by extra cases, because the case test expects exactly one case per rule.
+- The VB walker table row "indexing is a call" gives `Receiver` as the invoked name (`Vertices` in `device.Vertices(0).SetSource`), tested.
