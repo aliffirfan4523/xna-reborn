@@ -1093,6 +1093,12 @@
           "static": true
         },
         {
+          "name": "gamepads",
+          "kind": "field",
+          "type": "Array",
+          "static": true
+        },
+        {
           "name": "getRandom",
           "kind": "method",
           "type": "Object",
@@ -1144,6 +1150,36 @@
           "name": "keys",
           "kind": "field",
           "type": "FlxKeyboard",
+          "static": true
+        },
+        {
+          "name": "loadBytes",
+          "kind": "method",
+          "type": "Array",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Data",
+              "type": "Class"
+            }
+          ]
+        },
+        {
+          "name": "loadText",
+          "kind": "method",
+          "type": "String",
+          "static": true,
+          "parameters": [
+            {
+              "name": "Data",
+              "type": "Class"
+            }
+          ]
+        },
+        {
+          "name": "mouse",
+          "kind": "field",
+          "type": "FlxMouse",
           "static": true
         },
         {
@@ -1229,6 +1265,10 @@
             {
               "name": "keyState",
               "type": "IFlxKeyState"
+            },
+            {
+              "name": "mouseState",
+              "type": "IFlxMouseState"
             }
           ]
         },
@@ -1249,6 +1289,18 @@
           "kind": "field",
           "type": "int",
           "static": true
+        },
+        {
+          "name": "worldBounds",
+          "kind": "field",
+          "type": "FlxRect",
+          "static": true
+        },
+        {
+          "name": "worldDivisions",
+          "kind": "field",
+          "type": "int",
+          "static": true
         }
       ]
     },
@@ -1256,6 +1308,47 @@
       "name": "FlxGame",
       "base": "Game",
       "members": []
+    },
+    {
+      "name": "FlxGamepad",
+      "members": [
+        {
+          "name": "justPressed",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ButtonName",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "justReleased",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ButtonName",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "pressed",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ButtonName",
+              "type": "String"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "FlxGroup",
@@ -1442,6 +1535,12 @@
           "static": false
         },
         {
+          "name": "KeyNames",
+          "kind": "property",
+          "type": "IReadOnlyCollection",
+          "static": true
+        },
+        {
           "name": "LEFT",
           "kind": "property",
           "type": "Boolean",
@@ -1496,6 +1595,13 @@
           "static": false
         },
         {
+          "name": "any",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": []
+        },
+        {
           "name": "justPressed",
           "kind": "method",
           "type": "Boolean",
@@ -1532,6 +1638,13 @@
           ]
         },
         {
+          "name": "reset",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
           "name": "update",
           "kind": "method",
           "type": "void",
@@ -1542,6 +1655,118 @@
               "type": "IFlxKeyState"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "FlxList",
+      "members": [
+        {
+          "name": "@object",
+          "kind": "field",
+          "type": "FlxObject",
+          "static": false
+        },
+        {
+          "name": "next",
+          "kind": "field",
+          "type": "FlxList",
+          "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxMouse",
+      "members": [
+        {
+          "name": "hide",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "justPressed",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "justReleased",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "pressed",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "reset",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "screenX",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "screenY",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "show",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "update",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "state",
+              "type": "IFlxMouseState"
+            }
+          ]
+        },
+        {
+          "name": "visible",
+          "kind": "field",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "wheel",
+          "kind": "field",
+          "type": "int",
+          "static": false
+        },
+        {
+          "name": "x",
+          "kind": "field",
+          "type": "Number",
+          "static": false
+        },
+        {
+          "name": "y",
+          "kind": "field",
+          "type": "Number",
+          "static": false
         }
       ]
     },
@@ -2041,6 +2266,49 @@
           "kind": "field",
           "type": "Number",
           "static": false
+        }
+      ]
+    },
+    {
+      "name": "FlxQuadTree",
+      "base": "FlxRect",
+      "members": [
+        {
+          "name": "divisions",
+          "kind": "field",
+          "type": "int",
+          "static": true
+        },
+        {
+          "name": "execute",
+          "kind": "method",
+          "type": "Boolean",
+          "static": false,
+          "parameters": []
+        },
+        {
+          "name": "load",
+          "kind": "method",
+          "type": "void",
+          "static": false,
+          "parameters": [
+            {
+              "name": "ObjectOrGroup1",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "ObjectOrGroup2",
+              "type": "FlxBasic"
+            },
+            {
+              "name": "NotifyCallback",
+              "type": "Function"
+            },
+            {
+              "name": "ProcessCallback",
+              "type": "Function"
+            }
+          ]
         }
       ]
     },
@@ -2720,6 +2988,34 @@
               "type": "FlxPoint"
             }
           ]
+        },
+        {
+          "name": "setWorldBounds",
+          "kind": "method",
+          "type": "void",
+          "static": true,
+          "parameters": [
+            {
+              "name": "X",
+              "type": "Number"
+            },
+            {
+              "name": "Y",
+              "type": "Number"
+            },
+            {
+              "name": "Width",
+              "type": "Number"
+            },
+            {
+              "name": "Height",
+              "type": "Number"
+            },
+            {
+              "name": "Divisions",
+              "type": "int"
+            }
+          ]
         }
       ]
     },
@@ -2786,6 +3082,29 @@
               "type": "Keys"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "IFlxMouseState",
+      "members": [
+        {
+          "name": "LeftDown",
+          "kind": "property",
+          "type": "Boolean",
+          "static": false
+        },
+        {
+          "name": "Position",
+          "kind": "property",
+          "type": "(double X, double Y)",
+          "static": false
+        },
+        {
+          "name": "WheelTotal",
+          "kind": "property",
+          "type": "int",
+          "static": false
         }
       ]
     },
