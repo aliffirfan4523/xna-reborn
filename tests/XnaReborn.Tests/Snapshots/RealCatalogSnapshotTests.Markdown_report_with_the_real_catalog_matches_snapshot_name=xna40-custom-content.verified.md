@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 74 / 100 |
-| Projected score after automatic fixes | 83 / 100 |
+| Compatibility score | 76 / 100 |
+| Projected score after automatic fixes | 86 / 100 |
 | Projects analyzed | 1 |
 | Findings | 10 |
 
 Severity: Blocker 0, Error 5, Warning 4, Info 1
 
-Classification: AutoFixable 6, Manual 4, Unsupported 0
+Classification: AutoFixable 7, Manual 3, Unsupported 0
 
 ## Projects
 
@@ -40,6 +40,9 @@ Classification: AutoFixable 6, Manual 4, Unsupported 0
 - **[Warning] XNA004** Old .NET Framework target
   - Project: `CustomContent.csproj`
   - Code: `TargetFrameworkVersion=v4.0`
+- **[Warning] XNA016** XACT project file (.xap)
+  - Project: `CustomContent.csproj`
+  - Code: `Content/Audio/Sounds.xap`
 - **[Info] XNA002** XNA-specific project properties
   - Project: `CustomContent.csproj`
   - Code: `XnaFrameworkVersion=v4.0`
@@ -49,9 +52,6 @@ Classification: AutoFixable 6, Manual 4, Unsupported 0
 - **[Error] XNA013** XNA-only SpriteFont family
   - Project: `CustomContent.csproj`
   - Code: `Content/Fonts/Hud.spritefont: Pericles`
-- **[Warning] XNA016** XACT project file (.xap)
-  - Project: `CustomContent.csproj`
-  - Code: `Content/Audio/Sounds.xap`
 - **[Warning] XNA017** Effect file (.fx) needs shader review
   - Project: `CustomContent.csproj`
   - Code: `Shaders/Glow.fx`
@@ -111,7 +111,9 @@ A .spritefont names a font from the XNA Redistributable Font Pack, which XNA Gam
 
 The project contains an XACT authoring file. XACT is a Windows-only tool that is no longer updated, and the MonoGame content builder does not compile .xap files.
 
-**Resolution:** Compile the project in XACT and copy the .xgs, .xwb, and .xsb outputs, or export the sounds as wav or ogg files and use SoundEffect and Song.
+**Resolution:** The migrator reads the .xap, builds each wave as a SoundEffect or Song asset in Content.mgcb, and generates a catalog and stand-in for the cues. Features it cannot convert are listed as notes. Needs ffmpeg and ffprobe on the path at content build time.
+
+Migrator task: audio-and-shaders:4
 
 ### XNA017 Effect file (.fx) needs shader review
 

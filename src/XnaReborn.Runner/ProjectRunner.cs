@@ -48,6 +48,7 @@ public sealed record RunnerProgress(string Stage, string? Detail)
 /// <param name="RunningGame">The started game, still running after the startup window. The caller stops it.</param>
 /// <param name="StartupFailure">The session of a game that exited inside the startup window, with runtime hints.</param>
 /// <param name="Problem">A plain message for the user when the pipeline stopped before the end, otherwise null.</param>
+/// <param name="Warnings">Plain messages about things that do not stop the run but are likely to break the build, such as missing audio tools. Null when there are none.</param>
 public sealed record RunnerResult(
     GuardVerdict Guard,
     EnvironmentInfo? Environment,
@@ -55,7 +56,8 @@ public sealed record RunnerResult(
     GameTarget? Game,
     RunHandle? RunningGame,
     RunSession? StartupFailure,
-    string? Problem)
+    string? Problem,
+    IReadOnlyList<string>? Warnings = null)
 {
     /// <summary>
     /// True when the guard allowed the folder, the environment is fine, the build succeeded, and, when a launch was
@@ -141,7 +143,7 @@ public sealed class ProjectRunner
         }
 
         var guard = state.Guard ?? new GuardVerdict(false, state.Problem ?? "The folder was not checked.", null);
-        return new RunnerResult(guard, state.Environment, state.Build, state.Game, state.RunningGame, state.StartupFailure, state.Problem);
+        return new RunnerResult(guard, state.Environment, state.Build, state.Game, state.RunningGame, state.StartupFailure, state.Problem, state.Warnings.Count == 0 ? null : state.Warnings);
     }
 
     private async Task RunPipelineAsync(
@@ -171,6 +173,14 @@ public sealed class ProjectRunner
         {
             state.Problem = environment.Problem ?? "This computer cannot build the project.";
             return;
+        }
+
+        // Audio is built with ffmpeg and ffprobe: tell the user before the build if they are missing.
+        var audio = await AudioToolCheck.CheckAsync(folder, _processRunner, ct).ConfigureAwait(false);
+        if (audio.Warning is not null)
+        {
+            state.Warnings.Add(audio.Warning);
+            buildOutput?.Report(new OutputLine("warning: " + audio.Warning, IsError: true));
         }
 
         // 3. Build. Restore is part of it.
@@ -281,5 +291,7 @@ public sealed class ProjectRunner
         public RunSession? StartupFailure { get; set; }
 
         public string? Problem { get; set; }
+
+        public List<string> Warnings { get; } = [];
     }
 }

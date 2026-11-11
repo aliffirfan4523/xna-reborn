@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 90 / 100 |
+| Compatibility score | 89 / 100 |
 | Projected score after automatic fixes | 97 / 100 |
 | Projects analyzed | 1 |
-| Findings | 7 |
+| Findings | 8 |
 
-Severity: Blocker 0, Error 3, Warning 3, Info 1
+Severity: Blocker 0, Error 3, Warning 4, Info 1
 
-Classification: AutoFixable 5, Manual 2, Unsupported 0
+Classification: AutoFixable 7, Manual 1, Unsupported 0
 
 ## Projects
 
@@ -37,12 +37,6 @@ Classification: AutoFixable 5, Manual 2, Unsupported 0
 - **[Warning] XNA004** Old .NET Framework target
   - Project: `Xna40XactCompiled.csproj`
   - Code: `TargetFrameworkVersion=v4.0`
-- **[Info] XNA002** XNA-specific project properties
-  - Project: `Xna40XactCompiled.csproj`
-  - Code: `XnaFrameworkVersion=v4.0`
-
-### Manual
-
 - **[Warning] XNA015** XACT audio engine (AudioEngine, WaveBank, SoundBank, Cue)
   - Project: `Xna40XactCompiled.csproj`
   - Location: `Game1.cs:13:17`
@@ -51,6 +45,15 @@ Classification: AutoFixable 5, Manual 2, Unsupported 0
   - Project: `Xna40XactCompiled.csproj`
   - Location: `Game1.cs:28:26`
   - Code: `engine = new AudioEngine("Content\\Sounds.xgs");`
+- **[Info] XNA002** XNA-specific project properties
+  - Project: `Xna40XactCompiled.csproj`
+  - Code: `XnaFrameworkVersion=v4.0`
+
+### Manual
+
+- **[Warning] XNA070** Compiled XACT banks (.xwb)
+  - Project: `Xna40XactCompiled.csproj`
+  - Code: `Content/Music Bank.xwb, Content/Wave Bank.xwb`
 
 ## Rules
 
@@ -88,9 +91,11 @@ Migrator task: project-migrator:4.1
 
 ### XNA015 XACT audio engine (AudioEngine, WaveBank, SoundBank, Cue)
 
-Code uses the XACT runtime. MonoGame can load compiled XACT files (.xgs, .xwb, .xsb) but the content builder cannot compile XACT projects, and some features such as ADPCM and streaming wave banks are limited.
+Code uses the XACT runtime. MonoGame cannot build XACT projects, and it plays compiled banks only if they are not streaming and use PCM or ADPCM. When a .xap is present the migrator converts it to SoundEffect and Song assets and a generated stand-in; without a .xap only the compiled files can be copied (see XNA070).
 
-**Resolution:** Ship the compiled XACT files unchanged and load them by path, or move sounds to SoundEffect and Song assets and drop XACT.
+**Resolution:** The migrator points AudioEngine, WaveBank, SoundBank, Cue and AudioCategory at the generated XnaReborn.Compat.Xact stand-in with using aliases when it converted a .xap. Check that the cues sound right; the stand-in does not apply fades, filters, reverb or DSP.
+
+Migrator task: audio-and-shaders:7
 
 ### XNA046 Properties/AssemblyInfo.cs duplicates SDK attributes
 
@@ -99,3 +104,9 @@ Properties/AssemblyInfo.cs declares assembly attributes (title, product, company
 **Resolution:** The migrator writes <GenerateAssemblyInfo>false</GenerateAssemblyInfo> in the generated project so the kept AssemblyInfo.cs does not clash.
 
 Migrator task: project-migrator:4.1
+
+### XNA070 Compiled XACT banks (.xwb)
+
+The project has compiled XACT banks. The migrator copies them unchanged. MonoGame plays compiled banks only when they are not streaming wave banks (those throw NotImplementedException on desktop) and use PCM or ADPCM. When the .xap is also present, the migrator converts it and ignores the compiled files.
+
+**Resolution:** Keep the .xap next to the compiled files so the migrator can convert it, or export the sounds as wav or ogg files and use SoundEffect and Song.

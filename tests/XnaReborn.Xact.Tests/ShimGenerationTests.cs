@@ -4,6 +4,8 @@ using XnaReborn.Analyzer.Xact;
 using XnaReborn.Migrator;
 using XnaReborn.Migrator.Audio;
 using XnaReborn.Migrator.Shims;
+using XnaReborn.Migrator.Source;
+using XnaReborn.Migrator.Source.Rewriters;
 
 namespace XnaReborn.Xact.Tests;
 
@@ -97,6 +99,55 @@ public sealed class ShimGenerationTests
             .ToList();
 
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
+    [Fact]
+    public void The_fixture_game_with_aliases_next_to_the_audio_using_builds_against_the_stand_in()
+    {
+        // Risk 8 of the design: an alias must win over the type that `using Microsoft.Xna.Framework.Audio;` imports.
+        var game = File.ReadAllText(Path.Combine(Path.GetDirectoryName(FixtureXap())!, "..", "Game1.cs"));
+        var rewritten = new XactAliasRewriter().Rewrite(new SourceRewriteContext("Game1.cs", game, ["WINDOWS"])).Text;
+        Assert.Contains("using Microsoft.Xna.Framework.Audio;", rewritten, StringComparison.Ordinal);
+        Assert.Contains("using Cue = XnaReborn.Compat.Xact.Cue;", rewritten, StringComparison.Ordinal);
+        var shim = new ShimProjectGenerator().Generate(MonoGameTarget.DesktopGL, xactCatalog: FixtureCatalog())
+            .Where(c => c.RelativePath.StartsWith("XnaReborn.Compat/Xact/", StringComparison.Ordinal))
+            .Select(c => c.NewText!)
+            .Append(rewritten);
+
+        var errors = Compile(shim).Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => d.ToString()).ToList();
+        var original = Compile(shim.SkipLast(1).Append(game)).Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => d.ToString()).ToList();
+
+        Assert.True(errors.Count == 0, string.Join(Environment.NewLine, errors));
+        Assert.True(original.Count == 0, "The unrewritten game must also build, as a control: " + string.Join(Environment.NewLine, original));
+    }
+
+    [Fact]
+    public void Without_the_alias_the_audio_using_and_the_stand_in_namespace_make_the_names_ambiguous()
+    {
+        const string Probe = "using Microsoft.Xna.Framework.Audio;\nusing XnaReborn.Compat.Xact;\nclass P { Cue c; }\n";
+        var shim = new ShimProjectGenerator().Generate(MonoGameTarget.DesktopGL, xactCatalog: FixtureCatalog())
+            .Where(c => c.RelativePath.StartsWith("XnaReborn.Compat/Xact/", StringComparison.Ordinal))
+            .Select(c => c.NewText!);
+
+        var plain = Compile(shim.Append(Probe)).Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => d.Id).ToList();
+        var aliased = Compile(shim.Append(Probe.Replace("class P", "using Cue = XnaReborn.Compat.Xact.Cue;\nclass P", StringComparison.Ordinal))).Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+
+        Assert.Contains("CS0104", plain);
+        Assert.Empty(aliased);
+    }
+
+    private static IReadOnlyList<Diagnostic> Compile(IEnumerable<string> sources)
+    {
+        var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+            .Split(Path.PathSeparator)
+            .Where(p => Path.GetFileName(p) != "XnaReborn.Xact.Tests.dll")
+            .Select(p => MetadataReference.CreateFromFile(p));
+        return CSharpCompilation.Create(
+                "Check",
+                sources.Select(s => CSharpSyntaxTree.ParseText(s, new CSharpParseOptions(LanguageVersion.CSharp12))),
+                references,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable))
+            .GetDiagnostics();
     }
 
     [Fact]

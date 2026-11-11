@@ -474,6 +474,24 @@
     "language": "vb"
   },
   {
+    "ruleId": "XNA070",
+    "kind": "file",
+    "positive": "Content/Audio/Wave Bank.xwb",
+    "negative": "Content/Audio/hit.wav"
+  },
+  {
+    "ruleId": "XNA071",
+    "kind": "fileContent",
+    "positive": "Content/Sounds.xap\nWave Bank\n{\n    Name = Music;\n    Streaming = 1;\n}\n",
+    "negative": "Content/Sounds.xap\nWave Bank\n{\n    Name = Effects;\n    Streaming = 0;\n}\n"
+  },
+  {
+    "ruleId": "XNA072",
+    "kind": "fileContent",
+    "positive": "Content/Sounds.xap\nSound Bank\n{\n    Sound\n    {\n        Name = Wind;\n        Reverb Setting\n        {\n            Room = 1;\n        }\n    }\n}\n",
+    "negative": "Content/Sounds.xap\nSound Bank\n{\n    Sound\n    {\n        Name = Wind;\n        Volume = -1200;\n    }\n}\n"
+  },
+  {
     "ruleId": "XNA115",
     "kind": "source",
     "positive": "using System;\nusing Microsoft.Xna.Framework.Graphics;\nnamespace Cases\n{\n    public class Case\n    {\n        void Run()\n        {\n            var effect = new BasicEffect(null, (EffectPool)null);\n        }\n    }\n}\n",

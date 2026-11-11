@@ -142,11 +142,7 @@ public static partial class XactCatalogWriter
 
     private static string SoundBank(XapSoundBank bank, string stem, XapProject project)
     {
-        var bySound = project.Unsupported
-            .Select(u => (Item: u, Match: SoundInPath().Match(u.Path)))
-            .Where(x => x.Match.Success)
-            .GroupBy(x => x.Match.Groups["n"].Value, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.Select(x => x.Item.Path[(x.Item.Path.LastIndexOf('/') + 1)..] + " (line " + x.Item.Line.ToString(CultureInfo.InvariantCulture) + ")").ToList(), StringComparer.Ordinal);
+        var bySound = UnsupportedBySound(project);
         return $"new XactSoundBankData({Str(stem)}, {Str(bank.Name)}, "
             + List("XactSoundData", bank.Sounds.Select(s =>
                 $"new XactSoundData({Str(s.Name)}, {Float(Gain(s.VolumeCentiDb))}, {Float(Pitch(s.PitchCents))}, {s.Priority}, {Strings(s.Categories)}, {Strings(s.RpcNames)}, "
@@ -165,6 +161,19 @@ public static partial class XactCatalogWriter
                     + $", {Strings(notes)})";
             }))
             + ")";
+    }
+
+    /// <summary>Groups the unsupported items of a project that belong to a sound (their path has <c>Sound[name]</c>) by sound name. Each entry reads <c>feature (line N)</c>.</summary>
+    /// <param name="project">The parsed project.</param>
+    /// <returns>Sound name to the unsupported items, in file order.</returns>
+    public static IReadOnlyDictionary<string, List<string>> UnsupportedBySound(XapProject project)
+    {
+        ArgumentNullException.ThrowIfNull(project);
+        return project.Unsupported
+            .Select(u => (Item: u, Match: SoundInPath().Match(u.Path)))
+            .Where(x => x.Match.Success)
+            .GroupBy(x => x.Match.Groups["n"].Value, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Item.Path[(x.Item.Path.LastIndexOf('/') + 1)..] + " (line " + x.Item.Line.ToString(CultureInfo.InvariantCulture) + ")").ToList(), StringComparer.Ordinal);
     }
 
     private static string List(string type, IEnumerable<string> items)

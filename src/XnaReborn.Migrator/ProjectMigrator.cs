@@ -4,6 +4,7 @@ using XnaReborn.Analyzer.Discovery;
 using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Models;
+using XnaReborn.Migrator.Audio;
 using XnaReborn.Migrator.Content;
 using XnaReborn.Migrator.Modern;
 using XnaReborn.Migrator.Output;
@@ -32,6 +33,9 @@ public sealed class ProjectMigrator
     private const string _stageDiscover = "Discovering projects";
     private const string _stagePlan = "Planning";
     private const string _stageProjects = "Generating projects";
+    private static readonly string[] _compiledBankExtensions = [".xgs", ".xwb", ".xsb"];
+
+    private const string _xactContentRoot = "Content"; // the folder the MonoGame content builder writes to, which the stand-in loads from
     private const string _stageSource = "Rewriting source";
     private const string _stageContent = "Collecting content";
     private const string _stageConvert = "Converting content";
@@ -215,7 +219,7 @@ public sealed class ProjectMigrator
             && (p.Read.Info.ContentProjects.Count > 0 || p.Read.Info.ContentItems.Any(i => i.InProject) || (p.Discovered.IsSharpDxToolkit && ToolkitContentConverter.HasContent(p.Read)))).ToList();
         var converter = new ContentConverter(_fileSystem);
         var toolkitConverter = new ToolkitContentConverter(_fileSystem);
-        var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts, options.RewriteEffects);
+        var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts, options.RewriteEffects, options.Xact, options.StreamingWavesAsSong);
         for (var i = 0; i < converting.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -225,6 +229,22 @@ public sealed class ProjectMigrator
                 ? await toolkitConverter.ConvertAsync(project.Read, root, project.GameDirectory, contentOptions, cancellationToken).ConfigureAwait(false)
                 : await converter.ConvertAsync(project.Read, root, project.GameDirectory, contentOptions, cancellationToken).ConfigureAwait(false);
             progress?.Report(new MigrationProgress(_stageConvert, i + 1, converting.Count, project.Discovered.RelativePath));
+        }
+
+        // XACT: the alias rewriter runs only for a project whose .xap was converted; the catalog covers all converted projects.
+        foreach (var project in projects.Where(p => p.Content?.Xact is not { Count: > 0 }))
+        {
+            ((HashSet<string>)project.Enabled).Remove(XactAliasRewriter.Id);
+        }
+
+        var xactPlans = projects.SelectMany(p => p.Content?.Xact ?? []).ToList();
+        string? xactCatalog = null;
+        if (xactPlans.Count > 0)
+        {
+            state.Shims ??= new ShimProjectGenerator(new PackageSelector());
+            var catalog = XactCatalogWriter.Write(xactPlans.Select(p => (p.Project, p.Plan)).ToList(), _xactContentRoot);
+            xactCatalog = catalog.Text;
+            state.Notes.AddRange(catalog.Findings.Select(f => $"{f.RuleId}: {f.Message}"));
         }
 
         for (var i = 0; i < projects.Count; i++)
@@ -259,7 +279,7 @@ public sealed class ProjectMigrator
         // Shim library files go in early so they win a path clash with a same-named file from the source.
         if (state.Shims is not null)
         {
-            foreach (var shim in state.Shims.Generate(options.Target, state.Device))
+            foreach (var shim in state.Shims.Generate(options.Target, state.Device, null, xactCatalog))
             {
                 state.Add(shim, []);
             }
@@ -314,6 +334,7 @@ public sealed class ProjectMigrator
         {
             CopyApplicationIcon(project, root, state);
             CopyOutputItems(project, root, state);
+            NoteCompiledBanks(project, root, state, options);
         }
 
         // Step 6: converted content, then the unconverted copy for projects whose content rules were switched off.
@@ -595,6 +616,11 @@ public sealed class ProjectMigrator
             {
                 state.ShimUses.Add((projectPath, new ManifestShimUse(file.RelativePath, "XnaReborn.Compat.Input", ["CompatGamePad"])));
             }
+
+            if (result.AppliedRuleIds.Contains(XactAliasRewriter.Id, StringComparer.Ordinal))
+            {
+                state.ShimUses.Add((projectPath, new ManifestShimUse(file.RelativePath, XactAliasRewriter.ShimNamespace, XactAliasRewriter.AliasedTypes(result.Text))));
+            }
         }
 
         foreach (var failure in result.Failures)
@@ -677,6 +703,35 @@ public sealed class ProjectMigrator
             .Where(i => i.Problem == CopiedItemProblem.None && !_fileSystem.FileExists(Path.GetFullPath(Path.Combine(root, ToNative(i.RootRelativePath)))))
             .Select(i => i.Include)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    // Compiled XACT banks that the project copies to its output folder are never converted: say what MonoGame does with them
+    // (audio-and-shaders R2.3, R2.5). A project whose .xap was converted does not use them.
+    private void NoteCompiledBanks(ProjectWork project, string root, BuildState state, MigrationOptions options)
+    {
+        if (options.Xact == XactMode.CopyOnly)
+        {
+            return;
+        }
+
+        var banks = SdkCsprojGenerator.CopiedItems(project.Read)
+            .Where(i => i.Problem == CopiedItemProblem.None && _compiledBankExtensions.Contains(Path.GetExtension(i.Include), StringComparer.OrdinalIgnoreCase) && _fileSystem.FileExists(Path.GetFullPath(Path.Combine(root, ToNative(i.RootRelativePath)))))
+            .Select(i => i.Include.Replace('\\', '/'))
+            .Order(StringComparer.Ordinal)
+            .ToList();
+        if (banks.Count == 0)
+        {
+            return;
+        }
+
+        var projectPath = project.Read.Info.Path;
+        if (project.Content?.Xact is { Count: > 0 })
+        {
+            state.Notes.AddRange(banks.Select(b => $"{projectPath}: {b}: [{XactPlanner.XapRuleId}] This compiled XACT bank is copied unchanged and is not used, because the converted .xap provides the same sounds."));
+            return;
+        }
+
+        state.Notes.Add($"{projectPath}: [{XactPlanner.CompiledRuleId}] {banks.Count} compiled XACT file(s) ({string.Join(", ", banks)}) are copied unchanged and no .xap was converted, so no XACT stand-in was generated. MonoGame {PackageVersions.Default.MonoGame} plays compiled banks only when they are not streaming wave banks and use PCM or ADPCM; streaming wave banks throw NotImplementedException on desktop.");
+    }
 
     private void CopyOutputItems(ProjectWork project, string root, BuildState state)
     {
@@ -817,7 +872,7 @@ public sealed class ProjectMigrator
         public ManifestContent? Content { get; set; }
 
         /// <summary>The shim generator, or null when shims are off.</summary>
-        public ShimProjectGenerator? Shims { get; init; }
+        public ShimProjectGenerator? Shims { get; set; }
 
         /// <summary>True when the device part of the shim library is generated.</summary>
         public bool Device { get; init; }
