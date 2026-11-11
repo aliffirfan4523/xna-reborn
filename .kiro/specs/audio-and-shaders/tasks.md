@@ -112,7 +112,7 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 16.2 Tests: every hint has one message that matches and one that does not; the empty-profile message matches `fx-sm-too-low`.
   - _Requirements: R14_
 
-- [ ] 17. Catalog rule changes
+- [ ] 17. Catalog rule changes (partly done: the shader rules `NEW-B1` to `NEW-B6` are XNA064 to XNA069 and XNA017 has new text; the XACT rules and the XNA015/XNA016 edits wait for the converter and shim)
   - [ ] 17.1 Apply the rule change table in `design.md` to `rules/xna-to-monogame.json`: the three edits (XNA015, XNA016, XNA017) and the new rules (`NEW-A1` to `NEW-B6`), taking the next free `XNAnnn` IDs at the time of the task. Replace the `NEW-` labels in markers, rewriters and tests with the real IDs.
   - [ ] 17.2 Link every AutoFixable rule to its migrator task in `migratorTask` (`audio-and-shaders:N`).
   - [ ] 17.3 For each rule a positive and a negative fixture test; update the snapshot reports and review the diff; the analyzer score on `xna40-xact` and `xna40-effects` is recorded.
