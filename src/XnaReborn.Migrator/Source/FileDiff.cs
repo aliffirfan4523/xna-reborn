@@ -15,9 +15,7 @@ public sealed record FileDiff(
     int Removed,
     int Modified)
 {
-    private const string _marker = "// XNAREBORN:";
-
     /// <summary>True when any new line carries a manual-work marker the UI should highlight.</summary>
     public bool ContainsManualMarker =>
-        NewLines.Any(l => l.Kind != DiffLineKind.Imaginary && l.Text.Contains(_marker, StringComparison.Ordinal));
+        NewLines.Any(l => l.Kind != DiffLineKind.Imaginary && MarkerPrefixes.ContainsMarker(l.Text));
 }

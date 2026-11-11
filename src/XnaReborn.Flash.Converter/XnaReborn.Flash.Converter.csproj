@@ -10,6 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The Flixel runtime sources travel inside the converter and are written into every migrated copy. -->
+    <EmbeddedResource Include="..\XnaReborn.Flixel\**\*.cs" Exclude="..\XnaReborn.Flixel\obj\**;..\XnaReborn.Flixel\bin\**" LogicalName="XnaReborn.Flixel/%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\XnaReborn.Flixel\.editorconfig" LogicalName="XnaReborn.Flixel/.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="XnaReborn.Flash.Tests" />
   </ItemGroup>
 

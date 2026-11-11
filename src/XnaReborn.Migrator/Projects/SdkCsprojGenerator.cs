@@ -50,6 +50,7 @@ public sealed class SdkCsprojGenerator
         // A Toolkit project keeps its assets in build-action items, not in a content project. It has content when a Content.mgcb was made for it.
         var isToolkit = info.Family == ProjectFamily.SharpDxToolkit;
         var hasContent = info.ContentProjects.Count > 0 || info.ContentItems.Any(i => i.InProject) || (isToolkit && contentReferencePath is not null);
+        var isVisualBasic = info.Language == SourceLanguage.VisualBasic;
 
         var sb = new StringBuilder();
         sb.Append("<Project Sdk=\"Microsoft.NET.Sdk\">\n\n");
@@ -74,9 +75,42 @@ public sealed class SdkCsprojGenerator
             AppendProperty(sb, "DefineConstants", constants);
         }
 
-        AppendProperty(sb, "Nullable", "disable");
-        AppendProperty(sb, "ImplicitUsings", "disable");
+        if (isVisualBasic)
+        {
+            // The application model (MyType) needs types that SDK-style projects for a game do not have. With Empty, My.* code fails to compile (rule XNA112).
+            AppendProperty(sb, "MyType", "Empty");
+            foreach (var option in _visualBasicOptions)
+            {
+                if (source.Properties.TryGetValue(option, out var optionValue) && !string.IsNullOrWhiteSpace(optionValue))
+                {
+                    AppendProperty(sb, option, optionValue.Trim());
+                }
+            }
+
+            if (source.Properties.TryGetValue("StartupObject", out var startup) && NamesAType(startup))
+            {
+                AppendProperty(sb, "StartupObject", startup.Trim());
+            }
+        }
+        else
+        {
+            AppendProperty(sb, "Nullable", "disable");
+            AppendProperty(sb, "ImplicitUsings", "disable");
+        }
+
         sb.Append("  </PropertyGroup>\n");
+
+        var namespaceImports = isVisualBasic ? source.Items.Where(i => i.ItemType == "NamespaceImport").Select(i => i.Include.Trim()).Distinct(StringComparer.Ordinal).ToList() : [];
+        if (namespaceImports.Count > 0)
+        {
+            sb.Append("\n  <ItemGroup>\n");
+            foreach (var import in namespaceImports)
+            {
+                sb.Append("    <Import Include=\"").Append(Escape(import)).Append("\" />\n");
+            }
+
+            sb.Append("  </ItemGroup>\n");
+        }
 
         sb.Append("\n  <ItemGroup>\n");
         AppendPackage(sb, packages.FrameworkPackage, packages.FrameworkVersion);
@@ -232,6 +266,8 @@ public sealed class SdkCsprojGenerator
         return parts.Count == 0 ? null : string.Join('/', parts);
     }
 
+    private static readonly string[] _visualBasicOptions = ["OptionExplicit", "OptionStrict", "OptionCompare", "OptionInfer"];
+
     private static string OutputType(IReadOnlyDictionary<string, string> properties)
     {
         if (properties.TryGetValue("OutputType", out var value)
@@ -259,7 +295,17 @@ public sealed class SdkCsprojGenerator
     }
 
     private static bool IsAssemblyInfo(string path) =>
-        string.Equals(path.Replace('\\', '/'), "Properties/AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase);
+        string.Equals(path.Replace('\\', '/'), "Properties/AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(path.Replace('\\', '/'), "My Project/AssemblyInfo.vb", StringComparison.OrdinalIgnoreCase);
+
+    // StartupObject is kept only when it names a type or module. "Sub Main" and the My application class are left out.
+    private static bool NamesAType(string value)
+    {
+        var name = value.Trim();
+        return name.Length > 0
+            && !name.Equals("Sub Main", StringComparison.OrdinalIgnoreCase)
+            && !name.EndsWith("My.MyApplication", StringComparison.OrdinalIgnoreCase);
+    }
 
     private static string SimpleName(string include)
     {

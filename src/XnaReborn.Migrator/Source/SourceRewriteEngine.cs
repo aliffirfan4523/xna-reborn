@@ -24,6 +24,8 @@ public sealed class SourceRewriteEngine(RewriterRegistry registry)
     /// <param name="originalSymbols">The original project's DefineConstants.</param>
     /// <param name="enabledRuleIds">Rule IDs to run. Registered rewriters outside this set are skipped.</param>
     /// <param name="platform">The platform of the migrated project, for rewriters that fold platform conditionals.</param>
+    /// <param name="language">The language of the file. Only rewriters for this language run.</param>
+    /// <param name="implicitImports">Namespaces the project imports for every file (Visual Basic), or null.</param>
     /// <returns>
     /// The final text and what happened. A rewriter that throws is recorded as a failure and the text from before it is kept.
     /// <see cref="OperationCanceledException"/> is not caught.
@@ -34,7 +36,9 @@ public sealed class SourceRewriteEngine(RewriterRegistry registry)
         string text,
         IReadOnlyCollection<string> originalSymbols,
         IReadOnlySet<string> enabledRuleIds,
-        XnaPlatform platform = XnaPlatform.Unknown)
+        XnaPlatform platform = XnaPlatform.Unknown,
+        SourceLanguage language = SourceLanguage.CSharp,
+        IReadOnlyList<string>? implicitImports = null)
     {
         ArgumentNullException.ThrowIfNull(filePath);
         ArgumentNullException.ThrowIfNull(text);
@@ -48,12 +52,12 @@ public sealed class SourceRewriteEngine(RewriterRegistry registry)
 
         foreach (var rewriter in _registry.All.OrderBy(r => Priority(r.RuleId)))
         {
-            if (!enabledRuleIds.Contains(rewriter.RuleId))
+            if (rewriter.Language != language || !enabledRuleIds.Contains(rewriter.RuleId))
             {
                 continue;
             }
 
-            var context = new SourceRewriteContext(filePath, current, originalSymbols, platform);
+            var context = new SourceRewriteContext(filePath, current, originalSymbols, platform, language, implicitImports);
             SourceRewriteResult result;
             try
             {

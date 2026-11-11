@@ -10,6 +10,9 @@ public interface ISourceRewriter
     /// <summary>Gets the rule ID this rewriter handles, such as an analyzer ID or <c>ENTRYPOINT</c>.</summary>
     string RuleId { get; }
 
+    /// <summary>Gets the language of the files this rewriter handles. C# unless a rewriter says otherwise.</summary>
+    Core.Models.SourceLanguage Language => Core.Models.SourceLanguage.CSharp;
+
     /// <summary>Rewrites one file.</summary>
     /// <param name="context">The file and its original compilation symbols.</param>
     /// <returns>The new text, which equals <see cref="SourceRewriteContext.Text"/> when nothing changed, and notes for a person.</returns>

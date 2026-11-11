@@ -155,14 +155,7 @@ public sealed class SpriteBatchBeginRewriter : ISourceRewriter
             return null;
         }
 
-        var blend = member switch
-        {
-            "AlphaBlend" => "AlphaBlend",
-            "Additive" => "Additive",
-            "None" => "Opaque",
-            _ => null,
-        };
-        if (blend is null)
+        if (!BlendModeMap.TryGet(member, out var blend))
         {
             return null;
         }

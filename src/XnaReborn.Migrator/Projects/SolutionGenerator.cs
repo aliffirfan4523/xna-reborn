@@ -8,6 +8,7 @@ namespace XnaReborn.Migrator.Projects;
 public sealed class SolutionGenerator
 {
     private const string _csharpProjectType = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+    private const string _visualBasicProjectType = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}";
 
     /// <summary>Creates the solution file for the given projects.</summary>
     /// <param name="solutionName">File name of the solution without extension.</param>
@@ -44,7 +45,7 @@ public sealed class SolutionGenerator
         };
         foreach (var p in projects)
         {
-            lines.Add($"Project(\"{_csharpProjectType}\") = \"{p.Name}\", \"{p.Path.Replace('/', '\\')}\", \"{p.Guid}\"");
+            lines.Add($"Project(\"{(p.Path.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase) ? _visualBasicProjectType : _csharpProjectType)}\") = \"{p.Name}\", \"{p.Path.Replace('/', '\\')}\", \"{p.Guid}\"");
             lines.Add("EndProject");
         }
 

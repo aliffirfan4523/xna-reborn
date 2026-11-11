@@ -3,8 +3,8 @@
   "catalogName": "flash-to-monogame",
   "kind": "Flash",
   "projectFile": null,
-  "sourceFileCount": 13,
-  "entryClass": null,
+  "sourceFileCount": 14,
+  "entryClass": "GapGame",
   "flixelVersion": null,
   "findings": [
     {
@@ -149,15 +149,6 @@
         "column": 4
       },
       "snippet": "FlxG.stage.focus = null;"
-    },
-    {
-      "ruleId": "FL060",
-      "title": "No or several FlxGame entry classes",
-      "severity": "Error",
-      "classification": "Manual",
-      "project": ".",
-      "location": null,
-      "snippet": null
     },
     {
       "ruleId": "FL022",
@@ -379,6 +370,19 @@
         "column": 2
       },
       "snippet": "import org.flixel.plugin.TimerManager;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": ".",
+      "location": {
+        "file": "src/GapGame.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
     },
     {
       "ruleId": "FL026",
@@ -621,20 +625,13 @@
       "explanation": "Flixel plugins and input replay are not part of the runtime.",
       "resolution": "Remove the plugin or port it by hand.",
       "migratorTask": null
-    },
-    {
-      "id": "FL060",
-      "title": "No or several FlxGame entry classes",
-      "explanation": "The converter needs exactly one class that extends FlxGame.",
-      "resolution": "Keep one entry class, or remove the unused ones from the project.",
-      "migratorTask": null
     }
   ],
   "countsBySeverity": {
     "Blocker": 0,
-    "Error": 12,
+    "Error": 11,
     "Warning": 15,
-    "Info": 7
+    "Info": 8
   },
   "score": 0,
   "projectedScore": 0,

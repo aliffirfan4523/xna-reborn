@@ -190,6 +190,14 @@ public sealed class ProjectMigrator
             enabled.UnionWith(report.Findings
                 .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal))
                 .Select(f => f.RuleId));
+            if (read.Info.Language == SourceLanguage.VisualBasic)
+            {
+                // The Visual Basic rewriters for these rules only add markers; their findings are Manual, so no plan item enables them.
+                enabled.UnionWith(report.Findings
+                    .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && VisualBasicMarkerRewriter.RuleIds.Contains(f.RuleId, StringComparer.Ordinal))
+                    .Select(f => f.RuleId));
+            }
+
             var projectLevel = items
                 .Select(p => p.RuleId)
                 .Where(id => !_rewriters.TryGet(id, out _) && !contentRuleIds.Contains(id))
@@ -496,10 +504,23 @@ public sealed class ProjectMigrator
     private IEnumerable<SourceFile> CompileFiles(ProjectWork project, string root, BuildState state)
     {
         var projectDirectory = Path.GetDirectoryName(project.Discovered.FullPath) ?? root;
+        var isVisualBasic = project.Read.Info.Language == SourceLanguage.VisualBasic;
+        var extension = isVisualBasic ? ".vb" : ".cs";
         foreach (var compile in project.Read.Info.CompileFiles)
         {
-            if (!compile.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+            if (!compile.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
             {
+                continue;
+            }
+
+            if (isVisualBasic && VisualBasicProjectItems.IsMyDesignerFile(compile))
+            {
+                var omitted = Relative(root, Path.GetFullPath(Path.Combine(projectDirectory, ToNative(compile))));
+                if (!IsOutside(omitted) && state.Claim(omitted))
+                {
+                    state.Changes.Add(new FileChange(omitted, ChangeKind.Skipped, null, null, "Omitted: this file belongs to the Visual Basic application model (My Project) and does not build in an SDK-style project."));
+                }
+
                 continue;
             }
 
@@ -539,7 +560,8 @@ public sealed class ProjectMigrator
             bytes = buffer.ToArray();
         }
 
-        if (state.Shims is not null)
+        var language = file.Project.Read.Info.Language;
+        if (state.Shims is not null && language == SourceLanguage.CSharp)
         {
             foreach (var use in ShimProjectGenerator.Scan(_utf8.GetString(bytes)))
             {
@@ -560,8 +582,8 @@ public sealed class ProjectMigrator
             return;
         }
 
-        var result = engine.Rewrite(file.RelativePath, text, file.Project.Read.Info.DefineConstants, file.Project.Enabled, file.Project.Read.Info.Platform);
-        if (state.Modern is not null)
+        var result = engine.Rewrite(file.RelativePath, text, file.Project.Read.Info.DefineConstants, file.Project.Enabled, file.Project.Read.Info.Platform, language, file.Project.Read.ImplicitImports);
+        if (state.Modern is not null && language == SourceLanguage.CSharp)
         {
             var hook = ModernExtrasHook.Apply(result.Text, file.Project.Read.Info.DefineConstants);
             if (hook.Note is not null)

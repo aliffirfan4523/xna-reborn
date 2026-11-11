@@ -45,3 +45,11 @@ The original XNA project is never modified. All output goes to a new folder.
 ## License
 
 Not chosen yet. See `LICENSE`.
+
+## Flixel 2.x source projects (Flash)
+
+A folder with ActionScript 3 sources that use Flixel 2.x (`org.flixel`) is analyzed with its own catalog, `rules/flash-to-monogame.json` (FL001 to FL060), and converted to a MonoGame 3.8.6.1 project on net8.0 DesktopGL. The converter writes C# for the game classes, a `Content.mgcb` for `[Embed]` pictures and sounds, and a copy of the `XnaReborn.Flixel` runtime project next to the game.
+
+Covered: AS3 classes, getters and setters, `for each`, closures, `Vector.<T>`, `Object` bags, class values, `int` division and `Number` defaults, Flixel sprites, groups, states, text (built-in pixel font), tile blocks, collision and overlap, keyboard input and simple sounds.
+
+Not covered: compiled `.swf` files without source (never opened), Flash Pro `.fla` timelines, E4X XML, `with`, namespaces, regular expressions, `flash.display` outside Flixel, tilemaps, emitters, cameras, timers, ad and score SDKs. Each of these leaves a `// XNAREBORN: FLnnn` marker in the converted code and is counted in `manifest.json`. A converted game is built but was not started in testing. Design and notes: `.kiro/specs/flash-to-monogame`. Third-party notices: `THIRD-PARTY-NOTICES.md`.
