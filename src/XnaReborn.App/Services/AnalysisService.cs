@@ -8,27 +8,31 @@ using XnaReborn.Core.Models.Rules;
 namespace XnaReborn.App.Services;
 
 /// <summary>
-/// Real <see cref="IAnalysisService"/>. Loads <c>rules/xna-to-monogame.json</c> and, when it is usable,
-/// <c>rules/sharpdx-toolkit-to-monogame.json</c> once and reuses them.
-/// A Toolkit catalog that is missing or invalid never stops XNA analysis: the report gets an ANA021 diagnostic instead.
+/// Real <see cref="IAnalysisService"/>. Loads <c>rules/xna-to-monogame.json</c> and, when they are usable,
+/// <c>rules/sharpdx-toolkit-to-monogame.json</c> and <c>rules/monogame-upgrade.json</c> once and reuses them.
+/// A Toolkit or MonoGame catalog that is missing or invalid never stops XNA analysis: the report gets an ANA021 or ANA014 diagnostic instead.
 /// </summary>
 public sealed class AnalysisService : IAnalysisService
 {
     private const string _catalogRelativePath = "rules/xna-to-monogame.json";
     private const string _toolkitCatalogRelativePath = "rules/sharpdx-toolkit-to-monogame.json";
+    private const string _monoGameCatalogRelativePath = "rules/monogame-upgrade.json";
 
     private readonly string? _catalogPath;
     private readonly string? _toolkitCatalogPath;
+    private readonly string? _monoGameCatalogPath;
     private readonly SemaphoreSlim _loadLock = new(1, 1);
     private LoadedCatalogs? _loaded;
 
     /// <summary>Creates the service.</summary>
     /// <param name="catalogPath">XNA catalog file to use, or null to look next to the app and then up to the repository root.</param>
     /// <param name="toolkitCatalogPath">SharpDX Toolkit catalog file to use, or null to look in the same places.</param>
-    public AnalysisService(string? catalogPath = null, string? toolkitCatalogPath = null)
+    /// <param name="monoGameCatalogPath">Old MonoGame upgrade catalog file to use, or null to look in the same places.</param>
+    public AnalysisService(string? catalogPath = null, string? toolkitCatalogPath = null, string? monoGameCatalogPath = null)
     {
         _catalogPath = catalogPath;
         _toolkitCatalogPath = toolkitCatalogPath;
+        _monoGameCatalogPath = monoGameCatalogPath;
     }
 
     /// <inheritdoc />
@@ -88,6 +92,16 @@ public sealed class AnalysisService : IAnalysisService
             {
                 var detail = ex is RuleCatalogException invalid ? string.Join(" ", invalid.Errors.Take(3)) : ex.Message;
                 diagnostics.Add(new Diagnostic("ANA021", "The SharpDX Toolkit rule catalog was not loaded, so Toolkit projects are not analyzed: " + detail, _toolkitCatalogRelativePath));
+            }
+
+            try
+            {
+                catalogs.Add(await RuleCatalogLoader.LoadAsync(_monoGameCatalogPath ?? FindCatalog(_monoGameCatalogRelativePath), fileSystem, cancellationToken).ConfigureAwait(false));
+            }
+            catch (Exception ex) when (ex is RuleCatalogException or FileNotFoundException)
+            {
+                var detail = ex is RuleCatalogException invalid ? string.Join(" ", invalid.Errors.Take(3)) : ex.Message;
+                diagnostics.Add(new Diagnostic("ANA014", "The old MonoGame rule catalog was not loaded, so old MonoGame projects are not analyzed: " + detail, _monoGameCatalogRelativePath));
             }
 
             return _loaded = new LoadedCatalogs(catalogs, diagnostics);

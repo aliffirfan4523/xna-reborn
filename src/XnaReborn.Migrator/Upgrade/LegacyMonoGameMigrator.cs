@@ -41,12 +41,6 @@ internal sealed class LegacyMonoGameMigrator
         _rewriters = rewriters;
     }
 
-    /// <summary>True for a platform this version does not generate output for (UWP, Windows Phone, consoles, Android, iOS).</summary>
-    /// <param name="platform">The platform the analyzer detected.</param>
-    internal static bool IsPlatformProject(MonoGamePlatform platform) =>
-        platform is MonoGamePlatform.Uwp or MonoGamePlatform.WindowsPhone or MonoGamePlatform.Ouya
-            or MonoGamePlatform.PlayStationMobile or MonoGamePlatform.PsVita or MonoGamePlatform.Android or MonoGamePlatform.Ios;
-
     /// <summary>Chooses the desktop target for an old platform: DirectX Windows becomes WindowsDX, everything else DesktopGL.</summary>
     /// <param name="platform">The platform the analyzer detected.</param>
     internal static MonoGameTarget ChooseTarget(MonoGamePlatform platform) =>
@@ -93,7 +87,7 @@ internal sealed class LegacyMonoGameMigrator
             var discovered = candidates[i];
             progress?.Report(new MigrationProgress(_stageProjects, i, candidates.Count, discovered.RelativePath));
             var read = await reader.ReadAsync(discovered.FullPath, root, cancellationToken).ConfigureAwait(false);
-            if (discovered.Family == ProjectFamily.MonoGameLegacy && IsPlatformProject(read.Info.MonoGamePlatform))
+            if (discovered.Family == ProjectFamily.MonoGameLegacy && MigrationScope.IsPlatformProject(read.Info.MonoGamePlatform))
             {
                 skippedProjects.Add(discovered.RelativePath);
                 CopyPlatformProject(discovered, read, root, state, cancellationToken);

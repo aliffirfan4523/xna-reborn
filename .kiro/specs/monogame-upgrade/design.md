@@ -445,6 +445,12 @@ What the migrator part changed compared with the text above:
   - Fixture G (`mg38-old-pin`): the fixture has no `Main`, so the test builds a copy with a `Program.cs` added; it builds after the bump.
   - The source folder hash is unchanged after migration and build for A, B and G. The runner guard refuses the unmigrated fixtures.
 - **Not run:** no migrated game was started.
+## Studio UI implementation notes (task 16)
+
+- **Where the list is.** The report page has a "Projects" panel (an expander above the search box). Each row shows the path, then "family, version (confidence), platform", for example `MonoGame (old) · 3.7.0.1708 (High) · Windows (DirectX)`. A version band shows as a range (`3.2 to 3.6 (Medium)`). XNA projects show `XNA · XNA 4.0 · Windows`. A project with no version signal says "Version unknown". The panel is hidden when the report lists no project.
+- **"Not migrated".** A platform project (UWP, Windows Phone, OUYA, PlayStation Mobile, PS Vita, Android, iOS) gets the line "Not migrated, see manual work", as text and in the accessible name, not by color. Which platforms count is decided by `XnaReborn.Migrator.Upgrade.MigrationScope`, which the migrator also uses, so the UI holds no copy of that rule.
+- **The app now loads the old MonoGame catalog.** `AnalysisService` loads `rules/monogame-upgrade.json` after the Toolkit catalog; the csproj copies it next to the app. A missing or invalid file gives the diagnostic `ANA014` and XNA analysis goes on. The report's catalog name now reads `xna-to-monogame + sharpdx-toolkit-to-monogame + monogame-upgrade`, so two existing assertions in `AnalysisServiceTests` changed. Without this the app would not have analyzed old MonoGame projects at all.
+- **Not checked.** The panel was tested with the headless Avalonia tests only; no screenshot, no screen reader and no high-contrast check was made. The migration setup page was not changed: it still offers the single `Target` choice, so `MigrationOptions.LegacyTarget` is not reachable from the UI and an old project gets the target chosen from its platform.
 ## Open questions
 1. **WindowsDX on `net8.0-windows`.** Verified on Windows by the task 15 integration test (see "Runner implementation notes"). Not verified on other systems.
 2. **Android and iOS output.** Not generated here. A follow-up spec could target `net8.0-android` and `net8.0-ios`.
