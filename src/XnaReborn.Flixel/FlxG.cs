@@ -172,6 +172,9 @@ public static class FlxG
     /// <summary>The keyboard.</summary>
     public static FlxKeyboard keys = new();
 
+    /// <summary>Seed of <see cref="random"/>, a number from 0 to 1. Set it to repeat a sequence.</summary>
+    public static double globalSeed = Random.Shared.NextDouble();
+
     /// <summary>The state that is running, or null before the game starts.</summary>
     public static FlxState? state { get; private set; }
 
@@ -191,6 +194,23 @@ public static class FlxG
         keys = new FlxKeyboard();
         state = null;
         _requested = null;
+        FlxTimer.manager.clear();
+    }
+
+    /// <summary>The next number of Flixel's seeded sequence, from 0 up to but not including 1.</summary>
+    public static double random() => globalSeed = (69621L * (long)(globalSeed * 0x7FFFFFFF) % 0x7FFFFFFF) / (double)0x7FFFFFFF;
+
+    /// <summary>Picks a random item. <paramref name="Length"/> 0 means up to the end.</summary>
+    public static object? getRandom(AsArray? Objects, int StartIndex = 0, int Length = 0)
+    {
+        if (Objects is null || Objects.length == 0)
+        {
+            return null;
+        }
+
+        var start = Math.Clamp(StartIndex, 0, Objects.length - 1);
+        var count = Length <= 0 || start + Length > Objects.length ? Objects.length - start : Length;
+        return Objects[start + (int)(random() * count)];
     }
 
     /// <summary>Asks for a new state. It starts at the beginning of the next frame.</summary>
@@ -212,6 +232,7 @@ public static class FlxG
         if (_requested is not null)
         {
             state?.destroy();
+            FlxTimer.manager.clear();
             state = _requested;
             _requested = null;
             state.create();
@@ -222,6 +243,7 @@ public static class FlxG
             keys.update(keyState);
         }
 
+        FlxTimer.manager.update();
         state?.update();
     }
 
