@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 61 / 100 |
-| Projected score after automatic fixes | 67 / 100 |
+| Compatibility score | 79 / 100 |
+| Projected score after automatic fixes | 91 / 100 |
 | Projects analyzed | 1 |
 | Findings | 12 |
 
 Severity: Blocker 0, Error 8, Warning 3, Info 1
 
-Classification: AutoFixable 7, Manual 5, Unsupported 0
+Classification: AutoFixable 10, Manual 2, Unsupported 0
 
 ## Projects
 
@@ -40,18 +40,6 @@ Classification: AutoFixable 7, Manual 5, Unsupported 0
   - Project: `VbXna31Handmade.vbproj`
   - Location: `Game1.vb:29:27`
   - Code: `spriteBatch.Begin(SpriteBlendMode.AlphaBlend)`
-- **[Warning] XNA004** Old .NET Framework target
-  - Project: `VbXna31Handmade.vbproj`
-  - Code: `TargetFrameworkVersion=v3.5`
-- **[Warning] XNA111** Visual Basic application model (MyType)
-  - Project: `VbXna31Handmade.vbproj`
-  - Code: `MyType=WindowsForms`
-- **[Warning] XNA113** My Project designer files
-  - Project: `VbXna31Handmade.vbproj`
-  - Code: `My Project\Application.Designer.vb`
-
-### Manual
-
 - **[Error] XNA024** GraphicsDevice.RenderState (replaced by state objects)
   - Project: `VbXna31Handmade.vbproj`
   - Location: `Game1.vb:24:14`
@@ -64,6 +52,18 @@ Classification: AutoFixable 7, Manual 5, Unsupported 0
   - Project: `VbXna31Handmade.vbproj`
   - Location: `Game1.vb:32:9`
   - Code: `effect.Begin`
+- **[Warning] XNA004** Old .NET Framework target
+  - Project: `VbXna31Handmade.vbproj`
+  - Code: `TargetFrameworkVersion=v3.5`
+- **[Warning] XNA111** Visual Basic application model (MyType)
+  - Project: `VbXna31Handmade.vbproj`
+  - Code: `MyType=WindowsForms`
+- **[Warning] XNA113** My Project designer files
+  - Project: `VbXna31Handmade.vbproj`
+  - Code: `My Project\Application.Designer.vb`
+
+### Manual
+
 - **[Error] XNA112** My namespace used in code
   - Project: `VbXna31Handmade.vbproj`
   - Location: `Game1.vb:39:31`

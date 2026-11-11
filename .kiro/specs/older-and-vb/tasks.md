@@ -174,10 +174,10 @@ Rules for every task:
   - Full test run and `dotnet format --verify-no-changes`
   - _Requirements: R6 to R13, R14_
 
-- [ ] 24. Stretch: VB ports of the render state and effect pass rewriters
-  - [ ] 24.1 `RenderStateRewriter` VB port for direct statements; `With` blocks stay marker only
-  - [ ] 24.2 `EffectPassRewriter` VB port for the full `For Each ... Next` pattern; anything else stays marker only
-  - [ ] 24.3 Add `vb` to `autoFixLanguages` of the ported rules only after the tests pass; update the coverage test
+- [x] 24. Stretch: VB ports of the render state and effect pass rewriters
+  - [x] 24.1 `RenderStateRewriter` VB port for direct statements; `With` blocks stay marker only
+  - [x] 24.2 `EffectPassRewriter` VB port for the full `For Each ... Next` pattern; anything else stays marker only
+  - [x] 24.3 Add `vb` to `autoFixLanguages` of the ported rules only after the tests pass; update the coverage test
   - [ ] 24.4 Start only if checkpoint B shows these patterns in real VB code
   - _Requirements: R11_
 
