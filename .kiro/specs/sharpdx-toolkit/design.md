@@ -498,3 +498,10 @@ EcoSim migration (13.2), to a folder outside the source, for WindowsDX and Deskt
 - `dotnet build` of the migrated project fails with 7 errors for both targets. Six are the OpenCL library: EcoSim references the project `OpenCLWrapper` and `libs/Cloo/Cloo.dll`, which are not Toolkit or XNA projects, so they were not migrated or copied. One is `RectangleF` (SDX034, marked in the source, `Camera.cs` line 14). Manual edits needed to get a build: bring in or replace the OpenCL code, and replace `RectangleF`. Neither was attempted, because the OpenCL part is not a Toolkit concern.
 - Not checked: running the migrated game, and the effect of the three `IsKeyPressed` edge calls (SDX028) on behavior.
 - The migrator does not warn when a Toolkit project has a `ProjectReference` to a project that is not migrated. The reference is kept in the new project and the build fails. This is a gap for a later change.
+
+### Task 15 and what is left
+
+- There is no `docs/` folder in the repository and no support matrix in the README, so 15.1 added a "SharpDX Toolkit projects" section to the README that says what is covered and what is not.
+- 15.2: none of the commits that touch `rules/xna-to-monogame.json` belong to this work, and the XNA report snapshots changed only in the "no project" reason text (task 2). The XNA manifest has no new fields (tested).
+- Task 14 (stand-in types for `RectangleF`, `Color4`) was not started, as the spec says to wait for the owner after the checkpoint. The checkpoint numbers: `RectangleF` 3 hits in EcoSim, `Color4` or `Color3` 72 hits in ModernMoleculeViewer (a Store app, so not migratable) and 9 in graphicsproj2 (also a Store app). In the one migratable candidate with real use, `RectangleF` is the only API blocker after the OpenCL code.
+- Task 15.3 and the final owner review are for the conductor.

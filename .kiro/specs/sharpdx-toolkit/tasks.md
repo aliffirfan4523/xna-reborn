@@ -90,7 +90,7 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - _Requirements: R4, R9_
 
 - [ ] 15. Final checkpoint
-  - [ ] 15.1 Update `docs/` and the README support matrix to say what Toolkit support covers and what it does not (R9).
-  - [ ] 15.2 Confirm `rules/xna-to-monogame.json` and all XNA snapshots are unchanged by this work, except where an earlier task says otherwise.
+  - [x] 15.1 Update `docs/` and the README support matrix to say what Toolkit support covers and what it does not (R9).
+  - [x] 15.2 Confirm `rules/xna-to-monogame.json` and all XNA snapshots are unchanged by this work, except where an earlier task says otherwise.
   - [ ] 15.3 Run the full build, tests and format check. Stop for owner review.
   - _Requirements: R8, R9_
