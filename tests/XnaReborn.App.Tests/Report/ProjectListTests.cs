@@ -159,4 +159,14 @@ public sealed class ProjectListTests
         var note = Assert.Single(xna.Diagnostics, d => d.Code == "ANA014");
         Assert.Contains("MonoGame", note.Message, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void A_toolkit_project_is_labeled_as_sharpdx_toolkit()
+    {
+        var row = new ProjectRowItem(new ProjectInfo("T.csproj", "T", false, XnaVersion.Unknown, XnaPlatform.Unknown, null, null, [], [], [], [], [], Family: ProjectFamily.SharpDxToolkit));
+
+        Assert.Equal("SharpDX Toolkit", row.FamilyText);
+        Assert.Contains("SharpDX Toolkit", row.AutomationName, StringComparison.Ordinal);
+        Assert.False(row.IsNotMigrated);
+    }
 }

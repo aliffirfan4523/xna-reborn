@@ -237,7 +237,64 @@
       "match": { "code": "X5426" },
       "title": "Shader too big for level 9.1",
       "advice": "The shader is too big for the Shader Model 4 level 9.1 profile. Use _4_0_level_9_3, or _4_0 with GraphicsProfile.HiDef."
-    },    {
+    },
+    {
+      "id": "H401",
+      "match": { "messageRegex": "The (name|type or namespace name) 'RectangleF'" },
+      "title": "RectangleF has no MonoGame type",
+      "advice": "RectangleF is a SharpDX type. Use Rectangle (integer fields), or add a small struct of your own with float fields.",
+      "ruleId": "SDX034"
+    },
+    {
+      "id": "H402",
+      "match": { "messageRegex": "The (name|type or namespace name) '(Color4|Color3)'" },
+      "title": "Color4 and Color3 have no MonoGame type",
+      "advice": "Use Color for byte colors or Vector4 for float colors (Vector4 holds red, green, blue and alpha as X, Y, Z and W).",
+      "ruleId": "SDX035"
+    },
+    {
+      "id": "H403",
+      "match": { "messageRegex": "The (name|type or namespace name) '(GameSystem|GameSystemCollection)'" },
+      "title": "GameSystem has no MonoGame type",
+      "advice": "Port each GameSystem to GameComponent or DrawableGameComponent and add it to Game.Components. The update and draw order is set by UpdateOrder and DrawOrder.",
+      "ruleId": "SDX062"
+    },
+    {
+      "id": "H404",
+      "match": { "messageRegex": "The (name|type or namespace name) 'GeometricPrimitive'" },
+      "title": "GeometricPrimitive has no MonoGame type",
+      "advice": "MonoGame has no cube, sphere or teapot helper. Build the vertex and index buffers yourself, or load a model for the shape.",
+      "ruleId": "SDX048"
+    },
+    {
+      "id": "H405",
+      "match": { "messageRegex": "The type or namespace name '(SharpDX|Direct3D11|DXGI|Direct2D1|XAudio2)'" },
+      "title": "Raw SharpDX is not part of the migrated project",
+      "advice": "The migrated project does not reference SharpDX. Code that used SharpDX.Direct3D11, DXGI, Direct2D1 or XAudio2 directly has to be rewritten against the MonoGame API (GraphicsDevice, SurfaceFormat, SoundEffect).",
+      "ruleId": "SDX005"
+    },
+    {
+      "id": "H406",
+      "match": { "code": "CS1061", "messageContains": "'SetResource'" },
+      "title": "SetResource does not exist on EffectParameter",
+      "advice": "Set a texture with EffectParameter.SetValue(texture). Set samplers on the device with GraphicsDevice.SamplerStates[index].",
+      "ruleId": "SDX049"
+    },
+    {
+      "id": "H407",
+      "match": { "code": "MGFX0001", "messageContains": "Expected Compile" },
+      "title": "Toolkit effect syntax: shader without compile",
+      "advice": "A pass names its shader as PixelShader = Name; without the compile keyword, which is the SharpDX Toolkit form. Write PixelShader = compile ps_4_0_level_9_1 Name(); in the MonoGame effect syntax.",
+      "ruleId": "SDX013"
+    },
+    {
+      "id": "H408",
+      "match": { "code": "MGFX0001", "messageContains": "Expected None, Linear, Point, or Anisotropic" },
+      "title": "Toolkit effect syntax: Direct3D 10 sampler",
+      "advice": "A SamplerState block with a Filter such as MIN_MAG_MIP_POINT is Direct3D 10 syntax. In the MonoGame effect syntax use sampler_state { Texture = <Name>; MinFilter = Point; MagFilter = Point; MipFilter = Point; }.",
+      "ruleId": "SDX013"
+    },
+    {
       "id": "R001",
       "match": { "runtimeRegex": "could not find (file|a part of the path)[^\\r\\n]*\\.xnb|content file was not found|ContentLoadException:[^\\r\\n]*not found" },
       "title": "Compiled content (.xnb) was not found",
