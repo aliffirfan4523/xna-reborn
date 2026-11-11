@@ -51,4 +51,7 @@ public interface IRecentProjectsStore
     /// <summary>Forgets <paramref name="path"/>. Does nothing when it is not stored. Never touches the project on disk.</summary>
     /// <param name="path">The path to forget.</param>
     void Remove(string path);
+
+    /// <summary>Forgets every remembered project. Never touches a project on disk.</summary>
+    void Clear();
 }

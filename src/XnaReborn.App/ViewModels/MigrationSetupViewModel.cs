@@ -37,6 +37,7 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
     };
 
     private readonly IMigrationService _migration;
+    private readonly ISettingsService _settings;
     private object? _loadedReport;
     private string? _loadedSource;
     private CancellationTokenSource? _runCancellation;
@@ -94,10 +95,12 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
     /// <param name="navigator">Moves to other pages.</param>
     /// <param name="dialogs">File pickers and message dialogs.</param>
     /// <param name="migration">Plans and runs the migration and checks the output folder.</param>
-    public MigrationSetupViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IMigrationService migration)
+    /// <param name="settings">The saved defaults for the target, the options and the output folder. A choice made here for one run overrides them.</param>
+    public MigrationSetupViewModel(WorkflowSession session, INavigator navigator, IDialogService dialogs, IMigrationService migration, ISettingsService settings)
         : base("Migration setup", session, navigator, dialogs)
     {
         _migration = migration;
+        _settings = settings;
     }
 
     /// <summary>The plan checklist.</summary>
@@ -147,12 +150,15 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
         {
             _loadedReport = report;
             _loadedSource = source;
-            IsWindowsDx = MigrationDefaults.TargetFor(report) == MonoGameTarget.WindowsDX;
-            EnableShims = false;
-            SubstituteFonts = false;
-            AllowWindowResize = false;
-            FullscreenToggle = false;
-            HighDpi = false;
+            // The saved defaults are read here, when a project is opened, and not again while the user keeps it open.
+            // A SharpDX Toolkit project still starts on WindowsDX, because its effects need it.
+            var defaults = _settings.Current;
+            IsWindowsDx = MigrationDefaults.TargetFor(report) == MonoGameTarget.WindowsDX || defaults.DefaultTarget == MonoGameTarget.WindowsDX;
+            EnableShims = defaults.EnableShims;
+            SubstituteFonts = defaults.SubstituteFonts;
+            AllowWindowResize = defaults.AllowWindowResize;
+            FullscreenToggle = defaults.FullscreenToggle;
+            HighDpi = defaults.HighDpi;
             StatusMessage = null;
             ProgressText = string.Empty;
             OutputFolder = DefaultOutputFolder(source);
@@ -387,8 +393,8 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
         }
 
         var root = Path.TrimEndingDirectorySeparator(_migration.SourceRootOf(source));
-        var parent = Path.GetDirectoryName(root);
         var name = Path.GetFileName(root);
+        var parent = _settings.Current.OutputParentFolder ?? Path.GetDirectoryName(root);
         return string.IsNullOrEmpty(parent) || string.IsNullOrEmpty(name) ? string.Empty : Path.Combine(parent, name + "-monogame");
     }
 }

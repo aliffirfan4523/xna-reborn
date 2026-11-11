@@ -12,13 +12,16 @@
         Background="{DynamicResource BackgroundBrush}">
 
   <Window.KeyBindings>
-    <!-- Ctrl+1..6 jump to a step (locked steps ignore it). -->
-    <KeyBinding Gesture="Ctrl+1" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Open}" />
-    <KeyBinding Gesture="Ctrl+2" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Report}" />
-    <KeyBinding Gesture="Ctrl+3" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.MigrationSetup}" />
-    <KeyBinding Gesture="Ctrl+4" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Diff}" />
-    <KeyBinding Gesture="Ctrl+5" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.BuildRun}" />
-    <KeyBinding Gesture="Ctrl+6" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Summary}" />
+    <!-- Ctrl+1..6 jump to a step (locked steps ignore it). Digits are written D1..D7: a bare "1" is read as the key code 1 (Cancel). -->
+    <KeyBinding Gesture="Ctrl+D1" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Open}" />
+    <KeyBinding Gesture="Ctrl+D2" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Report}" />
+    <KeyBinding Gesture="Ctrl+D3" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.MigrationSetup}" />
+    <KeyBinding Gesture="Ctrl+D4" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Diff}" />
+    <KeyBinding Gesture="Ctrl+D5" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.BuildRun}" />
+    <KeyBinding Gesture="Ctrl+D6" Command="{Binding GoToCommand}" CommandParameter="{x:Static vm:WorkflowStep.Summary}" />
+    <!-- Ctrl+7 and Ctrl+, open Settings. -->
+    <KeyBinding Gesture="Ctrl+D7" Command="{Binding OpenSettingsCommand}" />
+    <KeyBinding Gesture="Ctrl+OemComma" Command="{Binding OpenSettingsCommand}" />
   </Window.KeyBindings>
 
   <Grid ColumnDefinitions="264,*">
@@ -49,7 +52,23 @@
                 AutomationProperties.Name="Switch color theme">
           <StackPanel Orientation="Horizontal" Spacing="10">
             <PathIcon Data="{StaticResource IconTheme}" Width="18" Height="18" />
-            <TextBlock x:Name="ThemeToggleText" Text="Theme: System" />
+            <TextBlock x:Name="ThemeToggleText" Text="{Binding ThemeText}" />
+          </StackPanel>
+        </Button>
+
+        <!-- Settings: not one of the six steps, so it sits apart, above the theme toggle. -->
+        <Button x:Name="SettingsButton"
+                DockPanel.Dock="Bottom"
+                Classes="nav-item"
+                Classes.current="{Binding IsSettingsOpen}"
+                Command="{Binding OpenSettingsCommand}"
+                Margin="0,0,0,4"
+                ToolTip.Tip="Settings (Ctrl+7 or Ctrl+comma)"
+                AutomationProperties.AutomationId="Nav_Settings"
+                AutomationProperties.Name="{Binding SettingsAutomationName}">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <PathIcon Data="{StaticResource IconSettings}" Width="18" Height="18" />
+            <TextBlock Text="Settings" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
 
