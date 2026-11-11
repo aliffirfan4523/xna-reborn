@@ -67,13 +67,13 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - [x] 10.2 Manifest JSON and Markdown show the source framework and each SDX rule that fired. Snapshot tests. Negative: the XNA manifest snapshot is unchanged.
   - _Requirements: R7_
 
-- [ ] 11. Effect check (research task, docs only)
-  - [ ] 11.1 Take a Toolkit-syntax `.fx` file written for the fixture (original), run it through the MonoGame effect compiler used by `dotnet-mgcb` 3.8.6.1, and record the exact error. Update the explanation and resolution text of SDX013 with what was observed. If the compiler accepts the form, say so and downgrade SDX013's explanation.
+- [x] 11. Effect check (research task, docs only)
+  - [x] 11.1 Take a Toolkit-syntax `.fx` file written for the fixture (original), run it through the MonoGame effect compiler used by `dotnet-mgcb` 3.8.6.1, and record the exact error. Update the explanation and resolution text of SDX013 with what was observed. If the compiler accepts the form, say so and downgrade SDX013's explanation.
   - _Requirements: R5, R9_
 
-- [ ] 12. Runner hints and UI label
-  - [ ] 12.1 Add the hint entries from `design.md` ("Runner and repair") to `HintCatalog`, each with a match test and a non-match test.
-  - [ ] 12.2 Show the source framework label in the studio through the existing report binding. No logic in the view. ViewModel test only.
+- [x] 12. Runner hints and UI label
+  - [x] 12.1 Add the hint entries from `design.md` ("Runner and repair") to `HintCatalog`, each with a match test and a non-match test.
+  - [x] 12.2 Show the source framework label in the studio through the existing report binding. No logic in the view. ViewModel test only.
   - _Requirements: R6, R7_
 
 - [ ] 13. Checkpoint: end-to-end on real candidates (read only)

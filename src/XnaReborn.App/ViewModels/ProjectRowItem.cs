@@ -16,6 +16,7 @@ public sealed class ProjectRowItem
         {
             ProjectFamily.MonoGameLegacy => ("MonoGame (old)", MonoGameVersionOf(info), MigrationScope.Describe(info.MonoGamePlatform)),
             ProjectFamily.MonoGameCurrent => ("MonoGame (current)", MonoGameVersionOf(info), MigrationScope.Describe(info.MonoGamePlatform)),
+            ProjectFamily.SharpDxToolkit => ("SharpDX Toolkit", "Toolkit 2.x", ".NET Framework"),
             _ => ("XNA", info.XnaVersion == XnaVersion.Unknown ? "Version unknown" : "XNA " + XnaVersionText(info.XnaVersion), info.Platform.ToString()),
         };
         IsNotMigrated = info.Family == ProjectFamily.MonoGameLegacy && MigrationScope.IsPlatformProject(info.MonoGamePlatform);
@@ -25,7 +26,7 @@ public sealed class ProjectRowItem
     /// <summary>Relative path of the project file.</summary>
     public string Path { get; }
 
-    /// <summary>"XNA", "MonoGame (old)" or "MonoGame (current)".</summary>
+    /// <summary>"XNA", "SharpDX Toolkit", "MonoGame (old)" or "MonoGame (current)".</summary>
     public string FamilyText { get; }
 
     /// <summary>The version, with how sure the analyzer is for MonoGame projects, for example "3.7.0.1708 (High)".</summary>

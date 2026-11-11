@@ -48,7 +48,16 @@ public class HintMatcherTests
         ("H306", "MGCB", "Could not run ffprobe: no such file", "Could not find file hero.png"),
         ("H307", "X4502", "invalid ps_2_0 input semantic 'VPOS'", "invalid ps_2_0 input semantic 'COLOR3'"),
         ("H308", "X4505", "anything", "anything"),
-        ("H309", "X5426", "anything", "anything"),    ];
+        ("H309", "X5426", "anything", "anything"),
+        ("H401", "CS0246", "The type or namespace name 'RectangleF' could not be found (are you missing a using directive or an assembly reference?)", "The type or namespace name 'Rectangles' could not be found (are you missing a using directive or an assembly reference?)"),
+        ("H402", "CS0103", "The name 'Color4' does not exist in the current context", "The name 'Color' does not exist in the current context"),
+        ("H403", "CS0246", "The type or namespace name 'GameSystem' could not be found (are you missing a using directive or an assembly reference?)", "The type or namespace name 'GameSystems' could not be found (are you missing a using directive or an assembly reference?)"),
+        ("H404", "CS0246", "The type or namespace name 'GeometricPrimitive' could not be found (are you missing a using directive or an assembly reference?)", "The type or namespace name 'GeometricPrimitives' could not be found (are you missing a using directive or an assembly reference?)"),
+        ("H405", "CS0246", "The type or namespace name 'SharpDX' could not be found (are you missing a using directive or an assembly reference?)", "The type or namespace name 'SharpDXtra' could not be found (are you missing a using directive or an assembly reference?)"),
+        ("H406", "CS1061", "'EffectParameter' does not contain a definition for 'SetResource' and no accessible extension method 'SetResource' accepting a first argument of type 'EffectParameter' could be found (are you missing a using directive or an assembly reference?)", "'EffectParameter' does not contain a definition for 'SetValue2' and no accessible extension method 'SetValue2' accepting a first argument of type 'EffectParameter' could be found (are you missing a using directive or an assembly reference?)"),
+        ("H407", "MGFX0001", "Tint.fx(17,9) : Unexpected token 'P' found. Expected Compile", "Tint.fx(17,9) : Unexpected token 'P' found. Expected Semicolon"),
+        ("H408", "MGFX0001", "Tint.fx(5,14) : Unexpected token 'M' found. Expected None, Linear, Point, or Anisotropic.", "Tint.fx(5,14) : Unexpected token 'M' found. Expected Semicolon"),
+    ];
 
     /// <summary>Codes whose near-miss differs only by code: the same message must not match under another code.</summary>
     private static readonly string[] _codeOnlyHints = ["H021", "H022", "H023", "H104", "H304", "H305", "H308", "H309"];
