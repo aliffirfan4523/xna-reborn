@@ -273,7 +273,16 @@ public sealed class SdkCsprojGenerator
     private static bool IsDroppedAssembly(string name) =>
         _frameworkAssemblies.Contains(name)
         || name.StartsWith("System.", StringComparison.OrdinalIgnoreCase)
-        || name.StartsWith("Microsoft.Xna.Framework", StringComparison.OrdinalIgnoreCase);
+        || name.StartsWith("Microsoft.Xna.Framework", StringComparison.OrdinalIgnoreCase)
+        || IsDeviceAssembly(name);
+
+    // Windows Phone and ad assemblies have no desktop version (rules XNA060 to XNA063). Their types are stood in for or marked.
+    private static bool IsDeviceAssembly(string name) =>
+        name.Equals("Microsoft.Phone", StringComparison.OrdinalIgnoreCase)
+        || name.StartsWith("Microsoft.Phone.", StringComparison.OrdinalIgnoreCase)
+        || name.StartsWith("Microsoft.Devices.", StringComparison.OrdinalIgnoreCase)
+        || name.StartsWith("Microsoft.Advertising", StringComparison.OrdinalIgnoreCase)
+        || name.StartsWith("AdDuplex", StringComparison.OrdinalIgnoreCase);
 
     private static void AppendProperty(StringBuilder sb, string name, string value) =>
         sb.Append("    <").Append(name).Append('>').Append(Escape(value)).Append("</").Append(name).Append(">\n");

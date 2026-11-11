@@ -140,7 +140,7 @@ public sealed class MigrationIntegrationTests(ITestOutputHelper testOutput) : ID
         Assert.Equal(copyBefore, MigrationTestSupport.Tree(source));
     }
 
-    private static async Task<(int ExitCode, string Output)> RunBuildAsync(string folder)
+    internal static async Task<(int ExitCode, string Output)> RunBuildAsync(string folder)
     {
         var start = new ProcessStartInfo("dotnet", "build --nologo -v minimal")
         {
