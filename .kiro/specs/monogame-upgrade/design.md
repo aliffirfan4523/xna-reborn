@@ -434,8 +434,19 @@ What the migrator part changed compared with the text above:
 - **Gap (14.3).** A DesktopGL project built from shared code only, "after confirmation", is not generated: there is no confirmation step in the options yet. When every project is a platform project the run stops with an error that says so.
 - **Manual notes.** Each Manual or Unsupported finding becomes one line per rule and project in the Markdown manifest notes, with the rule's resolution text.
 - **Shared files.** A `Compile` item outside the project folder (from a `.projitems`) is written as `Compile Include="..\Shared\X.cs" Link="X.cs"`. Two shared files with the same file name in different folders would get the same `Link`; not handled.
+## Runner implementation notes (task 15)
+
+- **Hints H102 to H105 are added; H100 and H101 are not.** The compiler text for `using Microsoft.Xna.Framework.Net` and `GamerServices` on MonoGame 3.8.6.1 is the same as for the XNA projects, and the matcher sees only the diagnostic, not the project family. A second hint would never be reached, because H001 and H003 come first in the catalog and already give the right advice. H100 and H101 stay unused ids. H102 (`CS0117` and `'TransparentBlack'`, MG032), H103 (`'OpenTK'` in the message, MG030), H104 (`NETSDK1100`, no rule) and H105 (`Failed to load assembly`, MG025) each have a matching and a non-matching sample in `HintMatcherTests`. The rule-id check in `HintCatalogTests` now reads both catalogs.
+- **H105 text is from a community report, not from a run on 3.8.6.1 with a missing DLL.** The integration test with a missing custom pipeline DLL printed `W: Failed to load assembly '...GlowPipeline.dll': Could not load file or assembly ...` as a warning line, then the asset errors and MSB3073. The hint matches that text. Whether the output parser turns that warning line into a diagnostic (and so shows the hint in the UI) was not checked.
+- **Integration results (`XNAREBORN_INTEGRATION=1`, Windows, .NET SDK 10.0.403, 2026-11-11).**
+  - Fixture A (`mg37-windowsdx-pkgconfig`) migrated to WindowsDX: `net8.0-windows` with `MonoGame.Framework.WindowsDX` 3.8.6.1 restores and builds with 0 errors. This closes open question 1 for Windows. It was not checked on Linux or macOS (where H104 applies).
+  - Fixture A moved to DesktopGL with `LegacyTarget`: builds.
+  - Fixture B (`mg37-desktopgl-installdir`): fails in the content builder only (no compiler errors). The fixture's `hero.png` and `level.lvl` do not exist and its pipeline DLL is missing, so this is the expected failure for a synthetic fixture.
+  - Fixture G (`mg38-old-pin`): the fixture has no `Main`, so the test builds a copy with a `Program.cs` added; it builds after the bump.
+  - The source folder hash is unchanged after migration and build for A, B and G. The runner guard refuses the unmigrated fixtures.
+- **Not run:** no migrated game was started.
 ## Open questions
-1. **WindowsDX on `net8.0-windows`.** Still unverified for 3.8.x in this product. The integration test decides.
+1. **WindowsDX on `net8.0-windows`.** Verified on Windows by the task 15 integration test (see "Runner implementation notes"). Not verified on other systems.
 2. **Android and iOS output.** Not generated here. A follow-up spec could target `net8.0-android` and `net8.0-ios`.
 3. **Sibling specs.** `sharpdx-toolkit` owns direct SharpDX code. `flash-to-monogame` is unrelated. This spec only drops redundant SharpDX references and defers the rest.
 

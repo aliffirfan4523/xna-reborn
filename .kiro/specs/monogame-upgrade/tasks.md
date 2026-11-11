@@ -96,10 +96,10 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [x] 14.4 Tests on fixture E: platform projects skipped, shared code linked, solution lists one project
   - _Requirements: R9_
 
-- [ ] 15. Build and run
-  - [ ] 15.1 Add hints H100 to H105 to `hints.json` with a matching and a non-matching sample diagnostic each
-  - [ ] 15.2 Integration test (`XNAREBORN_INTEGRATION=1`): migrate fixtures A and B, run `dotnet build` on the copy; record whether `net8.0-windows` with WindowsDX 3.8.6.1 restores and builds
-  - [ ] 15.3 Source folder hash unchanged after migration and build; the output has the manifest marker; the runner refuses the unmigrated fixture
+- [x] 15. Build and run
+  - [x] 15.1 Add hints H100 to H105 to `hints.json` with a matching and a non-matching sample diagnostic each
+  - [x] 15.2 Integration test (`XNAREBORN_INTEGRATION=1`): migrate fixtures A and B, run `dotnet build` on the copy; record whether `net8.0-windows` with WindowsDX 3.8.6.1 restores and builds
+  - [x] 15.3 Source folder hash unchanged after migration and build; the output has the manifest marker; the runner refuses the unmigrated fixture
   - _Requirements: R10, R11_
 
 - [ ] 16. Studio UI
