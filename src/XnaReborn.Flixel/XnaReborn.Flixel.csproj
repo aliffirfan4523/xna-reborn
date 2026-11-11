@@ -3,6 +3,8 @@
   <PropertyGroup>
     <Description>A C# port of the Flixel 2.x API and a small AS3 runtime, for converted Flash games.</Description>
     <RootNamespace>org.flixel</RootNamespace>
+    <!-- The runtime has hundreds of AS3-named public members; XML docs are on the types, not on every member. -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
