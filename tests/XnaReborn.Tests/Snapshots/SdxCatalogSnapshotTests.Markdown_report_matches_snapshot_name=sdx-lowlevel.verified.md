@@ -183,13 +183,13 @@ TransformCoordinate divides by w. MonoGame Vector3.Transform does not. The resul
 
 RectangleF is a SharpDX type with float fields. MonoGame has no such type, and SpriteBatch.Draw takes a Rectangle with integer fields. Matching is by syntax only, so a look-alike name in unrelated code can match.
 
-**Resolution:** Use Rectangle, or add a small struct of your own.
+**Resolution:** Use Rectangle, or add a small struct of your own. With the compatibility shims on, the migrated copy gets a RectangleF stand-in (sharpdx-toolkit task 14) and no marker.
 
 ### SDX035 Color4 and Color3
 
 Color4 and Color3 are float color structs of SharpDX. MonoGame has Color (bytes) and Vector4 (floats) but no type of this name. Matching is by syntax only, so a look-alike name in unrelated code can match.
 
-**Resolution:** Use Color for byte colors or Vector4 for float colors.
+**Resolution:** Use Color for byte colors or Vector4 for float colors. With the compatibility shims on, the migrated copy gets Color4 and Color3 stand-ins (sharpdx-toolkit task 14) and no marker.
 
 ### SDX043 SetRenderTargets (depth buffer or several targets)
 
