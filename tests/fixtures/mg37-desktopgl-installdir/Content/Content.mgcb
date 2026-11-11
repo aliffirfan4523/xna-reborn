@@ -1,0 +1,30 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+/reference:..\..\..\..\Program Files (x86)\MonoGame\v3.0\Tools\MonoGame.Content.Pipeline.dll
+/reference:Pipeline\GlowPipeline.dll
+
+#---------------------------------- Content ---------------------------------#
+
+#begin Textures/hero.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/build:Textures/hero.png
+
+#begin Data/level.lvl
+/importer:LevelImporter
+/processor:LevelProcessor
+/build:Data/level.lvl
+

@@ -2,14 +2,14 @@
 
 Each numbered task is sized for one worker on its own branch (`analyzer/...`, `migrator/...`, `runner/...`, `app/...`). Workers do not edit specs, packages, project files, or the XNA rule catalog unless the task says so. Every rule task adds a positive and a negative fixture test per rule (`Category=Rules`). Rules in `rules/monogame-upgrade.json` that are AutoFixable link to the migrator task in the form `monogame-upgrade:N.N`.
 
-- [ ] 1. Confirm the open research items (docs only)
+- [x] 1. Confirm the open research items (docs only)
   - [ ] 1.1 Read the 3.8.6.1 `MonoGame.Framework.WindowsDX` nuspec and API reference: SharpDX dependency version, whether legacy `Microsoft.Xna.Framework.Storage` types still exist
   - [ ] 1.2 Confirm the `MonoGamePlatform` values for Windows 8, Windows Phone, OUYA, PSM and Vita, the Xamarin.iOS project GUIDs, and the mgcb platform names, from the 3.7.1 and 3.8.6.1 sources and from the sample projects listed in the design
   - [ ] 1.3 Confirm the first version that used `MonoGame.Common.props` and the last version that shipped WindowsGL
   - [ ] 1.4 Update the "to confirm" items in `design.md` and the rule table. Change a rule only in this spec at this step; the catalog is written in tasks 7 to 9
   - _Requirements: R2, R4_
 
-- [ ] 2. Fixtures
+- [x] 2. Fixtures
   - [ ] 2.1 Write fixtures A to I from the design under `tests/fixtures/`, each with a `README.md` that says it is original, synthetic, and under the repository license. Fixture F holds a text placeholder named `Protobuild.exe` that is never executed
   - [ ] 2.2 Add the fixture paths to the test helper
   - [ ] 2.3 Test that every fixture folder is listed in a table in `tests/fixtures/README.md` with the rules it is positive for

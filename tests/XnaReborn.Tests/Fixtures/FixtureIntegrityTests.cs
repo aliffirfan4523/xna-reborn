@@ -6,12 +6,12 @@ namespace XnaReborn.Tests.Fixtures;
 /// <summary>Checks that the fixture projects are well formed, self-consistent, and properly attributed.</summary>
 public partial class FixtureIntegrityTests
 {
-    private static readonly string[] _xmlExtensions = [".csproj", ".contentproj", ".spritefont"];
+    private static readonly string[] _xmlExtensions = [".csproj", ".contentproj", ".spritefont", ".projitems", ".shproj", ".config", ".definition"];
 
     [GeneratedRegex(@"^Project\(""\{[^}]+\}""\) = ""[^""]+"", ""(?<path>[^""]+)"", ""\{(?<guid>[^}]+)\}""", RegexOptions.Multiline)]
     private static partial Regex SolutionProjectLine();
 
-    public static IEnumerable<object[]> NameRows() => FixturePaths.NameRows();
+    public static IEnumerable<object[]> NameRows() => FixturePaths.EveryNameRows();
 
     private static IEnumerable<string> Files(string name) =>
         Directory.EnumerateFiles(FixturePaths.Of(name), "*", SearchOption.AllDirectories);
@@ -29,7 +29,7 @@ public partial class FixtureIntegrityTests
     public void Fixture_list_matches_folders_on_disk()
     {
         var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!).Order(StringComparer.Ordinal);
-        Assert.Equal(FixturePaths.AllNames.Order(StringComparer.Ordinal), onDisk);
+        Assert.Equal(FixturePaths.AllNames.Concat(FixturePaths.MonoGameNames).Order(StringComparer.Ordinal), onDisk);
     }
 
     [Theory]

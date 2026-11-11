@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <MonoGamePlatform>Windows</MonoGamePlatform>
+    <ProjectGuid>{7B1E5A10-2C3D-4E5F-8A6B-9C0D1E2F3A49}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Mg37SourceApis</RootNamespace>
+    <AssemblyName>Mg37SourceApis</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NetCode.cs" />
+    <Compile Include="Services.cs" />
+    <Compile Include="GlCode.cs" />
+    <Compile Include="UwpCode.cs" />
+    <Compile Include="Colors.cs" />
+    <Compile Include="SafeColors.cs" />
+  </ItemGroup>
+</Project>
