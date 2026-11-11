@@ -188,7 +188,8 @@ public sealed class ProjectMigrator
             }
 
             enabled.UnionWith(report.Findings
-                .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal))
+                .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal)
+                    && (state.Shims is null || !DefaultRewriters.ToolkitShimFallbackIds.Contains(f.RuleId, StringComparer.Ordinal)))
                 .Select(f => f.RuleId));
             if (state.Shims is null && read.Info.Language == SourceLanguage.CSharp)
             {
@@ -287,7 +288,7 @@ public sealed class ProjectMigrator
         // Shim library files go in early so they win a path clash with a same-named file from the source.
         if (state.Shims is not null)
         {
-            foreach (var shim in state.Shims.Generate(options.Target, state.Device, null, xactCatalog))
+            foreach (var shim in state.Shims.Generate(options.Target, state.Device, null, xactCatalog, projects.Any(p => p.Discovered.IsSharpDxToolkit)))
             {
                 state.Add(shim, []);
             }

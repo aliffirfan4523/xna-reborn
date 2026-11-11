@@ -65,11 +65,12 @@ public sealed partial class ShimProjectGenerator
     /// <param name="includeDevice">True to add the device stand-ins and the input layer (device-to-desktop tasks 7 and 8).</param>
     /// <param name="controls">The keys and tilt numbers of the device part. The shipped values when null.</param>
     /// <param name="xactCatalog">The text of <c>XactCatalog.g.cs</c> to add the XACT stand-in (audio-and-shaders tasks 8 and 9) with that catalog. No XACT files when null.</param>
+    /// <param name="includeSharpDx">True to add the SharpDX math stand-ins (<c>RectangleF</c>, <c>Color3</c>, <c>Color4</c>; sharpdx-toolkit task 14).</param>
     /// <returns>
     /// Four <see cref="ChangeKind.Created"/> changes under <c>XnaReborn.Compat/</c>, in a fixed order, followed by the
     /// device files and then the XACT files (each in a fixed order) when they are asked for.
     /// </returns>
-    public IReadOnlyList<FileChange> Generate(MonoGameTarget target, bool includeDevice = false, DeviceControlsModel? controls = null, string? xactCatalog = null)
+    public IReadOnlyList<FileChange> Generate(MonoGameTarget target, bool includeDevice = false, DeviceControlsModel? controls = null, string? xactCatalog = null, bool includeSharpDx = false)
     {
         var packages = _selector.Select(target);
         var project = new StringBuilder()
@@ -112,6 +113,11 @@ public sealed partial class ShimProjectGenerator
             ]);
         }
 
+        if (includeSharpDx)
+        {
+            files.Add(Create(ProjectName + "/" + ShimSharpDxSources.FileName, ShimSharpDxSources.Source));
+        }
+
         if (xactCatalog is not null)
         {
             files.AddRange(XactShimSources.Files.Select(f => Create(ProjectName + "/Xact/" + f.Name, f.Text)));
@@ -143,6 +149,11 @@ public sealed partial class ShimProjectGenerator
         if (StoragePattern().IsMatch(sourceText))
         {
             uses.Add(new ShimUse(StorageNamespace, FindTypes(sourceText, _storageTypes)));
+        }
+
+        if (SharpDxPattern().IsMatch(sourceText) && FindTypes(sourceText, ShimSharpDxSources.Types) is { Length: > 0 } sharpDxTypes)
+        {
+            uses.Add(new ShimUse(ShimSharpDxSources.Namespace, sharpDxTypes));
         }
 
         foreach (var (ns, pattern, types) in _deviceNamespaces)
@@ -209,6 +220,9 @@ public sealed partial class ShimProjectGenerator
 
     [GeneratedRegex(@"Microsoft\s*\.\s*Xna\s*\.\s*Framework\s*\.\s*Storage\b", RegexOptions.CultureInvariant)]
     private static partial Regex StoragePattern();
+
+    [GeneratedRegex(@"^\s*using\s+SharpDX\s*;", RegexOptions.CultureInvariant | RegexOptions.Multiline)]
+    private static partial Regex SharpDxPattern();
 
     [GeneratedRegex(@"Microsoft\s*\.\s*Xna\s*\.\s*Framework\s*\.\s*GamerServices\b", RegexOptions.CultureInvariant)]
     private static partial Regex GamerServicesPattern();

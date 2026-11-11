@@ -9,6 +9,7 @@ using XnaReborn.Migrator.Content;
 using XnaReborn.Migrator.Output;
 using XnaReborn.Migrator.Planning;
 using XnaReborn.Migrator.Projects;
+using XnaReborn.Migrator.Shims;
 using XnaReborn.Migrator.Source;
 
 namespace XnaReborn.Migrator.Upgrade;
@@ -29,6 +30,9 @@ internal sealed class LegacyMonoGameMigrator
 
     // Manual and Unsupported source rules that only get a marker above the using (no plan item, so enabled by their finding).
     private static readonly string[] _markerRuleIds = ["MG028", "MG029", "MG030", "MG031"];
+
+    // MG029 (GamerServices) gets no marker when the shims are on: XnaReborn.Compat has the stand-ins (monogame-upgrade task 13.2).
+    private const string _gamerServicesRuleId = "MG029";
 
     private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
@@ -74,7 +78,7 @@ internal sealed class LegacyMonoGameMigrator
         var plan = new MigrationPlanner().CreatePlan(report, options);
         progress?.Report(new MigrationProgress(_stagePlan, 1, 1, null));
 
-        var state = new State();
+        var state = new State { ShimsEnabled = options.EnableShims };
         var reader = new ProjectReader(_fileSystem);
         var versions = PackageVersions.Default;
         var generator = new LegacyMonoGameProjectGenerator();
@@ -99,7 +103,8 @@ internal sealed class LegacyMonoGameMigrator
             var items = plan.Items.Where(p => string.Equals(p.Id, p.RuleId + ":" + discovered.RelativePath, StringComparison.Ordinal)).ToList();
             var enabled = items.Select(p => p.RuleId).ToHashSet(StringComparer.Ordinal);
             enabled.UnionWith(report.Findings
-                .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal))
+                .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal)
+                    && !(options.EnableShims && string.Equals(f.RuleId, _gamerServicesRuleId, StringComparison.Ordinal)))
                 .Select(f => f.RuleId));
             if (!sdkStyle)
             {
@@ -113,6 +118,7 @@ internal sealed class LegacyMonoGameMigrator
 
             if (work.SdkStyle)
             {
+                work.Target = text.Contains("MonoGame.Framework.WindowsDX", StringComparison.OrdinalIgnoreCase) ? MonoGameTarget.WindowsDX : MonoGameTarget.DesktopGL;
                 var bump = SdkProjectBumper.Bump(text, versions);
                 state.Notes.AddRange(bump.Notes.Select(n => $"{discovered.RelativePath}: {n}"));
                 state.Add(
@@ -170,16 +176,6 @@ internal sealed class LegacyMonoGameMigrator
             AddToolManifest(migrated, root, versions, state);
         }
 
-        var isSolutionInput = string.Equals(Path.GetExtension(sourcePath), ".sln", StringComparison.OrdinalIgnoreCase);
-        if (migrated.Count >= 2 || isSolutionInput)
-        {
-            state.Add(
-                new SolutionGenerator().Generate(
-                    ProjectMigrator.SolutionName(sourcePath, root, isSolutionInput),
-                    migrated.Select(w => w.Read.Info.Path).ToList()),
-                []);
-        }
-
         var engine = new SourceRewriteEngine(_rewriters);
         var files = migrated.SelectMany(w => SourceFiles(w, root, state, cancellationToken)).ToList();
         for (var i = 0; i < files.Count; i++)
@@ -198,6 +194,18 @@ internal sealed class LegacyMonoGameMigrator
             progress?.Report(new MigrationProgress(_stageContent, i + 1, migrated.Count, migrated[i].Discovered.RelativePath));
         }
 
+        AddShimLibrary(migrated, state);
+
+        var isSolutionInput = string.Equals(Path.GetExtension(sourcePath), ".sln", StringComparison.OrdinalIgnoreCase);
+        if (migrated.Count >= 2 || isSolutionInput)
+        {
+            state.Add(
+                new SolutionGenerator().Generate(
+                    ProjectMigrator.SolutionName(sourcePath, root, isSolutionInput),
+                    migrated.Select(w => w.Read.Info.Path).Concat(state.ShimUses.Count == 0 ? [] : [ShimProjectGenerator.ProjectPath]).ToList()),
+                []);
+        }
+
         AddManualNotes(report, skippedProjects, state);
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -210,7 +218,7 @@ internal sealed class LegacyMonoGameMigrator
 
         if (options.DryRun)
         {
-            var dry = ManifestBuilder.Build(report.CatalogName, completed: false, changes, state.RuleIdsByPath, null, version);
+            var dry = ManifestBuilder.Build(report.CatalogName, completed: false, changes, state.RuleIdsByPath, null, version, shims: state.ShimManifest(changes));
             progress?.Report(new MigrationProgress(_stageDone, 1, 1, null));
             return new MigrationResult(finalPlan, changes, dry, Completed: false);
         }
@@ -222,7 +230,7 @@ internal sealed class LegacyMonoGameMigrator
             await new OutputWriter().WriteAsync(session, root, changes, cancellationToken).ConfigureAwait(false);
 
             cancellationToken.ThrowIfCancellationRequested();
-            var manifest = ManifestBuilder.Build(report.CatalogName, completed: true, changes, state.RuleIdsByPath, null, version);
+            var manifest = ManifestBuilder.Build(report.CatalogName, completed: true, changes, state.RuleIdsByPath, null, version, shims: state.ShimManifest(changes));
             await ProjectMigrator.WriteManifestFilesAsync(session.StagingFolder, manifest, notes, cancellationToken).ConfigureAwait(false);
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -235,6 +243,49 @@ internal sealed class LegacyMonoGameMigrator
         {
             await TryWriteIncompleteManifestAsync(session, report, changes, state, notes, version).ConfigureAwait(false);
             throw;
+        }
+    }
+
+    // Adds XnaReborn.Compat (GamerServices only) when a migrated source file uses it, and references it from the projects that do.
+    // shortcut: no Microsoft.Xna.Framework.Net stand-ins, the XNA Net API (sessions, lobbies) does not fit the offline pattern; MG028 keeps its marker. Upgrade if a real game needs a local-only session.
+    private void AddShimLibrary(List<Work> migrated, State state)
+    {
+        if (state.ShimUses.Count == 0)
+        {
+            return;
+        }
+
+        var users = state.ShimUses.Select(u => u.Project).Distinct().ToList();
+        var target = users.Select(w => w.Target).Distinct().Count() == 1 ? users[0].Target : MonoGameTarget.DesktopGL;
+        if (migrated.Select(w => w.Target).Distinct().Count() > 1)
+        {
+            state.Notes.Add($"{ShimProjectGenerator.ProjectPath}: the migrated projects use different MonoGame platforms, so the shim library uses {target}. A project on the other platform may need its own copy.");
+        }
+
+        foreach (var shim in new ShimProjectGenerator(new PackageSelector()).Generate(target))
+        {
+            state.Add(shim, []);
+        }
+
+        foreach (var work in users)
+        {
+            var path = work.Read.Info.Path;
+            var index = state.Changes.FindIndex(c => string.Equals(c.RelativePath, path, StringComparison.Ordinal));
+            if (index < 0)
+            {
+                continue;
+            }
+
+            var change = state.Changes[index];
+            if (change.NewText is null)
+            {
+                // An unchanged SDK-style project was only copied. It needs real text to get the reference.
+                var original = _fileSystem.ReadAllText(work.Discovered.FullPath);
+                change = new FileChange(path, ChangeKind.Modified, original, original, null);
+            }
+
+            state.Changes[index] = ShimProjectGenerator.AddToProject(change, ProjectDirectory(work), reference: true);
+            state.ShimReferencedBy.Add(path.Replace('\\', '/'));
         }
     }
 
@@ -400,6 +451,15 @@ internal sealed class LegacyMonoGameMigrator
             state.Changes.Add(new FileChange(file.RelativePath, ChangeKind.Copied, null, null, null, file.FullPath));
             state.Notes.Add($"{file.RelativePath}: this file is not valid UTF-8, so it was copied unchanged and no source rewrite was applied.");
             return;
+        }
+
+        if (state.ShimsEnabled)
+        {
+            // Only GamerServices: MonoGame 3.8 has its own Storage, so the Storage stand-ins would clash.
+            foreach (var use in ShimProjectGenerator.Scan(text).Where(u => u.Namespace == ShimProjectGenerator.GamerServicesNamespace))
+            {
+                state.ShimUses.Add((file.Work, new ManifestShimUse(file.RelativePath, use.Namespace, use.Types)));
+            }
         }
 
         var result = engine.Rewrite(file.RelativePath, text, file.Work.Read.Info.DefineConstants, file.Work.Enabled);
@@ -652,6 +712,21 @@ internal sealed class LegacyMonoGameMigrator
         public List<FileChange> Changes { get; } = [];
 
         public List<string> Notes { get; } = [];
+
+        public bool ShimsEnabled { get; init; }
+
+        public List<(Work Project, ManifestShimUse Use)> ShimUses { get; } = [];
+
+        public SortedSet<string> ShimReferencedBy { get; } = new(StringComparer.Ordinal);
+
+        public ManifestShims? ShimManifest(IReadOnlyList<FileChange> changes) =>
+            ShimUses.Count == 0
+                ? null
+                : new ManifestShims(
+                    ShimProjectGenerator.ProjectPath,
+                    changes.Where(c => c.RelativePath.StartsWith(ShimProjectGenerator.ProjectName + "/", StringComparison.Ordinal)).Select(c => c.RelativePath).Order(StringComparer.Ordinal).ToList(),
+                    ShimReferencedBy.ToList(),
+                    ShimUses.Select(u => u.Use).OrderBy(u => u.File, StringComparer.Ordinal).ThenBy(u => u.Namespace, StringComparer.Ordinal).ToList());
 
         public Dictionary<string, IReadOnlyList<string>> RuleIdsByPath { get; } = new(StringComparer.Ordinal);
 

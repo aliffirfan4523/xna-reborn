@@ -37,7 +37,7 @@ A project that uses the SharpDX Toolkit 2.x (`SharpDX.Toolkit.*` references or t
 
 Covered: the project file, the namespaces (`SharpDX.Toolkit`, `.Graphics`, `.Content`, `.Input` and the math types of `SharpDX`), the `KeyboardManager`, right-handed `Matrix` factories, `MathUtil`, the graphics state collections and `Set*State` calls, `BackBuffer` size, `ToDisposeContent`, and the content (`TkFont` fonts, textures, `.fbx` and `.x` models, `.wav` sounds). Everything else is marked in the source with `// XNAREBORN: SDXnnn:` and listed in the manifest.
 
-Not covered: Toolkit effects (`.fx`) and compiled `.tkb` files, raw `SharpDX.Direct3D11`, `DXGI`, `Direct2D1` and `XAudio2` code, left-handed matrices, `RectangleF` and `Color4`, mouse and touch managers, `GameSystem`, `GeometricPrimitive`, and Windows Store, Windows Phone and UWP projects (refused, no copy is made). A migrated Toolkit game was built but never run. Details and the results on real projects: `.kiro/specs/sharpdx-toolkit/design.md`.
+With the compatibility shims on, `RectangleF`, `Color3` and `Color4` get small stand-ins in `XnaReborn.Compat`. Not covered: Toolkit effects (`.fx`) and compiled `.tkb` files, raw `SharpDX.Direct3D11`, `DXGI`, `Direct2D1` and `XAudio2` code, left-handed matrices, mouse and touch managers, `GameSystem`, `GeometricPrimitive`, and Windows Store, Windows Phone and UWP projects (refused, no copy is made). A migrated Toolkit game was built but never run. Details and the results on real projects: `.kiro/specs/sharpdx-toolkit/design.md`.
 ## Safety
 
 The original XNA project is never modified. All output goes to a new folder.

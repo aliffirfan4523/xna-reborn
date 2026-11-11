@@ -84,9 +84,9 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - [ ] 13.5 Run `dotnet build`, `dotnet test` and `dotnet format --verify-no-changes` on master. Stop for owner review before task 14.
   - _Requirements: R1 to R9_
 
-- [ ] 14. Stretch: compatibility stand-ins
+- [x] 14. Stretch: compatibility stand-ins
   - Only start after the checkpoint shows that `RectangleF`, `Color4` or `GameSystem` appear often.
-  - [ ] 14.1 Generate small stand-in types for the most frequent unmapped SharpDX types through the existing `Shims` generator, behind `MigrationOptions.EnableShims`, off by default. Positive and negative tests like the Storage shims. Link SDX034/SDX035 to this task only if it ships.
+  - [x] 14.1 Generate small stand-in types for the most frequent unmapped SharpDX types through the existing `Shims` generator, behind `MigrationOptions.EnableShims`, off by default. Positive and negative tests like the Storage shims. Link SDX034/SDX035 to this task only if it ships.
   - _Requirements: R4, R9_
 
 - [ ] 15. Final checkpoint
