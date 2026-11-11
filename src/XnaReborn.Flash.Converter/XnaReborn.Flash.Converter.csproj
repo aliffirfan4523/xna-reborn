@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Converts Flash (AS3 + Flixel 2.x) source projects into a MonoGame project copy. Never modifies the original.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XnaReborn.Flash.Analyzer\XnaReborn.Flash.Analyzer.csproj" />
+    <ProjectReference Include="..\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="XnaReborn.Flash.Tests" />
+  </ItemGroup>
+
+</Project>

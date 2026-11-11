@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A C# port of the Flixel 2.x API and a small AS3 runtime, for converted Flash games.</Description>
+    <RootNamespace>org.flixel</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="XnaReborn.Flixel.Tests" />
+  </ItemGroup>
+
+</Project>

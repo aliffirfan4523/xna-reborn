@@ -1,0 +1,11 @@
+{
+  "kind": "Flash",
+  "projectFile": null,
+  "sourceRoots": ["."],
+  "sourceFiles": ["src/BundledGame.as", "src/org/flixel/FlxG.as", "src/org/flixel/FlxGame.as"],
+  "entryClasses": ["BundledGame"],
+  "usesFlixel": true,
+  "bundlesFlixel": true,
+  "flixelVersion": "2.55",
+  "diagnostics": 0
+}
