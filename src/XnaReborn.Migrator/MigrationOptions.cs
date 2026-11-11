@@ -13,6 +13,10 @@ namespace XnaReborn.Migrator;
 /// <param name="AllowWindowResize">When true, the migrated game's window can be resized and the game keeps its own resolution, scaled to fit. Off by default.</param>
 /// <param name="FullscreenToggle">When true, Alt+Enter switches between a window and borderless fullscreen at the game's own resolution, scaled to fit. Off by default.</param>
 /// <param name="HighDpi">When true, the game process asks Windows for per-monitor DPI awareness so the window is not blurred by system scaling. Off by default.</param>
+/// <param name="LegacyTarget">
+/// For an old MonoGame project: the platform package to use instead of the one chosen from the project's old platform
+/// (DirectX Windows becomes WindowsDX, everything else DesktopGL). Null keeps that choice. Ignored for XNA projects.
+/// </param>
 public sealed record MigrationOptions(
     string OutputFolder,
     MonoGameTarget Target,
@@ -22,4 +26,5 @@ public sealed record MigrationOptions(
     bool SubstituteFonts = false,
     bool AllowWindowResize = false,
     bool FullscreenToggle = false,
-    bool HighDpi = false);
+    bool HighDpi = false,
+    MonoGameTarget? LegacyTarget = null);

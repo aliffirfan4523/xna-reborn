@@ -68,11 +68,11 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - Review of every report snapshot
   - _Requirements: R1 to R5, R11, R12_
 
-- [ ] 11. Project generation
-  - [ ] 11.1 `LegacyMonoGameProjectGenerator` (mode of `SdkCsprojGenerator`): target from platform, compile and content items, filtered `DefineConstants`, project references, packages from `PackageSelector`, everything in R6.4 dropped. Snapshot per fixture A, B, C, G. Links: MG001 to MG006, MG011, MG017 to MG020
-  - [ ] 11.2 Bump path for projects already on 3.8.x (fixture G): update the target framework, package versions, and tool manifest. Links: MG008, MG009
-  - [ ] 11.3 `PackagesConfigMapper`: non-MonoGame entries to `PackageReference`; MonoGame and SharpDX entries dropped; unmappable entries to manual work; no network. Links: MG007
-  - [ ] 11.4 Planner: plan items per project, exclusions, dry run
+- [x] 11. Project generation
+  - [x] 11.1 `LegacyMonoGameProjectGenerator` (mode of `SdkCsprojGenerator`): target from platform, compile and content items, filtered `DefineConstants`, project references, packages from `PackageSelector`, everything in R6.4 dropped. Snapshot per fixture A, B, C, G. Links: MG001 to MG006, MG011, MG017 to MG020
+  - [x] 11.2 Bump path for projects already on 3.8.x (fixture G): update the target framework, package versions, and tool manifest. Links: MG008, MG009
+  - [x] 11.3 `PackagesConfigMapper`: non-MonoGame entries to `PackageReference`; MonoGame and SharpDX entries dropped; unmappable entries to manual work; no network. Links: MG007
+  - [x] 11.4 Planner: plan items per project, exclusions, dry run
   - _Requirements: R6, R11_
 
 - [ ] 12. Content upgrade
@@ -89,11 +89,11 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 13.4 Marker for Manual source findings (MG030, MG031) through `MarkerInserter`
   - _Requirements: R8_
 
-- [ ] 14. Platform projects and solutions
-  - [ ] 14.1 Platform projects (MG012 to MG016) become `Skipped` plan items; files copied unchanged; manifest lists them with the reason
-  - [ ] 14.2 Shared project linking from `.projitems` into the migrated desktop project
-  - [ ] 14.3 Solution generation lists only projects written as SDK-style; DesktopGL project from shared code only after confirmation
-  - [ ] 14.4 Tests on fixture E: platform projects skipped, shared code linked, solution lists one project
+- [x] 14. Platform projects and solutions
+  - [x] 14.1 Platform projects (MG012 to MG016) become `Skipped` plan items; files copied unchanged; manifest lists them with the reason
+  - [x] 14.2 Shared project linking from `.projitems` into the migrated desktop project
+  - [x] 14.3 Solution generation lists only projects written as SDK-style; DesktopGL project from shared code only after confirmation
+  - [x] 14.4 Tests on fixture E: platform projects skipped, shared code linked, solution lists one project
   - _Requirements: R9_
 
 - [ ] 15. Build and run
