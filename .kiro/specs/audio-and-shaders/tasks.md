@@ -24,19 +24,19 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [x] 3.3 Tests: positive (a regex that matches `xna40-effects`), negative (a regex that matches only inside a comment, and a file over `maxBytes`), loader rejects a missing `regex`, hash-unchanged test. Do not add catalog rules in this task.
   - _Requirements: R15.3, R16.2_
 
-- [ ] 4. Planner, conversion mode and compiled-bank fallback
+- [ ] 4. Planner, conversion mode and compiled-bank fallback (only 4.2 is done: `XactPlanner` exists but nothing calls it yet)
   - [ ] 4.1 Add `XactMode` and `StreamingWavesAsSong` to `MigrationOptions` (defaults per design).
-  - [ ] 4.2 Implement `XactPlanner` in `XnaReborn.Migrator/Audio`: asset names, shared files, kinds, missing waves, compression preset notes, findings.
+  - [x] 4.2 Implement `XactPlanner` in `XnaReborn.Migrator/Audio`: asset names, shared files, kinds, missing waves, compression preset notes, findings.
   - [ ] 4.3 Change `ContentConverter` classification as described in the design: convert when a parsable `.xap` exists; otherwise copy and mark manual work. In `Auto` with compiled banks and no `.xap`, add the Warning with the MonoGame limits (PCM and ADPCM only, no streaming). When both exist, copy compiled files and say they are ignored.
   - [ ] 4.4 Tests for each mode and each case in R2 (positive and negative); planner tests for R3 (including the shared file and the missing file).
   - [ ] 4.5 Link catalog rule `NEW-A1` in the rule change table to this task (the catalog edit itself is task 17).
   - _Requirements: R2, R3_
 
-- [ ] 5. Catalog generator
-  - [ ] 5.1 Implement `XactCatalogWriter` (design: Catalog) with unit conversion, deterministic ordering and invariant-culture float formatting.
-  - [ ] 5.2 Unsupported features: collect them from the reader list and from `xact-features.json`; write them into the catalog per cue and into the report as Warnings (`NEW-A3`) and Info (`NEW-A2`).
-  - [ ] 5.3 Tests: Verify snapshot of the `xna40-xact` catalog; determinism (two runs equal); unit conversion table test (0 dB = 1.0, -1200 = 0.251...); negative test where a project without cues writes an empty catalog; a stem used twice reports a conflict.
-  - [ ] 5.4 Test that the generated file compiles (compile it with Roslyn together with the shim data types from task 8; until task 8 lands, compile it against a test stub of those types).
+- [x] 5. Catalog generator
+  - [x] 5.1 Implement `XactCatalogWriter` (design: Catalog) with unit conversion, deterministic ordering and invariant-culture float formatting.
+  - [x] 5.2 Unsupported features: collect them from the reader list and from `xact-features.json`; write them into the catalog per cue and into the report as Warnings (`NEW-A3`) and Info (`NEW-A2`).
+  - [x] 5.3 Tests: Verify snapshot of the `xna40-xact` catalog; determinism (two runs equal); unit conversion table test (0 dB = 1.0, -1200 = 0.251...); negative test where a project without cues writes an empty catalog; a stem used twice reports a conflict.
+  - [x] 5.4 Test that the generated file compiles (compile it with Roslyn together with the shim data types from task 8; until task 8 lands, compile it against a test stub of those types).
   - _Requirements: R4, R16.6_
 
 - [ ] 6. Content entries and audio tool check
