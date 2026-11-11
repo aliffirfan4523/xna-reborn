@@ -17,7 +17,7 @@ Classification: AutoFixable 0, Manual 0, Unsupported 0
 
 ## No XNA project found
 
-Found 1 project(s), but none use XNA.
+Found 1 project(s), but none use XNA or MonoGame.
 
 ## Findings
 

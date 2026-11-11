@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using XnaReborn.Analyzer.IO;
+using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Models;
 
 namespace XnaReborn.Analyzer.Discovery;
@@ -52,6 +53,7 @@ public sealed partial class ProjectDiscovery
 
         var diagnostics = new List<Diagnostic>();
         var candidates = new List<string>();
+        var protobuild = new List<string>();
         string root;
 
         if (_fileSystem.DirectoryExists(full))
@@ -59,7 +61,7 @@ public sealed partial class ProjectDiscovery
             root = full;
             var csprojs = new List<string>();
             var slns = new List<string>();
-            Walk(full, root, csprojs, slns, diagnostics, ct);
+            Walk(full, root, csprojs, slns, protobuild, diagnostics, ct);
             foreach (var sln in slns)
             {
                 candidates.AddRange(ReadSolution(sln, root, diagnostics));
@@ -100,7 +102,7 @@ public sealed partial class ProjectDiscovery
             }
 
             var relative = Rel(root, candidate);
-            projects.Add(new DiscoveredProject(relative, candidate, CheckXna(candidate, relative, diagnostics)));
+            projects.Add(new DiscoveredProject(relative, candidate, Classify(candidate, relative, root, diagnostics)));
         }
 
         projects.Sort((a, b) =>
@@ -110,19 +112,30 @@ public sealed partial class ProjectDiscovery
         });
 
         var unique = diagnostics.Distinct().ToList();
-        return new DiscoveryResult(root, projects, ReasonFor(full, projects, diagnostics), unique);
+        return new DiscoveryResult(root, projects, ReasonFor(full, projects, diagnostics, protobuild), unique);
     }
 
-    private static string? ReasonFor(string full, List<DiscoveredProject> projects, List<Diagnostic> diagnostics)
+    private static string? ReasonFor(string full, List<DiscoveredProject> projects, List<Diagnostic> diagnostics, List<string> protobuild)
     {
-        if (projects.Any(p => p.IsXna))
+        if (projects.Any(p => p.Family is ProjectFamily.Xna or ProjectFamily.MonoGameLegacy))
         {
             return null;
         }
 
+        if (projects.Any(p => p.Family == ProjectFamily.MonoGameCurrent))
+        {
+            return "All MonoGame projects are already current. Nothing to migrate.";
+        }
+
         if (projects.Count > 0)
         {
-            return $"Found {projects.Count} project(s), but none use XNA.";
+            return $"Found {projects.Count} project(s), but none use XNA or MonoGame.";
+        }
+
+        if (protobuild.Count > 0)
+        {
+            var shown = string.Join(", ", protobuild.Take(3));
+            return $"Found Protobuild files ({shown}) but no .csproj files. Generate the project files with the Protobuild version this project used, outside XNA Reborn, then open the generated folder.";
         }
 
         var isSolution = Path.GetExtension(full).Equals(".sln", StringComparison.OrdinalIgnoreCase)
@@ -132,7 +145,7 @@ public sealed partial class ProjectDiscovery
             : "No .csproj files found.";
     }
 
-    private void Walk(string directory, string root, List<string> csprojs, List<string> slns, List<Diagnostic> diagnostics, CancellationToken ct)
+    private void Walk(string directory, string root, List<string> csprojs, List<string> slns, List<string> protobuild, List<Diagnostic> diagnostics, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
         IReadOnlyList<string> solutionFiles;
@@ -143,6 +156,7 @@ public sealed partial class ProjectDiscovery
             solutionFiles = _fileSystem.EnumerateFiles(directory, "*.sln");
             projectFiles = _fileSystem.EnumerateFiles(directory, "*.csproj");
             subdirectories = _fileSystem.EnumerateDirectories(directory);
+            AddProtobuildFiles(directory, root, protobuild);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -162,7 +176,7 @@ public sealed partial class ProjectDiscovery
                 continue;
             }
 
-            Walk(sub, root, csprojs, slns, diagnostics, ct);
+            Walk(sub, root, csprojs, slns, protobuild, diagnostics, ct);
         }
     }
 
@@ -210,18 +224,39 @@ public sealed partial class ProjectDiscovery
         return found;
     }
 
-    private bool CheckXna(string projectPath, string relative, List<Diagnostic> diagnostics)
+    // Protobuild keeps its project definitions in Build/Projects/*.definition and its launcher in Protobuild.exe. Only names are read.
+    private void AddProtobuildFiles(string directory, string root, List<string> protobuild)
+    {
+        protobuild.AddRange(_fileSystem.EnumerateFiles(directory, "Protobuild.exe").Select(f => Rel(root, f)));
+        var name = Path.GetFileName(directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        var parent = Path.GetFileName(Path.GetDirectoryName(directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)) ?? string.Empty);
+        if (name.Equals("Projects", StringComparison.OrdinalIgnoreCase) && parent.Equals("Build", StringComparison.OrdinalIgnoreCase))
+        {
+            protobuild.AddRange(_fileSystem.EnumerateFiles(directory, "*.definition").Select(f => Rel(root, f)));
+        }
+    }
+
+    private ProjectFamily Classify(string projectPath, string relative, string root, List<Diagnostic> diagnostics)
     {
         try
         {
             using var stream = _fileSystem.OpenRead(projectPath);
             var document = XDocument.Load(stream);
-            return XnaProjectDetector.IsXna(document);
+
+            // An unreadable packages.config is reported by ProjectReader; here it only means no extra signal.
+            var packages = PackagesConfigReader.Read(_fileSystem, Path.GetDirectoryName(projectPath) ?? root, root).Packages;
+            var family = MonoGameProjectDetector.Classify(document, packages);
+            if (family == ProjectFamily.Xna && MonoGameProjectDetector.IsMonoGame(document, packages))
+            {
+                diagnostics.Add(new Diagnostic("ANA008", $"The project references both XNA and MonoGame ({MonoGameProjectDetector.DescribeMix(document, packages)}). It is treated as an XNA project.", relative));
+            }
+
+            return family;
         }
         catch (Exception ex) when (ex is System.Xml.XmlException or IOException or UnauthorizedAccessException)
         {
             diagnostics.Add(new Diagnostic("ANA001", $"Project file could not be read: {ex.Message}", relative));
-            return false;
+            return ProjectFamily.Other;
         }
     }
 }

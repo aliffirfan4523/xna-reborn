@@ -74,7 +74,7 @@ public sealed class ProjectAnalyzerTests : IDisposable
         Assert.Empty(report.Projects);
         Assert.Empty(report.Findings);
         Assert.Empty(report.TriggeredRules);
-        Assert.Equal("Found 1 project(s), but none use XNA.", report.NoProjectReason);
+        Assert.Equal("Found 1 project(s), but none use XNA or MonoGame.", report.NoProjectReason);
         Assert.Equal(100, report.Score);
         Assert.Equal(100, report.ProjectedScore);
         AssertCountsComplete(report);

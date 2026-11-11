@@ -22,7 +22,7 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 3.4 Catalog loader: reject duplicate ids across catalogs loaded together
   - _Requirements: R3, R4_
 
-- [ ] 4. Detection
+- [x] 4. Detection
   - [ ] 4.1 `MonoGameProjectDetector` and `DiscoveredProject.Family`; `DiscoveryResult.MonoGameProjects`
   - [ ] 4.2 `MonoGameVersionDetector` with the signal table, confidence, and Diagnostic `ANA009` on conflict; platform detection from `HintPath` folder, `MonoGamePlatform`, and project type GUID
   - [ ] 4.3 `PackagesConfigReader`; `ProjectReader` follows `.projitems` imports

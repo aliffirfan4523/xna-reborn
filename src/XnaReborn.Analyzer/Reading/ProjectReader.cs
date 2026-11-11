@@ -66,9 +66,20 @@ public sealed class ProjectReader
         }
 
         var properties = ProjectXml.ReadProperties(document);
-        var items = ProjectXml.ReadItems(document);
         var diagnostics = new List<Diagnostic>();
         var projectDirectory = Path.GetDirectoryName(projectFullPath) ?? root;
+        var items = ProjectXml.ReadItems(document);
+        items.AddRange(ReadSharedItems(items, projectDirectory, root, diagnostics, ct));
+
+        var packagesResult = PackagesConfigReader.Read(_fileSystem, projectDirectory, root);
+        diagnostics.AddRange(packagesResult.Diagnostics);
+        var family = MonoGameProjectDetector.Classify(document, packagesResult.Packages);
+        var isMonoGame = family is ProjectFamily.MonoGameLegacy or ProjectFamily.MonoGameCurrent;
+        var monoGame = isMonoGame ? MonoGameVersionDetector.Detect(properties, items, packagesResult.Packages, relative) : null;
+        if (monoGame?.Conflict is not null)
+        {
+            diagnostics.Add(monoGame.Conflict);
+        }
 
         var version = XnaVersionDetector.Detect(properties, items, relative);
         if (version.Conflict is not null)
@@ -116,7 +127,7 @@ public sealed class ProjectReader
         var info = new ProjectInfo(
             relative,
             Prop(properties, "AssemblyName") is { Length: > 0 } name ? name : Path.GetFileNameWithoutExtension(projectFullPath),
-            XnaProjectDetector.IsXna(document),
+            family == ProjectFamily.Xna,
             version.Version,
             ParsePlatform(Prop(properties, "XnaPlatform")),
             Prop(properties, "XnaProfile"),
@@ -125,8 +136,74 @@ public sealed class ProjectReader
             compileFiles,
             defines,
             contentProjects,
-            contentItems);
-        return new ProjectReadResult(info, properties, items, diagnostics);
+            contentItems,
+            family,
+            monoGame?.Version,
+            monoGame?.Platform ?? MonoGamePlatform.Unknown);
+        return new ProjectReadResult(info, properties, items, diagnostics, packagesResult.Packages);
+    }
+
+    private const string _sharedItemsExtension = ".projitems";
+    private const string _thisFileDirectory = "$(MSBuildThisFileDirectory)";
+    private const int _maxSharedDepth = 5;
+
+    // Follows Import of .projitems files (shared projects) and returns their items with paths made relative to the project folder.
+    private List<ProjectItem> ReadSharedItems(List<ProjectItem> items, string projectDirectory, string root, List<Diagnostic> diagnostics, CancellationToken ct)
+    {
+        var result = new List<ProjectItem>();
+        var visited = new HashSet<string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+        foreach (var import in items.Where(IsSharedImport))
+        {
+            var native = ProjectXml.ToNative(import.Include.Replace(_thisFileDirectory, string.Empty, StringComparison.OrdinalIgnoreCase));
+            CollectShared(Path.GetFullPath(Path.Combine(projectDirectory, native)), projectDirectory, root, 0, visited, result, diagnostics, ct);
+        }
+
+        return result;
+    }
+
+    private static bool IsSharedImport(ProjectItem item) =>
+        item.ItemType == "Import" && item.Include.Trim().EndsWith(_sharedItemsExtension, StringComparison.OrdinalIgnoreCase);
+
+    private void CollectShared(string full, string projectDirectory, string root, int depth, HashSet<string> visited, List<ProjectItem> result, List<Diagnostic> diagnostics, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if (depth > _maxSharedDepth || !visited.Add(full))
+        {
+            return;
+        }
+
+        XDocument shared;
+        try
+        {
+            shared = ProjectXml.Load(_fileSystem, full);
+        }
+        catch (Exception ex) when (ex is XmlException or IOException or UnauthorizedAccessException)
+        {
+            diagnostics.Add(new Diagnostic("ANA012", $"Shared project items could not be read: {ex.Message}", ProjectXml.Rel(root, full)));
+            return;
+        }
+
+        var sharedDirectory = Path.GetDirectoryName(full) ?? projectDirectory;
+        foreach (var item in ProjectXml.ReadItems(shared))
+        {
+            if (IsSharedImport(item))
+            {
+                var native = ProjectXml.ToNative(item.Include.Replace(_thisFileDirectory, string.Empty, StringComparison.OrdinalIgnoreCase));
+                CollectShared(Path.GetFullPath(Path.Combine(sharedDirectory, native)), projectDirectory, root, depth + 1, visited, result, diagnostics, ct);
+            }
+            else if (item.ItemType != "Import")
+            {
+                var include = item.Include.Replace(_thisFileDirectory, string.Empty, StringComparison.OrdinalIgnoreCase);
+                var expanded = item.ItemType == "Compile"
+                    ? ProjectXml.ExpandCompile(_fileSystem, sharedDirectory, include, ct)
+                    : [include.Replace('\\', '/')];
+                foreach (var path in expanded)
+                {
+                    var absolute = Path.GetFullPath(Path.Combine(sharedDirectory, ProjectXml.ToNative(path)));
+                    result.Add(new ProjectItem(item.ItemType, ProjectXml.Rel(projectDirectory, absolute), item.Metadata));
+                }
+            }
+        }
     }
 
     private static ProjectReadResult Minimal(string projectFullPath, string relative, string reason)
@@ -143,7 +220,8 @@ public sealed class ProjectReader
             [],
             [],
             [],
-            []);
+            [],
+            ProjectFamily.Other);
         return new ProjectReadResult(
             info,
             new Dictionary<string, string>(),
