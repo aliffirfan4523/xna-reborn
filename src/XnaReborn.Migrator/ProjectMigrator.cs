@@ -12,6 +12,7 @@ using XnaReborn.Migrator.Projects;
 using XnaReborn.Migrator.Shims;
 using XnaReborn.Migrator.Source;
 using XnaReborn.Migrator.Source.Rewriters;
+using XnaReborn.Migrator.Upgrade;
 
 namespace XnaReborn.Migrator;
 
@@ -91,6 +92,14 @@ public sealed class ProjectMigrator
         progress?.Report(new MigrationProgress(_stageDiscover, 0, 1, null));
         var discovery = await new ProjectDiscovery(_fileSystem).DiscoverAsync(sourcePath, cancellationToken).ConfigureAwait(false);
         var xnaProjects = discovery.XnaProjects.ToList();
+        if (xnaProjects.Count == 0 && discovery.MonoGameProjects.Any())
+        {
+            // An old MonoGame upgrade has its own flow (monogame-upgrade spec). A folder with any XNA project keeps the XNA flow.
+            return await new LegacyMonoGameMigrator(_fileSystem, _rewriters)
+                .MigrateAsync(discovery, sourcePath, report, options, confirmedNonEmpty, progress, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         if (xnaProjects.Count == 0)
         {
             throw new InvalidOperationException(
@@ -340,7 +349,7 @@ public sealed class ProjectMigrator
         }
     }
 
-    private static string SolutionName(string sourcePath, string root, bool isSolutionInput)
+    internal static string SolutionName(string sourcePath, string root, bool isSolutionInput)
     {
         if (isSolutionInput)
         {
@@ -355,7 +364,7 @@ public sealed class ProjectMigrator
         return string.IsNullOrWhiteSpace(folder) ? "Solution" : folder;
     }
 
-    private static string MigratorVersion()
+    internal static string MigratorVersion()
     {
         var text = typeof(ProjectMigrator).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
         if (text is not null)
@@ -370,13 +379,13 @@ public sealed class ProjectMigrator
         return string.IsNullOrWhiteSpace(text) ? "0.1.0" : text.Trim();
     }
 
-    private static string Relative(string root, string full) =>
+    internal static string Relative(string root, string full) =>
         Path.GetRelativePath(root, full).Replace('\\', '/');
 
-    private static bool IsOutside(string relative) =>
+    internal static bool IsOutside(string relative) =>
         relative == ".." || relative.StartsWith("../", StringComparison.Ordinal) || Path.IsPathRooted(relative);
 
-    private static string ToNative(string path) =>
+    internal static string ToNative(string path) =>
         path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 
     private static Manifest BuildManifest(
@@ -387,7 +396,7 @@ public sealed class ProjectMigrator
         string version) =>
         ManifestBuilder.Build(report.CatalogName, completed, changes, state.RuleIdsByPath, null, version, state.Content, state.ShimManifest(changes), state.ModernManifest(changes));
 
-    private static async Task WriteManifestFilesAsync(
+    internal static async Task WriteManifestFilesAsync(
         string staging,
         Manifest manifest,
         IReadOnlyList<string> notes,
