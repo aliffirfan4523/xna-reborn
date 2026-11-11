@@ -42,20 +42,20 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 6.3 Positive and negative tests for both
   - _Requirements: R4_
 
-- [ ] 7. Catalog part A: project and package rules (MG001 to MG010)
+- [x] 7. Catalog part A: project and package rules (MG001 to MG010)
   - [ ] 7.1 Create `rules/monogame-upgrade.json` with `appliesTo: "monogame"` and a `scoring` section; add MG001 to MG006 and MG010. This task adds the file; it does not touch `rules/xna-to-monogame.json`
   - [ ] 7.2 Add MG007 to MG009
   - [ ] 7.3 A positive and a negative fixture test per rule, using the Pos column of the design and `mg38-current` as the default negative
   - [ ] 7.4 Update snapshot reports and review the diff
   - _Requirements: R4, R5, R12_
 
-- [ ] 8. Catalog part B: platform and reference rules (MG011 to MG022)
+- [x] 8. Catalog part B: platform and reference rules (MG011 to MG022)
   - [ ] 8.1 Add MG011 to MG016 (platform rules); a negative variant for each: a desktop project whose platform value is `DesktopGL`
   - [ ] 8.2 Add MG017 to MG022 (reference rules); the negative is a project with only `PackageReference` items
   - [ ] 8.3 Update snapshot reports and review the diff
   - _Requirements: R4, R5, R12_
 
-- [ ] 9. Catalog part C: content and source rules (MG023 to MG032)
+- [x] 9. Catalog part C: content and source rules (MG023 to MG032)
   - [ ] 9.1 Add MG023 to MG027 (content rules); negatives: an mgcb with `/platform:DesktopGL`, no references, and only standard pairs
   - [ ] 9.2 Add MG028 to MG032 (source rules); the negative is a file that imports `Microsoft.Xna.Framework` and uses `Color.Transparent`, and a file with a type named `Net` in another namespace
   - [ ] 9.3 Update snapshot reports and review the diff

@@ -100,6 +100,20 @@ public sealed class ProjectReader
             compileFiles.AddRange(ProjectXml.ExpandCompile(_fileSystem, projectDirectory, item.Include, ct));
         }
 
+        // An SDK-style project compiles every *.cs file under its folder without listing them.
+        // shortcut: Compile Remove and Compile Update items are not read, so a removed file is still scanned; read them if that causes false findings.
+        if (isMonoGame && MonoGameProjectDetector.IsSdkStyle(document) && !string.Equals(Prop(properties, "EnableDefaultCompileItems"), "false", StringComparison.OrdinalIgnoreCase))
+        {
+            var listed = new HashSet<string>(compileFiles, StringComparer.Ordinal);
+            foreach (var file in ProjectXml.ExpandCompile(_fileSystem, projectDirectory, "**/*.cs", ct).Where(f => !IsBuildOutput(f)))
+            {
+                if (listed.Add(file))
+                {
+                    compileFiles.Add(file);
+                }
+            }
+        }
+
         var defines = ProjectXml.PropertyElements(document)
             .Where(e => e.Name.LocalName == "DefineConstants")
             .SelectMany(e => e.Value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
@@ -146,6 +160,10 @@ public sealed class ProjectReader
             mgcbFiles.Count == 0 ? null : mgcbFiles.Select(m => m.Path).ToList());
         return new ProjectReadResult(info, properties, items, diagnostics, packagesResult.Packages, mgcbFiles);
     }
+
+    // bin and obj hold build output, never source (the SDK excludes them by default).
+    private static bool IsBuildOutput(string path) =>
+        path.Split('/').SkipLast(1).Any(s => s.Equals("bin", StringComparison.OrdinalIgnoreCase) || s.Equals("obj", StringComparison.OrdinalIgnoreCase));
 
     private const string _conventionalMgcb = "Content/Content.mgcb";
 

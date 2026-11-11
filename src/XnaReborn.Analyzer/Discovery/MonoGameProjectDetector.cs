@@ -71,8 +71,7 @@ internal static class MonoGameProjectDetector
     /// <param name="document">Parsed .csproj document.</param>
     internal static bool IsCurrent(XDocument document)
     {
-        var root = document.Root;
-        if (root is null || !IsSdkStyle(root))
+        if (!IsSdkStyle(document))
         {
             return false;
         }
@@ -151,7 +150,10 @@ internal static class MonoGameProjectDetector
         return normalized.Contains(@"MonoGame\v3.0\MonoGame.", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool IsSdkStyle(XElement root) =>
-        ((string?)root.Attribute("Sdk"))?.StartsWith("Microsoft.NET.Sdk", StringComparison.OrdinalIgnoreCase) == true
-        || root.Elements().Any(e => e.Name.LocalName == "Sdk" && ((string?)e.Attribute("Name"))?.StartsWith("Microsoft.NET.Sdk", StringComparison.OrdinalIgnoreCase) == true);
+    /// <summary>True when the project uses <c>Sdk="Microsoft.NET.Sdk"</c> (as an attribute or an Sdk element).</summary>
+    /// <param name="document">Parsed .csproj document.</param>
+    internal static bool IsSdkStyle(XDocument document) =>
+        document.Root is { } root
+        && (((string?)root.Attribute("Sdk"))?.StartsWith("Microsoft.NET.Sdk", StringComparison.OrdinalIgnoreCase) == true
+            || root.Elements().Any(e => e.Name.LocalName == "Sdk" && ((string?)e.Attribute("Name"))?.StartsWith("Microsoft.NET.Sdk", StringComparison.OrdinalIgnoreCase) == true));
 }

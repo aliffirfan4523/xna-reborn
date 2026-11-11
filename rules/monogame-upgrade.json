@@ -1,0 +1,366 @@
+{
+  "$schema": "../src/XnaReborn.Analyzer/Rules/RuleSchema.json",
+  "version": 1,
+  "name": "monogame-upgrade",
+  "appliesTo": "monogame",
+  "scoring": {
+    "severityWeights": {
+      "Info": 1,
+      "Warning": 3,
+      "Error": 8,
+      "Blocker": 20
+    },
+    "classificationFactors": {
+      "AutoFixable": 0.25,
+      "Manual": 1.0,
+      "Unsupported": 1.5
+    }
+  },
+  "rules": [
+    {
+      "id": "MG001",
+      "title": "Import of MonoGame.Content.Builder.targets (installer targets)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectItem", "itemType": "Import", "include": "*MonoGame.Content.Builder.targets" },
+      "explanation": "The project imports MonoGame.Content.Builder.targets from the MonoGame installer folder (MonoGame\\v3.0). The installer is gone and the file does not exist on a machine with only the .NET SDK, so the build stops with MSB4019 (imported project not found).",
+      "resolution": "The migrator writes an SDK-style project that references the MonoGame.Content.Builder.Task package instead of importing the installer targets.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG002",
+      "title": "Import of MonoGame.Common.props (installer props)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectItem", "itemType": "Import", "include": "*MonoGame.Common.props" },
+      "explanation": "The project imports MonoGame.Common.props from the MonoGame installer folder. The file sets MonoGameInstallDirectory for the old HintPath references. Without the installer the import fails with MSB4019.",
+      "resolution": "The migrator drops the import. The SDK-style project gets MonoGame from NuGet and needs no install folder.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG003",
+      "title": "MonoGame.Framework assembly reference (install folder or packages folder)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "MonoGame.Framework*" },
+      "explanation": "The project references MonoGame.Framework as an assembly with a HintPath into the installer folder or into a packages folder next to the solution. Neither exists on a clean machine, and the version is fixed by the path.",
+      "resolution": "The migrator replaces the reference with a PackageReference to MonoGame.Framework.DesktopGL or MonoGame.Framework.WindowsDX at 3.8.6.1, chosen from the old platform.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG004",
+      "title": "MonoGamePlatform build property",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "MonoGamePlatform" },
+      "explanation": "The project sets MonoGamePlatform, which only the old MonoGame installer targets read. It also drives the OutputPath pattern bin\\$(MonoGamePlatform)\\... and the platform that Content.mgcb is built for.",
+      "resolution": "The migrator drops the property. The target platform comes from the package that the migrated project references, and Content.mgcb gets the matching /platform.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG005",
+      "title": ".NET Framework 4.x target (TargetFrameworkVersion)",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "TargetFrameworkVersion", "matches": "^v[2-4]\\." },
+      "explanation": "The project targets .NET Framework 2.0 to 4.x. MonoGame 3.8.6.1 supports only modern .NET, and a .NET Framework project cannot reference the MonoGame 3.8 packages.",
+      "resolution": "The migrator writes TargetFramework net8.0 (DesktopGL) or net8.0-windows (WindowsDX).",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG006",
+      "title": "x86-only build (PlatformTarget x86)",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "PlatformTarget", "equals": "x86" },
+      "explanation": "The project builds for x86 only, as the 3.x templates did. The 3.8 desktop packages run as x64 or AnyCPU, and an x86 build of a net8.0 game needs a 32-bit runtime that most machines do not have.",
+      "resolution": "The migrator drops PlatformTarget so the game builds for the default architecture.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG007",
+      "title": "packages.config NuGet list",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "filePattern", "glob": "**/packages.config" },
+      "explanation": "The project lists its NuGet packages in packages.config. SDK-style projects use PackageReference items instead, and the MonoGame and SharpDX packages in the list are replaced by the 3.8.6.1 package.",
+      "resolution": "The migrator turns each package that is not MonoGame or SharpDX into a PackageReference with the same id and version. A package it cannot map is listed as manual work. It does not call the network.",
+      "migratorTask": "monogame-upgrade:11.3"
+    },
+    {
+      "id": "MG008",
+      "title": "MonoGame package pinned below 3.8.6.1",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": {
+        "type": "projectItem",
+        "itemType": "PackageReference",
+        "include": "MonoGame.Framework.*",
+        "metadata": { "name": "Version", "notEquals": "3.8.6.1" }
+      },
+      "explanation": "The project already uses a MonoGame 3.8 package but pins an older version. The 3.8 line fixes bugs and adds net8.0 support. Packages not named MonoGame.Framework.* (for example MonoGame.Extended) are not checked, because they have their own versions.",
+      "resolution": "The migrator updates the MonoGame package versions, the target framework and the dotnet-mgcb tool manifest to 3.8.6.1.",
+      "migratorTask": "monogame-upgrade:11.2"
+    },
+    {
+      "id": "MG009",
+      "title": "Older .NET target (netcoreapp3.1, net5.0, net6.0, net7.0)",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Project",
+      "match": { "type": "projectProperty", "name": "TargetFramework", "matches": "^(netcoreapp3\\.1|net[5-7]\\.0)" },
+      "explanation": "The project targets a .NET version that is out of support. MonoGame 3.8.2 and later build for net8.0.",
+      "resolution": "The migrator sets the target framework to net8.0 or net8.0-windows.",
+      "migratorTask": "monogame-upgrade:11.2"
+    },
+    {
+      "id": "MG010",
+      "title": "Protobuild project definitions",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Project",
+      "match": { "type": "filePattern", "glob": "**/Protobuild.exe" },
+      "explanation": "The project comes from a repository that generates its project files with Protobuild. MonoGame removed Protobuild in 3.8. XNA Reborn never runs Protobuild or any program from your folder, so it cannot generate the missing project files.",
+      "resolution": "Generate the project files with the Protobuild version the project used, outside XNA Reborn, then open the generated folder."
+    },
+    {
+      "id": "MG011",
+      "title": "WindowsGL, Linux or macOS desktop project (OpenTK era)",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "MonoGamePlatform", "matches": "^(WindowsGL|Linux|MacOSX)$" },
+      "explanation": "The project targets the old OpenTK-based desktop platforms. MonoGame 3.5 replaced them with DesktopGL, and 3.8 has no WindowsGL, Linux or MacOS packages.",
+      "resolution": "The migrator moves the project to MonoGame.Framework.DesktopGL on net8.0.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG012",
+      "title": "Android project (Xamarin)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "ProjectTypeGuids", "matches": "EFBA0AD7-5A72-4C68-AF49-83D382785DCF" },
+      "explanation": "This is a Xamarin.Android project. This version of XNA Reborn does not generate Android output.",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project and port the Android project to net8.0-android by hand."
+    },
+    {
+      "id": "MG013",
+      "title": "iOS project (Xamarin)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "ProjectTypeGuids", "matches": "FEACFBD2-3405-455C-9665-78FE426C6842|6BC8ED88-2882-458C-8E55-DFD12B67127B" },
+      "explanation": "This is a Xamarin.iOS project. This version of XNA Reborn does not generate iOS output.",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project and port the iOS project to net8.0-ios by hand."
+    },
+    {
+      "id": "MG014",
+      "title": "UWP / Windows Store project",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "MonoGamePlatform", "matches": "^WindowsStoreApp$" },
+      "explanation": "This is a Windows Store or UWP project. MonoGame removed UWP support in 3.8.2, and there is no package for it in 3.8.6.1.",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project."
+    },
+    {
+      "id": "MG015",
+      "title": "Windows Phone 8 project",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "MonoGamePlatform", "matches": "^WindowsPhone8$" },
+      "explanation": "This is a Windows Phone 8 project. MonoGame 3.7 removed Windows Phone 8.1 support and the content builder no longer accepts the WindowsPhone8 platform.",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project."
+    },
+    {
+      "id": "MG016",
+      "title": "OUYA, PlayStation Mobile or PS Vita project",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "MonoGamePlatform", "matches": "^(Ouya|PlayStationMobile|PSVita)$" },
+      "explanation": "This project targets a platform that MonoGame no longer supports: OUYA (removed in 3.6), PlayStation Mobile (removed in 3.5) or PS Vita (removed in 3.8.1).",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project."
+    },
+    {
+      "id": "MG017",
+      "title": "OpenTK assembly reference",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "OpenTK*" },
+      "explanation": "The project references OpenTK next to MonoGame. Since 3.6 MonoGame uses its own OpenGL bindings, and the 3.8 DesktopGL package does not ship OpenTK.",
+      "resolution": "The migrator drops the reference. Code that uses OpenTK types directly is reported by MG030.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG018",
+      "title": "Tao.Sdl assembly reference",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "Tao.Sdl*" },
+      "explanation": "The project references Tao.Sdl, the SDL binding that the WindowsGL platform used before 3.5. Current MonoGame desktop packages bring their own SDL2.",
+      "resolution": "The migrator drops the reference.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG019",
+      "title": "NVorbis assembly reference",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "NVorbis*" },
+      "explanation": "The project references NVorbis for Ogg playback, as the old DesktopGL layout required. The 3.8 DesktopGL package includes Ogg support.",
+      "resolution": "The migrator drops the reference.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG020",
+      "title": "SharpDX assembly references",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "SharpDX*" },
+      "explanation": "The project references SharpDX assemblies directly. MonoGame.Framework.WindowsDX 3.8.6.1 depends on SharpDX 4.2.0, so a migrated project gets SharpDX from the package. The analyzer cannot tell whether your code uses SharpDX types itself.",
+      "resolution": "The migrator drops the references that the package brings in (monogame-upgrade task 11.1). If your code uses SharpDX directly, check that it builds against SharpDX 4.2.0."
+    },
+    {
+      "id": "MG021",
+      "title": "MonoGame.Framework.Net reference (removed in 3.8)",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "MonoGame.Framework.Net*" },
+      "explanation": "The project references MonoGame.Framework.Net, which held the Net and GamerServices namespaces. MonoGame 3.8 removed the assembly.",
+      "resolution": "Remove the networking and gamer services code, or replace it with your own. Source that uses the namespaces is reported by MG028 and MG029 (monogame-upgrade task 13.2 can add stand-ins)."
+    },
+    {
+      "id": "MG022",
+      "title": "Lidgren.Network reference",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "Lidgren.Network*" },
+      "explanation": "The project references Lidgren.Network, which old MonoGame builds shipped for networking. The 3.8 packages do not include it, and the install-folder copy is not available.",
+      "resolution": "Add the Lidgren.Network package from NuGet to the migrated project by hand, and check that your code builds against it."
+    },
+    {
+      "id": "MG023",
+      "title": "Content.mgcb references the MonoGame install folder",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "mgcbSetting", "setting": "reference", "matches": "(?i)MonoGame\\\\v3\\.0\\\\" },
+      "explanation": "Content.mgcb has a /reference line that points into the MonoGame installer folder. That folder does not exist on a machine without the installer, so the content build fails to load the pipeline assembly.",
+      "resolution": "The migrator removes the install-folder /reference lines. The content builder package provides the pipeline.",
+      "migratorTask": "monogame-upgrade:12.1"
+    },
+    {
+      "id": "MG024",
+      "title": "Content.mgcb platform is not valid for the 3.8.6.1 desktop targets",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": {
+        "type": "mgcbSetting",
+        "setting": "platform",
+        "matches": "^(MacOSX|WindowsStoreApp|WindowsPhone8|NativeClient|Ouya|PlayStationMobile|PSVita|RaspberryPi)$"
+      },
+      "explanation": "Content.mgcb is built for a platform that the 3.8.6.1 content builder does not accept or that is not a desktop target (WindowsStoreApp, WindowsPhone8, PlayStationMobile and PSVita were removed; MacOSX, NativeClient and RaspberryPi are not targets of the migrated copy).",
+      "resolution": "The migrator sets /platform to the platform of the chosen desktop target (Windows or DesktopGL).",
+      "migratorTask": "monogame-upgrade:12.1"
+    },
+    {
+      "id": "MG025",
+      "title": "Content.mgcb loads a custom pipeline assembly",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "mgcbSetting", "setting": "reference", "matches": "^(?!.*MonoGame\\\\v3\\.0\\\\).+$" },
+      "explanation": "Content.mgcb loads a pipeline extension assembly that is not part of MonoGame. An extension built for an older MonoGame usually fails to load in the 3.8.6.1 content builder and has to be rebuilt against it.",
+      "resolution": "The migrator copies the assembly and keeps the /reference line, then lists it as manual work (monogame-upgrade task 12.2). Rebuild the extension against MonoGame 3.8.6.1."
+    },
+    {
+      "id": "MG026",
+      "title": "Content.mgcb uses a non-standard importer or processor",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "mgcbSetting", "setting": "entry", "nonStandardPair": true },
+      "explanation": "Some content items use an importer or processor that is not in the stock list, so it comes from a custom pipeline assembly. Those items do not build until the assembly is rebuilt for MonoGame 3.8.6.1.",
+      "resolution": "The migrator keeps the entries unchanged and lists them as manual work (monogame-upgrade task 12.2). Rebuild the extension that provides the importer or processor."
+    },
+    {
+      "id": "MG027",
+      "title": "Prebuilt .xnb files",
+      "severity": "Info",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "filePattern", "glob": "**/*.xnb" },
+      "explanation": "The project folder contains prebuilt .xnb files. They were built for one MonoGame version and platform, and a different MonoGame version can refuse to load them. XNA Reborn cannot rebuild an .xnb without its source asset.",
+      "resolution": "The migrator copies the files unchanged and lists them as manual work (monogame-upgrade task 12.3). If the game fails to load them, rebuild them from the source assets."
+    },
+    {
+      "id": "MG028",
+      "title": "Microsoft.Xna.Framework.Net usage",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Microsoft.Xna.Framework.Net", "includeChildren": true },
+      "explanation": "The code uses the Microsoft.Xna.Framework.Net namespace (network sessions). It moved to MonoGame.Framework.Net in 3.3 and MonoGame 3.8 removed it.",
+      "resolution": "Replace the networking code with your own or a NuGet networking library. Stand-in types can be added with the compatibility shims (monogame-upgrade task 13.2)."
+    },
+    {
+      "id": "MG029",
+      "title": "Microsoft.Xna.Framework.GamerServices usage",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Microsoft.Xna.Framework.GamerServices", "includeChildren": true },
+      "explanation": "The code uses the Microsoft.Xna.Framework.GamerServices namespace (Guide, SignedInGamer). It moved to MonoGame.Framework.Net in 3.3 and MonoGame 3.8 removed it.",
+      "resolution": "Remove the calls or use the compatibility shims (monogame-upgrade task 13.2)."
+    },
+    {
+      "id": "MG030",
+      "title": "OpenTK API usage",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "OpenTK", "includeChildren": true },
+      "explanation": "The code uses OpenTK types directly. The 3.8 DesktopGL package does not ship OpenTK, so these types no longer exist.",
+      "resolution": "Replace the OpenTK calls with MonoGame APIs or a NuGet OpenTK package of your choice. The migrator leaves a marker at each use (monogame-upgrade task 13.4)."
+    },
+    {
+      "id": "MG031",
+      "title": "UWP API usage (Windows.UI.Xaml)",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "namespace", "namespace": "Windows.UI.Xaml", "includeChildren": true },
+      "explanation": "The code uses UWP types from Windows.UI.Xaml. They exist only in a UWP project, and the migrated desktop project does not target UWP.",
+      "resolution": "Move this code into the platform project, which is copied unchanged, or replace it with a desktop equivalent. The migrator leaves a marker at each use (monogame-upgrade task 13.4)."
+    },
+    {
+      "id": "MG032",
+      "title": "Color.TransparentBlack (removed in 3.8.1)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "member", "name": "TransparentBlack", "receiver": "Color", "namespaces": ["Microsoft.Xna.Framework"], "kind": "Access" },
+      "explanation": "Color.TransparentBlack was marked obsolete in MonoGame 3.8 and removed in 3.8.1. It and Color.Transparent are both (0, 0, 0, 0), so the replacement does not change behavior.",
+      "resolution": "The migrator replaces Color.TransparentBlack with Color.Transparent in files that import Microsoft.Xna.Framework.",
+      "migratorTask": "monogame-upgrade:13.1"
+    }
+  ]
+}
