@@ -5,11 +5,13 @@ namespace XnaReborn.Migrator.Content;
 /// <param name="CountsByStatus">Count per status. Every status is present, in enum order.</param>
 /// <param name="CountsByType">Count per asset type. Every type is present, in the order Texture, Font, SoundEffect, Song, Model, Effect, Xact, Xml, Prebuilt, Other.</param>
 /// <param name="Notes">Free-form notes, sorted and distinct.</param>
+/// <param name="Audio">What became of the XACT audio, or null when no <c>.xap</c> was converted.</param>
 public sealed record ContentReport(
     IReadOnlyList<ConvertedAsset> Assets,
     IReadOnlyDictionary<AssetStatus, int> CountsByStatus,
     IReadOnlyDictionary<string, int> CountsByType,
-    IReadOnlyList<string> Notes)
+    IReadOnlyList<string> Notes,
+    AudioReport? Audio = null)
 {
     private static readonly string[] _types =
         ["Texture", "Font", "SoundEffect", "Song", "Model", "Effect", "Xact", "Xml", "Prebuilt", "Other"];
@@ -19,8 +21,9 @@ public sealed record ContentReport(
     /// <summary>Builds a report.</summary>
     /// <param name="assets">The assets.</param>
     /// <param name="notes">Notes to include.</param>
+    /// <param name="audio">The XACT audio part, or null.</param>
     /// <returns>The report.</returns>
-    public static ContentReport Create(IEnumerable<ConvertedAsset> assets, IEnumerable<string> notes)
+    public static ContentReport Create(IEnumerable<ConvertedAsset> assets, IEnumerable<string> notes, AudioReport? audio = null)
     {
         ArgumentNullException.ThrowIfNull(assets);
         ArgumentNullException.ThrowIfNull(notes);
@@ -44,7 +47,7 @@ public sealed record ContentReport(
         }
 
         var sortedNotes = notes.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
-        return new ContentReport(sorted, byStatus, typeCounts, sortedNotes);
+        return new ContentReport(sorted, byStatus, typeCounts, sortedNotes, audio);
     }
 
     private static string TypeOf(ConvertedAsset asset)

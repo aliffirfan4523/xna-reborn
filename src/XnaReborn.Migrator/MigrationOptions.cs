@@ -17,6 +17,8 @@ namespace XnaReborn.Migrator;
 /// When true (the default), <c>.fx</c> files in the migrated copy get per-target shader model macros, sampler fixes and markers
 /// for constructs MonoGame rejects. When false they are copied unchanged.
 /// </param>
+/// <param name="Xact">What to do with XACT audio: convert a <c>.xap</c> and warn about compiled banks (<see cref="XactMode.Auto"/>, the default), convert only, or copy unchanged. See <see cref="XactMode"/>.</param>
+/// <param name="StreamingWavesAsSong">When true (the default), the waves of a streaming XACT wave bank are built as <c>Song</c> assets instead of <c>SoundEffect</c> assets.</param>
 /// <param name="LegacyTarget">
 /// For an old MonoGame project: the platform package to use instead of the one chosen from the project's old platform
 /// (DirectX Windows becomes WindowsDX, everything else DesktopGL). Null keeps that choice. Ignored for XNA projects.
@@ -32,4 +34,6 @@ public sealed record MigrationOptions(
     bool FullscreenToggle = false,
     bool HighDpi = false,
     MonoGameTarget? LegacyTarget = null,
-    bool RewriteEffects = true);
+    bool RewriteEffects = true,
+    XactMode Xact = XactMode.Auto,
+    bool StreamingWavesAsSong = true);

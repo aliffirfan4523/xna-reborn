@@ -36,11 +36,14 @@ public sealed record XactPlan(
 /// <summary>Plans the content assets for a parsed .xap: names, shared files, kinds, missing files and notes. Pure: it reads nothing itself.</summary>
 public static partial class XactPlanner
 {
+    /// <summary>Rule id of the note about compiled XACT banks that have no .xap and are only copied.</summary>
+    public const string CompiledRuleId = "XNA070";
+
     /// <summary>Rule id of the note that says a streaming wave bank was converted.</summary>
-    public const string StreamingRuleId = "NEW-A2";
+    public const string StreamingRuleId = "XNA071";
 
     /// <summary>Rule id of the note that lists XACT features that are not converted.</summary>
-    public const string UnsupportedRuleId = "NEW-A3";
+    public const string UnsupportedRuleId = "XNA072";
 
     /// <summary>Rule id of the .xap file rule, used for missing waves and presets.</summary>
     public const string XapRuleId = "XNA016";
