@@ -116,6 +116,25 @@
                 </ItemsControl>
               </StackPanel>
             </Expander>
+            <!-- Projects of the report: family, version with confidence, platform. Display only. -->
+            <Expander Header="Projects" IsExpanded="True"
+                      IsVisible="{Binding HasProjects}"
+                      HorizontalAlignment="Stretch"
+                      AutomationProperties.AutomationId="ProjectsPanel"
+                      AutomationProperties.Name="Projects">
+              <ItemsControl ItemsSource="{Binding Projects}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:ProjectRowItem">
+                    <StackPanel Margin="0,2" AutomationProperties.Name="{Binding AutomationName}">
+                      <TextBlock Text="{Binding Path}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding Summary}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
+                      <TextBlock Text="{Binding NotMigratedText}" FontSize="12" FontWeight="SemiBold"
+                                 IsVisible="{Binding IsNotMigrated}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Expander>
             <TextBox Text="{Binding SearchText}"
                      PlaceholderText="Search rule, title, file or code"
                      AutomationProperties.AutomationId="SearchBox"

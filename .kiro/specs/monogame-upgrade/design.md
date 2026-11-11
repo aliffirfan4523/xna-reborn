@@ -445,6 +445,27 @@ What the migrator part changed compared with the text above:
   - Fixture G (`mg38-old-pin`): the fixture has no `Main`, so the test builds a copy with a `Program.cs` added; it builds after the bump.
   - The source folder hash is unchanged after migration and build for A, B and G. The runner guard refuses the unmigrated fixtures.
 - **Not run:** no migrated game was started.
+## Studio UI implementation notes (task 16)
+
+- **Where the list is.** The report page has a "Projects" panel (an expander above the search box). Each row shows the path, then "family, version (confidence), platform", for example `MonoGame (old) · 3.7.0.1708 (High) · Windows (DirectX)`. A version band shows as a range (`3.2 to 3.6 (Medium)`). XNA projects show `XNA · XNA 4.0 · Windows`. A project with no version signal says "Version unknown". The panel is hidden when the report lists no project.
+- **"Not migrated".** A platform project (UWP, Windows Phone, OUYA, PlayStation Mobile, PS Vita, Android, iOS) gets the line "Not migrated, see manual work", as text and in the accessible name, not by color. Which platforms count is decided by `XnaReborn.Migrator.Upgrade.MigrationScope`, which the migrator also uses, so the UI holds no copy of that rule.
+- **The app now loads the old MonoGame catalog.** `AnalysisService` loads `rules/monogame-upgrade.json` after the Toolkit catalog; the csproj copies it next to the app. A missing or invalid file gives the diagnostic `ANA014` and XNA analysis goes on. The report's catalog name now reads `xna-to-monogame + sharpdx-toolkit-to-monogame + monogame-upgrade`, so two existing assertions in `AnalysisServiceTests` changed. Without this the app would not have analyzed old MonoGame projects at all.
+- **Not checked.** The panel was tested with the headless Avalonia tests only; no screenshot, no screen reader and no high-contrast check was made. The migration setup page was not changed: it still offers the single `Target` choice, so `MigrationOptions.LegacyTarget` is not reachable from the UI and an old project gets the target chosen from its platform.
+## Final checkpoint notes (task 18)
+
+- **Manifests reviewed.** The manifest of every migrated fixture is a Verify snapshot (`LegacyMonoGameCheckpointTests`): A, B, C, E, G and I. The review changed three things: the ManualWork file lists and the extra notes said the same thing twice, so the duplicate notes for prebuilt `.xnb` files and pipeline DLLs were removed; "This is a Android project" became "Platform project (Android)" through `MigrationScope.Describe`, which the UI list now shares; and the platform wording was checked against the UI text.
+- **Source hash.** Every fixture that migrates (A, B, C, E, G, I) has its source folder hashed before and after, and the three that have nothing to migrate (D, F, H) stop with an error and write nothing. Fixtures A, B and G are also hashed after a real `dotnet build` of the copy (task 15).
+- **Not done.** The demo with a real project (BloomFilter or Squid) and the checks on real projects (task 17) are left to the owner. No real old MonoGame project was migrated, so what the migrator does with real-world shapes (Directory.Build.props above the project, `$(SolutionDir)` paths, linked files, multi-target projects, `Condition` attributes on references) is not known.
+- **Known gaps, collected.**
+  - Task 13.2 (stand-ins for GamerServices and Net) is not done. The catalog resolution text of MG021, MG028 and MG029 still says stand-ins can be added by task 13.2; that wording was left as it is because the catalog belongs to the analyzer part.
+  - A DesktopGL project from shared code only (14.3, "after confirmation") is not generated.
+  - Android, iOS and UWP output is not generated (open question 2); those projects are copied unchanged.
+  - `MigrationOptions.LegacyTarget` has no UI control.
+  - Content files that no `Content.mgcb` entry names are not copied.
+  - The bump path (already SDK-style) does not run the mgcb upgrader and does not rewrite `TargetFrameworks` or version child elements; it reports them.
+  - H100 and H101 are not added (see the runner notes).
+  - Two shared files with the same file name in different folders get the same `Link`.
+  - `WindowsDX` on `net8.0-windows` was built on Windows only.
 ## Open questions
 1. **WindowsDX on `net8.0-windows`.** Verified on Windows by the task 15 integration test (see "Runner implementation notes"). Not verified on other systems.
 2. **Android and iOS output.** Not generated here. A follow-up spec could target `net8.0-android` and `net8.0-ios`.

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "sources": [
+    "https://github.com/sharpdx/SharpDX/blob/2.6.3/Source/SharpDX/Matrix.cs",
+    "https://github.com/sharpdx/SharpDX/blob/2.6.3/Source/SharpDX/MathUtil.cs",
+    "https://github.com/sharpdx/Toolkit/blob/master/Source/Toolkit/SharpDX.Toolkit.Graphics/BlendStateCollection.cs",
+    "https://github.com/sharpdx/Toolkit/blob/master/Source/Toolkit/SharpDX.Toolkit.Graphics/GraphicsDevice.cs",
+    "https://github.com/sharpdx/Toolkit/blob/master/Source/Toolkit/SharpDX.Toolkit.Game/Game.cs",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Matrix.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.MathHelper.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Graphics.BlendState.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Graphics.SamplerState.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Graphics.DepthStencilState.html",
+    "https://docs.monogame.net/api/Microsoft.Xna.Framework.Graphics.PresentationParameters.html"
+  ],
+  "notes": [
+    "Every MonoGame name below is compiled against MonoGame.Framework.DesktopGL 3.8.6.1 by a test (SdxMapTests), so a name that does not exist fails the test.",
+    "Left out on purpose because MonoGame has no equal: BlendStates.Default, SamplerStates.Default, SamplerStates.LinearMirror, SamplerStates.PointMirror, and every RasterizerStates member (the Toolkit CullBack and CullFront depend on the winding order, MonoGame names the culled winding instead).",
+    "Matrix.Scaling, Matrix.Translation and Matrix.RotationYawPitchRoll keep the argument order of their Create* counterparts. TransformCoordinate is not renamed because it divides by w (SDX033).",
+    "qualifiedTypes lists the types of a namespace that are rewritten when written with the namespace in front (SharpDX.Vector3). Other children, such as SharpDX.Direct3D11, are never rewritten."
+  ],
+  "namespaces": [
+    {
+      "ruleId": "SDX020",
+      "from": "SharpDX.Toolkit",
+      "to": "Microsoft.Xna.Framework",
+      "qualifiedTypes": ["Game", "GameTime", "GraphicsDeviceManager", "GameWindow"]
+    },
+    {
+      "ruleId": "SDX021",
+      "from": "SharpDX.Toolkit.Graphics",
+      "to": "Microsoft.Xna.Framework.Graphics",
+      "qualifiedTypes": ["SpriteBatch", "SpriteFont", "Texture2D", "BasicEffect", "Effect", "EffectPass", "EffectParameter", "RenderTarget2D", "GraphicsDevice", "SpriteSortMode", "SpriteEffects", "BlendState", "SamplerState", "DepthStencilState", "RasterizerState", "VertexBuffer", "IndexBuffer"]
+    },
+    {
+      "ruleId": "SDX022",
+      "from": "SharpDX.Toolkit.Content",
+      "to": "Microsoft.Xna.Framework.Content",
+      "qualifiedTypes": ["ContentManager"]
+    },
+    {
+      "ruleId": "SDX023",
+      "from": "SharpDX",
+      "to": "Microsoft.Xna.Framework",
+      "qualifiedTypes": ["Vector2", "Vector3", "Vector4", "Matrix", "Color", "Quaternion", "Rectangle", "BoundingBox", "BoundingSphere", "BoundingFrustum", "Ray", "Plane"]
+    },
+    {
+      "ruleId": "SDX024",
+      "from": "SharpDX.Toolkit.Input",
+      "to": "Microsoft.Xna.Framework.Input",
+      "qualifiedTypes": ["Keys", "KeyboardState", "ButtonState"]
+    }
+  ],
+  "matrixFactories": [
+    { "from": "LookAtRH", "to": "CreateLookAt" },
+    { "from": "PerspectiveFovRH", "to": "CreatePerspectiveFieldOfView" },
+    { "from": "OrthoOffCenterRH", "to": "CreateOrthographicOffCenter" },
+    { "from": "Scaling", "to": "CreateScale" },
+    { "from": "Translation", "to": "CreateTranslation" },
+    { "from": "RotationX", "to": "CreateRotationX" },
+    { "from": "RotationY", "to": "CreateRotationY" },
+    { "from": "RotationZ", "to": "CreateRotationZ" },
+    { "from": "RotationYawPitchRoll", "to": "CreateFromYawPitchRoll" }
+  ],
+  "mathUtilMembers": [
+    { "from": "Clamp", "to": "Clamp" },
+    { "from": "Lerp", "to": "Lerp" },
+    { "from": "SmoothStep", "to": "SmoothStep" },
+    { "from": "Pi", "to": "Pi" },
+    { "from": "TwoPi", "to": "TwoPi" },
+    { "from": "PiOverTwo", "to": "PiOver2" },
+    { "from": "PiOverFour", "to": "PiOver4" },
+    { "from": "DegreesToRadians", "to": "ToRadians" },
+    { "from": "RadiansToDegrees", "to": "ToDegrees" }
+  ],
+  "stateCollections": [
+    { "property": "BlendStates", "type": "BlendState", "members": ["Opaque", "AlphaBlend", "Additive", "NonPremultiplied"] },
+    { "property": "SamplerStates", "type": "SamplerState", "members": ["PointClamp", "PointWrap", "LinearClamp", "LinearWrap", "AnisotropicClamp", "AnisotropicWrap"] },
+    { "property": "DepthStencilStates", "type": "DepthStencilState", "members": ["Default", "DepthRead", "None"] }
+  ],
+  "stateSetters": [
+    { "call": "SetBlendState", "property": "BlendState" },
+    { "call": "SetDepthStencilState", "property": "DepthStencilState" },
+    { "call": "SetRasterizerState", "property": "RasterizerState" }
+  ],
+  "backBuffer": [
+    { "from": "Width", "to": "BackBufferWidth" },
+    { "from": "Height", "to": "BackBufferHeight" }
+  ]
+}
