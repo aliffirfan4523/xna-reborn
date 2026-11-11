@@ -41,6 +41,22 @@ public sealed class GameLocatorTests : IDisposable
     }
 
     [Fact]
+    public void VisualBasicProject_IsFoundAsTheGame()
+    {
+        var dir = Path.Combine(_dir, "VbGame");
+        Directory.CreateDirectory(dir);
+        var project = Path.Combine(dir, "VbGame.vbproj");
+        File.WriteAllText(project, $"<Project Sdk=\"Microsoft.NET.Sdk\">{Props("WinExe")}</Project>");
+        var dll = Built(project, "VbGame.dll");
+        var exe = Built(project, "VbGame.exe");
+
+        var result = GameLocator.Find(_dir);
+
+        Assert.Null(result.Problem);
+        Assert.Equal(project, result.Target!.ProjectPath);
+        Assert.Equal(OperatingSystem.IsWindows() ? exe : dll, result.Target.ExecutablePath);
+    }
+    [Fact]
     public void SingleExe_IsTheGame()
     {
         var project = Project("Game", Props("WinExe"));

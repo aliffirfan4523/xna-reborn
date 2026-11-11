@@ -295,6 +295,19 @@
       "ruleId": "SDX013"
     },
     {
+      "id": "H501",
+      "match": { "code": "BC30002", "messageContains": "ApplicationServices" },
+      "title": "Visual Basic application model types are missing",
+      "advice": "A type of the Visual Basic My application model (WindowsFormsApplicationBase, ConsoleApplicationBase) is not available in a .NET SDK game project. Remove the code that needs it; the migrated project sets MyType to Empty.",
+      "ruleId": "XNA112"
+    },
+    {
+      "id": "H502",
+      "match": { "code": "BC30451", "messageContains": "'My'" },
+      "title": "The My namespace is not available",
+      "advice": "A My type is not available in a .NET SDK project. Replace My.Application, My.Computer, My.Settings and My.Resources with the .NET API (System.IO, System.Environment, a settings file, embedded resources); see rule XNA112.",
+      "ruleId": "XNA112"
+    },    {
       "id": "R001",
       "match": { "runtimeRegex": "could not find (file|a part of the path)[^\\r\\n]*\\.xnb|content file was not found|ContentLoadException:[^\\r\\n]*not found" },
       "title": "Compiled content (.xnb) was not found",

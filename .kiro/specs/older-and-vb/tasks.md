@@ -153,17 +153,17 @@ Rules for every task:
   - [x] 20.5 Register in `DefaultRewriters`; before and after tests; preservation test; `autoFixLanguages` coverage test (a VB rewriter exists exactly for the rules whose `autoFixLanguages` includes `vb`, ignoring ENTRYPOINT)
   - _Requirements: R11_
 
-- [ ] 21. Runner (`Runner`)
-  - [ ] 21.1 `GameLocator` and `MigratedCopyGuard`: `.vbproj`
-  - [ ] 21.2 `MsBuildOutputParser`: `BC` codes, and `vbc :` lines without a file
-  - [ ] 21.3 `HintCatalog`: hints for `BC30002` on `My` types and `BC30451` after a removed XNA name
-  - [ ] 21.4 Tests with real-format sample lines (written from scratch)
+- [x] 21. Runner (`Runner`)
+  - [x] 21.1 `GameLocator` and `MigratedCopyGuard`: `.vbproj`
+  - [x] 21.2 `MsBuildOutputParser`: `BC` codes, and `vbc :` lines without a file
+  - [x] 21.3 `HintCatalog`: hints for `BC30002` on `My` types and `BC30451` after a removed XNA name
+  - [x] 21.4 Tests with real-format sample lines (written from scratch)
   - _Requirements: R12_
 
-- [ ] 22. Report and UI (`App`)
-  - [ ] 22.1 Language badge in the project summary and the report view
-  - [ ] 22.2 Marker highlight in the diff viewer reads `MarkerPrefixes.All`
-  - [ ] 22.3 Headless UI test: open `vb-xna40-basic`, see the VB badge and the XNA110 finding. No migration logic in the App project
+- [x] 22. Report and UI (`App`)
+  - [x] 22.1 Language badge in the project summary and the report view
+  - [x] 22.2 Marker highlight in the diff viewer reads `MarkerPrefixes.All`
+  - [x] 22.3 Headless UI test: open `vb-xna40-basic`, see the VB badge and the XNA110 finding. No migration logic in the App project
   - _Requirements: R13_
 
 - [ ] 23. Checkpoint B

@@ -29,7 +29,7 @@ public sealed record GameProjectResult(string? ProjectPath, string? AssemblyName
 public static class GameLocator
 {
     /// <summary>
-    /// Looks at the .csproj files under the folder (not in bin or obj) and picks the game. Of the projects with
+    /// Looks at the .csproj and .vbproj files under the folder (not in bin or obj) and picks the game. Of the projects with
     /// OutputType WinExe or Exe, exactly one is the game. With several, the one with a MonoGameContentReference
     /// wins, then the one that no other project references. The built file is
     /// <c>bin/&lt;configuration&gt;/&lt;TargetFramework&gt;/&lt;AssemblyName&gt;.exe</c> on Windows when it exists, else the .dll.
@@ -124,6 +124,7 @@ public static class GameLocator
     private static void Collect(string dir, List<string> found)
     {
         found.AddRange(Directory.GetFiles(dir, "*.csproj", SearchOption.TopDirectoryOnly));
+        found.AddRange(Directory.GetFiles(dir, "*.vbproj", SearchOption.TopDirectoryOnly));
         foreach (var sub in Directory.GetDirectories(dir))
         {
             var name = Path.GetFileName(sub);

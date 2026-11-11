@@ -237,7 +237,7 @@ public sealed partial class DiffViewModel : PageViewModel
     private static List<DiffMarker> MarkersIn(FileChange change)
     {
         var found = new List<DiffMarker>();
-        if (change.NewText is not { Length: > 0 } text || !text.Contains(MarkerPrefix, StringComparison.Ordinal))
+        if (change.NewText is not { Length: > 0 } text || !MarkerPrefixes.ContainsMarker(text))
         {
             return found;
         }
@@ -246,7 +246,7 @@ public sealed partial class DiffViewModel : PageViewModel
         var lines = text.Split('\n');
         for (var i = 0; i < lines.Length; i++)
         {
-            if (lines[i].Contains(MarkerPrefix, StringComparison.Ordinal))
+            if (MarkerPrefixes.ContainsMarker(lines[i]))
             {
                 found.Add(new DiffMarker(change.RelativePath, i + 1, lines[i].Trim()));
             }

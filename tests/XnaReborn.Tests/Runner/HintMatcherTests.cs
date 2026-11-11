@@ -57,6 +57,8 @@ public class HintMatcherTests
         ("H406", "CS1061", "'EffectParameter' does not contain a definition for 'SetResource' and no accessible extension method 'SetResource' accepting a first argument of type 'EffectParameter' could be found (are you missing a using directive or an assembly reference?)", "'EffectParameter' does not contain a definition for 'SetValue2' and no accessible extension method 'SetValue2' accepting a first argument of type 'EffectParameter' could be found (are you missing a using directive or an assembly reference?)"),
         ("H407", "MGFX0001", "Tint.fx(17,9) : Unexpected token 'P' found. Expected Compile", "Tint.fx(17,9) : Unexpected token 'P' found. Expected Semicolon"),
         ("H408", "MGFX0001", "Tint.fx(5,14) : Unexpected token 'M' found. Expected None, Linear, Point, or Anisotropic.", "Tint.fx(5,14) : Unexpected token 'M' found. Expected Semicolon"),
+        ("H501", "BC30002", "Type 'Global.Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase' is not defined.", "Type 'Shapes.Circle' is not defined."),
+        ("H502", "BC30451", "'My' is not declared. It may be inaccessible due to its protection level.", "'Mine' is not declared. It may be inaccessible due to its protection level."),
     ];
 
     /// <summary>Codes whose near-miss differs only by code: the same message must not match under another code.</summary>

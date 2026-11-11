@@ -109,6 +109,7 @@ public static class MigratedCopyGuard
     private static void CollectProjects(string dir, List<string> found)
     {
         found.AddRange(Directory.GetFiles(dir, "*.csproj", SearchOption.TopDirectoryOnly));
+        found.AddRange(Directory.GetFiles(dir, "*.vbproj", SearchOption.TopDirectoryOnly));
         foreach (var sub in Directory.GetDirectories(dir))
         {
             var name = Path.GetFileName(sub);

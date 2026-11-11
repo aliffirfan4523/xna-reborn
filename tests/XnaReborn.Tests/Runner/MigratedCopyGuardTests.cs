@@ -134,6 +134,24 @@ public sealed class MigratedCopyGuardTests : IDisposable
         Assert.False(string.IsNullOrWhiteSpace(v.Message));
     }
 
+    [Fact]
+    public void AcceptsCompletedCopyWithOneVisualBasicProject()
+    {
+        Manifest(1, true);
+        File.WriteAllText(Path.Combine(_dir, "Game", "Game.vbproj"), "<Project/>");
+        var v = MigratedCopyGuard.Check(_dir);
+        Assert.True(v.Allowed);
+        Assert.Equal(Path.Combine(_dir, "Game", "Game.vbproj"), v.ProjectOrSolutionPath);
+    }
+
+    [Fact]
+    public void RefusesAMixOfCSharpAndVisualBasicProjectsWithoutASolution()
+    {
+        Manifest(1, true);
+        File.WriteAllText(Path.Combine(_dir, "Game", "Game.csproj"), "<Project/>");
+        File.WriteAllText(Path.Combine(_dir, "Game", "Lib.vbproj"), "<Project/>");
+        Refused(MigratedCopyGuard.Check(_dir));
+    }
     private void Manifest(int version, bool completed)
     {
         var done = completed ? "true" : "false";
