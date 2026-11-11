@@ -140,7 +140,7 @@ Suggested waves (parallel inside a wave):
 
 - [ ] 18. Docs and final checks
   - [x] 18.1 `THIRD-PARTY-NOTICES.md` (Flixel MIT, reference projects with licenses); README section "Flixel 2.x source projects" with the scope and limits; update `.kiro/README.md` index. (L)
-  - [ ] 18.2 Demo script for the Flash path (open, analyze, migrate, run, show markers). (L)
+  - [x] 18.2 Demo script for the Flash path (open, analyze, migrate, run, show markers). (L)
   - [ ] 18.3 Final checkpoint: full build, tests, format on master; confirm no test uses the network; confirm the XNA flow tests are unchanged and green. (L)
   - _Requirements: R12, R13_
 
