@@ -22,30 +22,18 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ThemeToggle.Click += (_, _) => CycleTheme();
+        ThemeToggle.Click += (_, _) => (DataContext as MainViewModel)?.CycleThemeCommand.Execute(null);
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MainViewModel main)
             {
                 main.PropertyChanged += OnMainChanged;
+
+                // The starting theme is applied by the app at start. From here on a change of the setting is applied at once,
+                // whether it came from the rail toggle or from the Settings page.
+                main.Settings.Changed += (_, _) => AppearanceApplier.Apply(main.Settings.Current);
             }
         };
-    }
-
-    // The theme choice is not saved between runs. shortcut: add a setting file when the app gets a settings screen.
-    private void CycleTheme()
-    {
-        var app = Application.Current;
-        if (app is null)
-        {
-            return;
-        }
-
-        var next = app.RequestedThemeVariant == ThemeVariant.Light ? ThemeVariant.Dark
-            : app.RequestedThemeVariant == ThemeVariant.Dark ? ThemeVariant.Default
-            : ThemeVariant.Light;
-        app.RequestedThemeVariant = next;
-        ThemeToggleText.Text = "Theme: " + (next == ThemeVariant.Light ? "Light" : next == ThemeVariant.Dark ? "Dark" : "System");
     }
 
     private void OnMainChanged(object? sender, PropertyChangedEventArgs e)

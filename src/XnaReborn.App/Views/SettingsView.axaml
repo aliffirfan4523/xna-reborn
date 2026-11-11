@@ -1,0 +1,256 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:XnaReborn.App.ViewModels"
+             xmlns:controls="using:XnaReborn.App.Controls"
+             x:Class="XnaReborn.App.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="Escape" Command="{Binding BackCommand}" />
+  </UserControl.KeyBindings>
+
+  <ScrollViewer>
+    <StackPanel Margin="{StaticResource PagePadding}" Spacing="{StaticResource Space5}" MaxWidth="{StaticResource ContentMaxWidth}"
+                HorizontalAlignment="Stretch">
+      <StackPanel Spacing="{StaticResource Space1}">
+        <TextBlock Text="{Binding Title}" Classes="headline" AutomationProperties.HeadingLevel="1" />
+        <TextBlock Classes="muted" TextWrapping="Wrap"
+                   Text="Defaults for new work. Changes are saved at once. A choice you make on a page for one run still wins." />
+      </StackPanel>
+
+      <controls:Banner Kind="Warning" Title="Settings" Message="{Binding Problem}" IsVisible="{Binding HasProblem}"
+                       AutomationProperties.AutomationId="SettingsProblem" />
+      <TextBlock Text="{Binding Notice}" IsVisible="{Binding HasNotice}" TextWrapping="Wrap"
+                 AutomationProperties.AutomationId="SettingsNotice"
+                 AutomationProperties.LiveSetting="Polite" />
+
+      <!-- Appearance -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <TextBlock Text="Appearance" Classes="title" AutomationProperties.HeadingLevel="2" />
+
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Theme" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Light, dark, or follow the system. The theme button in the left rail changes the same setting." />
+            </StackPanel>
+            <ComboBox Grid.Column="1" MinWidth="240" ItemsSource="{x:Static vm:SettingsViewModel.ThemeChoices}"
+                      SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                      AutomationProperties.AutomationId="SettingTheme"
+                      AutomationProperties.Name="Theme" />
+          </Grid>
+          <Border Classes="divider" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Reduce motion" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="On skips the short page animations. Off always plays them. System follows Windows." />
+            </StackPanel>
+            <ComboBox Grid.Column="1" MinWidth="240" ItemsSource="{x:Static vm:SettingsViewModel.MotionChoices}"
+                      SelectedItem="{Binding SelectedMotion, Mode=TwoWay}"
+                      AutomationProperties.AutomationId="SettingMotion"
+                      AutomationProperties.Name="Reduce motion" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- Migration defaults -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <StackPanel Spacing="{StaticResource Space1}">
+            <TextBlock Text="Migration defaults" Classes="title" AutomationProperties.HeadingLevel="2" />
+            <TextBlock Classes="muted" TextWrapping="Wrap"
+                       Text="Migration setup starts with these choices when you open a project. You can change them there for one run." />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Default MonoGame target" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="The graphics backend a migration starts on. A SharpDX Toolkit project always starts on WindowsDX." />
+            </StackPanel>
+            <ComboBox Grid.Column="1" MinWidth="240" ItemsSource="{x:Static vm:SettingsViewModel.TargetChoices}"
+                      SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+                      AutomationProperties.AutomationId="SettingTarget"
+                      AutomationProperties.Name="Default MonoGame target" />
+          </Grid>
+          <Border Classes="divider" />
+          <CheckBox IsChecked="{Binding EnableShims, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingShims"
+                    AutomationProperties.Name="Add compatibility shims by default">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Add compatibility shims" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Adds small stand-in classes for XNA parts that MonoGame does not have." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding SubstituteFonts, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingFonts"
+                    AutomationProperties.Name="Substitute fonts by default">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Substitute fonts that only XNA installed" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="A .spritefont that names an XNA-only font gets a Windows font instead of manual work." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding AllowWindowResize, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingResize"
+                    AutomationProperties.Name="Let the window be resized by default">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Window extra: let the window be resized" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="The game keeps its own resolution and is scaled to the window." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding FullscreenToggle, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingFullscreen"
+                    AutomationProperties.Name="Alt plus Enter toggles fullscreen by default">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Window extra: Alt+Enter toggles fullscreen" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Switches between a window and borderless fullscreen." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding HighDpi, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingHighDpi"
+                    AutomationProperties.Name="High DPI awareness by default">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Window extra: high-DPI awareness (Windows)" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="The window is not blurred by Windows scaling, but it looks smaller on a high-DPI screen." />
+            </StackPanel>
+          </CheckBox>
+          <Border Classes="divider" />
+          <StackPanel Spacing="{StaticResource Space2}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Output parent folder" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="New migrated copies are placed in this folder. If it is not set, each copy goes next to its original project. You are still asked before a folder with content is used." />
+            </StackPanel>
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{StaticResource Space2}">
+              <TextBox Grid.Column="0" Text="{Binding OutputParentText, Mode=OneWay}" IsReadOnly="True"
+                       MinHeight="{StaticResource MinTarget}"
+                       AutomationProperties.AutomationId="SettingOutputParent"
+                       AutomationProperties.Name="Output parent folder" />
+              <Button Grid.Column="1" Classes="secondary" Command="{Binding BrowseOutputParentCommand}"
+                      AutomationProperties.AutomationId="SettingOutputParentBrowse"
+                      AutomationProperties.Name="Browse for the output parent folder">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+                  <PathIcon Data="{StaticResource IconFolderOpen}" Width="16" Height="16" />
+                  <TextBlock Text="Browse..." />
+                </StackPanel>
+              </Button>
+              <Button Grid.Column="2" Classes="subtle" Content="Clear" Command="{Binding ClearOutputParentCommand}"
+                      AutomationProperties.AutomationId="SettingOutputParentClear"
+                      AutomationProperties.Name="Clear the output parent folder" />
+            </Grid>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Build and run defaults -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <StackPanel Spacing="{StaticResource Space1}">
+            <TextBlock Text="Build and run" Classes="title" AutomationProperties.HeadingLevel="2" />
+            <TextBlock Classes="muted" TextWrapping="Wrap"
+                       Text="Build and run starts with these choices when you open a project. The game never starts without your OK." />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Default publish platform" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="The platform the Publish picker starts on. Publishing always makes one self-contained program." />
+            </StackPanel>
+            <ComboBox Grid.Column="1" MinWidth="240" ItemsSource="{x:Static vm:SettingsViewModel.PublishChoices}"
+                      SelectedItem="{Binding SelectedPublishPlatform, Mode=TwoWay}"
+                      AutomationProperties.AutomationId="SettingPublishPlatform"
+                      AutomationProperties.Name="Default publish platform" />
+          </Grid>
+          <Border Classes="divider" />
+          <CheckBox IsChecked="{Binding ShowHints, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingHints"
+                    AutomationProperties.Name="Show hints in the build results">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Show hints in the build results" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="Each group of build problems shows what to do next and the related rule." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding AutoFollowLog, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingFollowLog"
+                    AutomationProperties.Name="Follow the newest build log line by default">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Follow the newest build log line" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="The build log scrolls to the newest line while a build runs." />
+            </StackPanel>
+          </CheckBox>
+          <CheckBox IsChecked="{Binding CheckSdkOnStart, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingCheckSdk"
+                    AutomationProperties.Name="Check the .NET SDK when Build and run opens">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Check the .NET SDK when Build and run opens" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="When off, the check runs only when you press Check again, and a missing SDK shows up when you build." />
+            </StackPanel>
+          </CheckBox>
+        </StackPanel>
+      </Border>
+
+      <!-- Recent projects -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space3}">
+          <TextBlock Text="Recent projects" Classes="title" AutomationProperties.HeadingLevel="2" />
+          <CheckBox IsChecked="{Binding KeepRecentProjects, Mode=TwoWay}"
+                    AutomationProperties.AutomationId="SettingKeepRecent"
+                    AutomationProperties.Name="Keep a list of recent projects">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Keep a list of recent projects" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap"
+                         Text="The Open page lists the projects you opened before. Only their paths are stored, on this computer." />
+            </StackPanel>
+          </CheckBox>
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space3}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="How many to keep" FontWeight="SemiBold" />
+              <TextBlock Classes="caption muted" TextWrapping="Wrap" Text="From 1 to 10." />
+            </StackPanel>
+            <ComboBox Grid.Column="1" MinWidth="120" ItemsSource="{x:Static vm:SettingsViewModel.RecentCounts}"
+                      SelectedItem="{Binding MaxRecentProjects, Mode=TwoWay}"
+                      IsEnabled="{Binding CanSetMaxRecent}"
+                      AutomationProperties.AutomationId="SettingMaxRecent"
+                      AutomationProperties.Name="How many recent projects to keep" />
+          </Grid>
+          <Button Classes="secondary" HorizontalAlignment="Left" Content="Clear recent projects" Command="{Binding ClearRecentCommand}"
+                  AutomationProperties.AutomationId="SettingClearRecent"
+                  AutomationProperties.Name="Clear the list of recent projects" />
+        </StackPanel>
+      </Border>
+
+      <!-- Safety: read only, nothing here can be switched. -->
+      <Border Classes="card">
+        <StackPanel Spacing="{StaticResource Space2}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space2}">
+            <PathIcon Data="{StaticResource IconLock}" Width="16" Height="16" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Text="Privacy and safety" Classes="title" AutomationProperties.HeadingLevel="2" />
+          </StackPanel>
+          <TextBlock Text="{Binding PrivacyNote}" FontWeight="SemiBold" TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="PrivacyNote" />
+          <TextBlock Text="{Binding SafetyNote}" Classes="muted" TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="SafetyNote" />
+        </StackPanel>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space3}">
+        <Button Classes="primary" Content="Back" Command="{Binding BackCommand}"
+                AutomationProperties.AutomationId="SettingsBack"
+                AutomationProperties.Name="Close settings and go back" />
+        <Button Classes="secondary" Content="Reset to defaults" Command="{Binding ResetToDefaultsCommand}"
+                AutomationProperties.AutomationId="SettingsReset"
+                AutomationProperties.Name="Reset all settings to their defaults" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

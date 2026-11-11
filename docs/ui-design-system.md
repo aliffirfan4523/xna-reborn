@@ -15,7 +15,7 @@ Before/after screenshots: `docs/ui/before-*.png`, `docs/ui/after-*.png`. Refresh
 | `Styles/Shared.axaml` | older spacing keys and severity icon and label strings |
 | `Controls/` | Chip, StatTile, ProgressLabel, Banner, EmptyState, ScoreGauge, SeverityBadge |
 
-The base is the Fluent theme. The accent is violet (`#5B2EB8` light, `#B9A1FF` dark), set in `App.axaml` (palette) and `AccentBrush`. The theme follows the system; the rail has a toggle (System, Light, Dark; not saved between runs).
+The base is the Fluent theme. The accent is violet (`#5B2EB8` light, `#B9A1FF` dark), set in `App.axaml` (palette) and `AccentBrush`. The theme follows the system by default. The rail toggle and the Settings page change the same saved setting (System, Light, Dark).
 
 ## Tokens
 
@@ -63,14 +63,23 @@ All live in `XnaReborn.App.Controls`. `StatusKind` is Neutral, Accent, Success, 
 
 ## Shell
 
-Left rail (brand, six steps with done, current, locked states, theme toggle), header (project name, score chip), error banner, page area (max width 1080), status bar. Ctrl+1..6 jump to a step. The step buttons keep `Step_<Name>` automation ids; the error banner keeps `ErrorBanner`, `ErrorCopy`, `ErrorDismiss`.
+Left rail (brand, six steps with done, current, locked states, a Settings gear, theme toggle), header (project name, score chip), error banner, page area (max width 1080), status bar. Ctrl+1..6 jump to a step. Ctrl+7 and Ctrl+, open Settings. In XAML write digit gestures as `Ctrl+D1`..`Ctrl+D7`: a bare `Ctrl+1` is read as key code 1 (Cancel) and never fires. Settings is not a step: `MainViewModel.IsSettingsOpen` swaps the page and no step is current while it is open. The gear keeps the id `Nav_Settings`. The step buttons keep `Step_<Name>` automation ids; the error banner keeps `ErrorBanner`, `ErrorCopy`, `ErrorDismiss`.
 
 `MainViewModel` adds `ProjectName`, `HasProject`, `HasScore`, `ScoreText`, `StatusText` (additive; nothing renamed).
+
+## Settings page
+
+`SettingsViewModel` and `Views/SettingsView.axaml`. Settings are defaults: Open, Migration setup and Build and run read them when a project is opened, and a choice made on a page for one run wins. Changes save at once through `ISettingsService` (`%APPDATA%/XnaReborn/settings.json`, versioned; a missing, corrupt or newer file gives the defaults and a notice on the page). Tests use `FakeSettingsService`.
+
+- Layout: one `Border.card` per group (Appearance, Migration defaults, Build and run, Recent projects, Privacy and safety). Each setting is a bold label plus a `caption muted` help line; a `ComboBox` sits on the right, a `CheckBox` carries both lines as its content.
+- Give every control an `AutomationId` that starts with `Setting` and a `Name`. Tab order is tested in `SettingsViewTests`.
+- Add a setting: a property on `AppSettings`, a field in `SettingsViewModel` (and its `_saved` list), a row in the view, then read it where the default is applied.
+- Never add a setting that skips the launch question, overwrites an output folder without asking, or uploads anything. `SettingsViewModelTests` checks setting names for such words. The page shows a read-only note: "AI repair is off. Nothing is uploaded."
 
 ## Accessibility rules
 
 - Text and icons meet WCAG AA against their surface in both themes (text on `AccentBrush` uses `OnAccentBrush`). Check new colors against `SurfaceBrush` and `BackgroundBrush`. Disabled and locked steps are exempt, and still say "Locked".
 - Interactive targets are at least 32 px.
 - Status always has an icon and a word.
-- Keep every `AutomationProperties.AutomationId` and `Name`. Tests use them. Shell tab stops (steps, theme toggle) are skipped by page tab-order tests (`IsShellStop` in `KeyboardAccessTests`).
+- Keep every `AutomationProperties.AutomationId` and `Name`. Tests use them. Shell tab stops (steps, Settings gear, theme toggle) are skipped by page tab-order tests (`IsShellStop` in `KeyboardAccessTests`).
 - Full AA validation needs manual checks with assistive tools; contrast here was chosen by hand, not measured by a tool.

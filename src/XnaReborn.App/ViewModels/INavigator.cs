@@ -10,4 +10,7 @@ public interface INavigator
     /// <summary>True when the screen's prerequisites exist in the session, or the screen is the current one or an earlier one.</summary>
     /// <param name="step">The screen to test.</param>
     bool CanGoTo(WorkflowStep step);
+
+    /// <summary>Leaves the Settings page and shows the screen that was current before. Does nothing when Settings is not open.</summary>
+    void CloseSettings();
 }

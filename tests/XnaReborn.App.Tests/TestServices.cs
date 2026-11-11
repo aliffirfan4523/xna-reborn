@@ -38,6 +38,8 @@ public sealed class TestServices : IDisposable
 
     public FakeShellService Shell => Get<FakeShellService>();
 
+    public FakeSettingsService Settings => Get<FakeSettingsService>();
+
     /// <summary>Builds the container. <paramref name="configure"/> runs last, so a test can replace any registration.</summary>
     public static TestServices Create(Action<IServiceCollection>? configure = null)
     {
@@ -49,6 +51,7 @@ public sealed class TestServices : IDisposable
         AddFake<IRecentProjectsStore, FakeRecentProjectsStore>(services);
         AddFake<IClipboardService, FakeClipboardService>(services);
         AddFake<IShellService, FakeShellService>(services);
+        AddFake<ISettingsService, FakeSettingsService>(services);
         AppServices.AddViewModels(services);
         configure?.Invoke(services);
         return new TestServices(services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true }));

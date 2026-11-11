@@ -98,7 +98,8 @@ public sealed class NavigationTests
             {
                 resolved[type] = resolved.GetValueOrDefault(type) + 1;
                 return new ProbePage(type.Name);
-            }));
+            }),
+            new FakeSettingsService());
 
         await main.GoToAsync(WorkflowStep.Open);
         var first = main.CurrentPage;
@@ -116,7 +117,8 @@ public sealed class NavigationTests
         var main = new MainViewModel(
             session,
             new FakeClipboardService(),
-            new StubServiceProvider(type => pages[type] = new ProbePage(type.Name)));
+            new StubServiceProvider(type => pages[type] = new ProbePage(type.Name)),
+            new FakeSettingsService());
 
         await main.GoToAsync(WorkflowStep.Report);
         await main.GoToAsync(WorkflowStep.Open);
@@ -133,7 +135,8 @@ public sealed class NavigationTests
         var main = new MainViewModel(
             session,
             new FakeClipboardService(),
-            new StubServiceProvider(type => new ProbePage(type.Name) { Failure = new InvalidOperationException("boom") }));
+            new StubServiceProvider(type => new ProbePage(type.Name) { Failure = new InvalidOperationException("boom") }),
+            new FakeSettingsService());
 
         await main.GoToAsync(WorkflowStep.Report);
 
@@ -167,6 +170,10 @@ public sealed class NavigationTests
         }
 
         public bool CanGoTo(WorkflowStep step) => true;
+
+        public void CloseSettings()
+        {
+        }
     }
 
     private sealed class StubServiceProvider : IServiceProvider

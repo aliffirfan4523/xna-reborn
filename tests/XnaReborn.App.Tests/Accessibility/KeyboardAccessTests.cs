@@ -188,9 +188,9 @@ public sealed class KeyboardAccessTests
         return window;
     }
 
-    /// <summary>The navigation rail (step buttons and the theme toggle) is not part of a page, so page checks skip it.</summary>
+    /// <summary>The navigation rail (step buttons, Settings and the theme toggle) is not part of a page, so page checks skip it.</summary>
     private static bool IsShellStop(string label) =>
-        !label.StartsWith("Step_", StringComparison.Ordinal) && label != "ThemeToggle";
+        !label.StartsWith("Step_", StringComparison.Ordinal) && label is not ("ThemeToggle" or "Nav_Settings");
 
     /// <summary>The tab stops of the page: everything Tab visits except the navigation rail.</summary>
     private static List<string> PageStops(MainWindow window) =>

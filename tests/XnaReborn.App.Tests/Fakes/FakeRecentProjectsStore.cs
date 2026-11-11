@@ -14,6 +14,8 @@ public sealed class FakeRecentProjectsStore : IRecentProjectsStore
 
     public void Remove(string path) => Items.RemoveAll(i => string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase));
 
+    public void Clear() => Items.Clear();
+
     public void Add(string path, int? score)
     {
         Items.RemoveAll(i => string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase));
