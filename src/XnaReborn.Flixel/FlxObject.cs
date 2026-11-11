@@ -47,6 +47,55 @@ public static class FlxU
 
     /// <summary>Rounds up to a whole number.</summary>
     public static double ceil(double Value) => Math.Ceiling(Value);
+
+    /// <summary>The smaller of two numbers.</summary>
+    public static double min(double Number1, double Number2) => Number1 <= Number2 ? Number1 : Number2;
+
+    /// <summary>The larger of two numbers.</summary>
+    public static double max(double Number1, double Number2) => Number1 >= Number2 ? Number1 : Number2;
+
+    /// <summary>The absolute value.</summary>
+    public static double abs(double Value) => Value > 0 ? Value : -Value;
+
+    /// <summary>The distance between two points.</summary>
+    public static double getDistance(FlxPoint Point1, FlxPoint Point2)
+    {
+        var dx = Point1.x - Point2.x;
+        var dy = Point1.y - Point2.y;
+        return Math.Sqrt((dx * dx) + (dy * dy));
+    }
+
+    /// <summary>
+    /// The angle in degrees from <paramref name="Point1"/> to <paramref name="Point2"/>. 0 points straight up and the angle grows clockwise,
+    /// so right is 90 and down is 180 (or -180 when it comes from the left). Equal points give 0.
+    /// </summary>
+    public static double getAngle(FlxPoint Point1, FlxPoint Point2)
+    {
+        var dx = Point2.x - Point1.x;
+        var dy = Point2.y - Point1.y;
+        return dx == 0 && dy == 0 ? 0 : Math.Atan2(dx, -dy) * 180 / Math.PI;
+    }
+
+    /// <summary>Turns a point around a pivot. A positive angle in degrees turns clockwise on the screen (y points down).</summary>
+    /// <returns><paramref name="Point"/> when given, otherwise a new point.</returns>
+    public static FlxPoint rotatePoint(double X, double Y, double PivotX, double PivotY, double Angle, FlxPoint? Point = null)
+    {
+        var radians = -Angle / 180 * Math.PI;
+        var dx = X - PivotX;
+        var dy = PivotY - Y;
+        Point ??= new FlxPoint();
+        Point.x = PivotX + (Math.Cos(radians) * dx) - (Math.Sin(radians) * dy);
+        Point.y = PivotY - ((Math.Sin(radians) * dx) + (Math.Cos(radians) * dy));
+        return Point;
+    }
+
+    /// <summary>Formats seconds as <c>m:ss</c>, or <c>m:ss.cc</c> (hundredths) with <paramref name="ShowMS"/>.</summary>
+    public static string formatTime(double Seconds, bool ShowMS = false)
+    {
+        var whole = (int)Seconds;
+        var text = $"{whole / 60}:{whole % 60:00}";
+        return ShowMS ? $"{text}.{(int)((Seconds - whole) * 100):00}" : text;
+    }
 }
 
 /// <summary>A basic game object: a position, a size, motion and collision. Written against the public Flixel 2.x API.</summary>
