@@ -60,18 +60,18 @@ Suggested waves (parallel inside a wave):
   - _Requirements: R2, R4_
 
 - [ ] 7. AS3 runtime support (MVP)
-  - [ ] 7.1 `AsArray`, `AsVector<T>`: all methods in R8.1 with AS3 semantics. Tests for edge cases (negative indexes, sparse assignment, `splice` forms, `sort` flags). (H)
-  - [ ] 7.2 `AsObject`, `AsDictionary`, `AsClass` (type form and asset form), `AsFunction` (arity-tolerant call, implicit conversions from `Action` and `Func` with up to 4 arguments). (H)
-  - [ ] 7.3 `AsOps` and `AsGlobals`: `trace`, `getTimer`, `isNaN`, casts (`int()`, `uint()`, `Number()`, `String()`, `Boolean()`), loose equality, `AsCast.To<T>`, unsigned shift helper, `Math` extras. (L)
-  - [ ] 7.4 Tests for 7.1 to 7.3 including NaN and string-to-number cases. (L)
+  - [x] 7.1 `AsArray`, `AsVector<T>`: all methods in R8.1 with AS3 semantics. Tests for edge cases (negative indexes, sparse assignment, `splice` forms, `sort` flags). (H)
+  - [x] 7.2 `AsObject`, `AsDictionary`, `AsClass` (type form and asset form), `AsFunction` (arity-tolerant call, implicit conversions from `Action` and `Func` with up to 4 arguments). (H)
+  - [x] 7.3 `AsOps` and `AsGlobals`: `trace`, `getTimer`, `isNaN`, casts (`int()`, `uint()`, `Number()`, `String()`, `Boolean()`), loose equality, `AsCast.To<T>`, unsigned shift helper, `Math` extras. (L)
+  - [x] 7.4 Tests for 7.1 to 7.3 including NaN and string-to-number cases. (L)
   - _Requirements: R8_
 
 - [ ] 8. Flixel runtime: logic (MVP)
   - [ ] 8.1 `FlxPoint`, `FlxRect`, `FlxU` (math helpers, `getAngle`, `rotatePoint`, `formatTime`, `floor`, `ceil`), `FlxG` constants and random. Ported from the AS3 source with the MIT notice. Tests with hand-computed values. (L)
-  - [ ] 8.2 `FlxBasic`, `FlxObject` (motion, `overlaps`, `separate` helpers, `flicker`, `kill/revive`), `FlxGroup` (`add`, `remove`, `recycle`, `getFirstAvailable`, `countLiving`, `setAll`, `callAll`, `sort`). Tests: group recycling, kill/revive, object motion step. (H)
+  - [x] 8.2 `FlxBasic`, `FlxObject` (motion, `overlaps`, `separate` helpers, `flicker`, `kill/revive`), `FlxGroup` (`add`, `remove`, `recycle`, `getFirstAvailable`, `countLiving`, `setAll`, `callAll`, `sort`). Tests: group recycling, kill/revive, object motion step. (H)
   - [ ] 8.3 `FlxQuadTree`, `FlxList`, and `FlxG.collide` / `overlap` / `separate` / `worldBounds`. Tests: separation on X and Y, one-way platforms, group against group, notify callbacks through `AsFunction`. (H)
   - [ ] 8.4 `FlxTimer` and the timer manager plugin, `FlxPath` (data only), `FlxG` state switching (`switchState`, `resetState`). Tests: ticks, loops, pause. (L)
-  - [ ] 8.5 `FlxState`, `FlxGroup` lifecycle (`create`, `update`, `draw`, `destroy`) wired through a headless `FlxTestHost` that steps the game with no graphics device. Tests: a two-state script runs deterministically. (H)
+  - [x] 8.5 `FlxState`, `FlxGroup` lifecycle (`create`, `update`, `draw`, `destroy`) wired through a headless `FlxTestHost` that steps the game with no graphics device. Tests: a two-state script runs deterministically. (H)
   - _Requirements: R7.1 to R7.6_
 
 - [ ] 9. Flixel runtime: rendering, input, audio (MVP)
