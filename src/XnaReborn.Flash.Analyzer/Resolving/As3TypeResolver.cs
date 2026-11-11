@@ -18,6 +18,8 @@ public sealed class As3TypeResolver
     // shortcut: a hand-written map of the Flixel members the converter and rules need. Task 10.1 replaces it with a map generated from the runtime.
     private static readonly Dictionary<string, string> _flixelBase = new(StringComparer.Ordinal)
     {
+        ["FlxKeyboard"] = "Object",
+        ["Math"] = "Object",
         ["FlxSprite"] = "FlxObject",
         ["FlxObject"] = "FlxBasic",
         ["FlxGroup"] = "FlxBasic",
@@ -37,7 +39,7 @@ public sealed class As3TypeResolver
         ["FlxG.elapsed"] = "Number",
         ["FlxG.score"] = "int",
         ["FlxG.level"] = "int",
-        ["FlxG.keys"] = "Keyboard",
+        ["FlxG.keys"] = "FlxKeyboard",
         ["FlxG.mouse"] = "Mouse",
         ["FlxG.bgColor"] = "uint",
         ["FlxG.volume"] = "Number",
@@ -46,6 +48,37 @@ public sealed class As3TypeResolver
         ["FlxG.random"] = "Number",
         ["FlxG.play"] = "FlxSound",
         ["FlxG.worldBounds"] = "FlxRect",
+        ["FlxKeyboard.LEFT"] = "Boolean",
+        ["FlxKeyboard.RIGHT"] = "Boolean",
+        ["FlxKeyboard.UP"] = "Boolean",
+        ["FlxKeyboard.DOWN"] = "Boolean",
+        ["FlxKeyboard.SPACE"] = "Boolean",
+        ["FlxKeyboard.ENTER"] = "Boolean",
+        ["FlxKeyboard.ESCAPE"] = "Boolean",
+        ["FlxKeyboard.SHIFT"] = "Boolean",
+        ["FlxKeyboard.A"] = "Boolean",
+        ["FlxKeyboard.C"] = "Boolean",
+        ["FlxKeyboard.D"] = "Boolean",
+        ["FlxKeyboard.S"] = "Boolean",
+        ["FlxKeyboard.W"] = "Boolean",
+        ["FlxKeyboard.X"] = "Boolean",
+        ["FlxKeyboard.Z"] = "Boolean",
+        ["FlxKeyboard.pressed"] = "Boolean",
+        ["FlxKeyboard.justPressed"] = "Boolean",
+        ["FlxKeyboard.justReleased"] = "Boolean",
+        ["Math.floor"] = "Number",
+        ["Math.ceil"] = "Number",
+        ["Math.round"] = "Number",
+        ["Math.sqrt"] = "Number",
+        ["Math.abs"] = "Number",
+        ["Math.max"] = "Number",
+        ["Math.min"] = "Number",
+        ["Math.pow"] = "Number",
+        ["Math.sin"] = "Number",
+        ["Math.cos"] = "Number",
+        ["Math.atan2"] = "Number",
+        ["Math.random"] = "Number",
+        ["Math.PI"] = "Number",
         ["FlxPoint.x"] = "Number",
         ["FlxPoint.y"] = "Number",
         ["FlxBasic.exists"] = "Boolean",
@@ -265,7 +298,7 @@ public sealed class As3TypeResolver
 
     /// <summary>True when <paramref name="name"/> names a class of the project or a known Flixel class.</summary>
     /// <param name="name">A simple type name.</param>
-    public bool IsClassName(string name) => _classes.ContainsKey(name) || _flixelBase.ContainsKey(name) || name.StartsWith("Flx", StringComparison.Ordinal);
+    public bool IsClassName(string name) => name == "Math" || _classes.ContainsKey(name) || _flixelBase.ContainsKey(name) || name.StartsWith("Flx", StringComparison.Ordinal);
 
     private string? MemberType(As3MemberAccess m, As3Scope scope)
     {

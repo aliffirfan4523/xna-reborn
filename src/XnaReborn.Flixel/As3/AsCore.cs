@@ -211,6 +211,53 @@ public static class AsOps
         return ReferenceEquals(a, b) || a.Equals(b);
     }
 
+    /// <summary>The AS3 <c>Math.round</c>: halves round up (towards positive infinity).</summary>
+    public static double Round(double value) => Math.Floor(value + 0.5);
+
+    /// <summary>The AS3 <c>Math.random</c>: a number from 0 up to but not including 1.</summary>
+    public static double Random() => System.Random.Shared.NextDouble();
+
+    /// <summary>The AS3 <c>typeof</c> operator.</summary>
+    public static string TypeOf(object? value) => value switch
+    {
+        null => "object",
+        string => "string",
+        bool => "boolean",
+        AsFunction => "function",
+        _ when value.GetType().IsPrimitive => "number",
+        _ => "object",
+    };
+
+    /// <summary>The AS3 <c>in</c> operator: true when the object has the property (or the array has the index).</summary>
+    public static bool In(object? key, object? container) => container switch
+    {
+        AsObject o => o.hasOwnProperty(ToAsString(key)),
+        AsDictionary d => d.Keys.Any(k => Equals(k, key)),
+        AsArray a => ToInt(key) >= 0 && ToInt(key) < a.length,
+        _ => false,
+    };
+
+    /// <summary>The property names a <c>for (var k in obj)</c> loop visits: object keys, or array indexes as strings.</summary>
+    public static IEnumerable<string> KeysOf(object? container) => container switch
+    {
+        AsObject o => o.Keys,
+        AsDictionary d => d.Keys.Select(k => ToAsString(k)).ToList(),
+        AsArray a => Enumerable.Range(0, a.length).Select(i => i.ToString(CultureInfo.InvariantCulture)).ToList(),
+        _ => Enumerable.Empty<string>(),
+    };
+
+    /// <summary>The values a <c>for each (var v in obj)</c> loop visits.</summary>
+    public static IEnumerable<dynamic?> ValuesOf(object? container) => container switch
+    {
+        AsObject o => o.Select(p => (dynamic?)p.Value).ToList(),
+        AsDictionary d => d.Keys.Select(k => (dynamic?)d[k]).ToList(),
+        System.Collections.IEnumerable e and not string => e.Cast<object?>().Select(x => (dynamic?)x).ToList(),
+        _ => Enumerable.Empty<dynamic?>(),
+    };
+
+    /// <summary>The exception a <c>throw</c> raises: the value itself when it is an exception, otherwise a wrapper that keeps the value.</summary>
+    public static Exception ToException(object? value) => value as Exception ?? new AsError(value);
+
     /// <summary>The AS3 <c>&gt;&gt;&gt;</c> operator on a number: convert to int, then shift as unsigned.</summary>
     public static uint UnsignedShiftRight(double value, int count) => unchecked((uint)ToInt(value)) >> (count & 31);
 }
@@ -280,4 +327,15 @@ public static class AsCast
 
         return default;
     }
+}
+
+/// <summary>An exception that carries any thrown AS3 value.</summary>
+public sealed class AsError : Exception
+{
+    /// <summary>Creates the exception.</summary>
+    public AsError(object? value)
+        : base(AsOps.ToAsString(value)) => Value = value;
+
+    /// <summary>The thrown value.</summary>
+    public object? Value { get; }
 }

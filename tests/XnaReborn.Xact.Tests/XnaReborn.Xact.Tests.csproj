@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\XnaReborn.Core\XnaReborn.Core.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
+    <ProjectReference Include="..\..\src\XnaReborn.Migrator\XnaReborn.Migrator.csproj" />
+  </ItemGroup>
+
+  <!-- The shim sources are compiled into this test assembly, so the tests reach its internals and run it against the real MonoGame assembly. -->
+  <ItemGroup>
+    <Compile Include="..\..\src\XnaReborn.Migrator\Shims\Xact\*.cs" Link="Shim\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

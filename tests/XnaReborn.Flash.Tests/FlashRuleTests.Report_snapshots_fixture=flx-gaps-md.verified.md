@@ -1,9 +1,9 @@
 ﻿# Flash project report
 
 - Kind: Flash
-- Entry class: none
+- Entry class: GapGame
 - Flixel version: unknown
-- Source files: 13
+- Source files: 14
 - Score: 0 (projected 0)
 
 ## Findings
@@ -19,7 +19,6 @@
 - FL044 Error Unsupported: flash.external or Security src/GapImports.as:5
 - FL045 Error Unsupported: Filters and blend modes src/GapFlixelApi.as:12
 - FL052 Error Manual: Flixel stage access src/GapFlixelApi.as:14
-- FL060 Error Manual: No or several FlxGame entry classes
 - FL022 Warning Manual: 'arguments' object src/GapArguments.as:7
 - FL023 Warning AutoFixable: Untyped variable or '*' type src/GapUntyped.as:5
 - FL023 Warning AutoFixable: Untyped variable or '*' type src/GapUntyped.as:7
@@ -37,6 +36,7 @@
 - FL053 Warning Manual: Flixel plugins or replay src/GapFlixelApi.as:4
 - FL001 Info AutoFixable: Flixel 2.x library in use src/GapFlixelApi.as:3
 - FL001 Info AutoFixable: Flixel 2.x library in use src/GapFlixelApi.as:4
+- FL001 Info AutoFixable: Flixel 2.x library in use src/GapGame.as:3
 - FL026 Info AutoFixable: Function values and closures src/GapClosure.as:8
 - FL027 Info AutoFixable: Integer division changes meaning src/GapNumbers.as:9
 - FL028 Info AutoFixable: Number default is NaN src/GapNumbers.as:5
