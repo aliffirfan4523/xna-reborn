@@ -6,7 +6,7 @@ namespace XnaReborn.Tests.Fixtures;
 /// <summary>Checks that the fixture projects are well formed, self-consistent, and properly attributed.</summary>
 public partial class FixtureIntegrityTests
 {
-    private static readonly string[] _xmlExtensions = [".csproj", ".contentproj", ".spritefont", ".projitems", ".shproj", ".config", ".definition"];
+    private static readonly string[] _xmlExtensions = [".csproj", ".vbproj", ".contentproj", ".spritefont", ".projitems", ".shproj", ".config", ".definition"];
 
     [GeneratedRegex(@"^Project\(""\{[^}]+\}""\) = ""[^""]+"", ""(?<path>[^""]+)"", ""\{(?<guid>[^}]+)\}""", RegexOptions.Multiline)]
     private static partial Regex SolutionProjectLine();
@@ -17,7 +17,7 @@ public partial class FixtureIntegrityTests
         Directory.EnumerateFiles(FixturePaths.Of(name), "*", SearchOption.AllDirectories);
 
     private static IEnumerable<string> ProjectFiles(string name) =>
-        Files(name).Where(f => f.EndsWith(".csproj", StringComparison.Ordinal) || f.EndsWith(".contentproj", StringComparison.Ordinal));
+        Files(name).Where(f => f.EndsWith(".csproj", StringComparison.Ordinal) || f.EndsWith(".vbproj", StringComparison.Ordinal) || f.EndsWith(".contentproj", StringComparison.Ordinal));
 
     private static string Read(string name, string relative) =>
         File.ReadAllText(Path.Combine(FixturePaths.Of(name), relative.Replace('/', Path.DirectorySeparatorChar)));

@@ -111,7 +111,7 @@ public sealed class ProjectAnalyzer
             var directory = Path.GetDirectoryName(project.FullPath) ?? discovery.Root;
             findings.AddRange(engine.EvaluateProject(read, directory, project.RelativePath, cancellationToken));
 
-            var scan = await scanner.ScanAsync(read, directory, discovery.Root, project.RelativePath, engine.SourceRulesFor(read.Info.Family), progress, cancellationToken).ConfigureAwait(false);
+            var scan = await scanner.ScanAsync(read, directory, discovery.Root, project.RelativePath, engine.SourceRulesFor(read.Info.Family, read.Info.Language), progress, cancellationToken).ConfigureAwait(false);
             findings.AddRange(scan.Findings);
             diagnostics.AddRange(scan.Diagnostics);
             progress?.Report(new AnalysisProgress("Reading projects", i + 1, analyzed.Count, project.RelativePath));

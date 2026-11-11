@@ -1,0 +1,96 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "Game/Game.csproj",
+      "assemblyName": "MixedGame",
+      "isXna": true,
+      "xnaVersion": "4.0",
+      "platform": "Windows",
+      "profile": null,
+      "targetFramework": "v4.0",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game"
+      ],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    },
+    {
+      "path": "Lib/Lib.vbproj",
+      "assemblyName": "MixedLib",
+      "isXna": true,
+      "xnaVersion": "4.0",
+      "platform": "Windows",
+      "profile": null,
+      "targetFramework": "v4.0",
+      "references": [
+        "Microsoft.Xna.Framework"
+      ],
+      "compileFiles": [
+        "Helper.vb"
+      ],
+      "defineConstants": [
+        "WINDOWS",
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "language": "vb"
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Game/Game.csproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\Microsoft.Xna.GameStudio.targets"
+    },
+    {
+      "ruleId": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Lib/Lib.vbproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\Microsoft.Xna.GameStudio.targets"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "explanation": "The project imports the XNA build targets.",
+      "resolution": "The migrator writes an SDK-style project.",
+      "migratorTask": "project-migrator:4.1"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 2,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 2,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 99,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}
