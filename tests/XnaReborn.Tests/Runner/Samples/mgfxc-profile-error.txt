@@ -1,0 +1,2 @@
+Invalid profile 'vs_2_0'. Vertex shader 'MainVS' must be SM 4.0 level 9.1 or higher!
+Unexpected error compiling 'C:/work/obj/Sm2.fx'!
