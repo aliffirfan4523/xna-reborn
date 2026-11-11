@@ -9,6 +9,11 @@
     "$schema": { "type": "string" },
     "version": { "const": 1, "description": "Catalog schema version." },
     "name": { "type": "string", "minLength": 1 },
+    "appliesTo": {
+      "enum": ["xna", "monogame"],
+      "default": "xna",
+      "description": "Project family the catalog runs against. Omit for XNA projects."
+    },
     "scoring": { "$ref": "#/$defs/scoring" },
     "rules": {
       "type": "array",
@@ -57,7 +62,7 @@
       "required": ["id", "title", "severity", "classification", "match", "explanation", "resolution"],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^XNA[0-9]{3}$" },
+        "id": { "type": "string", "pattern": "^(XNA|MG)[0-9]{3}$" },
         "title": { "type": "string", "minLength": 1, "maxLength": 100 },
         "severity": { "$ref": "#/$defs/severity" },
         "classification": { "$ref": "#/$defs/classification" },
@@ -96,7 +101,8 @@
         { "$ref": "#/$defs/matchProjectItem" },
         { "$ref": "#/$defs/matchFilePattern" },
         { "$ref": "#/$defs/matchContentItem" },
-        { "$ref": "#/$defs/matchSpriteFontFamily" }
+        { "$ref": "#/$defs/matchSpriteFontFamily" },
+        { "$ref": "#/$defs/matchMgcbSetting" }
       ]
     },
     "matchReference": {
@@ -172,7 +178,19 @@
       "properties": {
         "type": { "const": "projectItem" },
         "itemType": { "type": "string", "minLength": 1 },
-        "include": { "type": "string", "minLength": 1 }
+        "include": { "type": "string", "minLength": 1 },
+        "metadata": {
+          "description": "Optional filter on one attribute or child element of the item, for example the Version of a PackageReference. An item without that metadata passes notEquals and fails equals and matches.",
+          "type": "object",
+          "required": ["name"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "equals": { "type": "string" },
+            "notEquals": { "type": "string" },
+            "matches": { "type": "string", "description": ".NET regular expression." }
+          }
+        }
       }
     },
     "matchFilePattern": {
@@ -217,6 +235,21 @@
           "uniqueItems": true,
           "items": { "type": "string", "minLength": 1 }
         }
+      }
+    },
+    "matchMgcbSetting": {
+      "description": "A setting, reference, or entry in a Content.mgcb file. For platform, profile, config, compress, and reference, the value is compared with equals or matches (no filter: any value). For entry, importer, processor, and nonStandardPair filter the entries. A reference value is the path as written.",
+      "type": "object",
+      "required": ["type", "setting"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "mgcbSetting" },
+        "setting": { "enum": ["platform", "profile", "config", "compress", "reference", "entry"] },
+        "equals": { "type": "string" },
+        "matches": { "type": "string", "description": ".NET regular expression." },
+        "importer": { "type": "string", "minLength": 1 },
+        "processor": { "type": "string", "minLength": 1 },
+        "nonStandardPair": { "type": "boolean" }
       }
     }
   }

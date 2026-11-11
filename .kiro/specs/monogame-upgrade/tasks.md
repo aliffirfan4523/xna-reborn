@@ -15,7 +15,7 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 2.3 Test that every fixture folder is listed in a table in `tests/fixtures/README.md` with the rules it is positive for
   - _Requirements: R11, R12_
 
-- [ ] 3. Core models, mgcb parser, schema
+- [x] 3. Core models, mgcb parser, schema
   - [ ] 3.1 Add `ProjectFamily`, `MonoGameBand`, `MonoGameVersionInfo`, `MonoGamePlatform`, and the new `ProjectInfo` fields with defaults. Existing tests must pass unchanged
   - [ ] 3.2 Add `MgcbFile` and `MgcbParser` (text in, model out, line numbers). Tests: globals, references, entries with parameters, comments, CRLF and LF, a malformed line (kept as a Diagnostic, not an exception)
   - [ ] 3.3 Update `RuleSchema.json`: id pattern `^(XNA|MG)[0-9]{3}$`, optional `appliesTo`, `matchMgcbSetting`, optional `metadata` on `matchProjectItem`. Add `RuleMatch` records for the new type. Existing catalog tests must pass unchanged

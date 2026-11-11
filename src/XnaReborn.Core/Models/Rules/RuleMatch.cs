@@ -48,9 +48,22 @@ public sealed record ProjectPropertyMatch(
 /// <summary>An item in a project file, such as Reference, Compile, NestedContentProject, or Import.</summary>
 /// <param name="ItemType">The item type.</param>
 /// <param name="Include">Item include value (the Project attribute for Import), or null for any. A * is a wildcard.</param>
+/// <param name="Metadata">Optional filter on one attribute or child element of the item, or null for no filter.</param>
 public sealed record ProjectItemMatch(
     string ItemType,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Include = null) : RuleMatch;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Include = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] MetadataFilter? Metadata = null) : RuleMatch;
+
+/// <summary>A filter on one metadata value of a project item, such as the Version of a PackageReference.</summary>
+/// <param name="Name">Attribute or child element name, compared ignoring case.</param>
+/// <param name="EqualsValue">Required exact value (JSON "equals"), or null.</param>
+/// <param name="NotEquals">Value the metadata must differ from, or null. An item without the metadata matches.</param>
+/// <param name="MatchesPattern">.NET regular expression the value must match (JSON "matches"), or null.</param>
+public sealed record MetadataFilter(
+    string Name,
+    [property: JsonPropertyName("equals"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? EqualsValue = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? NotEquals = null,
+    [property: JsonPropertyName("matches"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? MatchesPattern = null);
 
 /// <summary>A file under the project folder that matches a glob.</summary>
 /// <param name="Glob">The glob pattern, for example **/*.xap.</param>
@@ -70,3 +83,18 @@ public sealed record ContentItemMatch(
 /// <summary>A .spritefont file whose FontName is one of the listed font families. Looks in the project folder and in each nested content project folder.</summary>
 /// <param name="Families">Font family names, compared case-insensitively with the FontName element.</param>
 public sealed record SpriteFontFamilyMatch(IReadOnlyList<string> Families) : RuleMatch;
+
+/// <summary>A setting, reference, or entry in a Content.mgcb file.</summary>
+/// <param name="Setting">One of platform, profile, config, compress, reference, or entry.</param>
+/// <param name="EqualsValue">Required exact value (JSON "equals"), or null. Not used with entry.</param>
+/// <param name="MatchesPattern">.NET regular expression the value must match (JSON "matches"), or null. Not used with entry.</param>
+/// <param name="Importer">With entry: importer name filter, or null. A trailing * is a wildcard.</param>
+/// <param name="Processor">With entry: processor name filter, or null. A trailing * is a wildcard.</param>
+/// <param name="NonStandardPair">With entry: when true, the entry must use an importer or processor that is not a stock pair.</param>
+public sealed record MgcbSettingMatch(
+    string Setting,
+    [property: JsonPropertyName("equals"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? EqualsValue = null,
+    [property: JsonPropertyName("matches"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? MatchesPattern = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Importer = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Processor = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool NonStandardPair = false) : RuleMatch;

@@ -59,6 +59,52 @@ public static class RuleCatalogLoader
         return Task.Run(() => Load(path, fileSystem, cancellationToken), cancellationToken);
     }
 
+    /// <summary>Loads several catalog files and checks that no rule id appears in two of them.</summary>
+    /// <param name="paths">Absolute paths of the catalog files.</param>
+    /// <param name="fileSystem">Read-only file system used to read the files.</param>
+    /// <param name="cancellationToken">Cancels the load.</param>
+    /// <returns>The catalogs, in the order of <paramref name="paths"/>.</returns>
+    /// <exception cref="RuleCatalogException">A file is missing or invalid, or an id is defined twice.</exception>
+    /// <exception cref="OperationCanceledException">The token was cancelled.</exception>
+    public static async Task<IReadOnlyList<RuleCatalog>> LoadAllAsync(IReadOnlyList<string> paths, IReadOnlyFileSystem fileSystem, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(paths);
+        ArgumentNullException.ThrowIfNull(fileSystem);
+        var catalogs = new List<RuleCatalog>();
+        foreach (var path in paths)
+        {
+            catalogs.Add(await LoadAsync(path, fileSystem, cancellationToken).ConfigureAwait(false));
+        }
+
+        EnsureUniqueIds(catalogs);
+        return catalogs;
+    }
+
+    /// <summary>Checks that no rule id appears in two of the catalogs.</summary>
+    /// <param name="catalogs">Catalogs that will run together.</param>
+    /// <exception cref="RuleCatalogException">An id is defined in more than one catalog. Every duplicate is listed.</exception>
+    public static void EnsureUniqueIds(IReadOnlyList<RuleCatalog> catalogs)
+    {
+        ArgumentNullException.ThrowIfNull(catalogs);
+        var firstCatalogById = new Dictionary<string, int>(StringComparer.Ordinal);
+        var errors = new List<string>();
+        for (var i = 0; i < catalogs.Count; i++)
+        {
+            foreach (var rule in catalogs[i].Rules)
+            {
+                if (!firstCatalogById.TryAdd(rule.Id, i) && firstCatalogById[rule.Id] != i)
+                {
+                    errors.Add($"{rule.Id} catalog '{catalogs[i].Name}': duplicate rule id (also defined in catalog '{catalogs[firstCatalogById[rule.Id]].Name}').");
+                }
+            }
+        }
+
+        if (errors.Count > 0)
+        {
+            throw Invalid(errors);
+        }
+    }
+
     private static RuleCatalogException Invalid(IReadOnlyList<string> errors) =>
         new($"Rule catalog is invalid: {errors.Count} problem(s).", errors);
 
