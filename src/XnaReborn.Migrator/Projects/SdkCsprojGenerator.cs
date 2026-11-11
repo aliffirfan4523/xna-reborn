@@ -47,7 +47,7 @@ public sealed class SdkCsprojGenerator
         ArgumentNullException.ThrowIfNull(source);
         var info = source.Info;
         var packages = _selector.Select(target);
-        var hasContent = info.ContentProjects.Count > 0;
+        var hasContent = info.ContentProjects.Count > 0 || info.ContentItems.Any(i => i.InProject);
 
         var sb = new StringBuilder();
         sb.Append("<Project Sdk=\"Microsoft.NET.Sdk\">\n\n");

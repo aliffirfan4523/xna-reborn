@@ -147,7 +147,8 @@ public sealed class ContentConverter
             .Select(p => p.Replace('\\', '/'))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
-        if (contentProjectPaths.Count == 0)
+        var inProjectItems = gameProject.Info.ContentItems.Where(i => i.InProject).ToList();
+        if (contentProjectPaths.Count == 0 && inProjectItems.Count == 0)
         {
             return new ContentConversionResult([], ContentReport.Create([], []), [], null);
         }
@@ -162,10 +163,18 @@ public sealed class ContentConverter
             projects.Add(new ContentProject(relative, full, reader.Read(full, root)));
         }
 
+        // XNA Game Studio Express 1.0 lists content inside the game project: treat the game project as a content project that has those items.
+        if (inProjectItems.Count > 0)
+        {
+            var gameFull = Path.GetFullPath(Path.Combine(root, ToNative(gameProject.Info.Path)));
+            projects.Add(new ContentProject(gameProject.Info.Path, gameFull, new ContentProjectReadResult(inProjectItems, gameProject.Properties, [], []), IsInProject: true));
+        }
+
         // Step 3: one content root for the whole game.
         var good = projects.Where(p => p.Read.Diagnostics.Count == 0).ToList();
         var first = good.Count > 0 ? good[0] : null;
-        var contentRoot = first?.Read.ContentRootDirectory ?? _defaultContentRoot;
+        // Content that only lives in the game project keeps its "Content/" folder in the asset name, so Content.mgcb goes next to the project file.
+        var contentRoot = good.Count > 0 && good.All(p => p.IsInProject) ? string.Empty : first?.Read.ContentRootDirectory ?? _defaultContentRoot;
         foreach (var other in good.Skip(1).Where(p => !string.Equals(p.Read.ContentRootDirectory, contentRoot, StringComparison.Ordinal)))
         {
             notes.Add($"{other.RelativePath}: its ContentRootDirectory is '{other.Read.ContentRootDirectory}', but this game uses '{contentRoot}' from {first!.RelativePath}. All its content was put in one folder.");
@@ -537,7 +546,7 @@ public sealed class ContentConverter
     private static void ToManual(Slot slot, string note) =>
         slot.Asset = slot.Asset with { Status = AssetStatus.ManualWork, Note = note };
 
-    private static string RelativeToFolder(Slot slot, string folder) => slot.OutputPath[(folder.Length + 1)..];
+    private static string RelativeToFolder(Slot slot, string folder) => folder.Length == 0 ? slot.OutputPath : slot.OutputPath[(folder.Length + 1)..];
 
     private static void AddEntry(Slot slot, string folder, List<MgcbEntry> entries, List<string> notes)
     {
@@ -575,7 +584,7 @@ public sealed class ContentConverter
         copyPaths.Add(path);
     }
 
-    private sealed record ContentProject(string RelativePath, string FullPath, ContentProjectReadResult Read);
+    private sealed record ContentProject(string RelativePath, string FullPath, ContentProjectReadResult Read, bool IsInProject = false);
 
     private sealed class Slot(ContentProject project, ConvertedAsset asset)
     {
