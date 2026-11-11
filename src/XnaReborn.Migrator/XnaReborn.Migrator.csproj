@@ -14,6 +14,12 @@
     <EmbeddedResource Include="Content\data\xna-only-fonts.json" LogicalName="XnaReborn.Migrator.Content.xna-only-fonts.json" />
   </ItemGroup>
 
+  <!-- The XACT shim is real C# so that tests compile and run it against MonoGame. The migrator embeds the files and writes them into a migrated copy. -->
+  <ItemGroup>
+    <Compile Remove="Shims\Xact\**" />
+    <EmbeddedResource Include="Shims\Xact\*.cs" LogicalName="XnaReborn.Migrator.Shims.Xact.%(Filename)%(Extension)" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="DiffPlex" />
   </ItemGroup>

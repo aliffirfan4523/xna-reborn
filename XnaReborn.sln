@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaReborn.Flash.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaReborn.Flixel.Tests", "tests\XnaReborn.Flixel.Tests\XnaReborn.Flixel.Tests.csproj", "{12FEFB8E-9471-4D74-B99B-F435B524FC1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaReborn.Xact.Tests", "tests\XnaReborn.Xact.Tests\XnaReborn.Xact.Tests.csproj", "{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -199,6 +201,18 @@ Global
 		{12FEFB8E-9471-4D74-B99B-F435B524FC1A}.Release|x64.Build.0 = Release|Any CPU
 		{12FEFB8E-9471-4D74-B99B-F435B524FC1A}.Release|x86.ActiveCfg = Release|Any CPU
 		{12FEFB8E-9471-4D74-B99B-F435B524FC1A}.Release|x86.Build.0 = Release|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Debug|x64.Build.0 = Debug|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Release|x64.ActiveCfg = Release|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Release|x64.Build.0 = Release|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -217,5 +231,6 @@ Global
 		{BC7B7060-B60B-4E8F-8DBA-83DF43749357} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{243FFEBB-6CA8-4F70-8EF6-4E517AFF778B} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{12FEFB8E-9471-4D74-B99B-F435B524FC1A} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{6C0F38B0-58DD-4F42-A24B-905AC3B941FB} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
