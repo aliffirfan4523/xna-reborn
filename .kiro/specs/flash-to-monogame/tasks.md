@@ -69,7 +69,7 @@ Suggested waves (parallel inside a wave):
 - [ ] 8. Flixel runtime: logic (MVP)
   - [x] 8.1 `FlxPoint`, `FlxRect`, `FlxU` (math helpers, `getAngle`, `rotatePoint`, `formatTime`, `floor`, `ceil`), `FlxG` constants and random. Ported from the AS3 source with the MIT notice. Tests with hand-computed values. (L)
   - [x] 8.2 `FlxBasic`, `FlxObject` (motion, `overlaps`, `separate` helpers, `flicker`, `kill/revive`), `FlxGroup` (`add`, `remove`, `recycle`, `getFirstAvailable`, `countLiving`, `setAll`, `callAll`, `sort`). Tests: group recycling, kill/revive, object motion step. (H)
-  - [ ] 8.3 `FlxQuadTree`, `FlxList`, and `FlxG.collide` / `overlap` / `separate` / `worldBounds`. Tests: separation on X and Y, one-way platforms, group against group, notify callbacks through `AsFunction`. (H)
+  - [x] 8.3 `FlxQuadTree`, `FlxList`, and `FlxG.collide` / `overlap` / `separate` / `worldBounds`. Tests: separation on X and Y, one-way platforms, group against group, notify callbacks through `AsFunction`. (H)
   - [x] 8.4 `FlxTimer` and the timer manager plugin, `FlxPath` (data only), `FlxG` state switching (`switchState`, `resetState`). Tests: ticks, loops, pause. (L)
   - [x] 8.5 `FlxState`, `FlxGroup` lifecycle (`create`, `update`, `draw`, `destroy`) wired through a headless `FlxTestHost` that steps the game with no graphics device. Tests: a two-state script runs deterministically. (H)
   - _Requirements: R7.1 to R7.6_

@@ -182,6 +182,12 @@ public static class FlxG
     /// <summary>Seed of <see cref="random"/>, a number from 0 to 1. Set it to repeat a sequence.</summary>
     public static double globalSeed = Random.Shared.NextDouble();
 
+    /// <summary>The box that collisions are tested in. Objects entirely outside it are ignored.</summary>
+    public static FlxRect worldBounds = new(-10, -10, 330, 260);
+
+    /// <summary>How many times the world box is split by the quad tree.</summary>
+    public static int worldDivisions = 6;
+
     /// <summary>The state that is running, or null before the game starts.</summary>
     public static FlxState? state { get; private set; }
 
@@ -198,6 +204,8 @@ public static class FlxG
         height = Height;
         elapsed = 0;
         camera = new FlxCamera();
+        worldBounds = new FlxRect(-10, -10, Width + 20, Height + 20);
+        worldDivisions = 6;
         keys = new FlxKeyboard();
         state = null;
         _requested = null;
@@ -315,80 +323,15 @@ public static class FlxG
     /// Calls <paramref name="NotifyCallback"/> for each pair of objects that overlap. With <paramref name="ProcessCallback"/>
     /// a pair only counts when the callback returns true.
     /// </summary>
-    // shortcut: tests every pair (O(n*m)) instead of Flixel's quad tree; fine for a few hundred objects. Add FlxQuadTree if a game needs more.
     public static bool overlap(FlxBasic? ObjectOrGroup1 = null, FlxBasic? ObjectOrGroup2 = null, AsFunction? NotifyCallback = null, AsFunction? ProcessCallback = null) =>
         Run(ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, ProcessCallback is null ? null : (a, b) => AsOps.ToBoolean(ProcessCallback.Call(a, b)));
 
     private static bool Run(FlxBasic? ObjectOrGroup1, FlxBasic? ObjectOrGroup2, AsFunction? NotifyCallback, Func<FlxObject, FlxObject, bool>? ProcessCallback)
     {
         ObjectOrGroup1 ??= state;
-        var first = Flatten(ObjectOrGroup1);
-        var same = ObjectOrGroup2 is null || ReferenceEquals(ObjectOrGroup1, ObjectOrGroup2);
-        var second = same ? first : Flatten(ObjectOrGroup2);
-        var hit = false;
-        for (var i = 0; i < first.Count; i++)
-        {
-            for (var j = same ? i + 1 : 0; j < second.Count; j++)
-            {
-                var a = first[i];
-                var b = second[j];
-                if (ReferenceEquals(a, b) || !a.exists || !b.exists || a.allowCollisions == FlxObject.NONE || b.allowCollisions == FlxObject.NONE)
-                {
-                    continue;
-                }
-
-                if (ProcessCallback is null ? !a.overlaps(b) : !SweptOverlap(a, b))
-                {
-                    continue;
-                }
-
-                if (ProcessCallback is not null && !ProcessCallback(a, b))
-                {
-                    continue;
-                }
-
-                hit = true;
-                NotifyCallback?.Call(a, b);
-            }
-        }
-
-        return hit;
-    }
-
-    private static bool SweptOverlap(FlxObject a, FlxObject b)
-    {
-        var ax = Math.Min(a.x, a.last.x);
-        var aw = a.width + Math.Abs(a.x - a.last.x);
-        var ay = Math.Min(a.y, a.last.y);
-        var ah = a.height + Math.Abs(a.y - a.last.y);
-        var bx = Math.Min(b.x, b.last.x);
-        var bw = b.width + Math.Abs(b.x - b.last.x);
-        var by = Math.Min(b.y, b.last.y);
-        var bh = b.height + Math.Abs(b.y - b.last.y);
-        return ax + aw > bx && ax < bx + bw && ay + ah > by && ay < by + bh;
-    }
-
-    private static List<FlxObject> Flatten(FlxBasic? root)
-    {
-        var list = new List<FlxObject>();
-        void Add(FlxBasic? b)
-        {
-            switch (b)
-            {
-                case FlxGroup g when g.exists:
-                    foreach (var m in g.members)
-                    {
-                        Add(m);
-                    }
-
-                    break;
-                case FlxObject o when o.exists:
-                    list.Add(o);
-                    break;
-            }
-        }
-
-        Add(root);
-        return list;
+        var tree = new FlxQuadTree(worldBounds.x, worldBounds.y, worldBounds.width, worldBounds.height);
+        FlxQuadTree.divisions = worldDivisions;
+        tree.load(ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, ProcessCallback);
+        return tree.execute();
     }
 }
