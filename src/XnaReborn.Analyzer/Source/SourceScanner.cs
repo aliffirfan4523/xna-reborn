@@ -97,7 +97,7 @@ public sealed class SourceScanner
             {
                 ct.ThrowIfCancellationRequested();
                 var relative = Relative(root, files[index]);
-                results[index] = ScanFile(files[index], relative, options, projectRelativePath, sourceRules);
+                results[index] = ScanFile(files[index], relative, options, projectRelativePath, sourceRules, project.Info.Language);
                 var done = Interlocked.Increment(ref completed);
                 progress?.Report(new AnalysisProgress("Scanning source", done, files.Count, relative));
                 return ValueTask.CompletedTask;
@@ -121,7 +121,8 @@ public sealed class SourceScanner
         string relative,
         CSharpParseOptions options,
         string projectRelativePath,
-        IReadOnlyList<Rule> rules)
+        IReadOnlyList<Rule> rules,
+        SourceLanguage language)
     {
         var diagnostics = new List<Diagnostic>();
         string text;
@@ -166,7 +167,7 @@ public sealed class SourceScanner
                 x.Match.Rule.Id,
                 x.Match.Rule.Title,
                 x.Match.Rule.Severity,
-                x.Match.Rule.Classification,
+                x.Match.Rule.EffectiveClassification(language),
                 projectRelativePath,
                 new SourceLocation(relative, x.Match.Line, x.Match.Column),
                 x.Match.Snippet))

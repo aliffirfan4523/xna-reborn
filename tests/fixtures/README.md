@@ -12,6 +12,16 @@ Fixtures for the `older-and-vb` spec (rules `XNA100` to `XNA105`). Each README l
 | `xna10-clean` | Express 1.0 project that uses none of the removed APIs (negative) |
 | `xna20-vs2005` | 2.0 solution in format 9.00: Windows game, Xbox 360 project, nested `Content.contentproj`, `RenderState`, `Effect.Begin` |
 
+## Visual Basic fixtures
+
+Fixtures for Part B of the `older-and-vb` spec.
+
+| Fixture | Shape |
+|---|---|
+| `vb-xna40-basic` | VB 4.0 game: VB project type GUID, project-level `Import` items, `#If WINDOWS OrElse XBOX Then` around `Shared Sub Main`, comma separated defines, content project reference |
+| `vb-xna31-handmade` | Hand-made VB 3.1 project: plain references only, `MyType` WindowsForms, `SpriteBlendMode`, `With ... RenderState`, `fx.Begin` without parentheses, one `My.Application` call |
+| `vb-monogame-already` | SDK-style VB project on MonoGame 3.8.6.1 (negative: not XNA) |
+| `mixed-cs-vb-sln` | Solution with a C# XNA game and a VB XNA library |
 ## MonoGame upgrade fixtures
 
 Fixtures for the `monogame-upgrade` spec (rules `MG001` to `MG032`). The "Positive for" column lists the rules the fixture must trigger. `mg38-current` is the default negative and scores 100. A test checks that every folder is listed here with the same rules as `FixturePaths.MonoGamePositives`.

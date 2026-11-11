@@ -85,6 +85,7 @@ public sealed class ProjectReader
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+        var isVb = ProjectLanguage.FromPath(projectFullPath) == SourceLanguage.VisualBasic;
         var compileFiles = new List<string>();
         foreach (var item in items.Where(i => i.ItemType == "Compile"))
         {
@@ -96,7 +97,7 @@ public sealed class ProjectReader
         if (isMonoGame && MonoGameProjectDetector.IsSdkStyle(document) && !string.Equals(Prop(properties, "EnableDefaultCompileItems"), "false", StringComparison.OrdinalIgnoreCase))
         {
             var listed = new HashSet<string>(compileFiles, StringComparer.Ordinal);
-            foreach (var file in ProjectXml.ExpandCompile(_fileSystem, projectDirectory, "**/*.cs", ct).Where(f => !IsBuildOutput(f)))
+            foreach (var file in ProjectXml.ExpandCompile(_fileSystem, projectDirectory, isVb ? "**/*.vb" : "**/*.cs", ct).Where(f => !IsBuildOutput(f)))
             {
                 if (listed.Add(file))
                 {
@@ -107,7 +108,7 @@ public sealed class ProjectReader
 
         var defines = ProjectXml.PropertyElements(document)
             .Where(e => e.Name.LocalName == "DefineConstants")
-            .SelectMany(e => e.Value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .SelectMany(e => e.Value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).SelectMany(Symbols))
             .Distinct(StringComparer.Ordinal)
             .ToList();
 
@@ -150,9 +151,17 @@ public sealed class ProjectReader
             family,
             monoGame?.Version,
             monoGame?.Platform ?? MonoGamePlatform.Unknown,
-            mgcbFiles.Count == 0 ? null : mgcbFiles.Select(m => m.Path).ToList());
-        return new ProjectReadResult(info, properties, items, diagnostics, packagesResult.Packages, mgcbFiles);
+            mgcbFiles.Count == 0 ? null : mgcbFiles.Select(m => m.Path).ToList(),
+            ProjectLanguage.FromPath(projectFullPath));
+        var implicitImports = isVb ? items.Where(i => i.ItemType == "NamespaceImport").Select(i => i.Include.Trim()).Distinct(StringComparer.Ordinal).ToList() : null;
+        return new ProjectReadResult(info, properties, items, diagnostics, packagesResult.Packages, mgcbFiles, implicitImports);
     }
+
+    // Visual Basic DefineConstants may be separated by commas and may carry values (NAME=value). Only the name matters.
+    private static IEnumerable<string> Symbols(string entry) =>
+        entry.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(s => s.Contains('=', StringComparison.Ordinal) ? s[..s.IndexOf('=', StringComparison.Ordinal)].Trim() : s)
+            .Where(s => s.Length > 0);
 
     // bin and obj hold build output, never source (the SDK excludes them by default).
     private static bool IsBuildOutput(string path) =>
@@ -279,7 +288,8 @@ public sealed class ProjectReader
             [],
             [],
             [],
-            Family: ProjectFamily.Other);
+            Family: ProjectFamily.Other,
+            Language: ProjectLanguage.FromPath(projectFullPath));
         return new ProjectReadResult(
             info,
             new Dictionary<string, string>(),

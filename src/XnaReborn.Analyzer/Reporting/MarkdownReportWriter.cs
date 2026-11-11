@@ -80,12 +80,27 @@ public static class MarkdownReportWriter
     {
         // The two MonoGame columns appear only when the report has a project that is not XNA, so XNA reports keep their exact shape.
         var withFamily = report.Projects.Any(p => p.Family != ProjectFamily.Xna);
+        // The Language column appears only when a project is not written in C#.
+        var withLanguage = report.Projects.Any(p => p.Language != SourceLanguage.CSharp);
         var sb = new StringBuilder();
         sb.Append("## Projects\n\n");
-        sb.Append(withFamily
-            ? "| Project | Family | XNA version | MonoGame version | Platform | Profile | Target framework |\n|---|---|---|---|---|---|---|"
-            : "| Project | XNA version | Platform | Profile | Target framework |\n|---|---|---|---|---|");
-        foreach (var p in report.Projects)
+        var columns = new List<string> { "Project" };
+        if (withLanguage)
+        {
+            columns.Add("Language");
+        }
+
+        if (withFamily)
+        {
+            columns.AddRange(["Family", "XNA version", "MonoGame version"]);
+        }
+        else
+        {
+            columns.Add("XNA version");
+        }
+
+        columns.AddRange(["Platform", "Profile", "Target framework"]);
+        sb.Append("| ").Append(string.Join(" | ", columns)).Append(" |\n|").Append(string.Concat(columns.Select(_ => "---|"))); foreach (var p in report.Projects)
         {
             var version = p.XnaVersion switch
             {
@@ -98,6 +113,11 @@ public static class MarkdownReportWriter
             };
             var isMonoGame = p.Family is ProjectFamily.MonoGameLegacy or ProjectFamily.MonoGameCurrent;
             sb.Append("\n| ").Append(Cell(p.Path));
+            if (withLanguage)
+            {
+                sb.Append(" | ").Append(p.Language == SourceLanguage.VisualBasic ? "Visual Basic" : "C#");
+            }
+
             if (withFamily)
             {
                 sb.Append(" | ").Append(p.Family);

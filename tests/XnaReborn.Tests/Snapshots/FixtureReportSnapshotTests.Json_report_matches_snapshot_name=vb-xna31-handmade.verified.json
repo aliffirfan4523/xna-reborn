@@ -1,0 +1,51 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "VbXna31Handmade.vbproj",
+      "assemblyName": "VbXna31Handmade",
+      "isXna": true,
+      "xnaVersion": "3.1",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "v3.5",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "System",
+        "System.Core",
+        "System.Windows.Forms"
+      ],
+      "compileFiles": [
+        "Game1.vb",
+        "Module1.vb",
+        "My Project/Application.Designer.vb"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "language": "vb"
+    }
+  ],
+  "findings": [],
+  "triggeredRules": [],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}

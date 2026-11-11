@@ -20,6 +20,7 @@ namespace XnaReborn.Core.Models;
 /// <param name="Family">Project family. Defaults to <see cref="ProjectFamily.Xna"/>. <see cref="IsXna"/> is kept for existing callers and is true only for the Xna family. Omitted from JSON when "Xna".</param>
 /// <param name="MonoGameVersion">Detected MonoGame version for MonoGame projects, or null. Omitted from JSON when null.</param>
 /// <param name="MonoGamePlatform">MonoGame platform for MonoGame projects. Omitted from JSON when unknown.</param>
+/// <param name="Language">The language of the project's source files. Omitted from JSON when C#.</param>
 /// <param name="MgcbFiles">Relative paths of the Content.mgcb files read for this project, or null. Omitted from JSON when null.</param>
 public sealed record ProjectInfo(
     string Path,
@@ -39,4 +40,5 @@ public sealed record ProjectInfo(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] ProjectFamily Family = ProjectFamily.Xna,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] MonoGameVersionInfo? MonoGameVersion = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] MonoGamePlatform MonoGamePlatform = MonoGamePlatform.Unknown,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? MgcbFiles = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? MgcbFiles = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] SourceLanguage Language = SourceLanguage.CSharp);
