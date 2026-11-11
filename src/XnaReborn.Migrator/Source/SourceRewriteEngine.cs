@@ -1,9 +1,21 @@
+using XnaReborn.Core.Models;
+
 namespace XnaReborn.Migrator.Source;
 
 /// <summary>Runs the enabled source rewriters over one file, one after the other.</summary>
 /// <param name="registry">The available rewriters.</param>
 public sealed class SourceRewriteEngine(RewriterRegistry registry)
 {
+    // Rewriters that must run before the rest, in this order. Everything else runs in rule ID order.
+    // XNA053 folds platform #if groups first, so the entry point rewriter sees the result.
+    private static readonly string[] _runFirst = [PlatformDirectiveRewriter.Id];
+
+    private static int Priority(string ruleId)
+    {
+        var index = Array.IndexOf(_runFirst, ruleId);
+        return index < 0 ? _runFirst.Length : index;
+    }
+
     private readonly RewriterRegistry _registry = registry ?? throw new ArgumentNullException(nameof(registry));
 
     /// <summary>Rewrites one file.</summary>
@@ -11,6 +23,7 @@ public sealed class SourceRewriteEngine(RewriterRegistry registry)
     /// <param name="text">Text of the file.</param>
     /// <param name="originalSymbols">The original project's DefineConstants.</param>
     /// <param name="enabledRuleIds">Rule IDs to run. Registered rewriters outside this set are skipped.</param>
+    /// <param name="platform">The platform of the migrated project, for rewriters that fold platform conditionals.</param>
     /// <returns>
     /// The final text and what happened. A rewriter that throws is recorded as a failure and the text from before it is kept.
     /// <see cref="OperationCanceledException"/> is not caught.
@@ -20,7 +33,8 @@ public sealed class SourceRewriteEngine(RewriterRegistry registry)
         string filePath,
         string text,
         IReadOnlyCollection<string> originalSymbols,
-        IReadOnlySet<string> enabledRuleIds)
+        IReadOnlySet<string> enabledRuleIds,
+        XnaPlatform platform = XnaPlatform.Unknown)
     {
         ArgumentNullException.ThrowIfNull(filePath);
         ArgumentNullException.ThrowIfNull(text);
@@ -32,14 +46,14 @@ public sealed class SourceRewriteEngine(RewriterRegistry registry)
         var notes = new List<RewriteNote>();
         var failures = new List<RewriteFailure>();
 
-        foreach (var rewriter in _registry.All)
+        foreach (var rewriter in _registry.All.OrderBy(r => Priority(r.RuleId)))
         {
             if (!enabledRuleIds.Contains(rewriter.RuleId))
             {
                 continue;
             }
 
-            var context = new SourceRewriteContext(filePath, current, originalSymbols);
+            var context = new SourceRewriteContext(filePath, current, originalSymbols, platform);
             SourceRewriteResult result;
             try
             {

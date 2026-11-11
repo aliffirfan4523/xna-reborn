@@ -120,8 +120,21 @@ public sealed class ProjectMigrator
         var generator = new SdkCsprojGenerator();
         var projects = new List<ProjectWork>();
 
+        // Platform copies (device-to-desktop:5.2): the projects of an included skip item are not migrated and are recorded as Skipped.
+        var copyPlan = PlatformCopies.Find(report);
+        var skips = copyPlan.Skips
+            .Where(s => plan.Items.Any(i => string.Equals(i.Id, PlatformCopies.SkipItemId(s.Project), StringComparison.Ordinal)))
+            .ToDictionary(s => s.Project, StringComparer.Ordinal);
+        foreach (var skip in skips.Values)
+        {
+            state.Add(new FileChange(skip.Project, ChangeKind.Skipped, null, null, skip.Reason), [PlatformCopies.CopyRuleId]);
+            state.Notes.Add($"{skip.Project}: {PlatformCopies.CopyRuleId}: skipped, {skip.Reason}. Its own files were not copied or merged.");
+        }
+
+        state.Notes.AddRange(copyPlan.Notes.Where(n => skips.Values.Any(s => n.StartsWith(s.Kept + " ", StringComparison.Ordinal))));
+
         // Step 4: read the projects, convert their content, then write the project files and the solution.
-        foreach (var discovered in xnaProjects)
+        foreach (var discovered in xnaProjects.Where(d => !skips.ContainsKey(d.RelativePath)))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var read = await reader.ReadAsync(discovered.FullPath, root, cancellationToken).ConfigureAwait(false);
@@ -442,7 +455,7 @@ public sealed class ProjectMigrator
             return;
         }
 
-        var result = engine.Rewrite(file.RelativePath, text, file.Project.Read.Info.DefineConstants, file.Project.Enabled);
+        var result = engine.Rewrite(file.RelativePath, text, file.Project.Read.Info.DefineConstants, file.Project.Enabled, file.Project.Read.Info.Platform);
         if (state.Modern is not null)
         {
             var hook = ModernExtrasHook.Apply(result.Text, file.Project.Read.Info.DefineConstants);
