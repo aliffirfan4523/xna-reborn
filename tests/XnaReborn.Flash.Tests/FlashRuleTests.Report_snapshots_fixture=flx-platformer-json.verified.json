@@ -1,0 +1,285 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "flash-to-monogame",
+  "kind": "Flash",
+  "projectFile": "flx-platformer.as3proj",
+  "sourceFileCount": 7,
+  "entryClass": "PlatformerGame",
+  "flixelVersion": null,
+  "findings": [
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Bullet.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Enemy.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/MenuState.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/PlatformerGame.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/PlayState.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Player.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL010",
+      "title": "Embedded image",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/PlayState.as",
+        "line": 7,
+        "column": 3
+      },
+      "snippet": "[Embed(source=\u0022../data/sprites.png\u0022)] protected var ImgTiles:Class;"
+    },
+    {
+      "ruleId": "FL010",
+      "title": "Embedded image",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Player.as",
+        "line": 7,
+        "column": 3
+      },
+      "snippet": "[Embed(source=\u0022../data/sprites.png\u0022)] private var ImgPlayer:Class;"
+    },
+    {
+      "ruleId": "FL011",
+      "title": "Embedded audio",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Player.as",
+        "line": 8,
+        "column": 3
+      },
+      "snippet": "[Embed(source=\u0022../data/jump.wav\u0022)] private var SndJump:Class;"
+    },
+    {
+      "ruleId": "FL026",
+      "title": "Function values and closures",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/PlayState.as",
+        "line": 22,
+        "column": 23
+      },
+      "snippet": "_score.addListener(function(v:int):void"
+    },
+    {
+      "ruleId": "FL026",
+      "title": "Function values and closures",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Score.as",
+        "line": 22,
+        "column": 18
+      },
+      "snippet": "for each (var f:Function in _listeners)"
+    },
+    {
+      "ruleId": "FL026",
+      "title": "Function values and closures",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Score.as",
+        "line": 28,
+        "column": 31
+      },
+      "snippet": "public function addListener(f:Function):void"
+    },
+    {
+      "ruleId": "FL027",
+      "title": "Integer division changes meaning",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/MenuState.as",
+        "line": 9,
+        "column": 39
+      },
+      "snippet": "var title:FlxText = new FlxText(0, FlxG.height / 2 - 10, FlxG.width, \u0022XNA REBORN PLATFORMER\u0022);"
+    },
+    {
+      "ruleId": "FL027",
+      "title": "Integer division changes meaning",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/MenuState.as",
+        "line": 12,
+        "column": 40
+      },
+      "snippet": "var prompt:FlxText = new FlxText(0, FlxG.height / 2 \u002B 10, FlxG.width, \u0022PRESS X TO START\u0022);"
+    },
+    {
+      "ruleId": "FL027",
+      "title": "Integer division changes meaning",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Score.as",
+        "line": 35,
+        "column": 11
+      },
+      "snippet": "return a / b;"
+    },
+    {
+      "ruleId": "FL028",
+      "title": "Number default is NaN",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/PlayState.as",
+        "line": 15,
+        "column": 3
+      },
+      "snippet": "private var _spawnTimer:Number;"
+    },
+    {
+      "ruleId": "FL028",
+      "title": "Number default is NaN",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-platformer.as3proj",
+      "location": {
+        "file": "src/Player.as",
+        "line": 10,
+        "column": 3
+      },
+      "snippet": "public var runSpeed:Number;"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "FL001",
+      "title": "Flixel 2.x library in use",
+      "explanation": "The project uses the Flixel library. The converter maps org.flixel to a C# port of Flixel 2.x that is added to the migrated copy.",
+      "resolution": "No action. The runtime project XnaReborn.Flixel is generated next to the game.",
+      "migratorTask": "flash-to-monogame 13.2"
+    },
+    {
+      "id": "FL010",
+      "title": "Embedded image",
+      "explanation": "[Embed] images become texture entries in the MonoGame content project.",
+      "resolution": "No action. The converter adds the file to Content.mgcb.",
+      "migratorTask": "flash-to-monogame 12.2"
+    },
+    {
+      "id": "FL011",
+      "title": "Embedded audio",
+      "explanation": "[Embed] sounds become sound or song entries in the content project. MP3 may need ffmpeg on the build machine.",
+      "resolution": "No action unless the content build reports a missing audio tool.",
+      "migratorTask": "flash-to-monogame 12.2"
+    },
+    {
+      "id": "FL026",
+      "title": "Function values and closures",
+      "explanation": "Function expressions and function-typed values become AsFunction.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL027",
+      "title": "Integer division changes meaning",
+      "explanation": "In AS3, dividing two ints gives a Number. In C# it gives an int. The converter casts the left operand to double.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.3"
+    },
+    {
+      "id": "FL028",
+      "title": "Number default is NaN",
+      "explanation": "An AS3 Number without an initializer starts as NaN. C# doubles start as 0. The converter writes double.NaN.",
+      "resolution": "No action.",
+      "migratorTask": "flash-to-monogame 11.1"
+    }
+  ],
+  "countsBySeverity": {
+    "Blocker": 0,
+    "Error": 0,
+    "Warning": 0,
+    "Info": 17
+  },
+  "score": 99,
+  "projectedScore": 100,
+  "diagnostics": []
+}

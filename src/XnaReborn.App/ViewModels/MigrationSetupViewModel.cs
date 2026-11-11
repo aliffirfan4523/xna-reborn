@@ -106,7 +106,7 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
     /// <summary>True when the plan has at least one item.</summary>
     public bool HasPlanItems => PlanItems.Count > 0;
 
-    /// <summary>True when MonoGame DesktopGL is the chosen target (the default).</summary>
+    /// <summary>True when MonoGame DesktopGL is the chosen target (the default, except for a SharpDX Toolkit project, which starts on WindowsDX).</summary>
     public bool IsDesktopGL
     {
         get => !IsWindowsDx;
@@ -147,7 +147,7 @@ public sealed partial class MigrationSetupViewModel : PageViewModel
         {
             _loadedReport = report;
             _loadedSource = source;
-            IsWindowsDx = false;
+            IsWindowsDx = MigrationDefaults.TargetFor(report) == MonoGameTarget.WindowsDX;
             EnableShims = false;
             SubstituteFonts = false;
             AllowWindowResize = false;
