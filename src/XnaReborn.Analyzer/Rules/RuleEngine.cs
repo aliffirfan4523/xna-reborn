@@ -6,7 +6,7 @@ using XnaReborn.Core.Models.Rules;
 
 namespace XnaReborn.Analyzer.Rules;
 
-/// <summary>Evaluates the project-level rules of a catalog (reference, project property, project item, file pattern, content item, sprite font family).</summary>
+/// <summary>Evaluates the project-level rules of one or more catalogs (reference, project property, project item, file pattern, content item, sprite font family, mgcb setting).</summary>
 public sealed class RuleEngine
 {
     private const int _maxSnippetValues = 3;
@@ -60,6 +60,19 @@ public sealed class RuleEngine
             cancellationToken.ThrowIfCancellationRequested();
             if (rule.XnaVersions is { } versions && !versions.Contains(project.Info.XnaVersion))
             {
+                continue;
+            }
+
+            if (rule.Match is MgcbSettingMatch mgcb)
+            {
+                // The finding points at the first match inside the Content.mgcb file.
+                var found = MgcbSettingMatcher.Match(mgcb, project);
+                if (found.Count > 0)
+                {
+                    var location = new SourceLocation(found[0].Path, found[0].Line, 1);
+                    findings.Add(new Finding(rule.Id, rule.Title, rule.Severity, rule.Classification, projectRelativePath, location, Snippet(found.Select(f => f.Text).ToList())));
+                }
+
                 continue;
             }
 

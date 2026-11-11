@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using XnaReborn.Analyzer.Reading;
 using XnaReborn.Core.Models.Rules;
 
@@ -7,8 +6,6 @@ namespace XnaReborn.Analyzer.Rules.Matchers;
 /// <summary>Matches <see cref="ProjectPropertyMatch"/> against the project's properties.</summary>
 internal static class ProjectPropertyMatcher
 {
-    private static readonly TimeSpan _regexTimeout = TimeSpan.FromSeconds(1);
-
     /// <summary>Returns <c>Name=Value</c> when the property matches, or an empty list.</summary>
     /// <param name="match">The rule match.</param>
     /// <param name="project">The project.</param>
@@ -47,19 +44,5 @@ internal static class ProjectPropertyMatcher
         return [match.Name + "=" + text];
     }
 
-    private static bool IsRegexMatch(string pattern, string text)
-    {
-        try
-        {
-            return Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, _regexTimeout);
-        }
-        catch (RegexMatchTimeoutException)
-        {
-            return false;
-        }
-        catch (ArgumentException)
-        {
-            return false;
-        }
-    }
+    private static bool IsRegexMatch(string pattern, string text) => TextPattern.IsMatch(pattern, text);
 }

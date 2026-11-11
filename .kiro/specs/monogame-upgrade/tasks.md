@@ -36,7 +36,7 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [ ] 5.3 Tests: an XNA rule never fires on a MonoGame project and the reverse; the old overload still works; the report JSON keeps existing fields
   - _Requirements: R4, R5_
 
-- [ ] 6. Matchers
+- [x] 6. Matchers
   - [ ] 6.1 `projectItem.metadata` (`name`, `equals`, `notEquals`, `matches`). Test that the literal pin in MG008 equals `monoGame` in `Projects/packages.json`
   - [ ] 6.2 `MgcbSettingMatcher` for `platform`, `profile`, `config`, `compress`, `reference`, `entry` (with `importer`, `processor`, `nonStandardPair`)
   - [ ] 6.3 Positive and negative tests for both

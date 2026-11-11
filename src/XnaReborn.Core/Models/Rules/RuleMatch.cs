@@ -54,10 +54,10 @@ public sealed record ProjectItemMatch(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Include = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] MetadataFilter? Metadata = null) : RuleMatch;
 
-/// <summary>A filter on one metadata value of a project item, such as the Version of a PackageReference.</summary>
+/// <summary>A filter on one metadata value of a project item, such as the Version of a PackageReference. Every filter that is set must pass. An item without the named metadata passes none of them.</summary>
 /// <param name="Name">Attribute or child element name, compared ignoring case.</param>
 /// <param name="EqualsValue">Required exact value (JSON "equals"), or null.</param>
-/// <param name="NotEquals">Value the metadata must differ from, or null. An item without the metadata matches.</param>
+/// <param name="NotEquals">Value the metadata must differ from, or null.</param>
 /// <param name="MatchesPattern">.NET regular expression the value must match (JSON "matches"), or null.</param>
 public sealed record MetadataFilter(
     string Name,

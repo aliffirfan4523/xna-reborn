@@ -180,7 +180,7 @@
         "itemType": { "type": "string", "minLength": 1 },
         "include": { "type": "string", "minLength": 1 },
         "metadata": {
-          "description": "Optional filter on one attribute or child element of the item, for example the Version of a PackageReference. An item without that metadata passes notEquals and fails equals and matches.",
+          "description": "Optional filter on one attribute or child element of the item, for example the Version of a PackageReference. Every filter that is set must pass. An item without that metadata passes none of them.",
           "type": "object",
           "required": ["name"],
           "additionalProperties": false,
