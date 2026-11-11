@@ -4,16 +4,25 @@
              x:Class="XnaReborn.App.Controls.BuildLogView"
              AutomationProperties.Name="Build log">
 
+  <UserControl.Resources>
+    <!-- Terminal colors are fixed dark in both themes. Text on the panel is above 12:1, error text above 9:1. -->
+    <SolidColorBrush x:Key="TerminalBackground" Color="#0F0E15" />
+    <SolidColorBrush x:Key="TerminalText" Color="#E4E2F0" />
+    <SolidColorBrush x:Key="TerminalMuted" Color="#A9A5C0" />
+    <SolidColorBrush x:Key="TerminalError" Color="#FF9E96" />
+  </UserControl.Resources>
+
   <UserControl.Styles>
     <!-- The log is a tab stop so a keyboard user can scroll it; the frame shows where the focus is. -->
     <Style Selector="Border.log:focus-within">
-      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRingBrush}" />
       <Setter Property="BorderThickness" Value="2" />
     </Style>
   </UserControl.Styles>
 
-  <Border Classes="log" BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
-    <ItemsControl x:Name="LogItems" Focusable="True" AutomationProperties.Name="Build log lines">
+  <Border Classes="log" Background="{DynamicResource TerminalBackground}" BorderThickness="1"
+          CornerRadius="{DynamicResource RadiusMedium}" BorderBrush="{DynamicResource BorderBrushStrong}">
+    <ItemsControl x:Name="LogItems" Focusable="True" Padding="0,8" AutomationProperties.Name="Build log lines">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <VirtualizingStackPanel />
@@ -21,11 +30,18 @@
       </ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:BuildRunLogLine">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}" Margin="6,0">
-            <TextBlock Text="{Binding Number}" Width="44" TextAlignment="Right" Opacity="0.6"
-                       FontFamily="Consolas,Menlo,monospace" />
-            <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource SeverityErrorBrush}" IsVisible="{Binding IsError}" />
-            <TextBlock Text="{Binding Text}" FontFamily="Consolas,Menlo,monospace" />
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="10,0">
+            <TextBlock Text="{Binding Number}" Width="44" TextAlignment="Right" Foreground="{DynamicResource TerminalMuted}"
+                       FontFamily="Consolas,Menlo,monospace" FontSize="12" />
+            <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource TerminalError}" IsVisible="{Binding IsError}" />
+            <TextBlock Text="{Binding Text}" Foreground="{DynamicResource TerminalText}"
+                       Classes.error="{Binding IsError}" FontFamily="Consolas,Menlo,monospace" FontSize="12">
+              <TextBlock.Styles>
+                <Style Selector="TextBlock.error">
+                  <Setter Property="Foreground" Value="{DynamicResource TerminalError}" />
+                </Style>
+              </TextBlock.Styles>
+            </TextBlock>
           </StackPanel>
         </DataTemplate>
       </ItemsControl.ItemTemplate>

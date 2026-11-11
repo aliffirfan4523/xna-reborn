@@ -15,6 +15,10 @@ public sealed partial class BuildLogView : UserControl
     public static readonly StyledProperty<IReadOnlyList<BuildRunLogLine>?> LinesProperty =
         AvaloniaProperty.Register<BuildLogView, IReadOnlyList<BuildRunLogLine>?>(nameof(Lines));
 
+    /// <summary>When true (the default) the view scrolls to the newest line as lines arrive.</summary>
+    public static readonly StyledProperty<bool> AutoScrollProperty =
+        AvaloniaProperty.Register<BuildLogView, bool>(nameof(AutoScroll), true);
+
     private bool _scrollPending;
 
     /// <summary>Creates the view.</summary>
@@ -22,6 +26,13 @@ public sealed partial class BuildLogView : UserControl
     {
         InitializeComponent();
         LogItems.KeyDown += OnLogKeyDown;
+    }
+
+    /// <summary>When true the view follows the newest line.</summary>
+    public bool AutoScroll
+    {
+        get => GetValue(AutoScrollProperty);
+        set => SetValue(AutoScrollProperty, value);
     }
 
     /// <summary>The lines to show.</summary>
@@ -35,6 +46,12 @@ public sealed partial class BuildLogView : UserControl
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
+        if (change.Property == AutoScrollProperty && AutoScroll)
+        {
+            ScrollToNewest();
+            return;
+        }
+
         if (change.Property != LinesProperty)
         {
             return;
@@ -93,7 +110,7 @@ public sealed partial class BuildLogView : UserControl
 
     private void ScrollToNewest()
     {
-        if (_scrollPending)
+        if (_scrollPending || !AutoScroll)
         {
             return;
         }

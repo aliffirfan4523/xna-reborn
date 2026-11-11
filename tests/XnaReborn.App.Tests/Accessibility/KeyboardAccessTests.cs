@@ -130,7 +130,7 @@ public sealed class KeyboardAccessTests
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(
-            ["RecheckButton", "BuildButton", "BuildAndRunButton", "SummaryButton", "PublishPlatform", "PublishButton", "Build log lines", "GamerServices no longer exists, 1 error", "SelectableTextBlock"],
+            ["RecheckButton", "BuildAndRunButton", "BuildButton", "SummaryButton", "LogFilter", "LogErrorsOnly", "LogAutoScroll", "CopyLogButton", "Build log lines", "GamerServices no longer exists, 1 error", "SelectableTextBlock", "PublishPlatform", "PublishButton"],
             PageStops(window));
         AssertAllNamed(window);
     }
