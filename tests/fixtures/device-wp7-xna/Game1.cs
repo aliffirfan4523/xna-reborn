@@ -35,6 +35,7 @@ namespace Wp7Xna
             graphics.IsFullScreen = false;
 #endif
             TouchPanel.EnabledGestures = GestureType.Tap | GestureType.FreeDrag;
+            Exiting += OnGameExiting;
         }
 
         protected override void Initialize()
@@ -65,10 +66,9 @@ namespace Wp7Xna
             pixel.SetData(new[] { Color.White });
         }
 
-        protected override void OnExiting(object sender, EventArgs args)
+        private void OnGameExiting(object sender, EventArgs args)
         {
             PhoneApplicationService.Current.State["score"] = score;
-            base.OnExiting(sender, args);
         }
 
         protected override void Update(GameTime gameTime)

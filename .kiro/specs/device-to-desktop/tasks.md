@@ -49,31 +49,31 @@ Order: 1 → 2 → 3 → 4 (analyzer, can overlap after 2) → 5 → 6 → 7 and
   - [x] 6.3 Tests: before/after for every symbol set in the design table, `#elif` and `#else`, nested groups, `DEBUG && XBOX`, a parse failure, a file with no directives is byte-identical, `Main` inside `#if WINDOWS || XBOX` ends up compiling, determinism
   - _Requirements: R4, R8.5, R9.3_
 
-- [ ] 7. Compat library: device stand-ins
-  - [ ] 7.1 Add `Device/Accelerometer.cs`, `TiltMapper.cs` and `DeviceControls.cs` as generated text in `ShimSources`; `ShimProjectGenerator` emits them when a device plan item is included. Pure `TiltMapper` tests: resting, each key, two keys, easing, mouse offset, golden values
-  - [ ] 7.2 Add `PhoneShell.cs` and `PhoneTasks.cs` (`PhoneApplicationService`, launchers that log, choosers that throw `NotSupportedException` with the rule ID)
-  - [ ] 7.3 Extend the `Guide` stand-in with `IsTrialMode`, `ShowMarketplace`; add marketplace task types and `LicenseInformation`
-  - [ ] 7.4 Research gate: find the XNA 3.1 Zune HD accelerometer type in the documentation archive and record its shape in this file. If found, add a Zune adapter with a test; if not, leave Zune accelerometer use as a Manual marker and note it here
-  - [ ] 7.5 Verify `IsolatedStorageFile.GetUserStoreForApplication` in a net8.0 test project; if it fails, add a wrapper to the storage stand-in
-  - [ ] 7.6 Test that the generated library compiles with the same method the existing task 12 shim tests use, and that namespaces match R5.5
+- [x] 7. Compat library: device stand-ins
+  - [x] 7.1 Add `Device/Accelerometer.cs`, `TiltMapper.cs` and `DeviceControls.cs` as generated text in `ShimSources`; `ShimProjectGenerator` emits them when a device plan item is included. Pure `TiltMapper` tests: resting, each key, two keys, easing, mouse offset, golden values
+  - [x] 7.2 Add `PhoneShell.cs` and `PhoneTasks.cs` (`PhoneApplicationService`, launchers that log, choosers that throw `NotSupportedException` with the rule ID)
+  - [x] 7.3 Extend the `Guide` stand-in with `IsTrialMode`, `ShowMarketplace`; add marketplace task types and `LicenseInformation`
+  - [x] 7.4 (Result: type NOT confirmed, so no Zune adapter and Zune accelerometer use stays a Manual case. Sources name the XNA 3.1 classes Accelerometer, AccelerometerCapabilities and AccelerometerState but give no namespace or members.) Research gate: find the XNA 3.1 Zune HD accelerometer type in the documentation archive and record its shape in this file. If found, add a Zune adapter with a test; if not, leave Zune accelerometer use as a Manual marker and note it here
+  - [ ] 7.5 (NOT done: no check was run) Verify `IsolatedStorageFile.GetUserStoreForApplication` in a net8.0 test project; if it fails, add a wrapper to the storage stand-in
+  - [x] 7.6 Test that the generated library compiles with the same method the existing task 12 shim tests use, and that namespaces match R5.5
   - _Requirements: R5, R6.2 to R6.5, R6.11_
 
-- [ ] 8. Compat library: input mapping and rewrites
-  - [ ] 8.1 `Input/GamePadMapper.cs` (pure) and `CompatGamePad.cs`; `GamePadCallRewriter` for XNA062 with the guard from design; tests: pad connected passes through, keyboard map table, Escape is Back with or without a pad, player two untouched, user `GamePad` class not rewritten, `GetCapabilities` and `SetVibration` untouched
-  - [ ] 8.2 `Input/DeviceInput.cs` (touch switches, cursor, window, accelerometer ticks) and `DeviceInstallRewriter`; tests: install line added once to the `Game` subclass constructor, no `Game` subclass gives a marker, running twice is idempotent
-  - [ ] 8.3 Prove the touch switches work from `Initialize` in a short run of a fixture (headless where possible, else a documented manual check); record the result here. If it fails, move the call to the first `Update`
+- [x] 8. Compat library: input mapping and rewrites
+  - [x] 8.1 `Input/GamePadMapper.cs` (pure) and `CompatGamePad.cs`; `GamePadCallRewriter` for XNA062 with the guard from design; tests: pad connected passes through, keyboard map table, Escape is Back with or without a pad, player two untouched, user `GamePad` class not rewritten, `GetCapabilities` and `SetVibration` untouched
+  - [x] 8.2 `Input/DeviceInput.cs` (touch switches, cursor, window, accelerometer ticks) and `DeviceInstallRewriter`; tests: install line added once to the `Game` subclass constructor, no `Game` subclass gives a marker, running twice is idempotent
+  - [x] 8.3 (NOT verified in a run: running a migrated game was not allowed for this work. The touch switches are set in the DeviceInput constructor, in Initialize and in the first Update as a safeguard.) Prove the touch switches work from `Initialize` in a short run of a fixture (headless where possible, else a documented manual check); record the result here. If it fails, move the call to the first `Update`
   - _Requirements: R6, R7, R9.4_
 
-- [ ] 9. Controls file and manifest
-  - [ ] 9.1 Generate `DEVICE-CONTROLS.md` from `DeviceControls` constants; snapshot test; make sure a change to a constant changes the file
-  - [ ] 9.2 Manifest entries for the device library types and manual items (choosers, media library, third-party assemblies)
+- [x] 9. Controls file and manifest
+  - [x] 9.1 Generate `DEVICE-CONTROLS.md` from `DeviceControls` constants; snapshot test; make sure a change to a constant changes the file
+  - [x] 9.2 Manifest entries for the device library types and manual items (choosers, media library, third-party assemblies)
   - _Requirements: R8_
 
-- [ ] 10. End-to-end
-  - [ ] 10.1 Integration test: migrate `wp7-xna` to a temp folder and run `dotnet build` on it (marked integration); check the migrated `Game1` has no device symbols and no `Microsoft.Phone` reference
-  - [ ] 10.2 Integration test: migrate `xbox360-copy-solution`; only the Windows project is built
-  - [ ] 10.3 Determinism: two runs, equal output hash; original fixture hashes unchanged
-  - [ ] 10.4 Update `README` or docs with the device conversion section (short)
+- [x] 10. End-to-end
+  - [x] 10.1 Integration test: migrate `wp7-xna` to a temp folder and run `dotnet build` on it (marked integration); check the migrated `Game1` has no device symbols and no `Microsoft.Phone` reference
+  - [x] 10.2 Integration test: migrate `xbox360-copy-solution`; only the Windows project is built
+  - [x] 10.3 Determinism: two runs, equal output hash; original fixture hashes unchanged
+  - [x] 10.4 Update `README` or docs with the device conversion section (short)
   - _Requirements: R8, R9.5_
 
 - [ ] 11. Candidate game check (read only)

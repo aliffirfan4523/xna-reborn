@@ -11,6 +11,7 @@ using XnaReborn.Migrator.Planning;
 using XnaReborn.Migrator.Projects;
 using XnaReborn.Migrator.Shims;
 using XnaReborn.Migrator.Source;
+using XnaReborn.Migrator.Source.Rewriters;
 
 namespace XnaReborn.Migrator;
 
@@ -40,6 +41,13 @@ public sealed class ProjectMigrator
         "Content conversion is switched off for this project; this asset was copied unchanged and is not built.";
 
     private static readonly string[] _contentRuleIds = ["XNA005", "XNA049"];
+
+    // Plan items that make the device part of the Compat library necessary (device-to-desktop tasks 7 and 8).
+    private static readonly string[] _deviceRuleIds = ["XNA007", "XNA054", "XNA055", "XNA057", "XNA058", "XNA060", "XNA061", "XNA062"];
+
+    // Manual device rules that only get a marker in the source. They are not plan items, so they are enabled by their finding.
+    private static readonly string[] _markerRuleIds =
+        [DeviceManualMarkerRewriter.MediaLibraryId, DeviceManualMarkerRewriter.ChooserId, DeviceManualMarkerRewriter.ThirdPartyId];
 
     private static readonly UTF8Encoding _utf8 = new(encoderShouldEmitUTF8Identifier: false);
     private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
@@ -111,9 +119,11 @@ public sealed class ProjectMigrator
         progress?.Report(new MigrationProgress(_stagePlan, 1, 1, null));
 
         var modern = ModernExtrasChoice.From(options);
+        var device = plan.Items.Any(i => _deviceRuleIds.Contains(i.RuleId, StringComparer.Ordinal));
         var state = new BuildState
         {
-            Shims = options.EnableShims ? new ShimProjectGenerator(new PackageSelector()) : null,
+            Shims = options.EnableShims || device ? new ShimProjectGenerator(new PackageSelector()) : null,
+            Device = device,
             Modern = modern.Any ? modern : null,
         };
         var reader = new ProjectReader(_fileSystem);
@@ -140,6 +150,14 @@ public sealed class ProjectMigrator
             var read = await reader.ReadAsync(discovered.FullPath, root, cancellationToken).ConfigureAwait(false);
             var items = plan.Items.Where(p => string.Equals(p.Id, p.RuleId + ":" + discovered.RelativePath, StringComparison.Ordinal)).ToList();
             var enabled = items.Select(p => p.RuleId).Append(EntryPointSourceRewriter.Id).ToHashSet(StringComparer.Ordinal);
+            if (items.Any(p => p.RuleId == "XNA007"))
+            {
+                enabled.Add(DeviceInstallRewriter.Id);
+            }
+
+            enabled.UnionWith(report.Findings
+                .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal))
+                .Select(f => f.RuleId));
             var projectLevel = items
                 .Select(p => p.RuleId)
                 .Where(id => !_rewriters.TryGet(id, out _) && !contentRuleIds.Contains(id))
@@ -200,9 +218,14 @@ public sealed class ProjectMigrator
         // Shim library files go in early so they win a path clash with a same-named file from the source.
         if (state.Shims is not null)
         {
-            foreach (var shim in state.Shims.Generate(options.Target))
+            foreach (var shim in state.Shims.Generate(options.Target, state.Device))
             {
                 state.Add(shim, []);
+            }
+
+            if (state.Device)
+            {
+                state.Add(ShimProjectGenerator.GenerateControlsFile(), []);
             }
         }
 
@@ -226,6 +249,14 @@ public sealed class ProjectMigrator
             progress?.Report(new MigrationProgress(_stageSource, i, files.Count, file.RelativePath));
             await RewriteFileAsync(engine, file, state, cancellationToken).ConfigureAwait(false);
             progress?.Report(new MigrationProgress(_stageSource, i + 1, files.Count, file.RelativePath));
+        }
+
+        if (state.Device)
+        {
+            foreach (var project in projects.Where(p => DevicePlatforms.IsDevice(p.Read.Info.Platform) && !state.DeviceInstalled.Contains(p.Read.Info.Path)))
+            {
+                state.Notes.Add($"{project.Read.Info.Path}: {DeviceInstallRewriter.Id}: no Game class with a constructor was found, so the DeviceInput component was not added. Add {DeviceInstallRewriter.Statement} to your Game constructor, or touch, tilt and the window setup will not work.");
+            }
         }
 
         if (state.Shims is not null)
@@ -476,6 +507,21 @@ public sealed class ProjectMigrator
             state.Notes.Add($"{file.RelativePath}: {note.RuleId}: {note.Message}");
         }
 
+        if (state.Shims is not null)
+        {
+            var projectPath = file.Project.Read.Info.Path;
+            if (result.AppliedRuleIds.Contains(DeviceInstallRewriter.Id, StringComparer.Ordinal))
+            {
+                state.ShimUses.Add((projectPath, new ManifestShimUse(file.RelativePath, "XnaReborn.Compat.Input", ["DeviceInput"])));
+                state.DeviceInstalled.Add(projectPath);
+            }
+
+            if (result.AppliedRuleIds.Contains(GamePadCallRewriter.Id, StringComparer.Ordinal))
+            {
+                state.ShimUses.Add((projectPath, new ManifestShimUse(file.RelativePath, "XnaReborn.Compat.Input", ["CompatGamePad"])));
+            }
+        }
+
         foreach (var failure in result.Failures)
         {
             state.Notes.Add($"{file.RelativePath}: {failure.RuleId}: the rewrite failed and was skipped: {failure.Message}");
@@ -697,6 +743,12 @@ public sealed class ProjectMigrator
 
         /// <summary>The shim generator, or null when shims are off.</summary>
         public ShimProjectGenerator? Shims { get; init; }
+
+        /// <summary>True when the device part of the shim library is generated.</summary>
+        public bool Device { get; init; }
+
+        /// <summary>Paths of the projects whose Game constructor got the DeviceInput component.</summary>
+        public HashSet<string> DeviceInstalled { get; } = new(StringComparer.Ordinal);
 
         /// <summary>The window extras that are on, or null when all are off.</summary>
         public ModernExtrasChoice? Modern { get; init; }

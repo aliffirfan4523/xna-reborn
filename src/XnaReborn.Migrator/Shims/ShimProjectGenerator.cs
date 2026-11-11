@@ -24,6 +24,9 @@ public sealed partial class ShimProjectGenerator
     /// <summary>Original XNA namespace of the profile and guide stand-ins.</summary>
     public const string GamerServicesNamespace = "Microsoft.Xna.Framework.GamerServices";
 
+    /// <summary>Path of the controls file relative to the output root.</summary>
+    public const string ControlsFileName = "DEVICE-CONTROLS.md";
+
     private const string _shimReason = "Shim: part of the XnaReborn.Compat library, an offline stand-in for APIs MonoGame does not have.";
 
     private static readonly string[] _storageTypes = ["StorageContainer", "StorageDevice"];
@@ -32,6 +35,20 @@ public sealed partial class ShimProjectGenerator
     [
         "Gamer", "GamerServicesComponent", "GamerServicesDispatcher", "Guide", "MessageBoxIcon",
         "SignedInEventArgs", "SignedInGamer", "SignedInGamerCollection", "SignedOutEventArgs",
+    ];
+
+    private static readonly (string Namespace, string Pattern, string[] Types)[] _deviceNamespaces =
+    [
+        ("Microsoft.Devices.Sensors", @"Microsoft\s*\.\s*Devices\s*\.\s*Sensors\b", ["Accelerometer", "AccelerometerReading", "AccelerometerReadingEventArgs", "SensorState"]),
+        ("Microsoft.Phone.Marketplace", @"Microsoft\s*\.\s*Phone\s*\.\s*Marketplace\b", ["LicenseInformation"]),
+        ("Microsoft.Phone.Shell", @"Microsoft\s*\.\s*Phone\s*\.\s*Shell\b", ["PhoneApplicationService"]),
+        (
+            "Microsoft.Phone.Tasks",
+            @"Microsoft\s*\.\s*Phone\s*\.\s*Tasks\b",
+            [
+                "CameraCaptureTask", "EmailComposeTask", "MarketplaceDetailTask", "MarketplaceHubTask", "MarketplaceReviewTask",
+                "MarketplaceSearchTask", "PhoneCallTask", "PhotoChooserTask", "SaveRingtoneTask", "SmsComposeTask", "WebBrowserTask",
+            ]),
     ];
 
     private readonly PackageSelector _selector;
@@ -45,8 +62,13 @@ public sealed partial class ShimProjectGenerator
 
     /// <summary>Creates the files of the shim library.</summary>
     /// <param name="target">The MonoGame platform of the migrated games. The library uses the same package.</param>
-    /// <returns>Four <see cref="ChangeKind.Created"/> changes under <c>XnaReborn.Compat/</c>, in a fixed order.</returns>
-    public IReadOnlyList<FileChange> Generate(MonoGameTarget target)
+    /// <param name="includeDevice">True to add the device stand-ins and the input layer (device-to-desktop tasks 7 and 8).</param>
+    /// <param name="controls">The keys and tilt numbers of the device part. The shipped values when null.</param>
+    /// <returns>
+    /// Four <see cref="ChangeKind.Created"/> changes under <c>XnaReborn.Compat/</c>, in a fixed order, followed by the
+    /// device files (also in a fixed order) when <paramref name="includeDevice"/> is true.
+    /// </returns>
+    public IReadOnlyList<FileChange> Generate(MonoGameTarget target, bool includeDevice = false, DeviceControlsModel? controls = null)
     {
         var packages = _selector.Select(target);
         var project = new StringBuilder()
@@ -65,14 +87,38 @@ public sealed partial class ShimProjectGenerator
             .Append("</Project>\n")
             .ToString();
 
-        return
-        [
+        var files = new List<FileChange>
+        {
             Create(ProjectPath, project),
             Create(ProjectName + "/CompletedAsyncResult.cs", ShimSources.AsyncResult),
             Create(ProjectName + "/GamerServices.cs", ShimSources.GamerServices),
             Create(ProjectName + "/Storage.cs", ShimSources.Storage),
-        ];
+        };
+        if (includeDevice)
+        {
+            files.AddRange(
+            [
+                Create(ProjectName + "/Device/DeviceControls.cs", (controls ?? DeviceControlsModel.Default).ToCSharp()),
+                Create(ProjectName + "/Device/DeviceRuntime.cs", ShimDeviceSources.Runtime),
+                Create(ProjectName + "/Device/Accelerometer.cs", ShimDeviceSources.Accelerometer),
+                Create(ProjectName + "/Device/TiltMapper.cs", ShimDeviceSources.TiltMapper),
+                Create(ProjectName + "/Device/PhoneShell.cs", ShimDeviceSources.PhoneShell),
+                Create(ProjectName + "/Device/PhoneTasks.cs", ShimDeviceSources.PhoneTasks),
+                Create(ProjectName + "/Device/Marketplace.cs", ShimDeviceSources.Marketplace),
+                Create(ProjectName + "/Input/CompatGamePad.cs", ShimDeviceSources.CompatGamePad),
+                Create(ProjectName + "/Input/DeviceInput.cs", ShimDeviceSources.DeviceInput),
+                Create(ProjectName + "/Input/GamePadMapper.cs", ShimDeviceSources.GamePadMapper),
+            ]);
+        }
+
+        return files;
     }
+
+    /// <summary>Creates <c>DEVICE-CONTROLS.md</c>, written from the same table as <c>DeviceControls.cs</c>.</summary>
+    /// <param name="controls">The keys and tilt numbers. The shipped values when null.</param>
+    /// <returns>A <see cref="ChangeKind.Created"/> change at the output root.</returns>
+    public static FileChange GenerateControlsFile(DeviceControlsModel? controls = null) =>
+        new(ControlsFileName, ChangeKind.Created, null, (controls ?? DeviceControlsModel.Default).ToMarkdown(), "Device conversion: the keys, mouse actions and tilt values the player needs.");
 
     /// <summary>Finds which shimmed namespaces a source file uses, and which shimmed types it names.</summary>
     /// <param name="sourceText">The text of one C# file.</param>
@@ -92,7 +138,15 @@ public sealed partial class ShimProjectGenerator
             uses.Add(new ShimUse(StorageNamespace, FindTypes(sourceText, _storageTypes)));
         }
 
-        return uses;
+        foreach (var (ns, pattern, types) in _deviceNamespaces)
+        {
+            if (Regex.IsMatch(sourceText, pattern, RegexOptions.CultureInvariant))
+            {
+                uses.Add(new ShimUse(ns, FindTypes(sourceText, types)));
+            }
+        }
+
+        return uses.OrderBy(u => u.Namespace, StringComparer.Ordinal).ToList();
     }
 
     /// <summary>Adds the shim library to a generated game project.</summary>
