@@ -59,7 +59,7 @@ internal static class ProjectLinkReader
             IReadOnlyList<string> projects;
             try
             {
-                projects = fileSystem.DirectoryExists(directory) ? fileSystem.EnumerateFiles(directory, "*.csproj") : [];
+                projects = fileSystem.DirectoryExists(directory) ? fileSystem.EnumerateFiles(directory, "*.csproj").Concat(fileSystem.EnumerateFiles(directory, "*.vbproj")).ToList() : [];
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {

@@ -8,6 +8,7 @@ namespace XnaReborn.Analyzer.Reading;
 /// <param name="Items">All items in document order, including one Import item per top-level Import. Items from imported .projitems files follow, with paths relative to the project folder.</param>
 /// <param name="Diagnostics">Problems found while reading, such as ANA001 and ANA002.</param>
 /// <param name="Packages">Entries of the project's packages.config, or null when none were read.</param>
+/// <param name="ImplicitImports">Namespaces a Visual Basic project imports in every file (<c>NamespaceImport</c> items), or null for C#.</param>
 /// <param name="MgcbFiles">Parsed Content.mgcb files of a MonoGame project, in the order they were found, or null when none were read.</param>
 public sealed record ProjectReadResult(
     ProjectInfo Info,
@@ -15,4 +16,5 @@ public sealed record ProjectReadResult(
     IReadOnlyList<ProjectItem> Items,
     IReadOnlyList<Diagnostic> Diagnostics,
     IReadOnlyList<PackageEntry>? Packages = null,
-    IReadOnlyList<ParsedMgcb>? MgcbFiles = null);
+    IReadOnlyList<ParsedMgcb>? MgcbFiles = null,
+    IReadOnlyList<string>? ImplicitImports = null);

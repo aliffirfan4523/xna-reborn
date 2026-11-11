@@ -346,3 +346,8 @@ Stretch: convert Mode from a local checkout.
 - Text uses a built-in 5 by 7 pixel font instead of a `SpriteFont` (task 9.3 said SpriteFont). It needs no font file or content build step. Lower case draws as capitals; glyphs were not checked by eye.
 - `FlxGame` could not be run here (no window). Its drawing and audio paths are unverified; a headless `FlxTestHost` covers the logic through `IFlxRenderer`, `IFlxAssets` and `IFlxKeyState`.
 - The project does not generate XML docs (hundreds of AS3-named members); types carry summaries.
+- PR 2 (rules): the Flash rules use their own small model (`FlashRule`, `FlashRuleCatalog` in `XnaReborn.Flash.Analyzer`) and the catalog `rules/flash-to-monogame.json`, embedded in the assembly. Task 6.1 (adding match types to the Core rule model) was not done on purpose: it would touch the shared RuleSchema and RuleEngine that other workers edit. Findings, scoring and report shapes reuse Core types (`Finding`, `Severity`, `Scorer`). Task 6.1 stays open.
+- FL055 (Flixel member not in the runtime) is not in the catalog yet. It needs the generated API map (task 10.1) and the runtime.
+- `As3TypeResolver` uses a hand-written Flixel member map (shortcut, replace in 10.1). Tasks 10.2 and 10.3 are done for the analyzer's needs; the converter reuses the same class.
+- Embed files are checked for existence only. Stub files stand in for assets in `flx-embeds`; the platformer fixture has a generated png and wav.
+- Snapshots use Verify for the JSON and Markdown reports of `flx-hello`, `flx-platformer` and `flx-gaps`.

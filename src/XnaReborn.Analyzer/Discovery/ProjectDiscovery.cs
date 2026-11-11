@@ -73,7 +73,7 @@ public sealed partial class ProjectDiscovery
         {
             var ext = Path.GetExtension(full);
             root = Path.GetDirectoryName(full) ?? full;
-            if (ext.Equals(".csproj", StringComparison.OrdinalIgnoreCase))
+            if (IsProjectFile(ext))
             {
                 candidates.Add(full);
             }
@@ -154,7 +154,7 @@ public sealed partial class ProjectDiscovery
         try
         {
             solutionFiles = _fileSystem.EnumerateFiles(directory, "*.sln");
-            projectFiles = _fileSystem.EnumerateFiles(directory, "*.csproj");
+            projectFiles = _fileSystem.EnumerateFiles(directory, "*.csproj").Concat(_fileSystem.EnumerateFiles(directory, "*.vbproj")).ToList();
             subdirectories = _fileSystem.EnumerateDirectories(directory);
             AddProtobuildFiles(directory, root, protobuild);
         }
@@ -167,7 +167,7 @@ public sealed partial class ProjectDiscovery
         }
 
         slns.AddRange(solutionFiles.Where(f => Path.GetExtension(f).Equals(".sln", StringComparison.OrdinalIgnoreCase)));
-        csprojs.AddRange(projectFiles.Where(f => Path.GetExtension(f).Equals(".csproj", StringComparison.OrdinalIgnoreCase)));
+        csprojs.AddRange(projectFiles.Where(f => IsProjectFile(Path.GetExtension(f))));
         foreach (var sub in subdirectories)
         {
             var name = Path.GetFileName(sub.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
@@ -179,6 +179,9 @@ public sealed partial class ProjectDiscovery
             Walk(sub, root, csprojs, slns, protobuild, diagnostics, ct);
         }
     }
+
+    private static bool IsProjectFile(string extension) =>
+        extension.Equals(".csproj", StringComparison.OrdinalIgnoreCase) || extension.Equals(".vbproj", StringComparison.OrdinalIgnoreCase);
 
     private List<string> ReadSolution(string slnPath, string root, List<Diagnostic> diagnostics)
     {
@@ -204,7 +207,7 @@ public sealed partial class ProjectDiscovery
             }
 
             var entry = match.Groups["path"].Value;
-            if (!entry.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+            if (!IsProjectFile(Path.GetExtension(entry)))
             {
                 continue;
             }

@@ -47,7 +47,9 @@ public sealed class SdkCsprojGenerator
         ArgumentNullException.ThrowIfNull(source);
         var info = source.Info;
         var packages = _selector.Select(target);
-        var hasContent = info.ContentProjects.Count > 0 || info.ContentItems.Any(i => i.InProject);
+        // A Toolkit project keeps its assets in build-action items, not in a content project. It has content when a Content.mgcb was made for it.
+        var isToolkit = info.Family == ProjectFamily.SharpDxToolkit;
+        var hasContent = info.ContentProjects.Count > 0 || info.ContentItems.Any(i => i.InProject) || (isToolkit && contentReferencePath is not null);
 
         var sb = new StringBuilder();
         sb.Append("<Project Sdk=\"Microsoft.NET.Sdk\">\n\n");
@@ -113,7 +115,7 @@ public sealed class SdkCsprojGenerator
         var references = source.Items
             .Where(i => i.ItemType == "Reference")
             .Select(i => (Name: SimpleName(i.Include), Hint: HintPath(i)))
-            .Where(r => r.Hint is not null && !IsDroppedAssembly(r.Name))
+            .Where(r => r.Hint is not null && !IsDroppedAssembly(r.Name) && !(isToolkit && r.Name.StartsWith("SharpDX", StringComparison.OrdinalIgnoreCase)))
             .ToList();
         if (references.Count > 0)
         {

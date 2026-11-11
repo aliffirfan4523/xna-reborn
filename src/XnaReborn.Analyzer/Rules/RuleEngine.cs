@@ -42,6 +42,12 @@ public sealed class RuleEngine
     public IReadOnlyList<Rule> SourceRulesFor(ProjectFamily family) =>
         _catalogs.Where(c => c.AppliesToFamily(family)).SelectMany(c => c.Rules).Where(IsSourceRule).ToList();
 
+    /// <summary>Source rules of the catalogs that apply to a project family, limited to the rules that run for a source language.</summary>
+    /// <param name="family">The project family.</param>
+    /// <param name="language">The project language.</param>
+    public IReadOnlyList<Rule> SourceRulesFor(ProjectFamily family, SourceLanguage language) =>
+        SourceRulesFor(family).Where(r => r.AppliesTo(language)).ToList();
+
     private static bool IsSourceRule(Rule rule) => rule.Match is NamespaceMatch or TypeMatch or MemberMatch or MethodDeclarationMatch or PreprocessorSymbolMatch;
 
     /// <summary>Evaluates the project-level rules of the catalogs that apply to the project's family. Gives at most one finding per rule, in catalog order.</summary>
@@ -58,7 +64,7 @@ public sealed class RuleEngine
         foreach (var rule in rules)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (rule.XnaVersions is { } versions && !versions.Contains(project.Info.XnaVersion))
+            if ((rule.XnaVersions is { } versions && !versions.Contains(project.Info.XnaVersion)) || !rule.AppliesTo(project.Info.Language))
             {
                 continue;
             }
@@ -70,7 +76,7 @@ public sealed class RuleEngine
                 if (found.Count > 0)
                 {
                     var location = new SourceLocation(found[0].Path, found[0].Line, 1);
-                    findings.Add(new Finding(rule.Id, rule.Title, rule.Severity, rule.Classification, projectRelativePath, location, Snippet(found.Select(f => f.Text).ToList())));
+                    findings.Add(new Finding(rule.Id, rule.Title, rule.Severity, rule.EffectiveClassification(project.Info.Language), projectRelativePath, location, Snippet(found.Select(f => f.Text).ToList())));
                 }
 
                 continue;
@@ -82,7 +88,7 @@ public sealed class RuleEngine
                 continue;
             }
 
-            findings.Add(new Finding(rule.Id, rule.Title, rule.Severity, rule.Classification, projectRelativePath, null, Snippet(matched)));
+            findings.Add(new Finding(rule.Id, rule.Title, rule.Severity, rule.EffectiveClassification(project.Info.Language), projectRelativePath, null, Snippet(matched)));
         }
 
         return findings;

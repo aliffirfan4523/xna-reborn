@@ -95,4 +95,8 @@ public static class SetupReports
     {
         Findings = [.. ruleIds.Select(id => new Finding(id, "Title " + id, Severity.Warning, Classification.AutoFixable, "Game.csproj", new SourceLocation("Game1.cs", 1, 1), null))],
     };
+
+    /// <summary>A project entry for a SharpDX Toolkit game.</summary>
+    public static ProjectInfo ToolkitProject() => new(
+        "Toolkit.csproj", "Toolkit", false, XnaVersion.Unknown, XnaPlatform.Unknown, null, null, [], [], [], [], [], Family: ProjectFamily.SharpDxToolkit);
 }

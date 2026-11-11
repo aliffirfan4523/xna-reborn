@@ -1,0 +1,55 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "flash-to-monogame",
+  "kind": "Flash",
+  "projectFile": "flx-hello.as3proj",
+  "sourceFileCount": 2,
+  "entryClass": "HelloGame",
+  "flixelVersion": null,
+  "findings": [
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-hello.as3proj",
+      "location": {
+        "file": "src/HelloGame.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    },
+    {
+      "ruleId": "FL001",
+      "title": "Flixel 2.x library in use",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "flx-hello.as3proj",
+      "location": {
+        "file": "src/HelloState.as",
+        "line": 3,
+        "column": 2
+      },
+      "snippet": "import org.flixel.*;"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "FL001",
+      "title": "Flixel 2.x library in use",
+      "explanation": "The project uses the Flixel library. The converter maps org.flixel to a C# port of Flixel 2.x that is added to the migrated copy.",
+      "resolution": "No action. The runtime project XnaReborn.Flixel is generated next to the game.",
+      "migratorTask": "flash-to-monogame 13.2"
+    }
+  ],
+  "countsBySeverity": {
+    "Blocker": 0,
+    "Error": 0,
+    "Warning": 0,
+    "Info": 2
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": []
+}
