@@ -186,6 +186,8 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
+# The Runner source folder is named Publish; Windows matching is case-insensitive.
+!src/XnaReborn.Runner/Publish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
