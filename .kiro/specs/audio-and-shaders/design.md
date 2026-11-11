@@ -583,3 +583,10 @@ Kept up to date by the worker that implements the tasks. Each entry names the ta
   - `XNA065` lists common old state names by regex; it is not the complete allow list the migrator uses, so the migrator can mark more than the analyzer reports. `XNA064` does not see a template-style `#define VS_SHADERMODEL vs_2_0`, because the same text inside `#if OPENGL` in an already portable effect would be a false positive.
   - Analyzer scores recorded in the real-catalog snapshots: `xna40-effects` 59/100 (72 after automatic fixes).
   - Not done: rules `NEW-A1` to `NEW-A3`, and the XNA015/XNA016 changes. They need the XACT planner, catalog writer and shim, which are not implemented.
+
+- **Tasks 4.2 and 5 (planner, catalog writer), not wired in.**
+  - `XactPlanner` and `XactCatalogWriter` (`XnaReborn.Migrator/Audio`) are pure and tested, but nothing in `ContentConverter` or `ProjectMigrator` calls them: tasks 4.1, 4.3, 6, 7 and the whole shim (8 to 10) are not implemented, so a migrated project still gets the old manual-work treatment for `.xap` files. Adding the converter step without the shim would produce unusable output, so it was left out on purpose.
+  - The catalog calls constructors of data types that the shim must define. Their signatures are fixed in `XactCatalogContract.Source` (a compile-test stand-in and the contract for task 8). The catalog test compiles the fixture catalog with Roslyn against that source (task 5.4).
+  - Volume uses `gain = 10^(centiDb/2000)` and pitch `cents/1200` clamped to -1..1; both unit statements are still `expected, unverified` in `rules/xact-features.json`.
+  - Rule labels `NEW-A2` (streaming) and `NEW-A3` (unsupported features) are used in the planner's notes; no catalog rules exist for them yet.
+  - The catalog snapshot has long lines (one expression per bank). Readable enough to diff, not pretty; line-wrapping the generated code is a possible later change.
