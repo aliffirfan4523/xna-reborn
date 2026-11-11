@@ -113,6 +113,15 @@ public sealed class RuleCaseTests : IDisposable
                 File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version));
                 Write(Path.Combine(folder, snippet.Replace('/', Path.DirectorySeparatorChar)), "placeholder");
                 break;
+            case "fileContent":
+                {
+                    // The first line of the snippet is the relative path, the rest is the file text.
+                    File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version));
+                    var split = snippet.IndexOf('\n', StringComparison.Ordinal);
+                    Write(Path.Combine(folder, snippet[..split].Replace('/', Path.DirectorySeparatorChar)), snippet[(split + 1)..]);
+                    break;
+                }
+
             case "content":
                 File.WriteAllText(Path.Combine(folder, "Game.csproj"), GameProject(version, nested: @"Content\Content.contentproj"));
                 Write(Path.Combine(folder, "Content", "Content.contentproj"), snippet);

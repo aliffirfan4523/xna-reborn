@@ -3,28 +3,27 @@ using XnaReborn.Migrator.Source;
 namespace XnaReborn.Migrator.Effects;
 
 /// <summary>
-/// Rule ids used in effect notes and markers. They are provisional labels (<c>NEW-</c>); task 17 of the audio-and-shaders spec
-/// replaces them with real catalog ids.
+/// Rule ids used in effect notes and markers: the catalog rules XNA064 to XNA069 (task 17 of the audio-and-shaders spec).
 /// </summary>
 public static class FxRuleIds
 {
     /// <summary>Fixed shader model in a <c>compile</c> statement.</summary>
-    public const string Profile = "NEW-B1";
+    public const string Profile = "XNA064";
 
     /// <summary>Pass state that the MonoGame effect compiler does not accept.</summary>
-    public const string PassState = "NEW-B2";
+    public const string PassState = "XNA065";
 
     /// <summary>Annotation, arguments in <c>compile</c>, or a Direct3D 10 shader call.</summary>
-    public const string Syntax = "NEW-B3";
+    public const string Syntax = "XNA066";
 
     /// <summary>A <c>VPOS</c> pixel shader input.</summary>
-    public const string Vpos = "NEW-B4";
+    public const string Vpos = "XNA067";
 
     /// <summary>Old sampler state names and values.</summary>
-    public const string Sampler = "NEW-B5";
+    public const string Sampler = "XNA068";
 
     /// <summary>Parameter default values and unused parameters.</summary>
-    public const string Parameters = "NEW-B6";
+    public const string Parameters = "XNA069";
 }
 
 /// <summary>The result of rewriting one effect file.</summary>

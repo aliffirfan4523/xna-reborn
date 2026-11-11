@@ -276,9 +276,9 @@ public sealed class EffectRewriterTests
 
         Assert.Equal(3, result.Notes.Count(n => n.RuleId == FxRuleIds.PassState));
         Assert.True(result.Notes.All(n => n.NeedsManualWork));
-        Assert.Contains("        // XNA Reborn [NEW-B2]: AlphaTestEnable is not supported", result.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("[NEW-B2]: AlphaBlendEnable", result.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("[NEW-B2]: SrcBlend", result.Text, StringComparison.Ordinal);
+        Assert.Contains("        // XNA Reborn [XNA065]: AlphaTestEnable is not supported", result.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("[XNA065]: AlphaBlendEnable", result.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("[XNA065]: SrcBlend", result.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -299,7 +299,7 @@ public sealed class EffectRewriterTests
 
         var note = Assert.Single(result.Notes);
         Assert.Equal(FxRuleIds.Vpos, note.RuleId);
-        Assert.StartsWith("// XNA Reborn [NEW-B4]: VPOS is not available.", result.Text, StringComparison.Ordinal);
+        Assert.StartsWith("// XNA Reborn [XNA067]: VPOS is not available.", result.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -323,7 +323,7 @@ public sealed class EffectRewriterTests
 
         var note = Assert.Single(result.Notes);
         Assert.Equal(FxRuleIds.Sampler, note.RuleId);
-        Assert.Contains("    // XNA Reborn [NEW-B5]: Sampler state 'SRGBTexture'", result.Text, StringComparison.Ordinal);
+        Assert.Contains("    // XNA Reborn [XNA068]: Sampler state 'SRGBTexture'", result.Text, StringComparison.Ordinal);
     }
 
     [Fact]

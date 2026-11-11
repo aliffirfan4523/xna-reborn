@@ -577,3 +577,9 @@ Kept up to date by the worker that implements the tasks. Each entry names the ta
   - A real run showed that `mgfxc` does not create the output folder, so the check creates `obj/xnareborn-fx` first. The slow test `Build_check_runs_the_pinned_tool_in_a_migrated_copy` restores the pinned tools in a temp migrated copy and runs the real check.
   - Hint ids are `H301` to `H309` (the design's names are `fx-*`; the catalog uses `H` ids). The limit hint is split over a message regex and two codes, and VPOS over a code and a message regex, because the matcher tests the code and the message separately. The audio hint is `H306`.
   - The shader that needs a level above `_4_0_level_9_1` is never tested here: no real shader was found that triggers X4505/X5608 within the fixtures, so escalation is tested with a fake runner only.
+
+- **Task 17 (catalog rules), shader part only.**
+  - New rules `XNA064` to `XNA069` use the `fileContent` match on `**/*.fx` (labels `NEW-B1` to `NEW-B6`; `NEW-B7` was never used). `XNA064` and `XNA068` are AutoFixable and link `audio-and-shaders:12` and `:13`. `XNA017` keeps Manual with new text. The rule ids in markers, notes and tests are now these ids.
+  - `XNA065` lists common old state names by regex; it is not the complete allow list the migrator uses, so the migrator can mark more than the analyzer reports. `XNA064` does not see a template-style `#define VS_SHADERMODEL vs_2_0`, because the same text inside `#if OPENGL` in an already portable effect would be a false positive.
+  - Analyzer scores recorded in the real-catalog snapshots: `xna40-effects` 59/100 (72 after automatic fixes).
+  - Not done: rules `NEW-A1` to `NEW-A3`, and the XNA015/XNA016 changes. They need the XACT planner, catalog writer and shim, which are not implemented.

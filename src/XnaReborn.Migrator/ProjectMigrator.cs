@@ -41,7 +41,7 @@ public sealed class ProjectMigrator
     private const string _contentReason =
         "Content conversion is switched off for this project; this asset was copied unchanged and is not built.";
 
-    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049"];
+    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049", "XNA101"];
 
     // Plan items that make the device part of the Compat library necessary (device-to-desktop tasks 7 and 8).
     private static readonly string[] _deviceRuleIds = ["XNA007", "XNA054", "XNA055", "XNA057", "XNA058", "XNA060", "XNA061", "XNA062"];
@@ -181,7 +181,7 @@ public sealed class ProjectMigrator
             projects.Add(new ProjectWork(discovered, read, enabled, projectLevel, contentRules));
         }
 
-        var converting = projects.Where(p => p.ContentRules.Count > 0 && p.Read.Info.ContentProjects.Count > 0).ToList();
+        var converting = projects.Where(p => p.ContentRules.Count > 0 && (p.Read.Info.ContentProjects.Count > 0 || p.Read.Info.ContentItems.Any(i => i.InProject))).ToList();
         var converter = new ContentConverter(_fileSystem);
         var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts, options.RewriteEffects);
         for (var i = 0; i < converting.Count; i++)

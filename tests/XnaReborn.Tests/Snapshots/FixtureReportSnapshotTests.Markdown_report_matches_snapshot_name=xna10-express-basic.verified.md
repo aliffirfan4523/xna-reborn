@@ -27,7 +27,7 @@ Classification: AutoFixable 0, Manual 1, Unsupported 0
 
 - **[Error] XNA905** SpriteBlendMode
   - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:55:31`
+  - Location: `Game1.cs:45:31`
   - Code: `spriteBatch.Begin(SpriteBlendMode.AlphaBlend);`
 
 ## Rules

@@ -5,8 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace XnaExpress10Basic
 {
     /// <summary>
-    /// XNA Game Studio Express 1.0 style game. It overrides the 1.0-only content methods and uses
-    /// the 1.0 resource constructor that takes a usage and a management mode.
+    /// XNA Game Studio Express 1.0 style game. It overrides the 1.0-only content methods.
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
@@ -14,7 +13,6 @@ namespace XnaExpress10Basic
         private ContentManager content;
         private SpriteBatch spriteBatch;
         private Texture2D ship;
-        private Texture2D pixel;
 
         public Game1()
         {
@@ -28,14 +26,6 @@ namespace XnaExpress10Basic
             {
                 spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
                 ship = content.Load<Texture2D>("Content\\ship");
-                pixel = new Texture2D(
-                    graphics.GraphicsDevice,
-                    1,
-                    1,
-                    1,
-                    ResourceUsage.None,
-                    SurfaceFormat.Color,
-                    ResourceManagementMode.Manual);
             }
         }
 

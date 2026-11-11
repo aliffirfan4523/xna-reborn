@@ -51,9 +51,9 @@ public sealed class EffectMigrationTests
     {
         var result = await ConvertAsync(rewriteEffects: true);
 
-        Assert.Contains(result.ManualNotes, n => n.StartsWith("Content/AlphaTest.fx: [NEW-B2]", StringComparison.Ordinal));
-        Assert.Contains(result.ManualNotes, n => n.StartsWith("Content/Vpos.fx: [NEW-B4]", StringComparison.Ordinal));
-        Assert.Contains(result.ManualNotes, n => n.StartsWith("Content/Sm2.fx: [NEW-B1]", StringComparison.Ordinal));
+        Assert.Contains(result.ManualNotes, n => n.StartsWith("Content/AlphaTest.fx: [XNA065]", StringComparison.Ordinal));
+        Assert.Contains(result.ManualNotes, n => n.StartsWith("Content/Vpos.fx: [XNA067]", StringComparison.Ordinal));
+        Assert.Contains(result.ManualNotes, n => n.StartsWith("Content/Sm2.fx: [XNA064]", StringComparison.Ordinal));
         Assert.Equal(result.ManualNotes, result.Report.Notes);
     }
 

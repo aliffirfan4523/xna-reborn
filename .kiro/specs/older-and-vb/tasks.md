@@ -56,18 +56,18 @@ Rules for every task:
   - [x] 7.4 Tests: Express fixture gives content items with importer, processor, name; XNA050 does not fire for the two legacy processors; XNA050 still fires for a real custom processor
   - _Requirements: R2, R4_
 
-- [ ] 8. Content conversion and project file for in-project content (`Migrator`)
-  - [ ] 8.1 `ContentConverter`: use the game project folder as base for `InProject` items; keep everything else
-  - [ ] 8.2 `SdkCsprojGenerator`: `hasContent` also true for in-project items
-  - [ ] 8.3 Snapshot tests of `Content.mgcb` and the generated `.csproj` for `xna10-express-basic`; 2.0 nested project case unchanged
-  - [ ] 8.4 Merge this task after any open `content-conversion` PR (see design risk 2)
+- [x] 8. Content conversion and project file for in-project content (`Migrator`)
+  - [x] 8.1 `ContentConverter`: use the game project folder as base for `InProject` items; keep everything else
+  - [x] 8.2 `SdkCsprojGenerator`: `hasContent` also true for in-project items
+  - [x] 8.3 Snapshot tests of `Content.mgcb` and the generated `.csproj` for `xna10-express-basic`; 2.0 nested project case unchanged
+  - [x] 8.4 Merge this task after any open `content-conversion` PR (see design risk 2)
   - _Requirements: R4, R5_
 
-- [ ] 9. `LoadGraphicsContentRewriter` (`Migrator`)
-  - [ ] 9.1 Implement for XNA102 and XNA103: rename, drop parameter, add `const bool` first statement
-  - [ ] 9.2 Markers and no change for: calls by name, odd parameter list, existing `LoadContent`
-  - [ ] 9.3 Register in `DefaultRewriters`; before and after tests; preservation test (untouched bytes identical)
-  - [ ] 9.4 Hand check: migrate `xna10-express-basic` and run `dotnet build` on the result (integration test, `XNAREBORN_INTEGRATION=1`)
+- [x] 9. `LoadGraphicsContentRewriter` (`Migrator`)
+  - [x] 9.1 Implement for XNA102 and XNA103: rename, drop parameter, add `const bool` first statement
+  - [x] 9.2 Markers and no change for: calls by name, odd parameter list, existing `LoadContent`
+  - [x] 9.3 Register in `DefaultRewriters`; before and after tests; preservation test (untouched bytes identical)
+  - [x] 9.4 Hand check: migrate `xna10-express-basic` and run `dotnet build` on the result (integration test, `XNAREBORN_INTEGRATION=1`)
   - _Requirements: R5_
 
 - [ ] 10. Checkpoint A
