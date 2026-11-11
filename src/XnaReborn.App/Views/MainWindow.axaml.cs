@@ -22,6 +22,11 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        if (MotionPreference.Reduce())
+        {
+            Classes.Add("reduce-motion");
+        }
+
         ThemeToggle.Click += (_, _) => CycleTheme();
         DataContextChanged += (_, _) =>
         {

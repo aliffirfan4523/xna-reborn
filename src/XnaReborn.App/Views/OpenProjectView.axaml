@@ -106,7 +106,7 @@
                     <TextBlock Text="{Binding Name}" Classes="subtitle" TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding Path}" Classes="caption muted" TextTrimming="CharacterEllipsis"
                                ToolTip.Tip="{Binding Path}" />
-                    <TextBlock Text="{Binding LastOpened, StringFormat='Last opened {0:g}'}" Classes="caption muted" />
+                    <TextBlock Text="{Binding LastOpened, StringFormat='Last opened {0:g}'}" Classes="caption muted" TextWrapping="Wrap" />
                   </StackPanel>
                   <controls:Chip Grid.Column="2" Kind="Accent" Icon="{StaticResource IconChart}" Text="{Binding ScoreText}"
                                  IsVisible="{Binding HasScore}" VerticalAlignment="Center" />

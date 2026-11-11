@@ -48,7 +48,7 @@
                AutomationProperties.AutomationId="NoMigrationMessage" />
 
     <!-- Pipeline: three cards. Every card says its state in a word, an icon and a color. -->
-    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource SpacingLarge}">
+    <Grid x:Name="Pipeline" ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource SpacingLarge}" RowSpacing="{StaticResource SpacingLarge}">
 
       <Border Grid.Column="0" Classes="card"
               AutomationProperties.AutomationId="EnvironmentPanel"
@@ -163,7 +163,8 @@
       </StackPanel>
     </Border>
 
-    <Grid ColumnDefinitions="3*,2*" ColumnSpacing="{StaticResource SpacingLarge}">
+    <!-- Two columns when there is room; one column (log, then problems) in a narrow window. See BuildRunView.axaml.cs. -->
+    <Grid x:Name="LogAndProblems" ColumnDefinitions="3*,2*" ColumnSpacing="{StaticResource SpacingLarge}" RowSpacing="{StaticResource SpacingLarge}">
 
       <!-- Live log. -->
       <StackPanel Grid.Column="0" Spacing="{StaticResource SpacingMedium}">
@@ -195,7 +196,7 @@
       </StackPanel>
 
       <!-- Problems, grouped by fix hint. -->
-      <StackPanel Grid.Column="1" Spacing="{StaticResource SpacingMedium}">
+      <StackPanel x:Name="ProblemsPanel" Grid.Column="1" Spacing="{StaticResource SpacingMedium}">
         <TextBlock Text="Problems and hints" Classes="section" Margin="0" AutomationProperties.HeadingLevel="2" />
         <TextBlock Text="{Binding DiagnosticsSummary}" IsVisible="{Binding HasGroups}"
                    AutomationProperties.AutomationId="DiagnosticsSummary" />
@@ -215,12 +216,12 @@
                           AutomationProperties.Name="{Binding AutomationName}">
                   <Expander.Header>
                     <StackPanel Spacing="4">
-                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+                      <WrapPanel Orientation="Horizontal" ItemSpacing="{StaticResource SpacingMedium}">
                         <TextBlock Classes="icon" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
                         <TextBlock Classes="label" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
                         <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
                         <TextBlock Text="{Binding CountText}" Classes="muted" />
-                      </StackPanel>
+                      </WrapPanel>
                       <TextBlock Text="{Binding Advice}" IsVisible="{Binding HasAdvice}" TextWrapping="Wrap" />
                       <TextBlock Text="{Binding RuleText}" IsVisible="{Binding HasRuleId}" FontWeight="SemiBold"
                                  Foreground="{DynamicResource AccentTextBrush}" />
@@ -230,13 +231,13 @@
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="vm:DiagnosticItemViewModel">
                         <StackPanel Margin="0,4" Spacing="2">
-                          <StackPanel Orientation="Horizontal" Spacing="{StaticResource SpacingMedium}">
+                          <WrapPanel Orientation="Horizontal" ItemSpacing="{StaticResource SpacingMedium}">
                             <TextBlock Classes="icon" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
                             <TextBlock Classes="label" Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.info="{Binding IsInfo}" />
                             <TextBlock Text="{Binding Code}" FontFamily="Consolas,Menlo,monospace" />
                             <TextBlock Text="{Binding Location}" IsVisible="{Binding HasLocation}"
                                        FontFamily="Consolas,Menlo,monospace" Classes="muted" />
-                          </StackPanel>
+                          </WrapPanel>
                           <SelectableTextBlock Text="{Binding Message}" TextWrapping="Wrap" />
                         </StackPanel>
                       </DataTemplate>

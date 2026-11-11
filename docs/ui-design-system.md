@@ -63,7 +63,7 @@ All live in `XnaReborn.App.Controls`. `StatusKind` is Neutral, Accent, Success, 
 
 ## Shell
 
-Left rail (brand, six steps with done, current, locked states, theme toggle), header (project name, score chip), error banner, page area (max width 1080), status bar. Ctrl+1..6 jump to a step. The step buttons keep `Step_<Name>` automation ids; the error banner keeps `ErrorBanner`, `ErrorCopy`, `ErrorDismiss`.
+Left rail (brand, six steps with done, current, locked states, theme toggle), header (project name, score chip), error banner, page area (max width 1080), status bar. Ctrl+1..6 jump to a step (the gestures are `Ctrl+D1`..`Ctrl+D6`). The step buttons keep `Step_<Name>` automation ids; the error banner keeps `ErrorBanner`, `ErrorCopy`, `ErrorDismiss`.
 
 `MainViewModel` adds `ProjectName`, `HasProject`, `HasScore`, `ScoreText`, `StatusText` (additive; nothing renamed).
 
@@ -73,4 +73,13 @@ Left rail (brand, six steps with done, current, locked states, theme toggle), he
 - Interactive targets are at least 32 px.
 - Status always has an icon and a word.
 - Keep every `AutomationProperties.AutomationId` and `Name`. Tests use them. Shell tab stops (steps, theme toggle) are skipped by page tab-order tests (`IsShellStop` in `KeyboardAccessTests`).
-- Full AA validation needs manual checks with assistive tools; contrast here was chosen by hand, not measured by a tool.
+- Contrast is measured, not guessed: `ContrastTests` reads `Styles/Tokens.axaml` and checks every foreground and background pair in Light and Dark (text 4.5:1; icons, input borders and focus rings 3:1). A new color or a new place that uses a color goes into the pair list there. Fix a failing color in the token file, never per screen. `XNAREBORN_CONTRAST_REPORT=<file>` writes every ratio.
+- Input borders (TextBox, ComboBox, CheckBox, RadioButton, ToggleSwitch) use `BorderBrushStrong` through aliases in `Tokens.axaml`, so they are covered by that test.
+- Keyboard focus is Fluent's two-tone adorner (`FocusRingBrush` outside, `FocusRingInnerBrush` inside), set through the `SystemControlFocusVisual*` keys in `Tokens.axaml`. `Controls.axaml` turns it on for text inputs too. `ScreenAuditTests` presses Tab through every screen and fails on a stop with no ring.
+- An icon or glyph never carries meaning alone: give a severity glyph `Classes="icon"` (hidden from screen readers) and put the word beside it. `ScreenAuditTests` also fails on an unnamed control, a control under 32 px, and an icon outside a named control.
+- Live regions: the error banner is `Assertive`; `Banner` (non-error), the status bar, build status and indeterminate `ProgressLabel` are `Polite`.
+- Headings: one level-1 title per screen, sections level 2 and below, no level skipped.
+- Motion: every animation checks `MotionPreference.Reduce()`. `MainWindow` adds the class `reduce-motion`, which stops the indeterminate progress bar. Fluent's own short control transitions (Expander, toggles) are not switched off.
+- Layout: `TextScaleTests` lays out each screen at 800x600, at 100% and 150% text, and fails on cut-off text, overlapping controls, or content outside the window. Use `Grid` columns with `TextWrapping="Wrap"` or a `WrapPanel` instead of a horizontal `StackPanel` for text, and `NarrowLayout.Attach` to stack side-by-side panels in a narrow window.
+- Key gestures: write digits as `Ctrl+D1`. `Ctrl+1` is read as the key with code 1 (Backspace).
+- Still needs a person with a real screen reader and a real display; the headless tests cannot hear or see.

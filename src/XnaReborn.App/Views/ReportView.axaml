@@ -114,24 +114,24 @@
               <Border Classes="card compact">
                 <StackPanel Spacing="{DynamicResource Space1}" AutomationProperties.Name="Findings per classification">
                   <TextBlock Text="Who fixes it" Classes="section" AutomationProperties.HeadingLevel="2" />
-                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space2}">
                     <PathIcon Data="{StaticResource IconCheckCircle}" Width="16" Height="16" Foreground="{DynamicResource SuccessTextBrush}" />
-                    <TextBlock Text="{Binding AutoFixableCount, StringFormat='Auto-fixable: {0}'}"
+                    <TextBlock Grid.Column="1" Text="{Binding AutoFixableCount, StringFormat='Auto-fixable: {0}'}"
                                AutomationProperties.AutomationId="CountAutoFixable" />
-                    <TextBlock Text="the migrator does it" Classes="caption muted" VerticalAlignment="Center" />
-                  </StackPanel>
-                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                    <TextBlock Grid.Column="2" Text="the migrator does it" Classes="caption muted" TextWrapping="Wrap" VerticalAlignment="Center" />
+                  </Grid>
+                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space2}">
                     <PathIcon Data="{StaticResource IconTune}" Width="16" Height="16" Foreground="{DynamicResource SeverityWarningBrush}" />
-                    <TextBlock Text="{Binding ManualCount, StringFormat='Manual: {0}'}"
+                    <TextBlock Grid.Column="1" Text="{Binding ManualCount, StringFormat='Manual: {0}'}"
                                AutomationProperties.AutomationId="CountManual" />
-                    <TextBlock Text="you fix these by hand" Classes="caption muted" VerticalAlignment="Center" />
-                  </StackPanel>
-                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                    <TextBlock Grid.Column="2" Text="you fix these by hand" Classes="caption muted" TextWrapping="Wrap" VerticalAlignment="Center" />
+                  </Grid>
+                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space2}">
                     <PathIcon Data="{StaticResource IconError}" Width="16" Height="16" Foreground="{DynamicResource SeverityErrorBrush}" />
-                    <TextBlock Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
+                    <TextBlock Grid.Column="1" Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
                                AutomationProperties.AutomationId="CountUnsupported" />
-                    <TextBlock Text="no modern equivalent" Classes="caption muted" VerticalAlignment="Center" />
-                  </StackPanel>
+                    <TextBlock Grid.Column="2" Text="no modern equivalent" Classes="caption muted" TextWrapping="Wrap" VerticalAlignment="Center" />
+                  </Grid>
                 </StackPanel>
               </Border>
             </StackPanel>
@@ -243,7 +243,7 @@
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                       <DataTemplate x:DataType="vm:ReportFilterChoice">
-                        <TextBlock Text="{Binding Label}" />
+                        <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
                       </DataTemplate>
                     </ListBox.ItemTemplate>
                   </ListBox>
@@ -257,17 +257,17 @@
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                       <DataTemplate x:DataType="vm:ReportFilterChoice">
-                        <TextBlock Text="{Binding Label}" />
+                        <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
                       </DataTemplate>
                     </ListBox.ItemTemplate>
                   </ListBox>
-                  <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
+                  <WrapPanel Orientation="Horizontal" ItemSpacing="{DynamicResource Space2}">
                     <Button Classes="subtle" Content="Clear filters" Command="{Binding ClearFiltersCommand}"
                             AutomationProperties.AutomationId="ClearFilters"
                             AutomationProperties.Name="Clear filters" />
-                    <TextBlock Text="{Binding FilterSummary}" VerticalAlignment="Center" Classes="caption muted"
+                    <TextBlock Text="{Binding FilterSummary}" VerticalAlignment="Center" Classes="caption muted" TextWrapping="Wrap"
                                AutomationProperties.AutomationId="FilterSummary" />
-                  </StackPanel>
+                  </WrapPanel>
                 </StackPanel>
 
                 <Panel>
@@ -279,9 +279,9 @@
                       <DataTemplate x:DataType="vm:ReportRow">
                         <StackPanel>
                           <StackPanel IsVisible="{Binding StartsGroup}" Margin="0,8,0,6">
-                            <TextBlock Text="{Binding GroupHeader}" Classes="section"
+                            <TextBlock Text="{Binding GroupHeader}" Classes="section" TextWrapping="Wrap"
                                        AutomationProperties.HeadingLevel="3" />
-                            <TextBlock Text="{Binding GroupDescription}" Classes="caption muted" />
+                            <TextBlock Text="{Binding GroupDescription}" Classes="caption muted" TextWrapping="Wrap" />
                           </StackPanel>
                           <StackPanel Spacing="{DynamicResource Space1}"
                                       AutomationProperties.Name="{Binding Item.AutomationName}">
@@ -290,7 +290,7 @@
                               <TextBlock Text="{Binding Item.RuleId}" FontWeight="SemiBold" />
                             </StackPanel>
                             <TextBlock Text="{Binding Item.Title}" TextWrapping="Wrap" />
-                            <TextBlock Text="{Binding Item.LocationText}" Classes="caption muted" />
+                            <TextBlock Text="{Binding Item.LocationText}" Classes="caption muted" TextWrapping="Wrap" />
                           </StackPanel>
                         </StackPanel>
                       </DataTemplate>

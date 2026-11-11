@@ -33,7 +33,8 @@
           <StackPanel Orientation="Horizontal" Spacing="8" Margin="10,0">
             <TextBlock Text="{Binding Number}" Width="44" TextAlignment="Right" Foreground="{DynamicResource TerminalMuted}"
                        FontFamily="Consolas,Menlo,monospace" FontSize="12" />
-            <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource TerminalError}" IsVisible="{Binding IsError}" />
+            <TextBlock Text="{DynamicResource SeverityErrorIcon}" Foreground="{DynamicResource TerminalError}" IsVisible="{Binding IsError}"
+                       AutomationProperties.AccessibilityView="Raw" />
             <TextBlock Text="{Binding Text}" Foreground="{DynamicResource TerminalText}"
                        Classes.error="{Binding IsError}" FontFamily="Consolas,Menlo,monospace" FontSize="12">
               <TextBlock.Styles>

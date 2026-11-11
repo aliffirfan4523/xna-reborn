@@ -58,9 +58,19 @@
       <SolidColorBrush x:Key="RailBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="BorderBrushSubtle" Color="#DDD9EA" />
       <SolidColorBrush x:Key="BorderBrushStrong" Color="#8A85A3" />
+      <!-- Borders of Fluent inputs use the strong border token, so ContrastTests covers them (3:1 on every surface). -->
+      <StaticResource x:Key="TextControlBorderBrush" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="ComboBoxBorderBrush" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUnchecked" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="RadioButtonOuterEllipseStroke" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="ToggleSwitchStrokeOff" ResourceKey="BorderBrushStrong" />
       <SolidColorBrush x:Key="TextBrush" Color="#1C1A2E" />
       <SolidColorBrush x:Key="TextMutedBrush" Color="#55516B" />
       <SolidColorBrush x:Key="FocusRingBrush" Color="#1C1A2E" />
+      <SolidColorBrush x:Key="FocusRingInnerBrush" Color="#FFFFFF" />
+      <!-- The Fluent keyboard-focus adorner (every control) reads these two keys; point it at the ring tokens. -->
+      <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="#1C1A2E" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="#FFFFFF" />
 
       <SolidColorBrush x:Key="SuccessTextBrush" Color="#17663A" />
       <SolidColorBrush x:Key="SuccessSoftBrush" Color="#E3F4EA" />
@@ -92,9 +102,18 @@
       <SolidColorBrush x:Key="RailBrush" Color="#17151F" />
       <SolidColorBrush x:Key="BorderBrushSubtle" Color="#37334A" />
       <SolidColorBrush x:Key="BorderBrushStrong" Color="#8F8AAA" />
+      <!-- Borders of Fluent inputs use the strong border token, so ContrastTests covers them (3:1 on every surface). -->
+      <StaticResource x:Key="TextControlBorderBrush" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="ComboBoxBorderBrush" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUnchecked" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="RadioButtonOuterEllipseStroke" ResourceKey="BorderBrushStrong" />
+      <StaticResource x:Key="ToggleSwitchStrokeOff" ResourceKey="BorderBrushStrong" />
       <SolidColorBrush x:Key="TextBrush" Color="#EEECF8" />
       <SolidColorBrush x:Key="TextMutedBrush" Color="#B4B0CB" />
       <SolidColorBrush x:Key="FocusRingBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="FocusRingInnerBrush" Color="#121118" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="#121118" />
 
       <SolidColorBrush x:Key="SuccessTextBrush" Color="#78D8A0" />
       <SolidColorBrush x:Key="SuccessSoftBrush" Color="#14301F" />

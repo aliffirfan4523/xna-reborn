@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
+using XnaReborn.App.Controls;
 using XnaReborn.App.ViewModels;
 
 namespace XnaReborn.App.Views;
@@ -12,6 +13,9 @@ public sealed partial class BuildRunView : UserControl
     public BuildRunView()
     {
         InitializeComponent();
+        // Below these widths the panels stack: three columns of ~160 px or a 200 px problems column wrap word by word.
+        NarrowLayout.Attach(Pipeline, 640, "*,*,*");
+        NarrowLayout.Attach(LogAndProblems, 700, "3*,2*");
     }
 
     private async void OnOpenLink(object? sender, RoutedEventArgs e)

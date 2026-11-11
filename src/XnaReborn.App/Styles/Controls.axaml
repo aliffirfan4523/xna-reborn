@@ -35,6 +35,25 @@
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Margin" Value="0,8,0,0" />
   </Style>
+  <Style Selector="TextBlock.icon">
+    <!-- A severity glyph (circle, triangle, square, diamond). The word beside it says the same, so a screen reader skips the shape. -->
+    <Setter Property="AutomationProperties.AccessibilityView" Value="Raw" />
+  </Style>
+
+  <!--
+    Keyboard focus. Every control gets Fluent's two-tone focus adorner on Tab (colors from FocusRingBrush and FocusRingInnerBrush
+    through the SystemControlFocusVisual keys in Tokens.axaml). Fluent turns the adorner off for text inputs, which show only a thin
+    accent underline, so it is switched back on here.
+  -->
+  <Style Selector="TextBox, ComboBox">
+    <Setter Property="FocusAdorner">
+      <FocusAdornerTemplate>
+        <Border BorderThickness="2" CornerRadius="4" BorderBrush="{DynamicResource FocusRingBrush}">
+          <Border BorderThickness="1" CornerRadius="2" BorderBrush="{DynamicResource FocusRingInnerBrush}" />
+        </Border>
+      </FocusAdornerTemplate>
+    </Setter>
+  </Style>
 
   <!-- Surfaces. -->
   <Style Selector="Border.card">
@@ -65,6 +84,11 @@
     <Setter Property="Padding" Value="14,6" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- A button label wraps onto a second line when the button is squeezed, instead of being cut off. -->
+  <Style Selector="Button AccessText">
+    <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
 
   <Style Selector="Button.primary">
@@ -245,6 +269,21 @@
   </Style>
   <Style Selector="Border.error TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource SeverityErrorBrush}" />
+  </Style>
+
+  <!--
+    Reduced motion. MainWindow adds the class "reduce-motion" when MotionPreference.Reduce() is true. The sliding blocks of an
+    indeterminate progress bar are hidden and the track shows as one still bar; the text beside it already says it is working.
+  -->
+  <Style Selector="Window.reduce-motion ProgressBar:indeterminate /template/ Border#IndeterminateProgressBarIndicator">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+  <Style Selector="Window.reduce-motion ProgressBar:indeterminate /template/ Border#IndeterminateProgressBarIndicator2">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+  <Style Selector="Window.reduce-motion ProgressBar:indeterminate /template/ Border#ProgressBarRoot">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="Opacity" Value="0.55" />
   </Style>
 
   <!-- Progress bars: rounded, accent. -->

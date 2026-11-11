@@ -115,5 +115,8 @@ public sealed class Banner : ContentControl
         IconData = Icon ?? StatusKinds.DefaultIcon(Kind);
         var word = StatusKinds.WordOf(Kind);
         AutomationProperties.SetName(this, string.Join(". ", new[] { word, Title, Message }.Where(s => !string.IsNullOrWhiteSpace(s))));
+
+        // A failure interrupts the screen reader; the other kinds wait for it to finish speaking.
+        AutomationProperties.SetLiveSetting(this, Kind == StatusKind.Error ? AutomationLiveSetting.Assertive : AutomationLiveSetting.Polite);
     }
 }
