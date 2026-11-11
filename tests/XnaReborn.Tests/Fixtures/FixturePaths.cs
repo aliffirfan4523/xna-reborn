@@ -46,8 +46,23 @@ public static class FixturePaths
     /// <summary>Theory data: one row per MonoGame upgrade fixture name.</summary>
     public static IEnumerable<object[]> MonoGameNameRows() => MonoGameNames.Select(n => new object[] { n });
 
-    /// <summary>Theory data: one row per fixture name, XNA and MonoGame.</summary>
-    public static IEnumerable<object[]> EveryNameRows() => AllNames.Concat(MonoGameNames).Select(n => new object[] { n });
+    /// <summary>Names of the SharpDX Toolkit fixture folders, in a fixed order.</summary>
+    public static readonly IReadOnlyList<string> SharpDxNames =
+    [
+        "sdx-basic",
+        "sdx-effects",
+        "sdx-lowlevel",
+        "sdx-mixed",
+        "sdx-negative",
+        "sdx-prebuilt",
+        "sdx-store-app",
+    ];
+
+    /// <summary>Theory data: one row per SharpDX Toolkit fixture name.</summary>
+    public static IEnumerable<object[]> SharpDxNameRows() => SharpDxNames.Select(n => new object[] { n });
+
+    /// <summary>Theory data: one row per fixture name, XNA, MonoGame and SharpDX Toolkit.</summary>
+    public static IEnumerable<object[]> EveryNameRows() => AllNames.Concat(MonoGameNames).Concat(SharpDxNames).Select(n => new object[] { n });
 
     /// <summary>Absolute path of <c>tests/fixtures</c>.</summary>
     public static string Root { get; } = Path.Combine(FindRepoRoot(), "tests", "fixtures");

@@ -113,7 +113,7 @@ internal static class RuleCatalogValidator
             && rules[index].ValueKind == JsonValueKind.Object
             && rules[index].TryGetProperty("id", out var id)
             && id.ValueKind == JsonValueKind.String
-            && System.Text.RegularExpressions.Regex.IsMatch(id.GetString()!, "^(XNA|MG)[0-9]{3}$"))
+            && System.Text.RegularExpressions.Regex.IsMatch(id.GetString()!, "^(XNA|MG|SDX)[0-9]{3}$"))
         {
             return id.GetString()!;
         }
@@ -230,6 +230,12 @@ internal static class RuleCatalogValidator
             && Array.IndexOf(_matchTypes, type.GetString()) < 0)
         {
             add($"{label} /rules/{index}/match/type: unknown match type '{type.GetString()}'.");
+        }
+
+        if (match.TryGetProperty("type", out var memberType) && memberType.ValueKind == JsonValueKind.String && memberType.GetString() == "member"
+            && match.TryGetProperty("name", out _) == match.TryGetProperty("names", out _))
+        {
+            add($"{label} /rules/{index}/match: a member match needs exactly one of name or names.");
         }
 
         if (match.TryGetProperty("matches", out var pattern) && pattern.ValueKind == JsonValueKind.String)

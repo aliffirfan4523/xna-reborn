@@ -28,17 +28,24 @@ public sealed record TypeMatch(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? AlsoNames = null) : RuleMatch;
 
 /// <summary>A member access or call, matched by syntax only.</summary>
-/// <param name="Name">The member name.</param>
+/// <param name="Name">The member name, or null when <paramref name="Names"/> is used. Exactly one of the two is set.</param>
 /// <param name="Namespaces">Namespaces of which one must be imported by the file.</param>
 /// <param name="Receiver">Identifier that must appear left of the dot, or null for any.</param>
 /// <param name="Kind">Whether to match invocations, accesses, or both.</param>
 /// <param name="Arguments">Allowed argument count range, or null for any.</param>
+/// <param name="Names">Several member names that the same rule matches, or null. Used for rename families.</param>
 public sealed record MemberMatch(
-    string Name,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Name,
     IReadOnlyList<string> Namespaces,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Receiver = null,
     MemberMatchKind Kind = MemberMatchKind.Any,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ArgumentRange? Arguments = null) : RuleMatch;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ArgumentRange? Arguments = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? Names = null) : RuleMatch
+{
+    /// <summary>Every member name the rule matches: <see cref="Name"/> or <see cref="Names"/>.</summary>
+    [JsonIgnore]
+    public IReadOnlyList<string> AllNames => Names ?? (Name is null ? [] : [Name]);
+}
 
 /// <summary>An MSBuild property in a project file.</summary>
 /// <param name="Name">The property name.</param>
