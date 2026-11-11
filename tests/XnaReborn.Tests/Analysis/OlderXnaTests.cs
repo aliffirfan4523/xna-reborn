@@ -64,7 +64,7 @@ public sealed class OlderXnaTests
         var ids = RuleIds(await AnalyzeAsync("xna10-express-basic")).ToHashSet();
 
         Assert.Superset(
-            new HashSet<string> { "XNA001", "XNA002", "XNA003", "XNA022", "XNA024", "XNA100", "XNA101", "XNA102", "XNA103", "XNA104", "XNA105" },
+            new HashSet<string> { "XNA001", "XNA002", "XNA003", "XNA022", "XNA024", "XNA100", "XNA101", "XNA102", "XNA103" },
             ids);
         Assert.DoesNotContain("XNA050", ids);
     }

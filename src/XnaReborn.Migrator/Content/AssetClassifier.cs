@@ -105,7 +105,9 @@ public sealed class AssetClassifier
                 $"{finalImporter} with {finalProcessor} is not a stock pair that MonoGame can build.");
         }
 
-        var note = extension.Equals(".fx", StringComparison.OrdinalIgnoreCase) ? "Shader review needed." : null;
+        // An XNA 1.0 processor that was merged into a current one is built with the current one.
+        finalProcessor = map.Resolve(finalImporter, finalProcessor, out var alias);
+        var note = alias?.Note ?? (extension.Equals(".fx", StringComparison.OrdinalIgnoreCase) ? "Shader review needed." : null);
         return Result(finalImporter, finalProcessor, AssetStatus.Converted, note);
     }
 

@@ -41,7 +41,7 @@ public sealed class ProjectMigrator
     private const string _contentReason =
         "Content conversion is switched off for this project; this asset was copied unchanged and is not built.";
 
-    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049", "SDX010", "SDX011", "SDX012", "SDX014"];
+    private static readonly string[] _contentRuleIds = ["XNA005", "XNA049", "XNA101", "SDX010", "SDX011", "SDX012", "SDX014"];
 
     // Toolkit effects and compiled .tkb files are Manual or Unsupported, so they are not plan items. Their finding still starts the content conversion.
     private static readonly string[] _toolkitContentFindingIds = ["SDX013", "SDX015"];
@@ -203,7 +203,8 @@ public sealed class ProjectMigrator
             projects.Add(new ProjectWork(discovered, read, enabled, projectLevel, contentRules));
         }
 
-        var converting = projects.Where(p => p.ContentRules.Count > 0 && (p.Read.Info.ContentProjects.Count > 0 || (p.Discovered.IsSharpDxToolkit && ToolkitContentConverter.HasContent(p.Read)))).ToList();
+        var converting = projects.Where(p => p.ContentRules.Count > 0
+            && (p.Read.Info.ContentProjects.Count > 0 || p.Read.Info.ContentItems.Any(i => i.InProject) || (p.Discovered.IsSharpDxToolkit && ToolkitContentConverter.HasContent(p.Read)))).ToList();
         var converter = new ContentConverter(_fileSystem);
         var toolkitConverter = new ToolkitContentConverter(_fileSystem);
         var contentOptions = new ContentOptions(options.Target, options.SubstituteFonts, options.RewriteEffects);

@@ -49,7 +49,7 @@ public sealed class SdkCsprojGenerator
         var packages = _selector.Select(target);
         // A Toolkit project keeps its assets in build-action items, not in a content project. It has content when a Content.mgcb was made for it.
         var isToolkit = info.Family == ProjectFamily.SharpDxToolkit;
-        var hasContent = info.ContentProjects.Count > 0 || (isToolkit && contentReferencePath is not null);
+        var hasContent = info.ContentProjects.Count > 0 || info.ContentItems.Any(i => i.InProject) || (isToolkit && contentReferencePath is not null);
 
         var sb = new StringBuilder();
         sb.Append("<Project Sdk=\"Microsoft.NET.Sdk\">\n\n");

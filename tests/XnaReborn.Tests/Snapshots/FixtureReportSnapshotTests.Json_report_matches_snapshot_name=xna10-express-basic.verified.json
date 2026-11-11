@@ -55,7 +55,7 @@
       "project": "XnaExpress10Basic.csproj",
       "location": {
         "file": "Game1.cs",
-        "line": 55,
+        "line": 45,
         "column": 31
       },
       "snippet": "spriteBatch.Begin(SpriteBlendMode.AlphaBlend);"

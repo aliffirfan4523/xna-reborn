@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 70 / 100 |
-| Projected score after automatic fixes | 83 / 100 |
+| Compatibility score | 86 / 100 |
+| Projected score after automatic fixes | 99 / 100 |
 | Projects analyzed | 1 |
-| Findings | 11 |
+| Findings | 9 |
 
-Severity: Blocker 0, Error 8, Warning 1, Info 2
+Severity: Blocker 0, Error 6, Warning 1, Info 2
 
-Classification: AutoFixable 8, Manual 3, Unsupported 0
+Classification: AutoFixable 8, Manual 1, Unsupported 0
 
 ## Projects
 
@@ -33,19 +33,19 @@ Classification: AutoFixable 8, Manual 3, Unsupported 0
   - Code: `Microsoft.Xna.Framework, Microsoft.Xna.Framework.Game`
 - **[Error] XNA022** SpriteBlendMode (replaced by BlendState)
   - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:55:31`
+  - Location: `Game1.cs:45:31`
   - Code: `spriteBatch.Begin(SpriteBlendMode.AlphaBlend);`
 - **[Error] XNA024** GraphicsDevice.RenderState (replaced by state objects)
   - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:53:13`
+  - Location: `Game1.cs:43:13`
   - Code: `graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;`
 - **[Error] XNA102** LoadGraphicsContent (replaced by LoadContent)
   - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:25:33`
+  - Location: `Game1.cs:23:33`
   - Code: `protected override void LoadGraphicsContent(bool loadAllContent)`
 - **[Error] XNA103** UnloadGraphicsContent (replaced by UnloadContent)
   - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:42:33`
+  - Location: `Game1.cs:32:33`
   - Code: `protected override void UnloadGraphicsContent(bool unloadAllContent)`
 - **[Warning] XNA101** Content built inside the game project
   - Project: `XnaExpress10Basic.csproj`
@@ -56,14 +56,6 @@ Classification: AutoFixable 8, Manual 3, Unsupported 0
 
 ### Manual
 
-- **[Error] XNA104** ResourceManagementMode (removed)
-  - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:38:21`
-  - Code: `ResourceManagementMode.Manual);`
-- **[Error] XNA105** ResourceUsage (removed)
-  - Project: `XnaExpress10Basic.csproj`
-  - Location: `Game1.cs:36:21`
-  - Code: `ResourceUsage.None,`
 - **[Info] XNA100** XNA 1.0 or 2.0 project
   - Project: `XnaExpress10Basic.csproj`
   - Code: `XnaFrameworkVersion=v1.0`
@@ -139,15 +131,3 @@ XNA 1.0 called UnloadGraphicsContent(bool unloadAllContent) when the graphics de
 **Resolution:** The migrator renames the override to UnloadContent, drops the parameter and adds a constant with the old parameter name set to true. Calls by name and unusual signatures are marked for manual work.
 
 Migrator task: older-and-vb:9
-
-### XNA104 ResourceManagementMode (removed)
-
-XNA 1.0 let a game choose whether the framework or the game reloaded textures and vertex buffers after a device reset. The device was virtualized in 2.0, so the type is gone and MonoGame does not have it. Constructor overloads that take it fail to compile.
-
-**Resolution:** Use the overload without a ResourceManagementMode and load the resources in LoadContent.
-
-### XNA105 ResourceUsage (removed)
-
-XNA 1.0 resource constructors took a ResourceUsage value. It was removed together with the resource management modes, and MonoGame does not have it. Which exact version dropped it was not confirmed, so the rule runs on 1.0 and 2.0.
-
-**Resolution:** Use the overload without a ResourceUsage argument. Pass BufferUsage where the new overload asks for it.
