@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resolving\flixel-api.json" LogicalName="XnaReborn.Flash.Analyzer.flixel-api.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="XnaReborn.Flash.Tests" />
   </ItemGroup>
 

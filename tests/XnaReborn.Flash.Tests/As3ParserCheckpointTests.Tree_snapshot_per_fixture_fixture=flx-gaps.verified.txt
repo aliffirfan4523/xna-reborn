@@ -1,0 +1,403 @@
+﻿== src/GapArguments.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapArguments" Modifiers=Public
+      Members[]:
+        As3Method @5:3 Kind=Normal Name="count" Modifiers=Public
+          ReturnType:
+            As3TypeRef @5:27 Name="int"
+          Body:
+            As3Block @6:3
+              Statements[]:
+                As3ReturnStatement @7:4
+                  Value:
+                    As3MemberAccess @7:11 Name="length"
+                      Target:
+                        As3Identifier @7:11 Name="arguments"
+
+== src/GapClosure.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapClosure" Modifiers=Public
+      Members[]:
+        As3Method @5:3 Kind=Normal Name="run" Modifiers=Public
+          ReturnType:
+            As3TypeRef @5:25 Name="Function"
+          Body:
+            As3Block @6:3
+              Statements[]:
+                As3VarStatement @7:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @7:8 Name="base"
+                      Type:
+                        As3TypeRef @7:13 Name="int"
+                      Initializer:
+                        As3Literal @7:19 Kind=Number Text="3"
+                As3ReturnStatement @8:4
+                  Value:
+                    As3FunctionExpression @8:11
+                      Parameters[]:
+                        As3Parameter @8:20 Name="v" IsRest=False
+                          Type:
+                            As3TypeRef @8:22 Name="int"
+                      ReturnType:
+                        As3TypeRef @8:27 Name="int"
+                      Body:
+                        As3Block @9:4
+                          Statements[]:
+                            As3ReturnStatement @10:5
+                              Value:
+                                As3Binary @10:12 Operator="+"
+                                  Left:
+                                    As3Identifier @10:12 Name="v"
+                                  Right:
+                                    As3Identifier @10:16 Name="base"
+
+== src/GapDynamic.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapDynamic" Modifiers=Public, Dynamic
+      Members[]:
+        As3Field @5:3 IsConst=False Name="known" Modifiers=Public
+          Type:
+            As3TypeRef @5:20 Name="int"
+
+== src/GapFlixelApi.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+    As3Import @4:2 Name="org.flixel.plugin.TimerManager" IsWildcard=False
+  Members[]:
+    As3TypeDeclaration @6:2 Kind=Class Name="GapFlixelApi" Modifiers=Public
+      BaseType:
+        As3TypeRef @7:36 Name="FlxState"
+      Members[]:
+        As3Method @9:3 Kind=Normal Name="create" Modifiers=Public, Override
+          ReturnType:
+            As3TypeRef @9:37 Name="void"
+          Body:
+            As3Block @10:3
+              Statements[]:
+                As3VarStatement @11:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @11:8 Name="s"
+                      Type:
+                        As3TypeRef @11:10 Name="FlxSprite"
+                      Initializer:
+                        As3New @11:22
+                          Target:
+                            As3Identifier @11:26 Name="FlxSprite"
+                          Arguments[]:
+                            As3Literal @11:36 Kind=Number Text="0"
+                            As3Literal @11:39 Kind=Number Text="0"
+                As3ExpressionStatement @12:4
+                  Expression:
+                    As3Assignment @12:4 Operator="="
+                      Target:
+                        As3MemberAccess @12:4 Name="blendMode"
+                          Target:
+                            As3Identifier @12:4 Name="s"
+                      Value:
+                        As3Literal @12:18 Kind=String Text=""add""
+                As3VarStatement @13:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @13:8 Name="px"
+                      Type:
+                        As3TypeRef @13:11 Name="uint"
+                      Initializer:
+                        As3Call @13:18
+                          Target:
+                            As3MemberAccess @13:18 Name="getPixel"
+                              Target:
+                                As3Identifier @13:18 Name="s"
+                          Arguments[]:
+                            As3Literal @13:29 Kind=Number Text="1"
+                            As3Literal @13:32 Kind=Number Text="1"
+                As3ExpressionStatement @14:4
+                  Expression:
+                    As3Assignment @14:4 Operator="="
+                      Target:
+                        As3MemberAccess @14:4 Name="focus"
+                          Target:
+                            As3MemberAccess @14:4 Name="stage"
+                              Target:
+                                As3Identifier @14:4 Name="FlxG"
+                      Value:
+                        As3Literal @14:23 Kind=Null Text="null"
+                As3ExpressionStatement @15:4
+                  Expression:
+                    As3Assignment @15:4 Operator="="
+                      Target:
+                        As3MemberAccess @15:4 Name="debug"
+                          Target:
+                            As3Identifier @15:4 Name="FlxG"
+                      Value:
+                        As3Literal @15:17 Kind=Boolean Text="true"
+      Metadata[]:
+        As3Metadata @6:2 Name="Frame"
+          Arguments[]:
+            As3MetadataArgument @6:9 Key="factoryClass" Value="Preloader"
+
+== src/GapGame.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="org.flixel" IsWildcard=True
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="GapGame" Modifiers=Public
+      BaseType:
+        As3TypeRef @5:31 Name="FlxGame"
+      Members[]:
+        As3Method @7:3 Kind=Constructor Name="GapGame" Modifiers=Public
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3ExpressionStatement @9:4
+                  Expression:
+                    As3Call @9:4
+                      Target:
+                        As3Identifier @9:4 Name="super"
+                      Arguments[]:
+                        As3Literal @9:10 Kind=Number Text="320"
+                        As3Literal @9:15 Kind=Number Text="240"
+                        As3Identifier @9:20 Name="GapFlixelApi"
+
+== src/GapImports.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="flash.display.Sprite" IsWildcard=False
+    As3Import @4:2 Name="flash.events.Event" IsWildcard=False
+    As3Import @5:2 Name="flash.external.ExternalInterface" IsWildcard=False
+    As3Import @6:2 Name="flash.media.Sound" IsWildcard=False
+    As3Import @7:2 Name="flash.net.URLLoader" IsWildcard=False
+    As3Import @8:2 Name="mochi.as3.MochiServices" IsWildcard=False
+  Members[]:
+    As3TypeDeclaration @10:2 Kind=Class Name="GapImports" Modifiers=Public
+      Members[]:
+        As3Field @12:3 IsConst=False Name="lastEvent" Modifiers=Public
+          Type:
+            As3TypeRef @12:24 Name="Event"
+
+== src/GapNamespace.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapNamespace" Modifiers=Public
+      Members[]:
+        As3UnsupportedMember @5:3 Reason="namespace" RawText="namespace special;" Modifiers=None
+        As3Method @7:3 Kind=Normal Name="run" Modifiers=Public
+          ReturnType:
+            As3TypeRef @7:25 Name="void"
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3UnsupportedStatement @9:4 Reason="namespace" RawText="use namespace special;"
+
+== src/GapNumbers.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapNumbers" Modifiers=Public
+      Members[]:
+        As3Field @5:3 IsConst=False Name="speed" Modifiers=Public
+          Type:
+            As3TypeRef @5:20 Name="Number"
+        As3Method @7:3 Kind=Normal Name="half" Modifiers=Public
+          Parameters[]:
+            As3Parameter @7:24 Name="total" IsRest=False
+              Type:
+                As3TypeRef @7:30 Name="int"
+            As3Parameter @7:35 Name="parts" IsRest=False
+              Type:
+                As3TypeRef @7:41 Name="int"
+          ReturnType:
+            As3TypeRef @7:46 Name="Number"
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3ReturnStatement @9:4
+                  Value:
+                    As3Binary @9:11 Operator="/"
+                      Left:
+                        As3Identifier @9:11 Name="total"
+                      Right:
+                        As3Identifier @9:19 Name="parts"
+
+== src/GapObject.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapObject" Modifiers=Public
+      Members[]:
+        As3Method @5:3 Kind=Normal Name="run" Modifiers=Public
+          ReturnType:
+            As3TypeRef @5:25 Name="Object"
+          Body:
+            As3Block @6:3
+              Statements[]:
+                As3VarStatement @7:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @7:8 Name="bag"
+                      Type:
+                        As3TypeRef @7:12 Name="Object"
+                      Initializer:
+                        As3ObjectLiteral @7:21
+                          Properties[]:
+                            As3ObjectProperty @7:22 Key="name"
+                              Value:
+                                As3Literal @7:28 Kind=String Text=""x""
+                            As3ObjectProperty @7:33 Key="count"
+                              Value:
+                                As3Literal @7:40 Kind=Number Text="2"
+                As3ExpressionStatement @8:4
+                  Expression:
+                    As3Assignment @8:4 Operator="="
+                      Target:
+                        As3IndexAccess @8:4
+                          Target:
+                            As3Identifier @8:4 Name="bag"
+                          Index:
+                            As3Literal @8:8 Kind=String Text=""other""
+                      Value:
+                        As3Literal @8:19 Kind=Number Text="5"
+                As3ReturnStatement @9:4
+                  Value:
+                    As3Identifier @9:11 Name="bag"
+
+== src/GapReflection.as
+As3CompilationUnit @1:1 PackageName=""
+  Imports[]:
+    As3Import @3:2 Name="flash.utils.getDefinitionByName" IsWildcard=False
+  Members[]:
+    As3TypeDeclaration @5:2 Kind=Class Name="GapReflection" Modifiers=Public
+      Members[]:
+        As3Method @7:3 Kind=Normal Name="make" Modifiers=Public
+          Parameters[]:
+            As3Parameter @7:24 Name="name" IsRest=False
+              Type:
+                As3TypeRef @7:29 Name="String"
+          ReturnType:
+            As3TypeRef @7:37 Name="Object"
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3VarStatement @9:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @9:8 Name="c"
+                      Type:
+                        As3TypeRef @9:10 Name="Class"
+                      Initializer:
+                        As3Binary @9:18 Operator="as"
+                          Left:
+                            As3Call @9:18
+                              Target:
+                                As3Identifier @9:18 Name="getDefinitionByName"
+                              Arguments[]:
+                                As3Identifier @9:38 Name="name"
+                          Right:
+                            As3Identifier @9:47 Name="Class"
+                As3ReturnStatement @10:4
+                  Value:
+                    As3New @10:11
+                      Target:
+                        As3Identifier @10:15 Name="c"
+
+== src/GapRegex.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapRegex" Modifiers=Public
+      Members[]:
+        As3Method @5:3 Kind=Normal Name="run" Modifiers=Public
+          Parameters[]:
+            As3Parameter @5:23 Name="s" IsRest=False
+              Type:
+                As3TypeRef @5:25 Name="String"
+          ReturnType:
+            As3TypeRef @5:33 Name="Boolean"
+          Body:
+            As3Block @6:3
+              Statements[]:
+                As3ReturnStatement @7:4
+                  Value:
+                    As3Call @7:11
+                      Target:
+                        As3MemberAccess @7:11 Name="test"
+                          Target:
+                            As3Literal @7:11 Kind=Regex Text="/^[a-z]+$/i"
+                      Arguments[]:
+                        As3Identifier @7:28 Name="s"
+
+== src/GapUntyped.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapUntyped" Modifiers=Public
+      Members[]:
+        As3Field @5:3 IsConst=False Name="anything" Modifiers=Public
+          Type:
+            As3TypeRef @5:23 Name="*"
+        As3Method @7:3 Kind=Normal Name="run" Modifiers=Public
+          Parameters[]:
+            As3Parameter @7:23 Name="value" IsRest=False
+          ReturnType:
+            As3TypeRef @7:30 Name="void"
+          Body:
+            As3Block @8:3
+              Statements[]:
+                As3VarStatement @9:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @9:8 Name="other"
+                      Initializer:
+                        As3Identifier @9:16 Name="value"
+                As3ExpressionStatement @10:4
+                  Expression:
+                    As3Assignment @10:4 Operator="="
+                      Target:
+                        As3Identifier @10:4 Name="anything"
+                      Value:
+                        As3Identifier @10:15 Name="other"
+
+== src/GapWith.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapWith" Modifiers=Public
+      Members[]:
+        As3Method @5:3 Kind=Normal Name="run" Modifiers=Public
+          Parameters[]:
+            As3Parameter @5:23 Name="o" IsRest=False
+              Type:
+                As3TypeRef @5:25 Name="Object"
+          ReturnType:
+            As3TypeRef @5:33 Name="void"
+          Body:
+            As3Block @6:3
+              Statements[]:
+                As3UnsupportedStatement @7:4 Reason="with" RawText="with (o)\n			{\n				x = 1;\n			}"
+
+== src/GapXml.as
+As3CompilationUnit @1:1 PackageName=""
+  Members[]:
+    As3TypeDeclaration @3:2 Kind=Class Name="GapXml" Modifiers=Public
+      Members[]:
+        As3Method @5:3 Kind=Normal Name="run" Modifiers=Public
+          ReturnType:
+            As3TypeRef @5:25 Name="void"
+          Body:
+            As3Block @6:3
+              Statements[]:
+                As3VarStatement @7:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @7:8 Name="data"
+                      Type:
+                        As3TypeRef @7:13 Name="XML"
+                      Initializer:
+                        As3UnsupportedExpression @7:19 Reason="e4x" RawText="<items><item id="1"/></items>"
+                As3VarStatement @8:4 IsConst=False
+                  Declarators[]:
+                    As3Declarator @8:8 Name="first"
+                      Type:
+                        As3TypeRef @8:14 Name="XMLList"
+                      Initializer:
+                        As3UnsupportedExpression @8:24 Reason="e4x" RawText="data.item.(@id == 1)"
+                As3ExpressionStatement @9:4
+                  Expression:
+                    As3Call @9:4
+                      Target:
+                        As3Identifier @9:4 Name="trace"
+                      Arguments[]:
+                        As3Identifier @9:10 Name="first"

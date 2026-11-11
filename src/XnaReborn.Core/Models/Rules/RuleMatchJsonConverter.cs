@@ -26,6 +26,10 @@ public sealed class RuleMatchJsonConverter : JsonConverter<RuleMatch>
         ["preprocessorSymbol"] = typeof(PreprocessorSymbolMatch),
         ["mgcbSetting"] = typeof(MgcbSettingMatch),
         ["fileContent"] = typeof(FileContentMatch),
+        ["as3Import"] = typeof(As3ImportMatch),
+        ["as3Syntax"] = typeof(As3SyntaxMatch),
+        ["as3Metadata"] = typeof(As3MetadataMatch),
+        ["as3Api"] = typeof(As3ApiMatch),
     };
 
     private static readonly Dictionary<Type, string> _namesByType = _typesByName.ToDictionary(p => p.Value, p => p.Key);

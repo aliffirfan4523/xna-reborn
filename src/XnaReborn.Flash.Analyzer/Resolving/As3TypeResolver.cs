@@ -15,7 +15,9 @@ public sealed record As3Scope(As3TypeDeclaration? Class, IReadOnlyDictionary<str
 /// </summary>
 public sealed class As3TypeResolver
 {
-    // shortcut: a hand-written map of the Flixel members the converter and rules need. Task 10.1 replaces it with a map generated from the runtime.
+    // The generated runtime map (flixel-api.json, task 10.1) is asked first. shortcut: the hand-written maps below stay as a fallback for names the runtime does not have yet (Math, FlxG.collide); delete entries as the runtime gains them.
+    private static readonly Lazy<(Dictionary<string, string> Members, Dictionary<string, string> Bases)> _generated = new(LoadGenerated);
+
     private static readonly Dictionary<string, string> _flixelBase = new(StringComparer.Ordinal)
     {
         ["FlxKeyboard"] = "Object",
@@ -411,6 +413,26 @@ public sealed class As3TypeResolver
         return IsInteger(l) && IsInteger(r) ? (l == "int" || r == "int" ? "int" : "uint") : "Number";
     }
 
+    private static (Dictionary<string, string> Members, Dictionary<string, string> Bases) LoadGenerated()
+    {
+        var members = new Dictionary<string, string>(StringComparer.Ordinal);
+        var bases = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var t in FlixelApiMap.LoadBuiltIn().Types)
+        {
+            if (t.Base is not null)
+            {
+                bases[t.Name] = t.Base;
+            }
+
+            foreach (var m in t.Members)
+            {
+                members.TryAdd(t.Name + "." + m.Name, m.Type); // first overload wins
+            }
+        }
+
+        return (members, bases);
+    }
+
     private bool LookupMember(string typeName, string member, out string? type)
     {
         var seen = 0;
@@ -436,13 +458,13 @@ public sealed class As3TypeResolver
                 continue;
             }
 
-            if (_flixelMembers.TryGetValue(current + "." + member, out var known))
+            if (_generated.Value.Members.TryGetValue(current + "." + member, out var known) || _flixelMembers.TryGetValue(current + "." + member, out known))
             {
                 type = known;
                 return true;
             }
 
-            current = _flixelBase.TryGetValue(current, out var b) ? b : string.Empty;
+            current = _generated.Value.Bases.TryGetValue(current, out var b) || _flixelBase.TryGetValue(current, out b) ? b : string.Empty;
         }
 
         type = null;
