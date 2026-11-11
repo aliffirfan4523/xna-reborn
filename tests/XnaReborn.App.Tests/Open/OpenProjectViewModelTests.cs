@@ -202,5 +202,6 @@ public sealed class OpenProjectViewModelTests
 
         Assert.Equal(["C:/b"], vm.RecentProjects.Select(r => r.Path));
         Assert.True(vm.HasRecentProjects);
-    }}
+    }
+}
 
