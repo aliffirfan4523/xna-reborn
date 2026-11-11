@@ -48,6 +48,28 @@ public sealed class MigrationSetupViewTests
         Assert.False(ById<Button>(view, "MigrateButton").IsEffectivelyEnabled);
     }
 
+    [AvaloniaFact]
+    public async Task Locked_and_optional_steps_carry_a_word_and_the_chosen_target_says_Selected()
+    {
+        using var tree = new SetupTree();
+        using var t = TestServices.Create(s => s.AddSingleton<IMigrationService>(new GuardingMigrationService()));
+        t.Session.SourcePath = tree.Source;
+        t.Session.Report = SetupReports.WithRules("XNA001", "XNA022");
+        var window = new MainWindow { DataContext = t.Main };
+        window.Show();
+        await t.OpenPageAsync(WorkflowStep.MigrationSetup);
+        Dispatcher.UIThread.RunJobs();
+
+        var view = Assert.Single(window.GetVisualDescendants().OfType<MigrationSetupView>());
+        var words = view.GetVisualDescendants().OfType<TextBlock>()
+            .Where(b => b.IsEffectivelyVisible)
+            .Select(b => b.Text)
+            .ToList();
+        Assert.Single(words, "Required");
+        Assert.Single(words, "Optional");
+        Assert.Single(words, "Selected");
+    }
+
     private static T ById<T>(Control root, string id)
         where T : Control =>
         root.GetVisualDescendants().OfType<T>().Single(c => AutomationProperties.GetAutomationId(c) == id);
