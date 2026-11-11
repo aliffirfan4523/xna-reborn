@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using XnaReborn.App.ViewModels;
 
@@ -30,5 +31,28 @@ public sealed partial class BuildRunView : UserControl
                 // No browser could be started; the address is still shown in the message above.
             }
         }
+    }
+
+    private async void OnCopyLog(object? sender, RoutedEventArgs e)
+    {
+        // The text is exactly the lines now shown, so a filter narrows what is copied.
+        if (DataContext is not BuildRunViewModel vm)
+        {
+            return;
+        }
+
+        var note = this.FindControl<TextBlock>("CopyNote")!;
+        try
+        {
+            var clipboard = TopLevel.GetTopLevel(this)?.Clipboard ?? throw new InvalidOperationException("No clipboard.");
+            await clipboard.SetTextAsync(string.Join(System.Environment.NewLine, vm.VisibleLogLines.Select(l => l.Text)));
+            note.Text = $"Copied {vm.VisibleLogLines.Count} lines.";
+        }
+        catch (Exception)
+        {
+            note.Text = "The log could not be copied.";
+        }
+
+        note.IsVisible = true;
     }
 }
