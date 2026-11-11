@@ -115,9 +115,9 @@ The project contains an XACT authoring file. XACT is a Windows-only tool that is
 
 ### XNA017 Effect file (.fx) needs shader review
 
-XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently.
+XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently. The migrator fixes shader models and two sampler state names, marks the constructs it cannot fix, and copies included files; a person still has to check the look.
 
-**Resolution:** Build the effect with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits.
+**Resolution:** Read the notes and marker comments the migrator left in the copied effect, build it with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits.
 
 ### XNA046 Properties/AssemblyInfo.cs duplicates SDK attributes
 

@@ -1,0 +1,11 @@
+{
+  "kind": "Flash",
+  "projectFile": null,
+  "sourceRoots": ["."],
+  "sourceFiles": ["src/GameA.as", "src/GameB.as"],
+  "entryClasses": ["GameA", "GameB"],
+  "usesFlixel": true,
+  "bundlesFlixel": false,
+  "flixelVersion": null,
+  "diagnostics": 0
+}

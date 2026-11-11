@@ -1,0 +1,11 @@
+{
+  "kind": "Flash",
+  "projectFile": "flx-hello.as3proj",
+  "sourceRoots": ["src"],
+  "sourceFiles": ["src/HelloGame.as", "src/HelloState.as"],
+  "entryClasses": ["HelloGame"],
+  "usesFlixel": true,
+  "bundlesFlixel": false,
+  "flixelVersion": null,
+  "diagnostics": 0
+}

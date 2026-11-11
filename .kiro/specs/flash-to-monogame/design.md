@@ -334,3 +334,10 @@ Stretch: convert Mode from a local checkout.
 - **Licensing.** Candidate game assets may not be redistributable. They stay outside the repo. Unlicensed Flixel ports are reference only.
 - **Naming rules.** The runtime keeps AS3 member names. Repo analyzers and `dotnet format` may flag them. A folder-scoped `.editorconfig` handles it (task 1.3 proves it).
 - **Dynamic code.** `dynamic` needs the C# runtime binder. It ships with .NET 8, but dynamic call sites are slower. Only untyped code uses it.
+
+## Implementation notes (gaps and deviations)
+
+- PR 1 (reader): `ProjectKind` is in Core. The optional `SourceKind` on the shared report and manifest models (task 1.2) is deferred to the converter PR, so shared snapshots stay untouched until then.
+- `MonoGame.Framework.DesktopGL 3.8.6.1` was added to `Directory.Packages.props` because `XnaReborn.Flixel` must reference MonoGame. It is the version already pinned in `packages.json`.
+- Parser: tests are plain xUnit assertions and a round trip of every fixture. Verify tree snapshots (task 4.5) are not done yet. A custom namespace modifier (such as `mx_internal`) is skipped without a record. The E4X filter body `.( ... )` is skipped as balanced tokens, not parsed.
+- Existing fixture tests that list the folders of `tests/fixtures` now ignore the `flash` folder, which has its own fixture tests.

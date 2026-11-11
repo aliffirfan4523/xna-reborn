@@ -1,0 +1,11 @@
+{
+  "kind": "Flash",
+  "projectFile": null,
+  "sourceRoots": ["."],
+  "sourceFiles": ["src/Counter.as"],
+  "entryClasses": [],
+  "usesFlixel": false,
+  "bundlesFlixel": false,
+  "flixelVersion": null,
+  "diagnostics": 0
+}

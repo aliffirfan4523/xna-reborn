@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Read-only analysis of Flash (AS3 + Flixel 2.x) source projects: detection, lexer, parser and rules.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XnaReborn.Core\XnaReborn.Core.csproj" />
+    <ProjectReference Include="..\XnaReborn.Analyzer\XnaReborn.Analyzer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\rules\flash-to-monogame.json" LogicalName="XnaReborn.Flash.Analyzer.flash-to-monogame.json" Condition="Exists('..\..\rules\flash-to-monogame.json')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="XnaReborn.Flash.Tests" />
+  </ItemGroup>
+
+</Project>

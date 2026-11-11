@@ -34,7 +34,7 @@ public sealed partial class MonoGameFixtureTableTests
     [Fact]
     public void Every_fixture_folder_on_disk_is_a_known_fixture()
     {
-        var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!);
+        var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!).Where(n => n != "flash");
 
         Assert.All(onDisk, name => Assert.True(
             FixturePaths.AllNames.Contains(name) || FixturePaths.MonoGameNames.Contains(name) || FixturePaths.SharpDxNames.Contains(name),

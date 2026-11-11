@@ -190,8 +190,8 @@
       "classification": "Manual",
       "category": "Content",
       "match": { "type": "contentItem", "extension": ".fx" },
-      "explanation": "XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently.",
-      "resolution": "Build the effect with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits."
+      "explanation": "XNA compiled .fx files with the legacy DirectX 9 compiler. MonoGame uses a different compiler and imposes restrictions, so old shaders can fail to build or render differently. The migrator fixes shader models and two sampler state names, marks the constructs it cannot fix, and copies included files; a person still has to check the look.",
+      "resolution": "Read the notes and marker comments the migrator left in the copied effect, build it with the MonoGame content builder, fix compile errors, and compare the output. The MonoGame custom effects guide lists the limits."
     },
     {
       "id": "XNA018",
@@ -750,6 +750,68 @@
       "match": { "type": "type", "name": "ResourceUsage", "namespaces": ["Microsoft.Xna.Framework.Graphics"] },
       "explanation": "XNA 1.0 resource constructors took a ResourceUsage value. It was removed together with the resource management modes, and MonoGame does not have it. Which exact version dropped it was not confirmed, so the rule runs on 1.0 and 2.0.",
       "resolution": "Use the overload without a ResourceUsage argument. Pass BufferUsage where the new overload asks for it."
+    },
+    {
+      "id": "XNA064",
+      "title": "Fixed shader model in an effect",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.fx", "regex": "compile\\s+(vs|ps)_[1-3]_[0-4ab]\\b" },
+      "explanation": "A compile statement names a Shader Model 1 to 3 profile. The DirectX compiler in MonoGame only accepts Shader Model 4 level 9 or higher, so the effect fails to build for WindowsDX. A macro that sets the model in a template-style #define is not found by this rule.",
+      "resolution": "The migrator replaces the models with macros that pick the original on OpenGL and a Shader Model 4 level 9 profile on DirectX. Check the rendered result.",
+      "migratorTask": "audio-and-shaders:12"
+    },
+    {
+      "id": "XNA065",
+      "title": "Effect pass state MonoGame does not support",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.fx", "regex": "\\b(AlphaTestEnable|AlphaFunc|AlphaRef|SeparateAlphaBlendEnabled|SrcBlendAlpha|DestBlendAlpha|BlendOpAlpha|FogEnable|FogColor|FogStart|FogEnd|FogDensity|FogTableMode|FogVertexMode|Lighting|ColorVertex|SpecularEnable|ShadeMode|DitherEnable|PointSize|PointSpriteEnable|RangeFogEnable|ClipPlaneEnable|TextureFactor|Wrap[0-9]+)\\s*=" },
+      "explanation": "A pass sets a render state that the MonoGame effect compiler does not accept, such as alpha testing. The effect fails to build. This rule looks for the common old state names; the migrator checks every pass against the full list of accepted states.",
+      "resolution": "Set the state in C# (for example AlphaTestEffect for alpha testing) or discard in the pixel shader. The migrator adds a marker comment above each line."
+    },
+    {
+      "id": "XNA066",
+      "title": "Effect syntax MonoGame does not parse",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.fx", "regex": "(\\bSet(Vertex|Pixel|Geometry)Shader\\s*\\(|\\bcompile\\s+\\w+\\s+\\w+\\s*\\(\\s*[^)\\s]|\\w\\s*\u003c\\s*(string|int|float|bool|texture)\\b[^;\u003e]*=)" },
+      "explanation": "The effect uses an annotation, arguments in a compile statement, or Direct3D 10 shader calls. The MonoGame effect parser does not accept them and the effect fails to build.",
+      "resolution": "Remove the annotation, move the arguments into the shader function, or use VertexShader = compile and PixelShader = compile. The migrator adds a marker comment above each line."
+    },
+    {
+      "id": "XNA067",
+      "title": "Effect uses VPOS",
+      "severity": "Error",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.fx", "regex": ":\\s*VPOS\\b" },
+      "explanation": "A pixel shader reads its screen position from VPOS. The MonoGame effect compiler does not support that input on either target.",
+      "resolution": "Use SV_Position as the pixel shader input on DirectX, and compute the screen position from the vertex shader output on OpenGL. The migrator adds a marker comment."
+    },
+    {
+      "id": "XNA068",
+      "title": "Old sampler state name or filter",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.fx", "regex": "(\\bMipMapLodBias\\s*=|\\b(Min|Mag|Mip)?Filter\\s*=\\s*(GaussianQuad|PyramidalQuad))" },
+      "explanation": "A sampler uses MipMapLodBias, or the GaussianQuad or PyramidalQuad filter. MonoGame calls the first MipLodBias and has neither filter.",
+      "resolution": "The migrator renames MipMapLodBias to MipLodBias and replaces the two filters with Linear. Check the look.",
+      "migratorTask": "audio-and-shaders:13"
+    },
+    {
+      "id": "XNA069",
+      "title": "Effect parameter with a default value",
+      "severity": "Info",
+      "classification": "Manual",
+      "category": "Content",
+      "match": { "type": "fileContent", "glob": "**/*.fx", "regex": "(?m)^(float[1-4]?(x[1-4])?|half[1-4]?|int|bool)\\s+\\w+\\s*=\\s*[^;]+;" },
+      "explanation": "A top-level effect parameter has a default value. OpenGL targets ignore it, and the compiler removes parameters that the shader never uses.",
+      "resolution": "Set the value from code. The migration report lists defaults and unused parameters per file."
     }
   ]
 }
