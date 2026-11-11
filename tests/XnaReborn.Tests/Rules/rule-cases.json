@@ -437,5 +437,40 @@
     "kind": "fileContent",
     "positive": "Content/A.fx\nfloat Strength = 1;\n",
     "negative": "Content/A.fx\nfloat Strength;\n"
+  },
+  {
+    "ruleId": "XNA110",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d\" />\n  </ItemGroup>\n  <ItemGroup>\n    <Compile Include=\"Game1.vb\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d\" />\n  </ItemGroup>\n  <ItemGroup>\n    <Compile Include=\"Game1.cs\" />\n  </ItemGroup>\n</Project>\n",
+    "language": "vb"
+  },
+  {
+    "ruleId": "XNA111",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d\" />\n  </ItemGroup>\n  <PropertyGroup>\n    <MyType>WindowsForms</MyType>\n  </PropertyGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d\" />\n  </ItemGroup>\n  <PropertyGroup>\n    <MyType>Empty</MyType>\n  </PropertyGroup>\n</Project>\n",
+    "language": "vb"
+  },
+  {
+    "ruleId": "XNA112",
+    "kind": "source",
+    "positive": "Imports Microsoft.Xna.Framework\nPublic Class Case\n    Sub Run()\n        My.Application.Log.WriteEntry(\"x\")\n    End Sub\nEnd Class\n",
+    "negative": "Imports Microsoft.Xna.Framework\nPublic Class Case\n    Private MyField As Integer\n    Sub Run()\n        Me.MyField = 1\n    End Sub\nEnd Class\n",
+    "language": "vb"
+  },
+  {
+    "ruleId": "XNA113",
+    "kind": "project",
+    "positive": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d\" />\n  </ItemGroup>\n  <ItemGroup>\n    <Compile Include=\"My Project\\Application.Designer.vb\" />\n  </ItemGroup>\n</Project>\n",
+    "negative": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <ItemGroup>\n    <Reference Include=\"Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d\" />\n  </ItemGroup>\n  <ItemGroup>\n    <Compile Include=\"My Project\\AssemblyInfo.vb\" />\n    <Compile Include=\"Game1.vb\" />\n  </ItemGroup>\n</Project>\n",
+    "language": "vb"
+  },
+  {
+    "ruleId": "XNA114",
+    "kind": "file",
+    "positive": "My Project/AssemblyInfo.vb",
+    "negative": "Game1.vb",
+    "language": "vb"
   }
 ]

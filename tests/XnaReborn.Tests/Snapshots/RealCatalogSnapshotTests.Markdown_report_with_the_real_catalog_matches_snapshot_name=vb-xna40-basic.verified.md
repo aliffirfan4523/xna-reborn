@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 92 / 100 |
-| Projected score after automatic fixes | 100 / 100 |
+| Compatibility score | 86 / 100 |
+| Projected score after automatic fixes | 96 / 100 |
 | Projects analyzed | 1 |
-| Findings | 6 |
+| Findings | 9 |
 
-Severity: Blocker 0, Error 3, Warning 2, Info 1
+Severity: Blocker 0, Error 4, Warning 3, Info 2
 
-Classification: AutoFixable 6, Manual 0, Unsupported 0
+Classification: AutoFixable 7, Manual 2, Unsupported 0
 
 ## Projects
 
@@ -34,6 +34,9 @@ Classification: AutoFixable 6, Manual 0, Unsupported 0
 - **[Error] XNA049** Content project referenced with ProjectReference
   - Project: `VbXna40Basic.vbproj`
   - Code: `Content\Content.contentproj`
+- **[Error] XNA114** My Project AssemblyInfo.vb
+  - Project: `VbXna40Basic.vbproj`
+  - Code: `My Project/AssemblyInfo.vb`
 - **[Warning] XNA004** Old .NET Framework target
   - Project: `VbXna40Basic.vbproj`
   - Code: `TargetFrameworkVersion=v4.0`
@@ -43,6 +46,16 @@ Classification: AutoFixable 6, Manual 0, Unsupported 0
 - **[Info] XNA002** XNA-specific project properties
   - Project: `VbXna40Basic.vbproj`
   - Code: `XnaFrameworkVersion=v4.0`
+
+### Manual
+
+- **[Warning] XNA053** Device conditional compilation symbols
+  - Project: `VbXna40Basic.vbproj`
+  - Location: `Program.vb:1:5`
+  - Code: `#If WINDOWS OrElse XBOX Then`
+- **[Info] XNA110** Visual Basic project
+  - Project: `VbXna40Basic.vbproj`
+  - Code: `Game1.vb, Program.vb, My Project\AssemblyInfo.vb`
 
 ## Rules
 
@@ -93,3 +106,25 @@ The game project references a .contentproj with a ProjectReference (XnaReference
 **Resolution:** The migrator removes the reference, generates Content.mgcb from the content project like it does for a nested content project (XNA005), copies the source assets into the game project, and lists anything it cannot convert as manual work.
 
 Migrator task: project-migrator:7.1
+
+### XNA053 Device conditional compilation symbols
+
+An #if or #elif directive names a platform symbol (XBOX, XBOX360, ZUNE, WINDOWS_PHONE, or WINDOWS). The migrated project defines none of them, so the wrong branch would be compiled. Inactive branches count too.
+
+**Resolution:** The migrator keeps the branch that is true for the chosen platform and removes the other branches. A condition that also depends on another symbol, such as DEBUG, is left as it is with a marker.
+
+Migrator task: device-to-desktop:6.1
+
+### XNA110 Visual Basic project
+
+The project is written in Visual Basic. The migrator supports it with these limits. Matching is by syntax only, so a user type with the same name as an XNA type can match. A member use without parentheses in expression position (Dim t = fx.Begin) is a plain access, so a rule that looks for calls can miss it. The migrator rewrites the entry point and SpriteBatch.Begin and marks the other known breaks with a comment, but it does not rewrite them. The My namespace is never migrated.
+
+**Resolution:** Fix the findings that carry a marker comment by hand. The migrated project builds with MyType set to Empty, so code that uses My.Application, My.Computer, My.Settings or My.Resources has to be changed.
+
+### XNA114 My Project AssemblyInfo.vb
+
+The project has a My Project/AssemblyInfo.vb file with assembly attributes. An SDK-style project generates the same attributes, so the build fails with duplicate attribute errors.
+
+**Resolution:** The migrator keeps the file and turns off the generated assembly information (GenerateAssemblyInfo false), as it does for AssemblyInfo.cs.
+
+Migrator task: project-migrator:4.1

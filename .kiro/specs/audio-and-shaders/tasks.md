@@ -53,20 +53,20 @@ Order: 1 first. Part A is tasks 2 to 10, Part B is tasks 11 to 18; the two parts
   - [ ] 7.4 Tests: positive (uses `AudioEngine` and `Cue`), negative (uses only `SoundEffect`), alias with `using Microsoft.Xna.Framework.Audio;` still compiles when both the alias and the using are present against MonoGame DesktopGL and WindowsDX packages, idempotence, snapshot, local type declaration.
   - _Requirements: R6_
 
-- [ ] 8. Shim core
-  - [ ] 8.1 Add `XactShimSources.cs` and wire it into `ShimProjectGenerator`: data types (`XactEngineData`, `XactWaveBankData`, `XactSoundBankData` and friends), `AudioEngine`, `AudioCategory`, `WaveBank`, `SoundBank`, `Cue` (play, stop, pause, resume, states), lookup by stem, error messages, `EmptyServiceProvider`, private `ContentManager`.
-  - [ ] 8.2 Variations (types 0 to 4) with an injectable `Random`; sound, track, category and cue volume; pitch.
-  - [ ] 8.3 Seams for tests: `IInstanceFactory` so tests run without an audio device.
+- [x] 8. Shim core
+  - [x] 8.1 Add `XactShimSources.cs` (it embeds the real files under `Shims/Xact`, see the design notes) and wire it into `ShimProjectGenerator`: data types (`XactEngineData`, `XactWaveBankData`, `XactSoundBankData` and friends), `AudioEngine`, `AudioCategory`, `WaveBank`, `SoundBank`, `Cue` (play, stop, pause, resume, states), lookup by stem, error messages, `EmptyServiceProvider`, private `ContentManager`.
+  - [x] 8.2 Variations (types 0 to 4) with an injectable `Random`; sound, track, category and cue volume; pitch.
+  - [x] 8.3 Seams for tests: `IXactVoiceFactory` and `IXactVoice` (named so, not `IInstanceFactory`) so tests run without an audio device.
   - [ ] 8.4 Tests: lookup by stem (case, folders, missing file), variation order with a seeded random, volume math, state transitions, `FileNotFoundException` text. One test loads a real built `SoundEffect` asset through the empty-service-provider `ContentManager` (skipped without the audio tools) to prove R5.10.
   - _Requirements: R5.1 to R5.6, R5.10, R5.11_
 
-- [ ] 9. Shim advanced
-  - [ ] 9.1 Loops (infinite and finite), delayed events, `Update` driven timers.
-  - [ ] 9.2 Category instance limits and behaviors, `AudioCategory` operations, global and cue variables, RPC curves on volume and pitch (linear interpolation of the points).
-  - [ ] 9.3 `Song` waves through `MediaPlayer` with the limits as notes; `Apply3D`.
-  - [ ] 9.4 Unsupported catalog entries never throw (R5.9).
-  - [ ] 9.5 Parity test by reflection against the MonoGame assembly (R5.1); members the shim cannot support throw `NotSupportedException` naming `XnaReborn.Compat`.
-  - [ ] 9.6 Tests for every behavior above, positive and negative.
+- [x] 9. Shim advanced
+  - [x] 9.1 Loops (infinite and finite), delayed events, `Update` driven timers.
+  - [x] 9.2 Category instance limits and behaviors, `AudioCategory` operations, global and cue variables, RPC curves on volume and pitch (linear interpolation of the points).
+  - [x] 9.3 `Song` waves through `MediaPlayer` with the limits as notes; `Apply3D`.
+  - [x] 9.4 Unsupported catalog entries never throw (R5.9).
+  - [x] 9.5 Parity test by reflection against the MonoGame assembly (R5.1); members the shim cannot support throw `NotSupportedException` naming `XnaReborn.Compat`.
+  - [x] 9.6 Tests for every behavior above, positive and negative.
   - _Requirements: R5.7 to R5.9, R5.1_
 
 - [ ] 10. Checkpoint: XACT end to end

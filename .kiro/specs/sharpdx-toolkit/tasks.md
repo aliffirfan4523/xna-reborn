@@ -77,10 +77,10 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - _Requirements: R6, R7_
 
 - [ ] 13. Checkpoint: end-to-end on real candidates (read only)
-  - [ ] 13.1 Shallow-clone `zlynn1990/EcoSim`, `nuclearpidgeon/graphicsproj2` and `Luaancz/Yggmire` outside the repo. Run the analyzer on each. Record project count, framework detected, rule counts by id, false positives found (manual review of a sample), and score. Do not commit the clones.
-  - [ ] 13.2 Migrate EcoSim to an output folder outside the source, build it for WindowsDX and DesktopGL, and record the result and every manual edit needed. The build is expected to need manual work; record it honestly.
-  - [ ] 13.3 Run the analyzer on `kobush/ModernMoleculeViewer` and confirm SDX004 fires as Unsupported.
-  - [ ] 13.4 Write the findings into this spec as a "Candidate results" section. Add any new rule they require to the catalog by the normal rule process. Hashes of the source clones are identical before and after (read-only proof).
+  - [x] 13.1 Shallow-clone `zlynn1990/EcoSim`, `nuclearpidgeon/graphicsproj2` and `Luaancz/Yggmire` outside the repo. Run the analyzer on each. Record project count, framework detected, rule counts by id, false positives found (manual review of a sample), and score. Do not commit the clones.
+  - [x] 13.2 Migrate EcoSim to an output folder outside the source, build it for WindowsDX and DesktopGL, and record the result and every manual edit needed. The build is expected to need manual work; record it honestly.
+  - [x] 13.3 Run the analyzer on `kobush/ModernMoleculeViewer` and confirm SDX004 fires as Unsupported.
+  - [x] 13.4 Write the findings into this spec as a "Candidate results" section. Add any new rule they require to the catalog by the normal rule process. Hashes of the source clones are identical before and after (read-only proof).
   - [ ] 13.5 Run `dotnet build`, `dotnet test` and `dotnet format --verify-no-changes` on master. Stop for owner review before task 14.
   - _Requirements: R1 to R9_
 
@@ -90,7 +90,7 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - _Requirements: R4, R9_
 
 - [ ] 15. Final checkpoint
-  - [ ] 15.1 Update `docs/` and the README support matrix to say what Toolkit support covers and what it does not (R9).
-  - [ ] 15.2 Confirm `rules/xna-to-monogame.json` and all XNA snapshots are unchanged by this work, except where an earlier task says otherwise.
+  - [x] 15.1 Update `docs/` and the README support matrix to say what Toolkit support covers and what it does not (R9).
+  - [x] 15.2 Confirm `rules/xna-to-monogame.json` and all XNA snapshots are unchanged by this work, except where an earlier task says otherwise.
   - [ ] 15.3 Run the full build, tests and format check. Stop for owner review.
   - _Requirements: R8, R9_
