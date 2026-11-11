@@ -16,38 +16,38 @@ Suggested waves (parallel inside a wave):
 - After checkpoint: 17
 
 - [ ] 1. Setup (MVP)
-  - [ ] 1.1 Create `XnaReborn.Flash.Analyzer`, `XnaReborn.Flash.Converter` and `XnaReborn.Flixel` projects, `tests/XnaReborn.Flash.Tests` and `tests/XnaReborn.Flixel.Tests`; add them to the solution; wire references as in design.md. No new package versions. Add `InternalsVisibleTo` for the test projects. (L)
+  - [x] 1.1 Create `XnaReborn.Flash.Analyzer`, `XnaReborn.Flash.Converter` and `XnaReborn.Flixel` projects, `tests/XnaReborn.Flash.Tests` and `tests/XnaReborn.Flixel.Tests`; add them to the solution; wire references as in design.md. No new package versions. Add `InternalsVisibleTo` for the test projects. (L)
   - [ ] 1.2 Add `ProjectKind` (Xna, Flash, Unknown) to Core and an optional `SourceKind` to the shared report and manifest models. Old JSON without the field must still load. Tests: round trip of old and new JSON. (L)
-  - [ ] 1.3 In `XnaReborn.Flixel`, add a folder `.editorconfig` that turns off naming rules for AS3-style member names, one placeholder class with lower-camel members, and a test. Prove that `dotnet build` and `dotnet format --verify-no-changes` pass. If a root rule still fires, record what was needed in the task notes. (L)
+  - [x] 1.3 In `XnaReborn.Flixel`, add a folder `.editorconfig` that turns off naming rules for AS3-style member names, one placeholder class with lower-camel members, and a test. Prove that `dotnet build` and `dotnet format --verify-no-changes` pass. If a root rule still fires, record what was needed in the task notes. (L)
   - _Requirements: R3.1, R7.1, R12.8_
 
 - [ ] 2. Fixtures (MVP)
-  - [ ] 2.1 `tests/fixtures/flash/flx-hello`: FlashDevelop project (`.as3proj`), entry class extending `FlxGame`, one `FlxState` with `FlxText`, no embeds. Expected results file (detector output, score range, no FL errors). (L)
+  - [x] 2.1 `tests/fixtures/flash/flx-hello`: FlashDevelop project (`.as3proj`), entry class extending `FlxGame`, one `FlxState` with `FlxText`, no embeds. Expected results file (detector output, score range, no FL errors). (L)
   - [ ] 2.2 `tests/fixtures/flash/flx-platformer`: the demo game. Menu state, play state, player (`FlxSprite` with animations and input), enemies in a `FlxGroup`, bullets with `recycle`, a hand-written tile layer from `FlxTileblock` first (tilemap comes in task 17), one generated png (drawn by a test helper, 16 by 16 sprite sheet), one short wav written by a test helper. `[Embed]` for each, `[SWF]` metadata with zoom 2. Uses `Number` fields without initializers, `int / int`, closures, getters/setters, `for each`, `super()` first, a `Vector.<FlxSprite>`. (H)
-  - [ ] 2.3 Negative and edge fixtures: `flx-swf-only` (a text file named `game.swf`, never decoded), `flx-fla-only` (a stub `.fla`), `flx-plain-as3` (AS3 without Flixel), `flx-two-entries`, `flx-missing-embed`, `flx-not-flash` (C# only). Expected results for each. (L)
+  - [x] 2.3 Negative and edge fixtures: `flx-swf-only` (a text file named `game.swf`, never decoded), `flx-fla-only` (a stub `.fla`), `flx-plain-as3` (AS3 without Flixel), `flx-two-entries`, `flx-missing-embed`, `flx-not-flash` (C# only). Expected results for each. (L)
   - [ ] 2.4 Language-gap and embed-variant fixtures: `flx-gaps` (one file per FL020 to FL031 construct, each small, each with a known expected marker), `flx-embeds` (image, audio, csv map, xml, font, symbol embed). (H)
   - _Requirements: R12.1, R12.2_
 
 - [x] 3. AS3 lexer (MVP)
-  - [ ] 3.1 Define `As3Token`, `As3TokenKind`, `Trivia`, `SourceSpan` records. (L)
-  - [ ] 3.2 Implement `As3Lexer`: identifiers, keywords, numbers (hex, exponent), strings with escapes, comments as trivia, operators including `>>>`, `===`, `!==`, `...`, `::`, `.<`, `..`, `@`. (H)
-  - [ ] 3.3 Regex versus division by previous token; XML literal as one opaque token run. (H)
-  - [ ] 3.4 Tests: token tables, trivia round trip (concatenating tokens and trivia reproduces the input exactly), regex/division cases, error tokens for unterminated strings. Fuzz-style test: random bytes never throw. (L)
+  - [x] 3.1 Define `As3Token`, `As3TokenKind`, `Trivia`, `SourceSpan` records. (L)
+  - [x] 3.2 Implement `As3Lexer`: identifiers, keywords, numbers (hex, exponent), strings with escapes, comments as trivia, operators including `>>>`, `===`, `!==`, `...`, `::`, `.<`, `..`, `@`. (H)
+  - [x] 3.3 Regex versus division by previous token; XML literal as one opaque token run. (H)
+  - [x] 3.4 Tests: token tables, trivia round trip (concatenating tokens and trivia reproduces the input exactly), regex/division cases, error tokens for unterminated strings. Fuzz-style test: random bytes never throw. (L)
   - _Requirements: R3.3, R3.4, R3.5_
 
-- [x] 4. AS3 parser (MVP)
-  - [ ] 4.1 Syntax tree records (compilation unit, package, import, class, interface, member, metadata, statements, expressions, `As3Unsupported`). Every node has a span. (L)
-  - [ ] 4.2 Parse declarations: package, imports, classes, interfaces, fields, methods, getters and setters, constructors, modifiers, metadata (`[Embed(...)]`, `[SWF(...)]`), `const`, `static`, `override`, rest and default parameters, `include` as unsupported. (H)
-  - [ ] 4.3 Parse statements and expressions: all control flow including `for each`, `for in`, `switch`, `try`; precedence climbing; `as`, `is`, `new`, `delete`, `typeof`, `in`; object, array and function literals; `Vector.<T>`. (H)
-  - [ ] 4.4 Automatic semicolon insertion, error recovery at statement and member boundaries, E4X and `with` and namespace forms as unsupported nodes. (H)
+- [ ] 4. AS3 parser (MVP)
+  - [x] 4.1 Syntax tree records (compilation unit, package, import, class, interface, member, metadata, statements, expressions, `As3Unsupported`). Every node has a span. (L)
+  - [x] 4.2 Parse declarations: package, imports, classes, interfaces, fields, methods, getters and setters, constructors, modifiers, metadata (`[Embed(...)]`, `[SWF(...)]`), `const`, `static`, `override`, rest and default parameters, `include` as unsupported. (H)
+  - [x] 4.3 Parse statements and expressions: all control flow including `for each`, `for in`, `switch`, `try`; precedence climbing; `as`, `is`, `new`, `delete`, `typeof`, `in`; object, array and function literals; `Vector.<T>`. (H)
+  - [x] 4.4 Automatic semicolon insertion, error recovery at statement and member boundaries, E4X and `with` and namespace forms as unsupported nodes. (H)
   - [ ] 4.5 Tests and checkpoint: Verify snapshots of the tree for every fixture; negative tests per recovery path; if `XNAREBORN_FLASH_SAMPLES` is set, parse every `.as` file of Mode, FlxCollisions and Revenge with zero diagnostics (skipped when unset). (L)
   - _Requirements: R3_
 
 - [x] 5. Project detection and reading (MVP)
-  - [ ] 5.1 `FlashProjectDetector`: `.as3proj`, `.actionScriptProperties`, `org.flixel` imports, `.swf`-only and `.fla` cases. Returns `ProjectKind`. Uses `IReadOnlyFileSystem`. (L)
-  - [ ] 5.2 `FlashProjectReader`: source roots, entry class (`[SWF]` or the `FlxGame` subclass), Flixel version probe, bundled `org/flixel` source detection (skip converting it). (H)
-  - [ ] 5.3 Combined detection: a folder matching both XNA and Flash returns a conflict result for the UI. XNA tests stay green. (L)
-  - [ ] 5.4 Tests per fixture, including `flx-swf-only` where the file system fake throws if `game.swf` is read. (L)
+  - [x] 5.1 `FlashProjectDetector`: `.as3proj`, `.actionScriptProperties`, `org.flixel` imports, `.swf`-only and `.fla` cases. Returns `ProjectKind`. Uses `IReadOnlyFileSystem`. (L)
+  - [x] 5.2 `FlashProjectReader`: source roots, entry class (`[SWF]` or the `FlxGame` subclass), Flixel version probe, bundled `org/flixel` source detection (skip converting it). (H)
+  - [x] 5.3 Combined detection: a folder matching both XNA and Flash returns a conflict result for the UI. XNA tests stay green. (L)
+  - [x] 5.4 Tests per fixture, including `flx-swf-only` where the file system fake throws if `game.swf` is read. (L)
   - _Requirements: R1_
 
 - [ ] 6. Rules and analyzer (MVP)
