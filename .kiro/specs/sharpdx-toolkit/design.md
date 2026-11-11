@@ -464,3 +464,37 @@ Written as the work lands. Gaps and deviations are recorded here.
 - Task 11 result. The original `Tint.fx` fixture (all Toolkit forms in one file) was built with the dotnet-mgcb 3.8.6.1 effect compiler for Windows and DesktopGL, and each form was also tried alone. Results: `PixelShader = PSTint;` without `compile` gives "Unexpected token 'P' found. Expected Compile". `Profile = 9.1;` in a pass gives "Unexpected token 'P' found. Expected CloseBracket". A Direct3D 10 `SamplerState` with `Filter = MIN_MAG_MIP_POINT;` gives "Unexpected token 'M' found. Expected None, Linear, Point, or Anisotropic." `Texture2D<float4> Tex;` alone parses. A plain Effects 9 file with `compile ps_2_0` fails on the DirectX platform with the shader-model message ("must be SM 4.0 level 9.1 or higher"), which is the separate effect-rewrite work. The compiler therefore does not accept the Toolkit form, so SDX013 stays Manual and its explanation now quotes these messages.
 - Task 12.1: eight hints, H401 to H408, all linked to SDX rules. The design table also lists "missing generated effect wrapper type". It has no hint, because the missing name is not recognisable (a wrapper is named after the user's effect) and a pattern on the word Effect would blame unrelated types. Hints H407 and H408 recognise the effect syntax errors above instead.
 - Task 12.2: `ProjectRowItem` shows "SharpDX Toolkit" in the report's Projects list (family text, version "Toolkit 2.x"). ViewModel test only, no view logic.
+
+## Candidate results
+
+Task 13, run on 2026-11-11 with the analyzer and migrator of this branch. The four candidates were shallow-cloned into a temp folder outside the repository (nothing from them is committed). Every analysis and migration was followed by a hash of the whole source folder: all hashes were identical before and after.
+
+| Candidate | Toolkit projects | Score (projected) | Notes |
+|---|---|---|---|
+| zlynn1990/EcoSim | 1 of 2 projects | 78 (94) | The one practical migration target. 16 rules fired. |
+| nuclearpidgeon/graphicsproj2 | 1 | 16 (32) | `Project2` is a Windows 8.1 store app (type GUID `BC8A1FFA`), not a desktop project. SDX004 is correct. The design table called it a desktop project; that was wrong. |
+| Luaancz/Yggmire | 1 of 10 projects (the SharpClient) | 52 (68) | 21 rules fired. Uses LH matrices, `Model`, `SetResource`, a `ToolkitFxc` item. |
+| kobush/ModernMoleculeViewer | 3 Toolkit projects (Windows 8.1, Windows Phone 8.1, Windows 10) | 11 (23) | SDX004 fires on all 3 after the fix below. The WPF project is not a Toolkit project. |
+
+Rule counts by id (findings, not projects):
+
+- EcoSim: SDX001-003, 010, 011 once each; SDX020 5, SDX021 3, SDX022 3, SDX023 4, SDX024 3, SDX025 2, SDX028 5, SDX030 3, SDX031 1, SDX034 3, SDX040 1.
+- graphicsproj2: SDX004 1, SDX005 6, SDX013 1, SDX020 36, SDX021 26, SDX023 37, SDX030 7, SDX032 3, SDX035 9, SDX044 4, SDX047 21, SDX062 4, plus the single-hit rules SDX001/002/010/011/012/024-027/031/041.
+- Yggmire: SDX013 1, SDX026 2, SDX030 2, SDX032 2, SDX040 2, SDX044 2, SDX047 4, SDX049 5, plus namespaces and project rules.
+- ModernMoleculeViewer: SDX004 3, SDX005 8, SDX006 3, SDX013 3, SDX030 39, SDX031 24, SDX032 6, SDX033 6, SDX035 72, SDX048 6, SDX060 7, SDX062 3, plus namespaces.
+
+False positives found by reading the findings:
+
+- SDX028 on EcoSim: 3 of 5 hits are calls to the game's own `Controller.IsKeyPressed`, a wrapper the author wrote. Only the 2 hits on `_keyboardState` are the Toolkit method. Matching is by name only, and the rule is Manual with a marker, so the cost is a wrong marker. No change was made.
+- SDX040 and SDX044 in Yggmire read `Game.GraphicsDevice...` (a property of a field named Game) and match correctly through the last-name rule.
+- No other false positive was found in the sample of about 40 findings that were read.
+
+False negative found and fixed: SDX004 only knew the Windows Store (`BC8A1FFA`) and Windows Phone 8 (`C089C8C0`) GUIDs. ModernMoleculeViewer has a Windows Phone 8.1 project (`76F1466A`) and a Windows 10 UWP project (`A5A43C5B`). Both are now in the rule, with tests for the four refusals and for the desktop, WPF and portable GUIDs that must not match.
+
+EcoSim migration (13.2), to a folder outside the source, for WindowsDX and DesktopGL:
+
+- The migration completed: 20 changes (7 created, 8 copied, 5 modified). The font, two textures and `Content.mgcb` build with the MonoGame content builder.
+- A first run exposed a converter bug. EcoSim's font has `DefaultCharacter` 32 (a space). MonoGame's font reader trims that element, and the build failed with "Not have enough entries in space-separated list!". `TkFontConverter` now leaves a whitespace default character out and warns. The content build then succeeds.
+- `dotnet build` of the migrated project fails with 7 errors for both targets. Six are the OpenCL library: EcoSim references the project `OpenCLWrapper` and `libs/Cloo/Cloo.dll`, which are not Toolkit or XNA projects, so they were not migrated or copied. One is `RectangleF` (SDX034, marked in the source, `Camera.cs` line 14). Manual edits needed to get a build: bring in or replace the OpenCL code, and replace `RectangleF`. Neither was attempted, because the OpenCL part is not a Toolkit concern.
+- Not checked: running the migrated game, and the effect of the three `IsKeyPressed` edge calls (SDX028) on behavior.
+- The migrator does not warn when a Toolkit project has a `ProjectReference` to a project that is not migrated. The reference is kept in the new project and the build fails. This is a gap for a later change.
