@@ -94,7 +94,7 @@ public sealed class EffectCompilerIntegrationTests : IDisposable
         foreach (var name in new[] { "AlphaTest", "Annotated" })
         {
             var rewritten = EffectRewriteStep.Rewrite(File.ReadAllText(Path.Combine(_folder, name + ".fx"))).Text;
-            Assert.Contains("// XNA Reborn [NEW-B", rewritten, StringComparison.Ordinal);
+            Assert.Contains("// XNA Reborn [XNA06", rewritten, StringComparison.Ordinal);
 
             var (ok, _) = await CompileAsync(name, "OpenGL", rewrite: true);
             Assert.False(ok, name);
