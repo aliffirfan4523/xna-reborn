@@ -3,7 +3,9 @@ using System.Xml.Linq;
 using XnaReborn.Analyzer.Discovery;
 using XnaReborn.Analyzer.IO;
 using XnaReborn.Analyzer.Reading;
+using XnaReborn.Core.Content;
 using XnaReborn.Core.Models;
+using XnaReborn.Migrator.Content;
 using XnaReborn.Migrator.Output;
 using XnaReborn.Migrator.Planning;
 using XnaReborn.Migrator.Projects;
@@ -24,6 +26,9 @@ internal sealed class LegacyMonoGameMigrator
     private const string _stageContent = "Collecting content";
     private const string _stageWrite = "Writing files";
     private const string _stageDone = "Done";
+
+    // Manual and Unsupported source rules that only get a marker above the using (no plan item, so enabled by their finding).
+    private static readonly string[] _markerRuleIds = ["MG028", "MG029", "MG030", "MG031"];
 
     private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
@@ -96,10 +101,20 @@ internal sealed class LegacyMonoGameMigrator
             }
 
             var text = _fileSystem.ReadAllText(discovered.FullPath);
+            var sdkStyle = IsSdkStyle(text);
             var items = plan.Items.Where(p => string.Equals(p.Id, p.RuleId + ":" + discovered.RelativePath, StringComparison.Ordinal)).ToList();
             var enabled = items.Select(p => p.RuleId).ToHashSet(StringComparer.Ordinal);
+            enabled.UnionWith(report.Findings
+                .Where(f => string.Equals(f.Project, discovered.RelativePath, StringComparison.Ordinal) && _markerRuleIds.Contains(f.RuleId, StringComparer.Ordinal))
+                .Select(f => f.RuleId));
+            if (!sdkStyle)
+            {
+                // Old templates wrap Main in platform conditionals such as "#if WINDOWS || LINUX".
+                enabled.Add(EntryPointSourceRewriter.Id);
+            }
+
             var projectLevel = items.Select(p => p.RuleId).Where(id => !_rewriters.TryGet(id, out _)).Distinct(StringComparer.Ordinal).ToList();
-            var work = new Work(discovered, read, enabled, IsSdkStyle(text));
+            var work = new Work(discovered, read, enabled, sdkStyle);
             migrated.Add(work);
 
             if (work.SdkStyle)
@@ -185,7 +200,7 @@ internal sealed class LegacyMonoGameMigrator
         {
             cancellationToken.ThrowIfCancellationRequested();
             progress?.Report(new MigrationProgress(_stageContent, i, migrated.Count, migrated[i].Discovered.RelativePath));
-            CopyProjectFiles(migrated[i], root, state, cancellationToken);
+            CopyProjectFiles(migrated[i], root, options.ExcludedPlanItemIds, state, cancellationToken);
             progress?.Report(new MigrationProgress(_stageContent, i + 1, migrated.Count, migrated[i].Discovered.RelativePath));
         }
 
@@ -418,7 +433,7 @@ internal sealed class LegacyMonoGameMigrator
     }
 
     // Everything besides the .cs files and the project file: icon, copy-to-output items, kept references, content, and for an SDK-style project the rest of its folder.
-    private void CopyProjectFiles(Work work, string root, State state, CancellationToken cancellationToken)
+    private void CopyProjectFiles(Work work, string root, IReadOnlySet<string> excluded, State state, CancellationToken cancellationToken)
     {
         var projectPath = work.Read.Info.Path;
         var projectDirectory = Path.GetDirectoryName(work.Discovered.FullPath) ?? root;
@@ -465,31 +480,102 @@ internal sealed class LegacyMonoGameMigrator
             CopyIfExists(work, root, state, hint, ChangeKind.Copied, null);
         }
 
+        // Prebuilt .xnb files cannot be rebuilt. They are copied and listed even when nothing asks for them to be copied to the output.
+        foreach (var item in work.Read.Items.Where(i => i.ItemType is "Content" or "None" && i.Include.EndsWith(".xnb", StringComparison.OrdinalIgnoreCase) && !i.Include.Contains('*', StringComparison.Ordinal)))
+        {
+            CopyIfExists(work, root, state, item.Include, ChangeKind.ManualWork, "Prebuilt .xnb content cannot be rebuilt for MonoGame and may not load. It is copied as is.");
+        }
+
         foreach (var mgcb in work.Read.MgcbFiles ?? [])
         {
-            var mgcbFull = Path.GetFullPath(Path.Combine(root, ProjectMigrator.ToNative(mgcb.Path)));
-            if (state.Claim(mgcb.Path))
-            {
-                state.Changes.Add(new FileChange(mgcb.Path, ChangeKind.Copied, null, null, null, mgcbFull));
-            }
-
-            var mgcbDirectory = Path.GetDirectoryName(mgcbFull) ?? root;
-            foreach (var entry in mgcb.File.Entries)
-            {
-                var full = Path.GetFullPath(Path.Combine(mgcbDirectory, ProjectMigrator.ToNative(entry.Source)));
-                var relative = ProjectMigrator.Relative(root, full);
-                if (ProjectMigrator.IsOutside(relative) || !_fileSystem.FileExists(full))
-                {
-                    state.Notes.Add($"{mgcb.Path}: {entry.Source}: the content file was not found inside the source folder, so it was not copied.");
-                }
-                else if (state.Claim(relative))
-                {
-                    state.Changes.Add(new FileChange(relative, ChangeKind.Copied, null, null, null, full));
-                }
-            }
+            CopyContent(work, mgcb, root, excluded, state);
         }
     }
 
+    // Upgrades one Content.mgcb, copies the files its entries name, and lists what needs a person.
+    private void CopyContent(Work work, ParsedMgcb mgcb, string root, IReadOnlySet<string> excluded, State state)
+    {
+        var mgcbFull = Path.GetFullPath(Path.Combine(root, ProjectMigrator.ToNative(mgcb.Path)));
+        var mgcbDirectory = Path.GetDirectoryName(mgcbFull) ?? root;
+        var kept = new List<string>();
+        if (state.Claim(mgcb.Path))
+        {
+            var (text, hasBom) = ReadTextWithBom(mgcbFull);
+            var platform = work.Target == MonoGameTarget.WindowsDX ? "Windows" : "DesktopGL";
+            var removeInstall = !excluded.Contains("MG023:" + work.Discovered.RelativePath);
+            var upgrade = MgcbUpgrader.Upgrade(text, platform, removeInstall);
+            kept.AddRange(upgrade.KeptReferences);
+            if (upgrade.Changed)
+            {
+                var ids = new List<string>();
+                if (upgrade.RemovedReferences.Count > 0)
+                {
+                    ids.Add("MG023");
+                }
+
+                if (work.Enabled.Contains("MG024") && !string.Equals(upgrade.OldPlatform, platform, StringComparison.Ordinal))
+                {
+                    ids.Add("MG024");
+                }
+
+                state.Add(
+                    new FileChange(mgcb.Path, ChangeKind.Modified, (hasBom ? "\uFEFF" : string.Empty) + text, upgrade.Text, $"Platform set to {platform}; installer-folder references removed: {upgrade.RemovedReferences.Count}."),
+                    ids,
+                    alreadyClaimed: true);
+            }
+            else
+            {
+                state.Changes.Add(new FileChange(mgcb.Path, ChangeKind.Copied, null, null, null, mgcbFull));
+            }
+        }
+
+        foreach (var entry in mgcb.File.Entries)
+        {
+            var full = Path.GetFullPath(Path.Combine(mgcbDirectory, ProjectMigrator.ToNative(entry.Source)));
+            var relative = ProjectMigrator.Relative(root, full);
+            if (ProjectMigrator.IsOutside(relative) || !_fileSystem.FileExists(full))
+            {
+                state.Notes.Add($"{mgcb.Path}: {entry.Source}: the content file was not found inside the source folder, so it was not copied.");
+            }
+            else if (state.Claim(relative))
+            {
+                state.Changes.Add(new FileChange(relative, ChangeKind.Copied, null, null, null, full));
+            }
+        }
+
+        foreach (var reference in kept)
+        {
+            var full = Path.GetFullPath(Path.Combine(mgcbDirectory, ProjectMigrator.ToNative(reference)));
+            var relative = ProjectMigrator.Relative(root, full);
+            if (ProjectMigrator.IsOutside(relative) || !_fileSystem.FileExists(full))
+            {
+                state.Notes.Add($"{mgcb.Path}: MG025: the pipeline assembly '{reference.Replace('\\', '/')}' was not found inside the source folder, so it was not copied. Build it for MonoGame 3.8.6.1 and add it by hand.");
+            }
+            else if (state.Claim(relative))
+            {
+                const string reason = "Custom content pipeline assembly built for an older MonoGame or XNA. Rebuild it against MonoGame 3.8.6.1; the copy is the old binary.";
+                state.Changes.Add(new FileChange(relative, ChangeKind.ManualWork, null, null, reason, full));
+                state.Notes.Add($"{relative}: MG025: {reason}");
+            }
+        }
+
+        var custom = mgcb.File.Entries.Where(e => ImporterMap.Default.IsCustom(e.Importer, e.Processor)).ToList();
+        if (custom.Count > 0)
+        {
+            var pairs = string.Join(", ", custom.Select(e => $"{e.Importer ?? "-"}/{e.Processor ?? "-"}").Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).Take(5));
+            state.Notes.Add($"{mgcb.Path}: MG026: {custom.Count} entr{(custom.Count == 1 ? "y uses" : "ies use")} a custom importer or processor ({pairs}). They are kept in Content.mgcb and build only with a pipeline assembly for MonoGame 3.8.6.1.");
+        }
+    }
+
+    private (string Text, bool HasBom) ReadTextWithBom(string full)
+    {
+        using var stream = _fileSystem.OpenRead(full);
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        var bytes = buffer.ToArray();
+        var hasBom = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF;
+        return (new UTF8Encoding(false).GetString(bytes, hasBom ? 3 : 0, bytes.Length - (hasBom ? 3 : 0)), hasBom);
+    }
     private void CopyIfExists(Work work, string root, State state, string? projectRelative, ChangeKind kind, string? reason)
     {
         if (string.IsNullOrWhiteSpace(projectRelative))

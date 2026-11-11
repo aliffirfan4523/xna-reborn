@@ -75,18 +75,18 @@ Each numbered task is sized for one worker on its own branch (`analyzer/...`, `m
   - [x] 11.4 Planner: plan items per project, exclusions, dry run
   - _Requirements: R6, R11_
 
-- [ ] 12. Content upgrade
-  - [ ] 12.1 `MgcbUpgrader`: set `/platform` to the target, remove install-folder `/reference` lines, keep everything else byte for byte. Links: MG023, MG024
-  - [ ] 12.2 List custom pipeline assembly references and non-standard pairs in the manifest as manual work; copy the DLLs. Related: MG025, MG026
-  - [ ] 12.3 Copy and list prebuilt `.xnb` files; do not invent an mgcb when the project has none. Related: MG027
-  - [ ] 12.4 Tests: before and after, determinism (two runs, same bytes), asset names unchanged
+- [x] 12. Content upgrade
+  - [x] 12.1 `MgcbUpgrader`: set `/platform` to the target, remove install-folder `/reference` lines, keep everything else byte for byte. Links: MG023, MG024
+  - [x] 12.2 List custom pipeline assembly references and non-standard pairs in the manifest as manual work; copy the DLLs. Related: MG025, MG026
+  - [x] 12.3 Copy and list prebuilt `.xnb` files; do not invent an mgcb when the project has none. Related: MG027
+  - [x] 12.4 Tests: before and after, determinism (two runs, same bytes), asset names unchanged
   - _Requirements: R7_
 
-- [ ] 13. Source upgrade
-  - [ ] 13.1 `ColorTransparentBlackRewriter` with before and after fixtures, including a file with no `Microsoft.Xna.Framework` import (no change) and an ambiguous case (marker). Links: MG032
+- [x] 13. Source upgrade
+  - [x] 13.1 `ColorTransparentBlackRewriter` with before and after fixtures, including a file with no `Microsoft.Xna.Framework` import (no change) and an ambiguous case (marker). Links: MG032
   - [ ] 13.2 (stretch) Reuse `XnaReborn.Compat` for `GamerServices`; add `Net` stand-ins only if the GamerServices pattern fits. Without shims, leave markers. Related: MG021, MG028, MG029
-  - [ ] 13.3 Register `EntryPointRewriter` for legacy MonoGame projects; fixture with `Program` inside `#if WINDOWS || LINUX`
-  - [ ] 13.4 Marker for Manual source findings (MG030, MG031) through `MarkerInserter`
+  - [x] 13.3 Register `EntryPointRewriter` for legacy MonoGame projects; fixture with `Program` inside `#if WINDOWS || LINUX`
+  - [x] 13.4 Marker for Manual source findings (MG030, MG031) through `MarkerInserter`
   - _Requirements: R8_
 
 - [x] 14. Platform projects and solutions

@@ -236,4 +236,117 @@ public sealed class LegacyMonoGameMigrationTests : IDisposable
         Assert.Contains(result.Plan.Items, i => i.RuleId.StartsWith("XNA", StringComparison.Ordinal));
         Assert.DoesNotContain(result.Plan.Items, i => i.RuleId.StartsWith("MG", StringComparison.Ordinal));
     }
+
+    [Fact]
+    public async Task Desktop_project_content_is_upgraded_and_the_source_is_unchanged()
+    {
+        var source = FixturePaths.Of("mg37-desktopgl-installdir");
+        var before = MigrationTestSupport.Tree(source);
+
+        var result = await MigrateAsync(source, Options(Out(), dryRun: true));
+
+        var mgcb = Single(result, "Content/Content.mgcb");
+        Assert.Equal(ChangeKind.Modified, mgcb.Kind);
+        Assert.DoesNotContain("Program Files", mgcb.NewText, StringComparison.Ordinal);
+        Assert.Contains("/reference:Pipeline\\GlowPipeline.dll", mgcb.NewText);
+        Assert.Contains("/platform:DesktopGL", mgcb.NewText);
+        Assert.Equal(["MG023"], result.Manifest.Changes.Single(c => c.Path == "Content/Content.mgcb").Rules);
+        Assert.Equal(before, MigrationTestSupport.Tree(source));
+    }
+
+    [Fact]
+    public async Task Custom_pipeline_notes_reach_the_markdown_manifest()
+    {
+        await MigrateAsync(FixturePaths.Of("mg37-desktopgl-installdir"), Options(Out()));
+
+        var markdown = File.ReadAllText(Path.Combine(Out(), ProjectMigrator.ManifestMarkdownName));
+        Assert.Contains("MG025", markdown, StringComparison.Ordinal);
+        Assert.Contains("MG026", markdown, StringComparison.Ordinal);
+        Assert.Contains("LevelImporter/LevelProcessor", markdown, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Custom_pipeline_assembly_that_exists_is_copied_as_manual_work()
+    {
+        var source = Path.Combine(_temp, "src");
+        MigrationTestSupport.CopyFolder(FixturePaths.Of("mg37-desktopgl-installdir"), source);
+        Directory.CreateDirectory(Path.Combine(source, "Content", "Pipeline"));
+        await File.WriteAllBytesAsync(Path.Combine(source, "Content", "Pipeline", "GlowPipeline.dll"), [1, 2, 3]);
+
+        var result = await MigrateAsync(source, Options(Out(), dryRun: true));
+
+        var dll = Single(result, "Content/Pipeline/GlowPipeline.dll");
+        Assert.Equal(ChangeKind.ManualWork, dll.Kind);
+        Assert.False(string.IsNullOrWhiteSpace(dll.Reason));
+    }
+
+    [Fact]
+    public async Task Windows_project_keeps_the_windows_content_platform_and_prebuilt_xnb_is_listed()
+    {
+        var result = await MigrateAsync(FixturePaths.Of("mg37-windowsdx-pkgconfig"), Options(Out(), dryRun: true));
+
+        Assert.Contains("/platform:Windows", File.ReadAllText(Path.Combine(FixturePaths.Of("mg37-windowsdx-pkgconfig"), "Content", "Content.mgcb")));
+        Assert.Equal(ChangeKind.Copied, Single(result, "Content/Content.mgcb").Kind);
+        Assert.Equal(ChangeKind.ManualWork, Single(result, "Content/Prebuilt/logo.xnb").Kind);
+    }
+
+    [Fact]
+    public async Task Legacy_target_override_changes_the_content_platform()
+    {
+        var result = await MigrateAsync(FixturePaths.Of("mg37-windowsdx-pkgconfig"), Options(Out(), dryRun: true, legacy: MonoGameTarget.DesktopGL));
+
+        Assert.Contains("/platform:DesktopGL", Single(result, "Content/Content.mgcb").NewText);
+    }
+
+    [Fact]
+    public async Task Project_without_content_gets_no_mgcb_and_no_tool_manifest()
+    {
+        var result = await MigrateAsync(FixturePaths.Of("mg34-windowsgl"), Options(Out(), dryRun: true));
+
+        Assert.DoesNotContain(result.Changes, c => c.RelativePath.EndsWith(".mgcb", StringComparison.Ordinal));
+        Assert.DoesNotContain(result.Changes, c => c.RelativePath == ".config/dotnet-tools.json");
+    }
+
+    [Fact]
+    public async Task Source_rewrites_and_markers_are_applied_and_the_safe_file_is_copied()
+    {
+        var source = FixturePaths.Of("mg37-source-apis");
+        var before = MigrationTestSupport.Tree(source);
+
+        var result = await MigrateAsync(source, Options(Out()));
+
+        Assert.True(result.Completed);
+        Assert.Equal(before, MigrationTestSupport.Tree(source));
+        var colors = Single(result, "Colors.cs");
+        Assert.Equal(ChangeKind.Modified, colors.Kind);
+        Assert.Contains("Color.Transparent;", colors.NewText);
+        Assert.Equal(["MG032"], result.Manifest.Changes.Single(c => c.Path == "Colors.cs").Rules);
+        Assert.Equal(ChangeKind.Copied, Single(result, "SafeColors.cs").Kind);
+        foreach (var (file, rule) in new[] { ("NetCode.cs", "MG028"), ("Services.cs", "MG029"), ("GlCode.cs", "MG030"), ("UwpCode.cs", "MG031") })
+        {
+            Assert.Contains("// XNAREBORN: " + rule + ":", Single(result, file).NewText);
+        }
+
+        var markdown = File.ReadAllText(Path.Combine(Out(), ProjectMigrator.ManifestMarkdownName));
+        Assert.Contains("MG030", markdown, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Excluded_color_step_leaves_the_file_alone()
+    {
+        var source = FixturePaths.Of("mg37-source-apis");
+
+        var result = await MigrateAsync(source, Options(Out(), dryRun: true, null, "MG032:Mg37SourceApis.csproj"));
+
+        Assert.Equal(ChangeKind.Copied, Single(result, "Colors.cs").Kind);
+    }
+
+    [Fact]
+    public async Task Folder_of_only_phone_and_console_projects_stops_with_a_clear_message()
+    {
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => MigrateAsync(FixturePaths.Of("mg35-win8-wp8-ouya"), Options(Out())));
+
+        Assert.Contains("No desktop project", ex.Message, StringComparison.Ordinal);
+        Assert.False(Directory.Exists(Out()));
+    }
 }
