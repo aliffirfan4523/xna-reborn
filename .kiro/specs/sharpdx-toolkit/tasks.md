@@ -15,22 +15,22 @@ Each numbered task is sized for one worker. Sub-tasks are steps inside that task
   - [x] 2.4 Read-only test: file hashes of every Toolkit fixture are identical before and after analysis.
   - _Requirements: R1, R7_
 
-- [ ] 3. Schema and engine changes
+- [x] 3. Schema and engine changes
   - [x] 3.1 Widen the rule id pattern to `^(XNA|SDX)[0-9]{3}$` in `RuleSchema.json` and `RuleCatalogValidator`. Test: an `SDX` id validates; an id with another prefix is rejected; the XNA catalog still validates.
-  - [ ] 3.2 Add `appliesTo` to the catalog schema and model. The analyzer runs a catalog only on projects of that framework. `AnalysisService` loads both catalog files. A broken Toolkit catalog must not stop XNA analysis (a diagnostic is reported). Positive: Toolkit fixture runs the SDX catalog. Negative: an XNA fixture never runs it, and a Toolkit fixture never runs the XNA catalog.
+  - [x] 3.2 Add `appliesTo` to the catalog schema and model. The analyzer runs a catalog only on projects of that framework. `AnalysisService` loads both catalog files. A broken Toolkit catalog must not stop XNA analysis (a diagnostic is reported). Positive: Toolkit fixture runs the SDX catalog. Negative: an XNA fixture never runs it, and a Toolkit fixture never runs the XNA catalog.
   - [x] 3.3 Add optional `names` to the `member` match: schema, `MemberMatch` record, JSON converter, `SourceRuleIndex`. Exactly one of `name` or `names`. Positive: a rule with `names` matches each listed name once per position. Negative: an unlisted name, a missing receiver, a wrong argument count, and a rule with both `name` and `names` (rejected).
   - [x] 3.4 Existing tests and XNA snapshots stay green with no snapshot change.
   - _Requirements: R2_
 
-- [ ] 4. Rule catalog `rules/sharpdx-toolkit-to-monogame.json`
+- [x] 4. Rule catalog `rules/sharpdx-toolkit-to-monogame.json`
   - Each sub-task adds its rules, one positive and one negative fixture test per rule, the Verify snapshot update (review the diff), and the `migratorTask` link on AutoFixable rules. Do not add a rule before task 3 is merged.
-  - [ ] 4.1 Project, platform and interop: SDX001 to SDX008. Confirm the two project type GUID prefixes in SDX004 against the Toolkit template (`ProjectTemplate.csproj`). Negative for SDX004: a normal desktop project GUID.
-  - [ ] 4.2 Content: SDX010 to SDX015. Negative: a project with only XNA `Compile` content items.
-  - [ ] 4.3 Namespaces and input: SDX020 to SDX028. Negative for SDX023: `using SharpDX.Toolkit.Graphics;` alone must not fire it. Negative for SDX025: a field named `keyboard` of a user-defined type.
-  - [ ] 4.4 Math: SDX030 to SDX035. Negative for SDX030: an instance named `matrix` calling `Translation`, and `Matrix.Translation` as a property. Negative for SDX032: a RH call.
-  - [ ] 4.5 Graphics: SDX040 to SDX051. Negative for SDX041: `SetBlendState` with two arguments. Negative for SDX042/SDX043: argument counts at the edges (1 vs 2, and 9). Negative for SDX051: `spriteBatch.Begin()` with no arguments.
-  - [ ] 4.6 Game: SDX060 to SDX063.
-  - [ ] 4.7 Catalog test: 45 rules, ids unique, every AutoFixable rule has a `migratorTask` that points at a task in this file, every Manual and Unsupported rule has a resolution text, and the catalog validates against the schema.
+  - [x] 4.1 Project, platform and interop: SDX001 to SDX008. Confirm the two project type GUID prefixes in SDX004 against the Toolkit template (`ProjectTemplate.csproj`). Negative for SDX004: a normal desktop project GUID.
+  - [x] 4.2 Content: SDX010 to SDX015. Negative: a project with only XNA `Compile` content items.
+  - [x] 4.3 Namespaces and input: SDX020 to SDX028. Negative for SDX023: `using SharpDX.Toolkit.Graphics;` alone must not fire it. Negative for SDX025: a field named `keyboard` of a user-defined type.
+  - [x] 4.4 Math: SDX030 to SDX035. Negative for SDX030: an instance named `matrix` calling `Translation`, and `Matrix.Translation` as a property. Negative for SDX032: a RH call.
+  - [x] 4.5 Graphics: SDX040 to SDX051. Negative for SDX041: `SetBlendState` with two arguments. Negative for SDX042/SDX043: argument counts at the edges (1 vs 2, and 9). Negative for SDX051: `spriteBatch.Begin()` with no arguments.
+  - [x] 4.6 Game: SDX060 to SDX063.
+  - [x] 4.7 Catalog test: 45 rules, ids unique, every AutoFixable rule has a `migratorTask` that points at a task in this file, every Manual and Unsupported rule has a resolution text, and the catalog validates against the schema.
   - _Requirements: R2_
 
 - [ ] 5. Rename map and namespace rewriter

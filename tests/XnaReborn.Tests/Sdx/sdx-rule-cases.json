@@ -1,0 +1,272 @@
+[
+    {
+        "ruleId":  "SDX001",
+        "kind":  "project",
+        "positive":  "<ItemGroup><Reference Include=\"SharpDX.Direct3D11\" /></ItemGroup>",
+        "negative":  "<ItemGroup><Reference Include=\"System.Core\" /></ItemGroup>"
+    },
+    {
+        "ruleId":  "SDX002",
+        "kind":  "project",
+        "positive":  "<Import Project=\"..\\packages\\SharpDX.2.6.3\\build\\SharpDX.targets\" />",
+        "negative":  "<Import Project=\"$(MSBuildToolsPath)\\Microsoft.CSharp.targets\" />"
+    },
+    {
+        "ruleId":  "SDX003",
+        "kind":  "project",
+        "positive":  "<PropertyGroup><TargetFrameworkVersion>v4.5</TargetFrameworkVersion></PropertyGroup>",
+        "negative":  "<PropertyGroup><TargetFrameworkVersion>v5.0</TargetFrameworkVersion></PropertyGroup>"
+    },
+    {
+        "ruleId":  "SDX004",
+        "kind":  "project",
+        "positive":  "<PropertyGroup><ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids></PropertyGroup>",
+        "negative":  "<PropertyGroup><ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids></PropertyGroup>"
+    },
+    {
+        "ruleId":  "SDX010",
+        "kind":  "project",
+        "positive":  "<ItemGroup><ToolkitFont Include=\"a.xml\" /></ItemGroup>",
+        "negative":  "<ItemGroup><ToolkitTexture Include=\"a.dds\" /></ItemGroup>"
+    },
+    {
+        "ruleId":  "SDX011",
+        "kind":  "project",
+        "positive":  "<ItemGroup><ToolkitTexture Include=\"a.dds\" /></ItemGroup>",
+        "negative":  "<ItemGroup><ToolkitFont Include=\"a.xml\" /></ItemGroup>"
+    },
+    {
+        "ruleId":  "SDX012",
+        "kind":  "project",
+        "positive":  "<ItemGroup><ToolkitModel Include=\"a.fbx\" /></ItemGroup>",
+        "negative":  "<ItemGroup><ToolkitAudio Include=\"a.wav\" /></ItemGroup>"
+    },
+    {
+        "ruleId":  "SDX013",
+        "kind":  "project",
+        "positive":  "<ItemGroup><ToolkitFxc Include=\"a.fx\" /></ItemGroup>",
+        "negative":  "<ItemGroup><ToolkitFont Include=\"a.xml\" /></ItemGroup>"
+    },
+    {
+        "ruleId":  "SDX014",
+        "kind":  "project",
+        "positive":  "<ItemGroup><ToolkitAudio Include=\"a.wav\" /></ItemGroup>",
+        "negative":  "<ItemGroup><ToolkitModel Include=\"a.fbx\" /></ItemGroup>"
+    },
+    {
+        "ruleId":  "SDX015",
+        "kind":  "file",
+        "positive":  "Content/Balls.tkb",
+        "negative":  "Content/Balls.dds"
+    },
+    {
+        "ruleId":  "SDX005",
+        "kind":  "source",
+        "positive":  "using SharpDX.Direct3D11;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Direct3D9;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX006",
+        "kind":  "source",
+        "positive":  "using SharpDX.DXGI;\nclass C\n{\n\n}\n",
+        "negative":  "using System.Drawing;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX007",
+        "kind":  "source",
+        "positive":  "using SharpDX.Direct2D1;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.DirectWrite;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX008",
+        "kind":  "source",
+        "positive":  "using SharpDX.XAudio2;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Toolkit.Audio;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX020",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX021",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Toolkit;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX022",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Content;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX023",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX024",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Input;\nclass C\n{\n\n}\n",
+        "negative":  "using SharpDX.Toolkit;\nclass C\n{\n\n}\n"
+    },
+    {
+        "ruleId":  "SDX025",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Input;\nclass C\n{\n    KeyboardManager keyboard;\n}\n",
+        "negative":  "using SharpDX.Toolkit.Input;\nclass KeyboardHelper { }\nclass C\n{\n    KeyboardHelper keyboard;\n}\n"
+    },
+    {
+        "ruleId":  "SDX026",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Input;\nclass C\n{\n    MouseManager mouse;\n}\n",
+        "negative":  "class MouseManager { }\nclass C\n{\n    MouseManager mouse;\n}\n"
+    },
+    {
+        "ruleId":  "SDX027",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Input;\nclass C\n{\n    PointerManager pointer;\n}\n",
+        "negative":  "class PointerManager { }\nclass C\n{\n    PointerManager pointer;\n}\n"
+    },
+    {
+        "ruleId":  "SDX028",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Input;\nclass C\n{\n    bool M(KeyboardState s) { return s.IsKeyPressed(Keys.A); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Input;\nclass C\n{\n    bool M(KeyboardState s) { return s.IsKeyDown(Keys.A); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX030",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n    Matrix M() { return Matrix.RotationY(1f); }\n}\n",
+        "negative":  "using SharpDX;\nclass C\n{\n    void M(Matrix matrix) { var t = matrix.Translation; var u = matrix.Scaling(1f); var v = Matrix.Translation; }\n}\n"
+    },
+    {
+        "ruleId":  "SDX031",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n    float M() { return MathUtil.Clamp(1f, 0f, 2f); }\n}\n",
+        "negative":  "using SharpDX;\nclass C\n{\n    float M() { return MathHelper.Clamp(1f, 0f, 2f); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX032",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n    Matrix M() { return Matrix.LookAtLH(Vector3.Zero, Vector3.One, Vector3.UnitY); }\n}\n",
+        "negative":  "using SharpDX;\nclass C\n{\n    Matrix M() { return Matrix.LookAtRH(Vector3.Zero, Vector3.One, Vector3.UnitY); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX033",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n    Vector3 M(Vector3 v, Matrix m) { return Vector3.TransformCoordinate(v, m); }\n}\n",
+        "negative":  "using SharpDX;\nclass C\n{\n    Vector3 M(Vector3 v, Matrix m) { return Vector3.Transform(v, m); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX034",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n    RectangleF bounds;\n}\n",
+        "negative":  "using SharpDX;\nclass C\n{\n    Rectangle bounds;\n}\n"
+    },
+    {
+        "ruleId":  "SDX035",
+        "kind":  "source",
+        "positive":  "using SharpDX;\nclass C\n{\n    Color4 tint;\n}\n",
+        "negative":  "using SharpDX;\nclass C\n{\n    Color tint;\n}\n"
+    },
+    {
+        "ruleId":  "SDX040",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M() { var b = GraphicsDevice.BlendStates.Opaque; }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice device;\n    void M() { var b = BlendState.Opaque; var c = device.BlendStates; }\n}\n"
+    },
+    {
+        "ruleId":  "SDX041",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(BlendState s) { GraphicsDevice.SetBlendState(s); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(BlendState s) { GraphicsDevice.SetBlendState(s, 1); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX042",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(RenderTarget2D rt) { GraphicsDevice.SetRenderTargets(rt); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(DepthStencilBuffer d, RenderTarget2D rt) { GraphicsDevice.SetRenderTargets(d, rt); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX043",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(DepthStencilBuffer d, RenderTarget2D rt) { GraphicsDevice.SetRenderTargets(d, rt); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(RenderTarget2D a) { GraphicsDevice.SetRenderTargets(a); GraphicsDevice.SetRenderTargets(a, a, a, a, a, a, a, a, a); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX044",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    int M() { return GraphicsDevice.BackBuffer.Width; }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    int M() { return GraphicsDevice.PresentationParameters.BackBufferWidth; }\n}\n"
+    },
+    {
+        "ruleId":  "SDX045",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    RenderTarget2D M(GraphicsDevice d) { return RenderTarget2D.New(d, 1, 1, PixelFormat.R8G8B8A8.UNorm); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    RenderTarget2D M(GraphicsDevice d) { return new RenderTarget2D(d, 1, 1); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX046",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    Texture2D M(GraphicsDevice d) { return Texture2D.New(d, 1, 1, PixelFormat.R8G8B8A8.UNorm); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    Texture2D M(GraphicsDevice d) { return new Texture2D(d, 1, 1); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX047",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    Model model;\n}\n",
+        "negative":  "class Model { }\nclass C\n{\n    Model model;\n}\n"
+    },
+    {
+        "ruleId":  "SDX048",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GeometricPrimitive cube;\n}\n",
+        "negative":  "class GeometricPrimitive { }\nclass C\n{\n    GeometricPrimitive cube;\n}\n"
+    },
+    {
+        "ruleId":  "SDX049",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    void M(EffectParameter p, Texture2D t) { p.SetResource(t); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    void M(EffectParameter p, Texture2D t) { p.SetValue(t); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX050",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(Effect e) { GraphicsDevice.DrawQuad(e); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    GraphicsDevice GraphicsDevice;\n    void M(Effect e) { GraphicsDevice.Draw(e); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX051",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    SpriteBatch spriteBatch;\n    void M(Effect e) { spriteBatch.Begin(SpriteSortMode.Deferred, e); }\n}\n",
+        "negative":  "using SharpDX.Toolkit.Graphics;\nclass C\n{\n    SpriteBatch spriteBatch;\n    void M(Effect e) { spriteBatch.Begin(); spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, e); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX060",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit;\nclass C\n{\n    object M() { return ToDisposeContent(new object()); }\n}\n",
+        "negative":  "using SharpDX.Toolkit;\nclass C\n{\n    object M() { return new object(); }\n}\n"
+    },
+    {
+        "ruleId":  "SDX061",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit;\nclass C\n{\n    void M(GraphicsDeviceManager m) { m.PreferredGraphicsProfile = null; }\n}\n",
+        "negative":  "using SharpDX.Toolkit;\nclass C\n{\n    void M(GraphicsDeviceManager m) { m.PreferredBackBufferWidth = 1; }\n}\n"
+    },
+    {
+        "ruleId":  "SDX062",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit;\nclass C\n{\n    GameSystem system;\n}\n",
+        "negative":  "class GameSystem { }\nclass C\n{\n    GameSystem system;\n}\n"
+    },
+    {
+        "ruleId":  "SDX063",
+        "kind":  "source",
+        "positive":  "using SharpDX.Toolkit;\nclass C\n{\n    SharpDXElement element;\n}\n",
+        "negative":  "using SharpDX.Toolkit;\nclass C\n{\n    GameWindow window;\n}\n"
+    }
+]

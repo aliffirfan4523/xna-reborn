@@ -1,0 +1,322 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + sharpdx-toolkit-to-monogame",
+  "projects": [
+    {
+      "path": "Toolkit/ToolkitGame.csproj",
+      "assemblyName": "ToolkitGame",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "v4.5",
+      "references": [
+        "SharpDX",
+        "SharpDX.Toolkit",
+        "SharpDX.Toolkit.Game",
+        "SharpDX.Toolkit.Graphics",
+        "SharpDX.Toolkit.Input",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "SharpDxToolkit"
+    },
+    {
+      "path": "Xna/XnaGame.csproj",
+      "assemblyName": "Xna40Basic",
+      "isXna": true,
+      "xnaVersion": "4.0",
+      "platform": "Windows",
+      "profile": "HiDef",
+      "targetFramework": "v4.0",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "Microsoft.Xna.Framework.Graphics",
+        "Microsoft.Xna.Framework.Input",
+        "System",
+        "System.Core",
+        "System.Xml"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "WINDOWS"
+      ],
+      "contentProjects": [
+        "Xna/Content/Content.contentproj"
+      ],
+      "contentItems": [
+        {
+          "sourcePath": "Textures/hero.png",
+          "nameOverride": "hero",
+          "importer": "TextureImporter",
+          "processor": "TextureProcessor",
+          "processorParams": {
+            "PremultiplyAlpha": "True"
+          }
+        },
+        {
+          "sourcePath": "Fonts/Font.spritefont",
+          "nameOverride": "Font",
+          "importer": "FontDescriptionImporter",
+          "processor": "FontDescriptionProcessor",
+          "processorParams": {}
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "SDX001",
+      "title": "SharpDX assembly reference",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": null,
+      "snippet": "SharpDX, SharpDX.Toolkit, SharpDX.Toolkit.Game +2 more"
+    },
+    {
+      "ruleId": "SDX002",
+      "title": "SharpDX build targets import",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": null,
+      "snippet": "..\\packages\\SharpDX.2.6.3\\build\\SharpDX.targets, ..\\packages\\SharpDX.Toolkit.2.6.3\\build\\SharpDX.Toolkit.targets"
+    },
+    {
+      "ruleId": "SDX020",
+      "title": "Toolkit game namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": {
+        "file": "Toolkit/Game1.cs",
+        "line": 2,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit;"
+    },
+    {
+      "ruleId": "SDX023",
+      "title": "SharpDX math namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": {
+        "file": "Toolkit/Game1.cs",
+        "line": 1,
+        "column": 1
+      },
+      "snippet": "using SharpDX;"
+    },
+    {
+      "ruleId": "XNA001",
+      "title": "XNA Game Studio build targets import",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Xna/XnaGame.csproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v4.0\\Microsoft.Xna.GameStudio.targets"
+    },
+    {
+      "ruleId": "XNA003",
+      "title": "XNA assembly references",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Xna/XnaGame.csproj",
+      "location": null,
+      "snippet": "Microsoft.Xna.Framework, Microsoft.Xna.Framework.Game, Microsoft.Xna.Framework.Graphics +1 more"
+    },
+    {
+      "ruleId": "XNA005",
+      "title": "Nested XNA content project",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Xna/XnaGame.csproj",
+      "location": null,
+      "snippet": "Content\\Content.contentproj"
+    },
+    {
+      "ruleId": "XNA046",
+      "title": "Properties/AssemblyInfo.cs duplicates SDK attributes",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Xna/XnaGame.csproj",
+      "location": null,
+      "snippet": "Properties/AssemblyInfo.cs"
+    },
+    {
+      "ruleId": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": {
+        "file": "Toolkit/Game1.cs",
+        "line": 21,
+        "column": 20
+      },
+      "snippet": "view = Matrix.LookAtRH(new Vector3(0f, 0f, 5f), Vector3.Zero, Vector3.UnitY);"
+    },
+    {
+      "ruleId": "XNA004",
+      "title": "Old .NET Framework target",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Xna/XnaGame.csproj",
+      "location": null,
+      "snippet": "TargetFrameworkVersion=v4.0"
+    },
+    {
+      "ruleId": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": null,
+      "snippet": "TargetFrameworkVersion=v4.5"
+    },
+    {
+      "ruleId": "SDX011",
+      "title": "Toolkit texture (ToolkitTexture)",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Toolkit/ToolkitGame.csproj",
+      "location": null,
+      "snippet": "Content\\Balls.dds"
+    },
+    {
+      "ruleId": "XNA002",
+      "title": "XNA-specific project properties",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Xna/XnaGame.csproj",
+      "location": null,
+      "snippet": "XnaFrameworkVersion=v4.0"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "SDX001",
+      "title": "SharpDX assembly reference",
+      "explanation": "The project references SharpDX assemblies (SharpDX, SharpDX.Toolkit.*, SharpDX.Direct3D11 and others). They come from the SharpDX 2.x NuGet packages, which target .NET Framework 4.x and need the SharpDX build targets. They are not part of MonoGame.",
+      "resolution": "The migrator writes an SDK-style project that drops every SharpDX reference and references MonoGame instead. Code that used SharpDX types directly is reported by the SDX005 to SDX008 and SDX034 to SDX035 rules.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX002",
+      "title": "SharpDX build targets import",
+      "explanation": "The project imports SharpDX.targets or SharpDX.Toolkit.targets from the NuGet packages folder. Those files set the reference paths and run the Toolkit content compilers. They exist only after a NuGet restore of the old packages, and a build without them stops with MSB4019.",
+      "resolution": "The migrator drops the imports, the NuGet restore guard target and the import stamp from the SDK-style project it writes.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "explanation": "The project targets .NET Framework 4.x (for example v4.5). MonoGame 3.8.6.1 desktop projects target net8.0.",
+      "resolution": "The migrator writes an SDK-style project for net8.0 (or the Windows variant for WindowsDX).",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX011",
+      "title": "Toolkit texture (ToolkitTexture)",
+      "explanation": "The project builds textures with the ToolkitTexture build action. The Toolkit mostly copies the image into a .tkb file. MonoGame loads textures built by the content pipeline.",
+      "resolution": "The migrator adds each texture whose format the MonoGame builder accepts to Content.mgcb. Other formats are listed as manual work in the content report.",
+      "migratorTask": "sharpdx-toolkit:9.3"
+    },
+    {
+      "id": "SDX020",
+      "title": "Toolkit game namespace",
+      "explanation": "The code imports SharpDX.Toolkit, which holds Game, GameTime and GraphicsDeviceManager. The same names live in Microsoft.Xna.Framework in MonoGame. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX023",
+      "title": "SharpDX math namespace",
+      "explanation": "The code imports SharpDX for its math types (Vector2, Vector3, Matrix, Color, Rectangle). MonoGame keeps these names in Microsoft.Xna.Framework. Types that exist only in SharpDX are reported by SDX034 and SDX035. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "explanation": "The code builds matrices with the SharpDX factory methods. The right-handed ones map to Matrix.Create* in MonoGame, which is also right-handed. Only calls on the type name Matrix match, not calls on a variable. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator renames the calls (LookAtRH to CreateLookAt, PerspectiveFovRH to CreatePerspectiveFieldOfView, Scaling to CreateScale and so on).",
+      "migratorTask": "sharpdx-toolkit:6.1"
+    },
+    {
+      "id": "XNA001",
+      "title": "XNA Game Studio build targets import",
+      "explanation": "The project file imports the XNA Game Studio MSBuild targets. They exist only on machines with XNA Game Studio 4.0 and Visual Studio 2010 installed. Without them the build stops at once with MSB4019 (imported project not found), as it did for Pirate-Treasure-Hunter.",
+      "resolution": "The migrator writes an SDK-style project for .NET 8 that does not import the XNA targets.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA002",
+      "title": "XNA-specific project properties",
+      "explanation": "The project sets XnaFrameworkVersion, a property that only the XNA Game Studio targets understand. The same project usually also sets ProjectTypeGuids (the XNA game GUID), XnaPlatform, XnaProfile, XnaOutputType, and XnaCrossPlatformGroupID. None has an MSBuild equivalent in MonoGame.",
+      "resolution": "The migrator drops XNA-specific properties and project type GUIDs when it generates the SDK-style project. The graphics profile is carried into Content.mgcb as /profile.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA003",
+      "title": "XNA assembly references",
+      "explanation": "The project references XNA assemblies (Microsoft.Xna.Framework and related) by strong name with Private=False. They do not resolve on a machine without XNA, so the project cannot build. MonoGame ships the same API under the same namespaces in its own package. This rule also fires for assemblies MonoGame does not provide (GamerServices, Net, Avatar, Storage, Xact, Video); those have their own rules for code that uses them.",
+      "resolution": "The migrator replaces the XNA references with the MonoGame DesktopGL or WindowsDX package.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA004",
+      "title": "Old .NET Framework target",
+      "explanation": "The project targets the .NET Framework (3.5 for XNA 3.x, 4.0 with the Client profile for XNA 4.0). That framework version is not available to an SDK-style build, and current MonoGame releases need modern .NET.",
+      "resolution": "The migrator sets the target framework of the generated project to net8.0.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA005",
+      "title": "Nested XNA content project",
+      "explanation": "Assets live in a nested .contentproj that imports the XNA content pipeline targets, which only XNA Game Studio can build. MonoGame builds content from a Content.mgcb file. Projects that reference the content project with a ProjectReference instead are covered by XNA049.",
+      "resolution": "The migrator generates Content.mgcb from the content project, copies the source assets, and lists anything it cannot convert as manual work.",
+      "migratorTask": "project-migrator:7.1"
+    },
+    {
+      "id": "XNA046",
+      "title": "Properties/AssemblyInfo.cs duplicates SDK attributes",
+      "explanation": "Properties/AssemblyInfo.cs declares assembly attributes (title, product, company, version). An SDK-style project generates the same attributes from project properties, and the build then fails with CS0579 duplicate attribute. Pirate-Treasure-Hunter got four errors from this one file.",
+      "resolution": "The migrator writes <GenerateAssemblyInfo>false</GenerateAssemblyInfo> in the generated project so the kept AssemblyInfo.cs does not clash.",
+      "migratorTask": "project-migrator:4.1"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 3,
+    "Warning": 2,
+    "Error": 8,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 13,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 82,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}

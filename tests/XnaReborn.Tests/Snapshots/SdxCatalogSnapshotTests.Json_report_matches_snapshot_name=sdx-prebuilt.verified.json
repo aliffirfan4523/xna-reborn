@@ -1,0 +1,157 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + sharpdx-toolkit-to-monogame",
+  "projects": [
+    {
+      "path": "SdxPrebuilt.csproj",
+      "assemblyName": "SdxPrebuilt",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "v4.5",
+      "references": [
+        "SharpDX",
+        "SharpDX.Toolkit",
+        "SharpDX.Toolkit.Game",
+        "SharpDX.Toolkit.Graphics",
+        "SharpDX.Toolkit.Input",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "SharpDxToolkit"
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "SDX001",
+      "title": "SharpDX assembly reference",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxPrebuilt.csproj",
+      "location": null,
+      "snippet": "SharpDX, SharpDX.Toolkit, SharpDX.Toolkit.Game +2 more"
+    },
+    {
+      "ruleId": "SDX002",
+      "title": "SharpDX build targets import",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxPrebuilt.csproj",
+      "location": null,
+      "snippet": "..\\packages\\SharpDX.2.6.3\\build\\SharpDX.targets, ..\\packages\\SharpDX.Toolkit.2.6.3\\build\\SharpDX.Toolkit.targets"
+    },
+    {
+      "ruleId": "SDX020",
+      "title": "Toolkit game namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxPrebuilt.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 1,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit;"
+    },
+    {
+      "ruleId": "SDX021",
+      "title": "Toolkit graphics namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxPrebuilt.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 2,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit.Graphics;"
+    },
+    {
+      "ruleId": "SDX015",
+      "title": "Prebuilt .tkb asset",
+      "severity": "Warning",
+      "classification": "Unsupported",
+      "project": "SdxPrebuilt.csproj",
+      "location": null,
+      "snippet": "Content/Balls.tkb"
+    },
+    {
+      "ruleId": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "SdxPrebuilt.csproj",
+      "location": null,
+      "snippet": "TargetFrameworkVersion=v4.5"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "SDX001",
+      "title": "SharpDX assembly reference",
+      "explanation": "The project references SharpDX assemblies (SharpDX, SharpDX.Toolkit.*, SharpDX.Direct3D11 and others). They come from the SharpDX 2.x NuGet packages, which target .NET Framework 4.x and need the SharpDX build targets. They are not part of MonoGame.",
+      "resolution": "The migrator writes an SDK-style project that drops every SharpDX reference and references MonoGame instead. Code that used SharpDX types directly is reported by the SDX005 to SDX008 and SDX034 to SDX035 rules.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX002",
+      "title": "SharpDX build targets import",
+      "explanation": "The project imports SharpDX.targets or SharpDX.Toolkit.targets from the NuGet packages folder. Those files set the reference paths and run the Toolkit content compilers. They exist only after a NuGet restore of the old packages, and a build without them stops with MSB4019.",
+      "resolution": "The migrator drops the imports, the NuGet restore guard target and the import stamp from the SDK-style project it writes.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "explanation": "The project targets .NET Framework 4.x (for example v4.5). MonoGame 3.8.6.1 desktop projects target net8.0.",
+      "resolution": "The migrator writes an SDK-style project for net8.0 (or the Windows variant for WindowsDX).",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX015",
+      "title": "Prebuilt .tkb asset",
+      "explanation": "The project folder holds compiled .tkb files. When the source asset is not in the folder, nothing can rebuild the asset for MonoGame, and MonoGame has no importer for the .tkb format.",
+      "resolution": "Find the original image, font, model or sound and add it to the project, or leave the asset out. The migrator copies .tkb files unchanged and flags them.",
+      "migratorTask": null
+    },
+    {
+      "id": "SDX020",
+      "title": "Toolkit game namespace",
+      "explanation": "The code imports SharpDX.Toolkit, which holds Game, GameTime and GraphicsDeviceManager. The same names live in Microsoft.Xna.Framework in MonoGame. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX021",
+      "title": "Toolkit graphics namespace",
+      "explanation": "The code imports SharpDX.Toolkit.Graphics (SpriteBatch, Texture2D, SpriteFont, BasicEffect). MonoGame keeps these names in Microsoft.Xna.Framework.Graphics. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.Graphics.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 1,
+    "Warning": 1,
+    "Error": 4,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 5,
+    "Manual": 0,
+    "Unsupported": 1
+  },
+  "score": 87,
+  "projectedScore": 96,
+  "diagnostics": [],
+  "noProjectReason": null
+}

@@ -7,28 +7,36 @@ using XnaReborn.Core.Models.Rules;
 
 namespace XnaReborn.App.Services;
 
-/// <summary>Real <see cref="IAnalysisService"/>. Loads <c>rules/xna-to-monogame.json</c> once and reuses it.</summary>
+/// <summary>
+/// Real <see cref="IAnalysisService"/>. Loads <c>rules/xna-to-monogame.json</c> and, when it is usable,
+/// <c>rules/sharpdx-toolkit-to-monogame.json</c> once and reuses them.
+/// A Toolkit catalog that is missing or invalid never stops XNA analysis: the report gets an ANA021 diagnostic instead.
+/// </summary>
 public sealed class AnalysisService : IAnalysisService
 {
     private const string _catalogRelativePath = "rules/xna-to-monogame.json";
+    private const string _toolkitCatalogRelativePath = "rules/sharpdx-toolkit-to-monogame.json";
 
     private readonly string? _catalogPath;
+    private readonly string? _toolkitCatalogPath;
     private readonly SemaphoreSlim _loadLock = new(1, 1);
-    private RuleCatalog? _catalog;
+    private LoadedCatalogs? _loaded;
 
     /// <summary>Creates the service.</summary>
-    /// <param name="catalogPath">Catalog file to use, or null to look next to the app and then up to the repository root.</param>
-    public AnalysisService(string? catalogPath = null)
+    /// <param name="catalogPath">XNA catalog file to use, or null to look next to the app and then up to the repository root.</param>
+    /// <param name="toolkitCatalogPath">SharpDX Toolkit catalog file to use, or null to look in the same places.</param>
+    public AnalysisService(string? catalogPath = null, string? toolkitCatalogPath = null)
     {
         _catalogPath = catalogPath;
+        _toolkitCatalogPath = toolkitCatalogPath;
     }
 
     /// <inheritdoc />
     public async Task<AnalysisReport> AnalyzeAsync(string path, IProgress<AnalysisProgress>? progress, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        var catalog = await GetCatalogAsync(cancellationToken).ConfigureAwait(false);
-        return await new ProjectAnalyzer().AnalyzeAsync(path, catalog, progress, cancellationToken).ConfigureAwait(false);
+        var loaded = await GetCatalogsAsync(cancellationToken).ConfigureAwait(false);
+        return await new ProjectAnalyzer().AnalyzeAsync(path, loaded.Catalogs, loaded.Diagnostics, progress, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -37,9 +45,24 @@ public sealed class AnalysisService : IAnalysisService
     /// <inheritdoc />
     public string ToJson(AnalysisReport report) => JsonReportWriter.Write(report);
 
-    private async Task<RuleCatalog> GetCatalogAsync(CancellationToken cancellationToken)
+    private static string FindCatalog(string relativePath)
     {
-        if (_catalog is { } cached)
+        // The build copies the catalog next to the app. Walking up finds it when the app runs from another folder.
+        for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
+        {
+            var candidate = Path.Combine(dir.FullName, relativePath);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new FileNotFoundException("The rule catalog " + relativePath + " was not found next to the app or in a parent folder.");
+    }
+
+    private async Task<LoadedCatalogs> GetCatalogsAsync(CancellationToken cancellationToken)
+    {
+        if (_loaded is { } cached)
         {
             return cached;
         }
@@ -47,10 +70,27 @@ public sealed class AnalysisService : IAnalysisService
         await _loadLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            // A failed or cancelled load is not cached, so the next call tries again.
-            return _catalog ??= await RuleCatalogLoader
-                .LoadAsync(_catalogPath ?? FindCatalog(), new ReadOnlyFileSystem(), cancellationToken)
-                .ConfigureAwait(false);
+            // A failed or cancelled XNA load is not cached, so the next call tries again.
+            if (_loaded is { } again)
+            {
+                return again;
+            }
+
+            var fileSystem = new ReadOnlyFileSystem();
+            var xna = await RuleCatalogLoader.LoadAsync(_catalogPath ?? FindCatalog(_catalogRelativePath), fileSystem, cancellationToken).ConfigureAwait(false);
+            var catalogs = new List<RuleCatalog> { xna };
+            var diagnostics = new List<Diagnostic>();
+            try
+            {
+                catalogs.Add(await RuleCatalogLoader.LoadAsync(_toolkitCatalogPath ?? FindCatalog(_toolkitCatalogRelativePath), fileSystem, cancellationToken).ConfigureAwait(false));
+            }
+            catch (Exception ex) when (ex is RuleCatalogException or FileNotFoundException)
+            {
+                var detail = ex is RuleCatalogException invalid ? string.Join(" ", invalid.Errors.Take(3)) : ex.Message;
+                diagnostics.Add(new Diagnostic("ANA021", "The SharpDX Toolkit rule catalog was not loaded, so Toolkit projects are not analyzed: " + detail, _toolkitCatalogRelativePath));
+            }
+
+            return _loaded = new LoadedCatalogs(catalogs, diagnostics);
         }
         finally
         {
@@ -58,18 +98,5 @@ public sealed class AnalysisService : IAnalysisService
         }
     }
 
-    private static string FindCatalog()
-    {
-        // The build copies the catalog next to the app. Walking up finds it when the app runs from another folder.
-        for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
-        {
-            var candidate = Path.Combine(dir.FullName, _catalogRelativePath);
-            if (File.Exists(candidate))
-            {
-                return candidate;
-            }
-        }
-
-        throw new FileNotFoundException("The rule catalog " + _catalogRelativePath + " was not found next to the app or in a parent folder.");
-    }
+    private sealed record LoadedCatalogs(IReadOnlyList<RuleCatalog> Catalogs, IReadOnlyList<Diagnostic> Diagnostics);
 }

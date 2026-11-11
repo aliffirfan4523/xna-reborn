@@ -1,0 +1,452 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + sharpdx-toolkit-to-monogame",
+  "projects": [
+    {
+      "path": "SdxBasic.csproj",
+      "assemblyName": "SdxBasic",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "v4.5",
+      "references": [
+        "SharpDX",
+        "SharpDX.Toolkit",
+        "SharpDX.Toolkit.Game",
+        "SharpDX.Toolkit.Graphics",
+        "SharpDX.Toolkit.Input",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE"
+      ],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "SharpDxToolkit"
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "SDX001",
+      "title": "SharpDX assembly reference",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": null,
+      "snippet": "SharpDX, SharpDX.Toolkit, SharpDX.Toolkit.Game +2 more"
+    },
+    {
+      "ruleId": "SDX002",
+      "title": "SharpDX build targets import",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": null,
+      "snippet": "..\\packages\\SharpDX.2.6.3\\build\\SharpDX.targets, ..\\packages\\SharpDX.Toolkit.2.6.3\\build\\SharpDX.Toolkit.targets"
+    },
+    {
+      "ruleId": "SDX020",
+      "title": "Toolkit game namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 3,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit;"
+    },
+    {
+      "ruleId": "SDX021",
+      "title": "Toolkit graphics namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 4,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit.Graphics;"
+    },
+    {
+      "ruleId": "SDX023",
+      "title": "SharpDX math namespace",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 2,
+        "column": 1
+      },
+      "snippet": "using SharpDX;"
+    },
+    {
+      "ruleId": "SDX010",
+      "title": "Toolkit font (ToolkitFont)",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": null,
+      "snippet": "Content\\Arial16.xml"
+    },
+    {
+      "ruleId": "SDX024",
+      "title": "Toolkit input namespace",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 5,
+        "column": 1
+      },
+      "snippet": "using SharpDX.Toolkit.Input;"
+    },
+    {
+      "ruleId": "SDX025",
+      "title": "KeyboardManager",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 18,
+        "column": 17
+      },
+      "snippet": "private KeyboardManager keyboard;"
+    },
+    {
+      "ruleId": "SDX025",
+      "title": "KeyboardManager",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 29,
+        "column": 28
+      },
+      "snippet": "keyboard = new KeyboardManager(this);"
+    },
+    {
+      "ruleId": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 50,
+        "column": 20
+      },
+      "snippet": "view = Matrix.LookAtRH(new Vector3(0f, 0f, 5f), Vector3.Zero, Vector3.UnitY);"
+    },
+    {
+      "ruleId": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 51,
+        "column": 26
+      },
+      "snippet": "projection = Matrix.PerspectiveFovRH(MathUtil.PiOverFour, 1.6f, 0.1f, 100f);"
+    },
+    {
+      "ruleId": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 52,
+        "column": 21
+      },
+      "snippet": "world = Matrix.RotationY(angle) * Matrix.Scaling(2f) * Matrix.Translation(1f, 0f, 0f);"
+    },
+    {
+      "ruleId": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 52,
+        "column": 47
+      },
+      "snippet": "world = Matrix.RotationY(angle) * Matrix.Scaling(2f) * Matrix.Translation(1f, 0f, 0f);"
+    },
+    {
+      "ruleId": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 52,
+        "column": 68
+      },
+      "snippet": "world = Matrix.RotationY(angle) * Matrix.Scaling(2f) * Matrix.Translation(1f, 0f, 0f);"
+    },
+    {
+      "ruleId": "SDX031",
+      "title": "MathUtil members",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 49,
+        "column": 21
+      },
+      "snippet": "angle = MathUtil.Clamp(angle + 0.01f, 0f, MathUtil.TwoPi);"
+    },
+    {
+      "ruleId": "SDX031",
+      "title": "MathUtil members",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 49,
+        "column": 55
+      },
+      "snippet": "angle = MathUtil.Clamp(angle + 0.01f, 0f, MathUtil.TwoPi);"
+    },
+    {
+      "ruleId": "SDX031",
+      "title": "MathUtil members",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 51,
+        "column": 50
+      },
+      "snippet": "projection = Matrix.PerspectiveFovRH(MathUtil.PiOverFour, 1.6f, 0.1f, 100f);"
+    },
+    {
+      "ruleId": "SDX040",
+      "title": "Graphics state collections",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 59,
+        "column": 42
+      },
+      "snippet": "GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.AlphaBlend);"
+    },
+    {
+      "ruleId": "SDX040",
+      "title": "Graphics state collections",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 61,
+        "column": 56
+      },
+      "snippet": "spriteBatch.Begin(SpriteSortMode.Deferred, GraphicsDevice.BlendStates.Opaque, GraphicsDevice.SamplerStates.PointClamp, null, null);"
+    },
+    {
+      "ruleId": "SDX040",
+      "title": "Graphics state collections",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 61,
+        "column": 91
+      },
+      "snippet": "spriteBatch.Begin(SpriteSortMode.Deferred, GraphicsDevice.BlendStates.Opaque, GraphicsDevice.SamplerStates.PointClamp, null, null);"
+    },
+    {
+      "ruleId": "SDX041",
+      "title": "Set*State calls",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 59,
+        "column": 13
+      },
+      "snippet": "GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.AlphaBlend);"
+    },
+    {
+      "ruleId": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": null,
+      "snippet": "TargetFrameworkVersion=v4.5"
+    },
+    {
+      "ruleId": "SDX011",
+      "title": "Toolkit texture (ToolkitTexture)",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": null,
+      "snippet": "Content\\Balls.dds"
+    },
+    {
+      "ruleId": "SDX060",
+      "title": "ToDisposeContent",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "SdxBasic.csproj",
+      "location": {
+        "file": "Game1.cs",
+        "line": 35,
+        "column": 27
+      },
+      "snippet": "spriteBatch = ToDisposeContent(new SpriteBatch(GraphicsDevice));"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "SDX001",
+      "title": "SharpDX assembly reference",
+      "explanation": "The project references SharpDX assemblies (SharpDX, SharpDX.Toolkit.*, SharpDX.Direct3D11 and others). They come from the SharpDX 2.x NuGet packages, which target .NET Framework 4.x and need the SharpDX build targets. They are not part of MonoGame.",
+      "resolution": "The migrator writes an SDK-style project that drops every SharpDX reference and references MonoGame instead. Code that used SharpDX types directly is reported by the SDX005 to SDX008 and SDX034 to SDX035 rules.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX002",
+      "title": "SharpDX build targets import",
+      "explanation": "The project imports SharpDX.targets or SharpDX.Toolkit.targets from the NuGet packages folder. Those files set the reference paths and run the Toolkit content compilers. They exist only after a NuGet restore of the old packages, and a build without them stops with MSB4019.",
+      "resolution": "The migrator drops the imports, the NuGet restore guard target and the import stamp from the SDK-style project it writes.",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX003",
+      "title": ".NET Framework 4.x target",
+      "explanation": "The project targets .NET Framework 4.x (for example v4.5). MonoGame 3.8.6.1 desktop projects target net8.0.",
+      "resolution": "The migrator writes an SDK-style project for net8.0 (or the Windows variant for WindowsDX).",
+      "migratorTask": "sharpdx-toolkit:8.1"
+    },
+    {
+      "id": "SDX010",
+      "title": "Toolkit font (ToolkitFont)",
+      "explanation": "The project builds fonts with the ToolkitFont build action. The source is a TkFont XML file that the Toolkit compiles to .tkb. MonoGame cannot read .tkb files and uses .spritefont files instead.",
+      "resolution": "The migrator converts each TkFont file to a .spritefont file and adds it to Content.mgcb. Line spacing and premultiply settings have no MonoGame field and are listed in the content report.",
+      "migratorTask": "sharpdx-toolkit:9.2"
+    },
+    {
+      "id": "SDX011",
+      "title": "Toolkit texture (ToolkitTexture)",
+      "explanation": "The project builds textures with the ToolkitTexture build action. The Toolkit mostly copies the image into a .tkb file. MonoGame loads textures built by the content pipeline.",
+      "resolution": "The migrator adds each texture whose format the MonoGame builder accepts to Content.mgcb. Other formats are listed as manual work in the content report.",
+      "migratorTask": "sharpdx-toolkit:9.3"
+    },
+    {
+      "id": "SDX020",
+      "title": "Toolkit game namespace",
+      "explanation": "The code imports SharpDX.Toolkit, which holds Game, GameTime and GraphicsDeviceManager. The same names live in Microsoft.Xna.Framework in MonoGame. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX021",
+      "title": "Toolkit graphics namespace",
+      "explanation": "The code imports SharpDX.Toolkit.Graphics (SpriteBatch, Texture2D, SpriteFont, BasicEffect). MonoGame keeps these names in Microsoft.Xna.Framework.Graphics. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.Graphics.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX023",
+      "title": "SharpDX math namespace",
+      "explanation": "The code imports SharpDX for its math types (Vector2, Vector3, Matrix, Color, Rectangle). MonoGame keeps these names in Microsoft.Xna.Framework. Types that exist only in SharpDX are reported by SDX034 and SDX035. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX024",
+      "title": "Toolkit input namespace",
+      "explanation": "The code imports SharpDX.Toolkit.Input (Keys, KeyboardState, MouseManager). MonoGame has Keys and KeyboardState in Microsoft.Xna.Framework.Input. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the using directive to Microsoft.Xna.Framework.Input.",
+      "migratorTask": "sharpdx-toolkit:5.2"
+    },
+    {
+      "id": "SDX025",
+      "title": "KeyboardManager",
+      "explanation": "The game creates a KeyboardManager and reads keys from it. MonoGame has the static Keyboard.GetState() and needs no manager. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator removes the manager field and its construction and replaces GetState() on it with Keyboard.GetState(). When the manager is used in any other way the code is left alone and marked.",
+      "migratorTask": "sharpdx-toolkit:7.1"
+    },
+    {
+      "id": "SDX030",
+      "title": "Right-handed Matrix factories",
+      "explanation": "The code builds matrices with the SharpDX factory methods. The right-handed ones map to Matrix.Create* in MonoGame, which is also right-handed. Only calls on the type name Matrix match, not calls on a variable. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator renames the calls (LookAtRH to CreateLookAt, PerspectiveFovRH to CreatePerspectiveFieldOfView, Scaling to CreateScale and so on).",
+      "migratorTask": "sharpdx-toolkit:6.1"
+    },
+    {
+      "id": "SDX031",
+      "title": "MathUtil members",
+      "explanation": "The code uses SharpDX MathUtil. MonoGame has the same helpers on MathHelper, some under other names (PiOver2, PiOver4, ToRadians, ToDegrees). Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites MathUtil.X to MathHelper.X and renames the members that differ.",
+      "migratorTask": "sharpdx-toolkit:6.1"
+    },
+    {
+      "id": "SDX040",
+      "title": "Graphics state collections",
+      "explanation": "The code reads states from GraphicsDevice.BlendStates, SamplerStates, DepthStencilStates or RasterizerStates. MonoGame has static BlendState, SamplerState and DepthStencilState members. Names that do not map one to one (BlendStates.Default, RasterizerStates.*, SamplerStates.Default) are marked, not renamed. Face culling may look inverted after a change of handedness. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites GraphicsDevice.BlendStates.X to BlendState.X and does the same for samplers and depth states. Names without an equivalent get a marker.",
+      "migratorTask": "sharpdx-toolkit:6.2"
+    },
+    {
+      "id": "SDX041",
+      "title": "Set*State calls",
+      "explanation": "The code sets a state with GraphicsDevice.SetBlendState(state) and its relatives. MonoGame uses properties on the device. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator rewrites the one-argument call to an assignment (GraphicsDevice.BlendState = state).",
+      "migratorTask": "sharpdx-toolkit:6.2"
+    },
+    {
+      "id": "SDX060",
+      "title": "ToDisposeContent",
+      "explanation": "ToDisposeContent(x) registers x for disposal when the game unloads and returns x. MonoGame Game has no such method. Removing the call drops that automatic disposal. That changes nothing visible for objects that live as long as the game. The rule uses the type match because the call is normally a bare call of an inherited method. Matching is by syntax only, so a look-alike name in unrelated code can match.",
+      "resolution": "The migrator replaces ToDisposeContent(x) with x. Dispose objects that must not outlive their use in UnloadContent.",
+      "migratorTask": "sharpdx-toolkit:6.2"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 3,
+    "Warning": 16,
+    "Error": 5,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 24,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 84,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}
