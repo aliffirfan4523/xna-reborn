@@ -136,7 +136,7 @@ public sealed class KeyboardAccessTests
     }
 
     [AvaloniaFact]
-    public async Task Summary_page_tab_stops_are_the_three_buttons()
+    public async Task Summary_page_tab_stops_are_the_four_action_buttons()
     {
         using var t = TestServices.Create();
         t.Session.Report = Fakes.SampleData.Report();
@@ -144,7 +144,7 @@ public sealed class KeyboardAccessTests
         var window = Show(t);
         await t.OpenPageAsync(WorkflowStep.Summary);
 
-        Assert.Equal(["OpenOutputFolder", "OpenManifest", "StartOver"], PageStops(window));
+        Assert.Equal(["RunGame", "OpenOutputFolder", "OpenManifest", "StartOver"], PageStops(window));
         AssertAllNamed(window);
     }
 
