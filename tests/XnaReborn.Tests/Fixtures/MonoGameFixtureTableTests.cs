@@ -37,7 +37,7 @@ public sealed partial class MonoGameFixtureTableTests
         var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!);
 
         Assert.All(onDisk, name => Assert.True(
-            FixturePaths.AllNames.Contains(name) || FixturePaths.MonoGameNames.Contains(name),
+            FixturePaths.AllNames.Contains(name) || FixturePaths.MonoGameNames.Contains(name) || FixturePaths.SharpDxNames.Contains(name),
             $"{name} is not in FixturePaths"));
     }
 

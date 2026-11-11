@@ -55,14 +55,32 @@ public sealed class ProjectAnalyzer
     /// <returns>The analysis report. Its catalog name joins the catalog names with " + ".</returns>
     /// <exception cref="RuleCatalogException">A rule id is defined in more than one catalog.</exception>
     /// <exception cref="OperationCanceledException">The token was cancelled.</exception>
+    public Task<AnalysisReport> AnalyzeAsync(
+        string path,
+        IReadOnlyList<RuleCatalog> catalogs,
+        IProgress<AnalysisProgress>? progress,
+        CancellationToken cancellationToken) =>
+        AnalyzeAsync(path, catalogs, [], progress, cancellationToken);
+
+    /// <summary>Analyzes with several catalogs and adds diagnostics produced while loading them (for example a Toolkit catalog that failed validation).</summary>
+    /// <param name="path">Folder, solution or project path.</param>
+    /// <param name="catalogs">Rule catalogs to evaluate. No rule id may appear in two of them.</param>
+    /// <param name="catalogDiagnostics">Diagnostics from loading the catalogs, added to the report.</param>
+    /// <param name="progress">Receives stage updates, or null.</param>
+    /// <param name="cancellationToken">Cancels the analysis.</param>
+    /// <returns>The analysis report. Its catalog name joins the catalog names with " + ".</returns>
+    /// <exception cref="RuleCatalogException">A rule id is defined in more than one catalog.</exception>
+    /// <exception cref="OperationCanceledException">The token was cancelled.</exception>
     public async Task<AnalysisReport> AnalyzeAsync(
         string path,
         IReadOnlyList<RuleCatalog> catalogs,
+        IReadOnlyList<Diagnostic> catalogDiagnostics,
         IProgress<AnalysisProgress>? progress,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(catalogs);
+        ArgumentNullException.ThrowIfNull(catalogDiagnostics);
         RuleCatalogLoader.EnsureUniqueIds(catalogs);
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -78,6 +96,7 @@ public sealed class ProjectAnalyzer
         var projects = new List<ProjectInfo>();
         var findings = new List<Finding>();
         var diagnostics = new List<Diagnostic>(discovery.Diagnostics);
+        diagnostics.AddRange(catalogDiagnostics);
 
         for (var i = 0; i < analyzed.Count; i++)
         {
@@ -121,7 +140,9 @@ public sealed class ProjectAnalyzer
     }
 
     private static string NoCatalogReason(DiscoveryResult discovery) =>
-        $"Found {discovery.Projects.Count(p => p.IsMonoGame)} MonoGame project(s), but no rule catalog for them was loaded.";
+        discovery.Projects.Any(p => p.IsSharpDxToolkit)
+            ? $"Found {discovery.Projects.Count(p => p.IsSharpDxToolkit)} SharpDX Toolkit project(s), but no rule catalog for them was loaded."
+            : $"Found {discovery.Projects.Count(p => p.IsMonoGame)} MonoGame project(s), but no rule catalog for them was loaded.";
 
     private static List<TriggeredRule> BuildTriggeredRules(List<Finding> findings, IReadOnlyList<RuleCatalog> catalogs)
     {

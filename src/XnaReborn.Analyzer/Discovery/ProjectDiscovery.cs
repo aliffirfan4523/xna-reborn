@@ -117,7 +117,7 @@ public sealed partial class ProjectDiscovery
 
     private static string? ReasonFor(string full, List<DiscoveredProject> projects, List<Diagnostic> diagnostics, List<string> protobuild)
     {
-        if (projects.Any(p => p.Family is ProjectFamily.Xna or ProjectFamily.MonoGameLegacy))
+        if (projects.Any(p => p.Family is ProjectFamily.Xna or ProjectFamily.SharpDxToolkit or ProjectFamily.MonoGameLegacy))
         {
             return null;
         }
@@ -129,7 +129,7 @@ public sealed partial class ProjectDiscovery
 
         if (projects.Count > 0)
         {
-            return $"Found {projects.Count} project(s), but none use XNA or MonoGame.";
+            return $"Found {projects.Count} project(s), but none use XNA, MonoGame or the SharpDX Toolkit.";
         }
 
         if (protobuild.Count > 0)
@@ -245,7 +245,13 @@ public sealed partial class ProjectDiscovery
 
             // An unreadable packages.config is reported by ProjectReader; here it only means no extra signal.
             var packages = PackagesConfigReader.Read(_fileSystem, Path.GetDirectoryName(projectPath) ?? root, root).Packages;
-            var family = MonoGameProjectDetector.Classify(document, packages);
+            var directory = Path.GetDirectoryName(projectPath) ?? root;
+            var family = SharpDxToolkitDetector.Classify(document, directory, _fileSystem, packages);
+            if (family == ProjectFamily.SharpDxToolkit && XnaProjectDetector.IsXna(document))
+            {
+                diagnostics.Add(new Diagnostic("ANA020", "The project references both XNA and the SharpDX Toolkit. It is treated as a SharpDX Toolkit project.", relative));
+            }
+
             if (family == ProjectFamily.Xna && MonoGameProjectDetector.IsMonoGame(document, packages))
             {
                 diagnostics.Add(new Diagnostic("ANA008", $"The project references both XNA and MonoGame ({MonoGameProjectDetector.DescribeMix(document, packages)}). It is treated as an XNA project.", relative));

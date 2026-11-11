@@ -102,7 +102,7 @@ public sealed class ProjectDiscoveryTests : IDisposable
         var p = Assert.Single(r.Projects);
         Assert.Equal("NotXna.csproj", p.RelativePath);
         Assert.False(p.IsXna);
-        Assert.Equal("Found 1 project(s), but none use XNA or MonoGame.", r.NoProjectReason);
+        Assert.Equal("Found 1 project(s), but none use XNA, MonoGame or the SharpDX Toolkit.", r.NoProjectReason);
         Assert.Empty(r.Diagnostics);
     }
 

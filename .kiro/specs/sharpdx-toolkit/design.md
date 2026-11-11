@@ -403,3 +403,19 @@ What was not checked: that any candidate builds today, that its NuGet packages r
 5. WindowsDX for a Toolkit project is a default chosen from the build model, not tested. Task 13 builds the EcoSim copy with both targets.
 6. Whether the shared migrator `Shims` project should provide `RectangleF`, `Color4` stand-ins (like the Storage shims) is open. Task 14 is a stretch task for that. Do not start it before task 13 shows how often these types appear.
 7. SharpDX 3.x and later: the Toolkit never shipped a 3.x NuGet package, so a project on `SharpDX` 3.x with a hand-built Toolkit is possible but rare. Detection works on names, not versions. The rules were written against 2.6.3 sources; any difference found on a candidate becomes a new rule.
+
+## Implementation notes
+
+Written as the work lands. Gaps and deviations are recorded here.
+
+### Tasks 1 to 3 (fixtures, detection, schema and engine)
+
+- Fixtures use ASCII placeholders for `.dds` and `.tkb` bytes, like the XNA fixtures use for `.png`, so the repo stays text-only. Tasks that need real bytes (9.3) write them at test time.
+- `sdx-negative` holds two projects: plain SharpDX, and an SDK-style MonoGame game. The MonoGame project classifies as `MonoGameLegacy` (3.8.4 pin) after the `monogame-upgrade` merge, so the report for this folder is not "nothing found". The negative proof is that no project is a Toolkit project and no SDX rule fires. `sdx-mixed` embeds a copy of the `xna40-basic` project as its XNA half.
+- Deviation from design "Detection": the sibling `monogame-upgrade` spec had already merged a single `ProjectFamily` enum on `DiscoveredProject` and `ProjectInfo` and an `appliesTo` string on the catalog. This work builds on that instead of adding `IsSharpDxToolkit` plus `SourceFrameworks` next to it. `ProjectFamily.SharpDxToolkit` is the new value, `DiscoveredProject.IsSharpDxToolkit` and `DiscoveryResult.MigratableProjects` (XNA or Toolkit) are derived, and the report carries the framework as the `family` property that the MonoGame work already writes (omitted for XNA, so XNA reports are unchanged).
+- Consequence: a project with both XNA and Toolkit signals is one project with one family. It classifies as `SharpDxToolkit` and gets diagnostic `ANA020`. The design sentence "run both catalogs on a Toolkit project that also contains XNA references" is therefore not implemented. Mixed solutions (separate projects) work. Revisit only if a real candidate needs the hybrid.
+- `appliesTo` accepts `"SharpDxToolkit"` (as written in this spec) next to the MonoGame work's lowercase `"xna"` and `"monogame"`. The mixed casing is deliberate to keep the spec text and the merged schema both valid.
+- `member` match: `name` became nullable and `names` was added (`MemberMatch.AllNames`). The schema requires `type` and `namespaces` and the validator checks exactly one of `name` or `names`, because a JSON-schema `oneOf` there produces unreadable errors.
+- `ProjectAnalyzer.AnalyzeAsync(path, catalogs, catalogDiagnostics, ...)` is new so the app can pass a "Toolkit catalog skipped" diagnostic (ANA021) into the report. The existing overloads delegate to it.
+- The XNA-catalog snapshot tests do not cover the Toolkit fixtures. They are in `FixturePaths.SharpDxNames` and `EveryNameRows` only. Toolkit snapshots with the real SDX catalog arrive with task 4.
+- Not done in task 3.2 yet: `AnalysisService` loading the Toolkit catalog file and the "broken Toolkit catalog must not stop XNA analysis" diagnostic. Both need the catalog file, so they land with task 4. Task 3.2 stays unticked until then.

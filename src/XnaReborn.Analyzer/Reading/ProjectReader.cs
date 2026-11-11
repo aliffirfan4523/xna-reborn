@@ -65,7 +65,7 @@ public sealed class ProjectReader
 
         var packagesResult = PackagesConfigReader.Read(_fileSystem, projectDirectory, root);
         diagnostics.AddRange(packagesResult.Diagnostics);
-        var family = MonoGameProjectDetector.Classify(document, packagesResult.Packages);
+        var family = SharpDxToolkitDetector.Classify(document, projectDirectory, _fileSystem, packagesResult.Packages);
         var isMonoGame = family is ProjectFamily.MonoGameLegacy or ProjectFamily.MonoGameCurrent;
         var monoGame = isMonoGame ? MonoGameVersionDetector.Detect(properties, items, packagesResult.Packages, relative) : null;
         if (monoGame?.Conflict is not null)

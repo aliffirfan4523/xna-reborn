@@ -1,0 +1,12 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolkitGame", "Toolkit\ToolkitGame.csproj", "{6B2D3F5C-4E6A-4B9C-8D7F-2A3B4C5D6E01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaGame", "Xna\XnaGame.csproj", "{6B2D3F5C-4E6A-4B9C-8D7F-2A3B4C5D6E02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+	EndGlobalSection
+EndGlobal

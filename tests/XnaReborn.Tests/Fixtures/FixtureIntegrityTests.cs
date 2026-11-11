@@ -29,7 +29,7 @@ public partial class FixtureIntegrityTests
     public void Fixture_list_matches_folders_on_disk()
     {
         var onDisk = Directory.GetDirectories(FixturePaths.Root).Select(d => Path.GetFileName(d)!).Order(StringComparer.Ordinal);
-        Assert.Equal(FixturePaths.AllNames.Concat(FixturePaths.MonoGameNames).Order(StringComparer.Ordinal), onDisk);
+        Assert.Equal(FixturePaths.AllNames.Concat(FixturePaths.MonoGameNames).Concat(FixturePaths.SharpDxNames).Order(StringComparer.Ordinal), onDisk);
     }
 
     [Theory]

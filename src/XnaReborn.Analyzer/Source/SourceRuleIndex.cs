@@ -68,7 +68,11 @@ internal sealed class SourceRuleIndex
                     index._symbols.Add(new IndexedRule<PreprocessorSymbolMatch>(i, rule, symbol));
                     break;
                 case MemberMatch member:
-                    Add(index._members, member.Name, new IndexedRule<MemberMatch>(i, rule, member));
+                    foreach (var name in member.AllNames.Distinct(StringComparer.Ordinal))
+                    {
+                        Add(index._members, name, new IndexedRule<MemberMatch>(i, rule, member));
+                    }
+
                     break;
             }
         }

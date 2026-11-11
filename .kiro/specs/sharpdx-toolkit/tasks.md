@@ -2,24 +2,24 @@
 
 Each numbered task is sized for one worker. Sub-tasks are steps inside that task. Rules: every rule needs a positive and a negative fixture test, no test uses the network, `dotnet build`, `dotnet test` and `dotnet format --verify-no-changes` pass before a task is merged, and a worker does not edit the rule catalog of another task. Rule table: see `design.md` ("Proposed rules").
 
-- [ ] 1. Fixtures
-  - [ ] 1.1 Add the seven synthetic fixtures from `design.md` ("Fixtures"): `sdx-basic`, `sdx-effects`, `sdx-lowlevel`, `sdx-mixed`, `sdx-store-app`, `sdx-prebuilt`, `sdx-negative`. Each has an `expected` file in the same style as the XNA fixtures. All content is original; `.tkb` and image bytes are written at test time so the repo stays text-only.
-  - [ ] 1.2 Add a `README` line per fixture that says what it proves and that it is synthetic (no code or assets from any candidate game).
-  - [ ] 1.3 Fixture loader test: each fixture loads and has the expected file list.
+- [x] 1. Fixtures
+  - [x] 1.1 Add the seven synthetic fixtures from `design.md` ("Fixtures"): `sdx-basic`, `sdx-effects`, `sdx-lowlevel`, `sdx-mixed`, `sdx-store-app`, `sdx-prebuilt`, `sdx-negative`. Each has an `expected` file in the same style as the XNA fixtures. All content is original; `.tkb` and image bytes are written at test time so the repo stays text-only.
+  - [x] 1.2 Add a `README` line per fixture that says what it proves and that it is synthetic (no code or assets from any candidate game).
+  - [x] 1.3 Fixture loader test: each fixture loads and has the expected file list.
   - _Requirements: R2, R8_
 
-- [ ] 2. Detection and model
-  - [ ] 2.1 Implement `SharpDxToolkitDetector` (references, imports, build actions, `packages.config`) next to `XnaProjectDetector`, read-only.
-  - [ ] 2.2 Add `IsSharpDxToolkit` to `DiscoveredProject`, `SourceFramework` and `SourceFrameworks` to `ProjectInfo` and the report, `DiscoveryResult.MigratableProjects`, and the new "no XNA or Toolkit project" reason text. Keep `IsXna` and `XnaProjects` unchanged.
-  - [ ] 2.3 Positive tests: `sdx-basic`, `sdx-effects`, `sdx-lowlevel` are Toolkit projects; `sdx-mixed` reports both. Negative tests: plain SharpDX without Toolkit (`sdx-negative`), an XNA fixture, and `not-xna` are not Toolkit projects.
-  - [ ] 2.4 Read-only test: file hashes of every Toolkit fixture are identical before and after analysis.
+- [x] 2. Detection and model
+  - [x] 2.1 Implement `SharpDxToolkitDetector` (references, imports, build actions, `packages.config`) next to `XnaProjectDetector`, read-only.
+  - [x] 2.2 Add `IsSharpDxToolkit` to `DiscoveredProject`, `SourceFramework` and `SourceFrameworks` to `ProjectInfo` and the report, `DiscoveryResult.MigratableProjects`, and the new "no XNA or Toolkit project" reason text. Keep `IsXna` and `XnaProjects` unchanged.
+  - [x] 2.3 Positive tests: `sdx-basic`, `sdx-effects`, `sdx-lowlevel` are Toolkit projects; `sdx-mixed` reports both. Negative tests: plain SharpDX without Toolkit (`sdx-negative`), an XNA fixture, and `not-xna` are not Toolkit projects.
+  - [x] 2.4 Read-only test: file hashes of every Toolkit fixture are identical before and after analysis.
   - _Requirements: R1, R7_
 
 - [ ] 3. Schema and engine changes
-  - [ ] 3.1 Widen the rule id pattern to `^(XNA|SDX)[0-9]{3}$` in `RuleSchema.json` and `RuleCatalogValidator`. Test: an `SDX` id validates; an id with another prefix is rejected; the XNA catalog still validates.
+  - [x] 3.1 Widen the rule id pattern to `^(XNA|SDX)[0-9]{3}$` in `RuleSchema.json` and `RuleCatalogValidator`. Test: an `SDX` id validates; an id with another prefix is rejected; the XNA catalog still validates.
   - [ ] 3.2 Add `appliesTo` to the catalog schema and model. The analyzer runs a catalog only on projects of that framework. `AnalysisService` loads both catalog files. A broken Toolkit catalog must not stop XNA analysis (a diagnostic is reported). Positive: Toolkit fixture runs the SDX catalog. Negative: an XNA fixture never runs it, and a Toolkit fixture never runs the XNA catalog.
-  - [ ] 3.3 Add optional `names` to the `member` match: schema, `MemberMatch` record, JSON converter, `SourceRuleIndex`. Exactly one of `name` or `names`. Positive: a rule with `names` matches each listed name once per position. Negative: an unlisted name, a missing receiver, a wrong argument count, and a rule with both `name` and `names` (rejected).
-  - [ ] 3.4 Existing tests and XNA snapshots stay green with no snapshot change.
+  - [x] 3.3 Add optional `names` to the `member` match: schema, `MemberMatch` record, JSON converter, `SourceRuleIndex`. Exactly one of `name` or `names`. Positive: a rule with `names` matches each listed name once per position. Negative: an unlisted name, a missing receiver, a wrong argument count, and a rule with both `name` and `names` (rejected).
+  - [x] 3.4 Existing tests and XNA snapshots stay green with no snapshot change.
   - _Requirements: R2_
 
 - [ ] 4. Rule catalog `rules/sharpdx-toolkit-to-monogame.json`
