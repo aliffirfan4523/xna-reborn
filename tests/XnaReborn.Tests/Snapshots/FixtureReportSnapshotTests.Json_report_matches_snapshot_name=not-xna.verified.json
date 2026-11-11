@@ -18,5 +18,5 @@
   "score": 100,
   "projectedScore": 100,
   "diagnostics": [],
-  "noProjectReason": "Found 1 project(s), but none use XNA."
+  "noProjectReason": "Found 1 project(s), but none use XNA or MonoGame."
 }

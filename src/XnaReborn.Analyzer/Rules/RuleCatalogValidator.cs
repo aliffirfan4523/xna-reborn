@@ -11,7 +11,7 @@ internal static class RuleCatalogValidator
     private static readonly Lazy<JsonSchema> _schema = new(LoadSchema);
 
     private static readonly string[] _matchTypes =
-        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol"];
+        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "mgcbSetting"];
 
     /// <summary>Returns every problem found in <paramref name="root"/>, in a stable order.</summary>
     /// <param name="root">The parsed catalog.</param>
@@ -113,7 +113,7 @@ internal static class RuleCatalogValidator
             && rules[index].ValueKind == JsonValueKind.Object
             && rules[index].TryGetProperty("id", out var id)
             && id.ValueKind == JsonValueKind.String
-            && System.Text.RegularExpressions.Regex.IsMatch(id.GetString()!, "^XNA[0-9]{3}$"))
+            && System.Text.RegularExpressions.Regex.IsMatch(id.GetString()!, "^(XNA|MG)[0-9]{3}$"))
         {
             return id.GetString()!;
         }
@@ -234,15 +234,16 @@ internal static class RuleCatalogValidator
 
         if (match.TryGetProperty("matches", out var pattern) && pattern.ValueKind == JsonValueKind.String)
         {
-            try
-            {
-                _ = new System.Text.RegularExpressions.Regex(pattern.GetString()!, System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(1));
-            }
-            catch (ArgumentException ex)
-            {
-                add($"{label} /rules/{index}/match/matches: not a valid regular expression ({ex.Message}).");
-            }
+            CheckRegex(pattern.GetString()!, $"{label} /rules/{index}/match/matches", add);
         }
+
+        if (match.TryGetProperty("metadata", out var metadata) && metadata.ValueKind == JsonValueKind.Object
+            && metadata.TryGetProperty("matches", out var metadataPattern) && metadataPattern.ValueKind == JsonValueKind.String)
+        {
+            CheckRegex(metadataPattern.GetString()!, $"{label} /rules/{index}/match/metadata/matches", add);
+        }
+
+        CheckMgcbSetting(match, index, label, add);
 
         if (match.TryGetProperty("arguments", out var arguments) && arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty("min", out var min) && min.ValueKind == JsonValueKind.Number && min.TryGetInt64(out var minValue)
@@ -250,6 +251,39 @@ internal static class RuleCatalogValidator
             && minValue > maxValue)
         {
             add($"{label} /rules/{index}/match/arguments: min ({minValue}) is greater than max ({maxValue}).");
+        }
+    }
+
+    private static void CheckRegex(string pattern, string location, Action<string> add)
+    {
+        try
+        {
+            _ = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(1));
+        }
+        catch (ArgumentException ex)
+        {
+            add($"{location}: not a valid regular expression ({ex.Message}).");
+        }
+    }
+
+    // The schema cannot tie the fields of mgcbSetting to the chosen setting, so check it here.
+    private static void CheckMgcbSetting(JsonElement match, int index, string label, Action<string> add)
+    {
+        if (!match.TryGetProperty("type", out var type) || type.GetString() != "mgcbSetting"
+            || !match.TryGetProperty("setting", out var setting) || setting.ValueKind != JsonValueKind.String)
+        {
+            return;
+        }
+
+        var isEntry = setting.GetString() == "entry";
+        var entryOnly = new[] { "importer", "processor", "nonStandardPair" };
+        var valueOnly = new[] { "equals", "matches" };
+        foreach (var name in isEntry ? valueOnly : entryOnly)
+        {
+            if (match.TryGetProperty(name, out _))
+            {
+                add($"{label} /rules/{index}/match/{name}: not allowed with setting '{setting.GetString()}'.");
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ public static class MarkdownReportWriter
             SummaryBlock(report),
             $"Severity: {SeverityLine(report)}",
             $"Classification: {ClassificationLine(report)}",
-            report.NoProjectReason is null ? ProjectsBlock(report) : $"## No XNA project found\n\n{report.NoProjectReason}",
+            ProjectsOrReasonBlock(report),
         };
 
         blocks.AddRange(FindingBlocks(report));
@@ -63,12 +63,28 @@ public static class MarkdownReportWriter
     private static int Count<TKey>(IReadOnlyDictionary<TKey, int> counts, TKey key) =>
         counts.TryGetValue(key, out var value) ? value : 0;
 
+    // No projects analyzed: explain why. Projects analyzed and still a reason (all MonoGame projects current): list them, then say nothing is left to do.
+    private static string ProjectsOrReasonBlock(AnalysisReport report)
+    {
+        if (report.NoProjectReason is null)
+        {
+            return ProjectsBlock(report);
+        }
+
+        return report.Projects.Count == 0
+            ? $"## No XNA project found\n\n{report.NoProjectReason}"
+            : ProjectsBlock(report) + $"\n\n## Nothing to migrate\n\n{report.NoProjectReason}";
+    }
+
     private static string ProjectsBlock(AnalysisReport report)
     {
+        // The two MonoGame columns appear only when the report has a project that is not XNA, so XNA reports keep their exact shape.
+        var withFamily = report.Projects.Any(p => p.Family != ProjectFamily.Xna);
         var sb = new StringBuilder();
         sb.Append("## Projects\n\n");
-        sb.Append("| Project | XNA version | Platform | Profile | Target framework |\n");
-        sb.Append("|---|---|---|---|---|");
+        sb.Append(withFamily
+            ? "| Project | Family | XNA version | MonoGame version | Platform | Profile | Target framework |\n|---|---|---|---|---|---|---|"
+            : "| Project | XNA version | Platform | Profile | Target framework |\n|---|---|---|---|---|");
         foreach (var p in report.Projects)
         {
             var version = p.XnaVersion switch
@@ -78,15 +94,49 @@ public static class MarkdownReportWriter
                 XnaVersion.V40 => "4.0",
                 _ => "Unknown",
             };
-            sb.Append("\n| ").Append(Cell(p.Path))
-                .Append(" | ").Append(version)
-                .Append(" | ").Append(p.Platform).Append(p.PlatformInferred ? " (inferred)" : string.Empty)
+            var isMonoGame = p.Family is ProjectFamily.MonoGameLegacy or ProjectFamily.MonoGameCurrent;
+            sb.Append("\n| ").Append(Cell(p.Path));
+            if (withFamily)
+            {
+                sb.Append(" | ").Append(p.Family);
+            }
+
+            sb.Append(" | ").Append(isMonoGame ? "-" : version);
+            if (withFamily)
+            {
+                sb.Append(" | ").Append(isMonoGame ? MonoGameVersionText(p.MonoGameVersion) : "-");
+            }
+
+            sb.Append(" | ").Append(isMonoGame ? p.MonoGamePlatform : p.Platform).Append(!isMonoGame && p.PlatformInferred ? " (inferred)" : string.Empty)
                 .Append(" | ").Append(Cell(p.Profile))
                 .Append(" | ").Append(Cell(p.TargetFramework))
                 .Append(" |");
         }
 
         return sb.ToString();
+    }
+
+    private static string MonoGameVersionText(MonoGameVersionInfo? info)
+    {
+        if (info is null || (info.Exact is null && info.Band == MonoGameBand.Unknown))
+        {
+            return "Unknown";
+        }
+
+        var text = info.Exact ?? info.Band switch
+        {
+            MonoGameBand.V3Early => "3.0 to 3.4",
+            MonoGameBand.V35 => "3.5",
+            MonoGameBand.V36 => "3.6",
+            MonoGameBand.V37 => "3.7",
+            MonoGameBand.V38 => "3.8",
+            MonoGameBand.V32To36 => "3.2 to 3.6",
+            MonoGameBand.V33To381 => "3.3 to 3.8.1",
+            MonoGameBand.V35Plus => "3.5 or later",
+            MonoGameBand.V380Era => "3.8.0 era",
+            _ => "Unknown",
+        };
+        return $"{text} ({info.Confidence})";
     }
 
     private static string Cell(string? text) =>

@@ -57,6 +57,11 @@ internal static class ProjectXml
                         if (element.Attribute("Include")?.Value is { } include)
                         {
                             var metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                            foreach (var attribute in element.Attributes().Where(a => !a.IsNamespaceDeclaration && a.Name.LocalName != "Include"))
+                            {
+                                metadata[attribute.Name.LocalName] = attribute.Value.Trim();
+                            }
+
                             foreach (var meta in element.Elements())
                             {
                                 metadata[meta.Name.LocalName] = meta.Value.Trim();

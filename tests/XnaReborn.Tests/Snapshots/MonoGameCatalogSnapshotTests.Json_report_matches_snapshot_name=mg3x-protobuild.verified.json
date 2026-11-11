@@ -1,0 +1,22 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + monogame-upgrade",
+  "projects": [],
+  "findings": [],
+  "triggeredRules": [],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": "Found Protobuild files (Protobuild.exe, Build/Projects/Game.definition) but no .csproj files. Generate the project files with the Protobuild version this project used, outside XNA Reborn, then open the generated folder."
+}

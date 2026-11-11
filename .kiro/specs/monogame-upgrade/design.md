@@ -23,7 +23,7 @@ report -> MigrationPlanner -> SdkCsprojGenerator / MgcbUpgrader / rewriters -> O
 
 ## What the research found
 
-All claims here are from official MonoGame pages or the MonoGame changelog. Where a claim comes from a real project instead, it says so. Items marked **to confirm** are not proven yet and are settled in task 1.
+All claims here are from official MonoGame pages or the MonoGame changelog. Where a claim comes from a real project instead, it says so. Items that were marked "to confirm" were settled in task 1 (see "Task 1 findings" below).
 
 ### What 3.8 changed for existing projects
 
@@ -117,10 +117,10 @@ A project that references `Microsoft.Xna.Framework*` and `MonoGame.Framework*` s
 | Assembly version in a `Reference` include | `MonoGame.Framework, Version=3.7.0.213` | exact `3.7.0.213`, High |
 | Version in a NuGet `HintPath` or `packages.config` | `MonoGame.Framework.WindowsDX.3.7.0.1708` | exact, High |
 | `PackageReference` `Version` | `3.8.1.303` | exact, High |
-| `HintPath` folder `Assemblies\WindowsGL` | Farseer samples | band 3.2 to 3.5, Medium. WindowsGL was named in 3.2 and DesktopGL arrived in 3.5. **To confirm:** the last version that shipped WindowsGL. |
+| `HintPath` folder `Assemblies\WindowsGL` | Farseer samples | band 3.2 to 3.6, Medium. WindowsGL was named in 3.2 and DesktopGL arrived in 3.5. The last release that shipped WindowsGL is 3.6 (NuGet `MonoGame.Framework.WindowsGL` 3.6.0.1625); the 3.7 tag has no WindowsGL package. |
 | `HintPath` folder `Assemblies\DesktopGL` | Squid | band 3.5 and later, Medium |
 | `HintPath` folder `Assemblies\WindowsUniversal` or `ProjectTypeGuids` UWP | TheLastSliceGame | band 3.3 to 3.8.1, Medium (template added in 3.3, removed in 3.8.2) |
-| Import of `MonoGame.Common.props` | all installer-era samples above | "installer era", no version. **To confirm:** the first version that used `.props`. |
+| Import of `MonoGame.Common.props` | all installer-era samples above | "installer era", band 3.5 and later, Medium. `MonoGame.Common.props` first appears in the 3.5 tag (it is absent in 3.4). It is not an exact version. |
 | `TargetFramework` `netcoreapp3.1` or `net5.0` with a `PackageReference` | | 3.8.0 era, Medium |
 
 When two signals give different exact versions, the detector reports the higher one and adds `ANA002`-style Diagnostic `ANA009`. When there is none, the band is `Unknown`.
@@ -133,9 +133,10 @@ When two signals give different exact versions, the detector reports the higher 
 | `Assemblies\WindowsGL`, `MonoGamePlatform=WindowsGL`, `Linux`, `MacOS` | WindowsGL, Linux, or macOS (OpenTK or SDL desktop) |
 | `Assemblies\DesktopGL` or `MonoGamePlatform=DesktopGL` | DesktopGL |
 | `Assemblies\WindowsUniversal`, UWP GUID, or `WindowsStoreApp` with an `AppContainerExe` output | UWP |
-| `WindowsPhone`, `WindowsPhone81`, or `Windows8` (**names to confirm**) | Windows 8 or Windows Phone |
+| `MonoGamePlatform=WindowsPhone8` (template GUID `{76F1466A-8B6D-4E39-A767-685A06062A39}`) | Windows Phone |
+| `MonoGamePlatform=Ouya`, `PlayStationMobile` or `PSVita` | OUYA, PlayStation Mobile, or PS Vita |
 | Xamarin.Android GUID `{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}` or `MonoAndroid` | Android |
-| Xamarin.iOS GUIDs `{6BC8ED88-2882-458C-8E55-DFD12B67127B}` or `{FEACFBD2-3405-455C-9665-78FE426C6842}` (**to confirm**) | iOS |
+| Xamarin.iOS GUIDs `{FEACFBD2-3405-455C-9665-78FE426C6842}` (seen in the 3.7.1 templates) or `{6BC8ED88-2882-458C-8E55-DFD12B67127B}` (older Xamarin.iOS type; not in the MonoGame sources read, kept as a recognized GUID) | iOS |
 
 ## Rule catalog
 
@@ -164,15 +165,15 @@ Ids are contiguous: `MG001` to `MG032`. Ids are never reused.
 | MG005 | .NET Framework 4.x target (`TargetFrameworkVersion`) | Warning | AutoFixable | `projectProperty` `TargetFrameworkVersion` matches `^v[2-4]\.` | A, B | 11.1 |
 | MG006 | x86-only build (`PlatformTarget` x86) | Warning | AutoFixable | `projectProperty` `PlatformTarget` equals `x86` | A, B | 11.1 |
 | MG007 | `packages.config` NuGet list | Warning | AutoFixable | `filePattern` `**/packages.config` | A | 11.3 |
-| MG008 | MonoGame package pinned below 3.8.6.1 | Info | AutoFixable | `projectItem` PackageReference `MonoGame.*` with `metadata` Version not `3.8.6.1` | G | 11.2 |
+| MG008 | MonoGame package pinned below 3.8.6.1 | Info | AutoFixable | `projectItem` PackageReference `MonoGame.Framework.*` with `metadata` Version not `3.8.6.1` | G | 11.2 |
 | MG009 | Older .NET target (`netcoreapp3.1`, `net5.0`, `net6.0`, `net7.0`) | Info | AutoFixable | `projectProperty` `TargetFramework` matches `^(netcoreapp3\.1\|net[5-7]\.0)` | G | 11.2 |
 | MG010 | Protobuild project definitions | Error | Manual | `filePattern` `**/Protobuild.exe` | F | - |
-| MG011 | WindowsGL, Linux or macOS desktop project (OpenTK era) | Warning | AutoFixable | `projectProperty` `MonoGamePlatform` matches `^(WindowsGL\|Linux\|MacOS)$` | C | 11.1 |
+| MG011 | WindowsGL, Linux or macOS desktop project (OpenTK era) | Warning | AutoFixable | `projectProperty` `MonoGamePlatform` matches `^(WindowsGL\|Linux\|MacOSX)$` | C | 11.1 |
 | MG012 | Android project (Xamarin) | Warning | Manual | `projectProperty` `ProjectTypeGuids` matches `EFBA0AD7-5A72-4C68-AF49-83D382785DCF` | E | 14.1 (related) |
 | MG013 | iOS project (Xamarin) | Warning | Manual | `projectProperty` `ProjectTypeGuids` matches the two iOS GUIDs | E | 14.1 (related) |
-| MG014 | UWP / Windows Store project | Error | Unsupported | `projectProperty` `MonoGamePlatform` matches `^(WindowsStoreApp\|WindowsUniversal)$` | E | 14.1 (related) |
-| MG015 | Windows 8 / Windows Phone project (names to confirm) | Error | Unsupported | `projectProperty` `MonoGamePlatform` matches `^(WindowsPhone8?1?\|Windows8)$` | D | 14.1 (related) |
-| MG016 | OUYA, PlayStation Mobile or PS Vita project | Error | Unsupported | `projectProperty` `MonoGamePlatform` matches `^(Ouya\|PSM\|PSMobile\|PSVita)$` (names to confirm) | D | 14.1 (related) |
+| MG014 | UWP / Windows Store project | Error | Unsupported | `projectProperty` `MonoGamePlatform` matches `^WindowsStoreApp$` | E | 14.1 (related) |
+| MG015 | Windows Phone 8 project | Error | Unsupported | `projectProperty` `MonoGamePlatform` matches `^WindowsPhone8$` | D | 14.1 (related) |
+| MG016 | OUYA, PlayStation Mobile or PS Vita project | Error | Unsupported | `projectProperty` `MonoGamePlatform` matches `^(Ouya\|PlayStationMobile\|PSVita)$` | D | 14.1 (related) |
 | MG017 | `OpenTK` assembly reference | Warning | AutoFixable | `reference` `OpenTK*` | B | 11.1 |
 | MG018 | `Tao.Sdl` assembly reference | Warning | AutoFixable | `reference` `Tao.Sdl*` | C | 11.1 |
 | MG019 | `NVorbis` assembly reference | Info | AutoFixable | `reference` `NVorbis*` | B | 11.1 |
@@ -180,7 +181,7 @@ Ids are contiguous: `MG001` to `MG032`. Ids are never reused.
 | MG021 | `MonoGame.Framework.Net` reference (removed in 3.8) | Error | Unsupported | `reference` `MonoGame.Framework.Net*` | C | 13.2 (related) |
 | MG022 | `Lidgren.Network` reference | Warning | Manual | `reference` `Lidgren.Network*` | C | - |
 | MG023 | `Content.mgcb` references the MonoGame install folder | Error | AutoFixable | `mgcbSetting` `reference` matches `(?i)MonoGame\\v3\.0\\` | B | 12.1 |
-| MG024 | `Content.mgcb` platform not valid for the 3.8.6.1 desktop targets | Warning | AutoFixable | `mgcbSetting` `platform` matches `^(MacOSX\|WindowsStoreApp\|WindowsUniversal\|WindowsPhone\|WindowsPhone81\|NativeClient\|Ouya\|PlayStationMobile\|RaspberryPi)$` (names to confirm) | D, E | 12.1 |
+| MG024 | `Content.mgcb` platform not valid for the 3.8.6.1 desktop targets | Warning | AutoFixable | `mgcbSetting` `platform` matches `^(MacOSX\|WindowsStoreApp\|WindowsPhone8\|NativeClient\|Ouya\|PlayStationMobile\|PSVita\|RaspberryPi)$` | D, E | 12.1 |
 | MG025 | `Content.mgcb` loads a custom pipeline assembly | Warning | Manual | `mgcbSetting` `reference` matches `.` and not the install folder | B | 12.2 (related) |
 | MG026 | `Content.mgcb` uses a non-standard importer or processor | Warning | Manual | `mgcbSetting` `entry` with `nonStandardPair: true` | B | 12.2 (related) |
 | MG027 | Prebuilt `.xnb` files | Info | Manual | `filePattern` `**/*.xnb` | A | 12.3 (related) |
@@ -197,8 +198,8 @@ Notes on specific rules:
 - **MG003** only fires on `Reference` items. A migrated SDK-style project uses `PackageReference`, so `mg38-current` does not match. This is the negative test.
 - **MG010** reports Protobuild. The tool does not run Protobuild. The resolution says: generate the project files with the Protobuild version the project used, outside this tool, then open the generated folder. A repository with `.definition` files and a generated `.csproj` is analyzed from the `.csproj` and carries this rule as a warning-level note.
 - **MG012 to MG016** are platform rules. They fire per project, so the report says which project in a solution is a platform project. They are Manual or Unsupported because this version does not generate Android, iOS, or UWP output (R9).
-- **MG020** does not decide whether the code uses SharpDX. A direct SharpDX user is covered by the sibling `sharpdx-toolkit` spec. Here the migrator drops the SharpDX `Reference` items that the 3.8 package brings in, and marks the rule. **To confirm:** which SharpDX version `MonoGame.Framework.WindowsDX` 3.8.6.1 depends on (read from the nuspec in task 1).
-- **MG024** needs the platform names confirmed against the 3.8.6.1 content builder. The migrator always writes the platform of the chosen target, so the rule is informational for the report and does not depend on the list being complete.
+- **MG020** does not decide whether the code uses SharpDX. A direct SharpDX user is covered by the sibling `sharpdx-toolkit` spec. Here the migrator drops the SharpDX `Reference` items that the 3.8 package brings in, and marks the rule. `MonoGame.Framework.WindowsDX` 3.8.6.1 depends on SharpDX 4.2.0 (and its DXGI, Direct2D1, Direct3D11, MediaFoundation, XAudio2 and XInput packages), so a migrated project gets SharpDX from the package and the old direct references are redundant. MG020 stays Manual because the analyzer cannot tell whether code uses SharpDX types directly.
+- **MG024** uses the names read from the 3.7.1 and 3.8.6.1 `TargetPlatform` enums (see "Task 1 findings"). `Linux` and `WindowsGL` are not in the rule: the 3.8 content builder maps them to `DesktopGL` itself. The migrator always writes the platform of the chosen target, so the rule is informational for the report and does not depend on the list being complete.
 - **MG032** is safe to automate because `Color.TransparentBlack` and `Color.Transparent` are both (0, 0, 0, 0). The pattern is syntactic (`Color.TransparentBlack`), which matches the existing `member` limits.
 
 ### Rules considered and not proposed
@@ -207,7 +208,7 @@ Notes on specific rules:
 |---|---|
 | `Matrix.Scale` / `Matrix.Rotation` removed in 3.7 | `Scale` and `Rotation` are common member names, and a syntax-only `member` match cannot tell a `Matrix` from other types. It would give false positives. A semantic check needs the MonoGame assemblies, which the analyzer does not require. Left to the compiler error and a runner hint. |
 | Obsolete `SpriteBatch.Draw` overload removed in 3.8 | The changelog does not name the overload. Left to the compiler error. |
-| Legacy `Microsoft.Xna.Framework.Storage` classes (removed in 3.6) | **To confirm** against the 3.8.6.1 API reference before writing a rule. Task 1 settles it. |
+| Legacy `Microsoft.Xna.Framework.Storage` classes (removed in 3.6) | Task 1 checked the 3.8.6.1 source. `StorageDevice`, `StorageContainer` and `StorageStream` exist only under `#if NATIVE` (the native preview backend), so they are not in the WindowsDX and DesktopGL packages. A rule is possible, but 3.7.1 and 3.8.6.1 have no `Storage` folder and the legacy classes are missing from 3.6 on, so code that used them already fails on 3.6 and 3.7. Not added to the 32 rules; a follow-up can add it. |
 | `.config/dotnet-tools.json` with an old `dotnet-mgcb` | A `filePattern` cannot read the version, and the migrator always rewrites the manifest. Not a rule. |
 | Raw asset loading through `ContentManager` (removed in 3.6) | Not detectable from syntax. |
 
@@ -342,7 +343,7 @@ Written from scratch under `tests/fixtures/`, each with a `README.md` that state
 | A `mg37-windowsdx-pkgconfig` | Installer imports, `packages.config` with `MonoGame.Framework.WindowsDX` 3.7.0.1708 and a SharpDX package, `net47`, x86, a `.xnb` | MG001 to MG007, MG020, MG027 |
 | B `mg37-desktopgl-installdir` | `Assemblies\DesktopGL` HintPaths, `OpenTK` and `NVorbis` references, `Content.mgcb` with an install-folder reference, a custom pipeline DLL reference and a custom importer | MG001 to MG006, MG017, MG019, MG023, MG025, MG026 |
 | C `mg34-windowsgl` | `Assemblies\WindowsGL`, `Tao.Sdl`, `MonoGame.Framework.Net` and `Lidgren.Network` references, no `.props` import | MG003, MG004, MG011, MG018, MG021, MG022 |
-| D `mg35-win8-wp8-ouya` | Windows 8 / Windows Phone / OUYA style platform properties and an mgcb with a legacy platform | MG015, MG016, MG024 |
+| D `mg35-win8-wp8-ouya` | Windows Phone 8 / OUYA / PlayStation Mobile style platform properties and an mgcb with a legacy platform | MG015, MG016, MG024 |
 | E `mg37-multiplatform-sln` | A solution with a shared project, a desktop project, an Android project, an iOS project, and a UWP project | MG012 to MG014, MG024 |
 | F `mg3x-protobuild` | `Protobuild.exe` (a text placeholder, never executed), `Build/Projects/Game.definition`, no `.csproj` | MG010 |
 | G `mg38-old-pin` | SDK-style, `netcoreapp3.1`, `MonoGame.Framework.DesktopGL` 3.8.0.1641 | MG008, MG009 |
@@ -387,15 +388,38 @@ Three or more permissive candidates are listed (five MIT). They are code librari
 10. **Integration** (`XNAREBORN_INTEGRATION=1`): migrate fixtures A and B, run `dotnet build` on the result, verify the source hash.
 11. No test uses the network.
 
-## Open questions
+## Task 1 findings
 
-1. **Platform names.** The `MonoGamePlatform` values for Windows 8, Windows Phone, OUYA, PSM and Vita, the GUID for Xamarin.iOS, and the mgcb platform names are marked "to confirm". Task 1 settles them from the 3.7 and 3.8.6.1 sources and from sample projects. If a name is wrong, the rule is a catalog edit.
-2. **`MonoGame.Common.props` start version.** Not found in the changelog. The detector does not use it as a version signal until it is confirmed.
-3. **WindowsGL end of life.** The last release that shipped WindowsGL is not stated in the sources read.
-4. **SharpDX with WindowsDX 3.8.6.1.** Confirm the dependency version from the nuspec, then decide whether MG020 can become AutoFixable.
-5. **WindowsDX on `net8.0-windows`.** Still unverified for 3.8.x in this product. The integration test decides.
-6. **Android and iOS output.** Not generated here. A follow-up spec could target `net8.0-android` and `net8.0-ios`.
-7. **Sibling specs.** `sharpdx-toolkit` owns direct SharpDX code. `flash-to-monogame` is unrelated. This spec only drops redundant SharpDX references and defers the rest.
+Read on 2026-11-11 from the MonoGame tags on GitHub (`v3.3` to `v3.8.6.1`) and from the NuGet flat container. Nothing was cloned and no package was installed.
+
+| Question | Answer | Source |
+|---|---|---|
+| SharpDX version of `MonoGame.Framework.WindowsDX` 3.8.6.1 | SharpDX 4.2.0, plus DXGI, Direct2D1, Direct3D11, MediaFoundation, XAudio2 and XInput 4.2.0, for `net8.0-windows7.0`. 3.8.4 used 4.0.1. | nuspec `https://api.nuget.org/v3-flatcontainer/monogame.framework.windowsdx/3.8.6.1/monogame.framework.windowsdx.nuspec` |
+| Legacy `Storage` types in 3.8.6.1 | Present only under `#if NATIVE`. Not in the WindowsDX and DesktopGL builds. | `MonoGame.Framework/Storage/StorageDevice.cs` at tag `v3.8.6.1` |
+| `MonoGamePlatform` values accepted by `MonoGame.Content.Builder.targets` in 3.7.1 | Windows, WindowsGL, WindowsStoreApp, WindowsPhone8, MacOSX, iOS, Linux, DesktopGL, RaspberryPi, Android, NativeClient, PlayStation4, PSVita, XboxOne, PlayStationMobile (the error text also names Ouya). There is no `Windows8`, `WindowsPhone` or `WindowsPhone81` value. | `MonoGame.Framework.Content.Pipeline/MonoGame.Content.Builder.targets` at `v3.7.1` |
+| Template platform values | UWP: `WindowsStoreApp` with `AppContainerExe`, GUID `{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A}`. Windows Phone: `WindowsPhone8`, GUID `{76F1466A-8B6D-4E39-A767-685A06062A39}`. Android: `Android`, GUID `{EFBA0AD7-...}`. iOS: `iOS`, GUID `{FEACFBD2-...}`. tvOS: `iOS`, GUID `{06FA79CB-D6CD-4721-BB4B-1BD202089C55}`. | `ProjectTemplates/...` at `v3.7.1` |
+| mgcb platform names valid in 3.8.6.1 | Windows, Xbox360, iOS, Android, DesktopGL, MacOSX, NativeClient, RaspberryPi, PlayStation4, PlayStation5, XboxOne, Switch, Web, DesktopVK, WindowsDX12, XboxSeries, Switch2. `Linux` and `WindowsGL` are converted to `DesktopGL` by the reader. `WindowsStoreApp` was removed after 3.8.1, `WindowsPhone8`, `PlayStationMobile` and `PSVita` after 3.7.1. | `TargetPlatform.cs` at `v3.7.1`, `v3.8.1`, `v3.8.4.1`, `v3.8.6.1` |
+| First version with `MonoGame.Common.props` | The 3.5 tag. It is absent in 3.4 (`MonoGame.Content.Builder.targets` is already in 3.3). | tag trees `v3.3` to `v3.5` |
+| Last version that shipped WindowsGL | 3.6 (`MonoGame.Framework.WindowsGL` 3.6.0.1625 is the last NuGet version). The 3.7 tag has no WindowsGL package. | NuGet index, tag trees `v3.6` and `v3.7` |
+
+Rule changes made in this step: MG011 uses `MacOSX` (not `MacOS`), MG014 matches `WindowsStoreApp` only, MG015 matches `WindowsPhone8` only, MG016 uses `PlayStationMobile` and `PSVita`, and MG024 uses the names above. Every "to confirm" note is removed.
+
+## Analyzer implementation notes (tasks 3 to 10)
+
+What the analyzer part changed compared with the text above:
+
+- **MG008 include.** The rule uses `MonoGame.Framework.*`, not `MonoGame.*`, so third-party packages such as `MonoGame.Extended` (their own version numbers) are not reported. `metadata` filters need the metadata to exist: a `PackageReference` without a `Version` matches none of `equals`, `notEquals` and `matches`.
+- **MG010 and fixture F.** A rule runs per project, and F has no project. The F fixture is used for the Protobuild-only message (R1.5). The MG010 test copies F to a temp folder and adds a generated project next to `Protobuild.exe`. The glob is relative to the project folder, so a `Protobuild.exe` above the project is not seen; the no-project message covers that case.
+- **Order of `ProjectInfo` fields.** `Family`, `MonoGameVersion`, `MonoGamePlatform` and `MgcbFiles` are optional and come last. They are left out of the JSON report when they hold the XNA default, so existing XNA reports are byte-identical. The Markdown project table gets the Family and MonoGame version columns only when the report holds a project that is not XNA.
+- **No-project wording.** "Found N project(s), but none use XNA." became "Found N project(s), but none use XNA or MonoGame." (R1.6). Only the `not-xna` snapshots changed. A folder whose MonoGame projects are all current is analyzed (score 100) and reports "All MonoGame projects are already current. Nothing to migrate." as `NoProjectReason`.
+- **Source of SDK-style projects.** An SDK-style MonoGame project lists no `Compile` items, so the reader adds `**/*.cs` (skipping `bin` and `obj`) unless `EnableDefaultCompileItems` is false. `Compile Remove` is not read.
+- **New diagnostics.** `ANA008` XNA plus MonoGame mix, `ANA009` version conflict, `ANA010` unreadable mgcb line, `ANA011` unreadable packages.config, `ANA012` unreadable shared items file, `ANA013` missing or unreadable mgcb file.
+- **Findings from mgcb files** carry the mgcb path and the line of the first match as their location.
+- **Catalog API.** `RuleCatalogLoader.LoadAllAsync` and `EnsureUniqueIds` check ids across catalogs; `ProjectAnalyzer.AnalyzeAsync` has an overload that takes a list of catalogs and scores each rule with the weights of its own catalog.
+## Open questions
+1. **WindowsDX on `net8.0-windows`.** Still unverified for 3.8.x in this product. The integration test decides.
+2. **Android and iOS output.** Not generated here. A follow-up spec could target `net8.0-android` and `net8.0-ios`.
+3. **Sibling specs.** `sharpdx-toolkit` owns direct SharpDX code. `flash-to-monogame` is unrelated. This spec only drops redundant SharpDX references and defers the rest.
 
 ## Sources
 

@@ -1,0 +1,180 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + monogame-upgrade",
+  "projects": [
+    {
+      "path": "Ouya/Mg35Ouya.csproj",
+      "assemblyName": "Mg35Ouya",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": null,
+      "references": [
+        "MonoGame.Framework"
+      ],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "MonoGameLegacy",
+      "monoGameVersion": {
+        "exact": null,
+        "band": "Unknown",
+        "confidence": "Unknown"
+      },
+      "monoGamePlatform": "Ouya"
+    },
+    {
+      "path": "Phone/Mg35Phone.csproj",
+      "assemblyName": "Mg35Phone",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": null,
+      "references": [
+        "MonoGame.Framework"
+      ],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "MonoGameLegacy",
+      "monoGameVersion": {
+        "exact": null,
+        "band": "Unknown",
+        "confidence": "Unknown"
+      },
+      "monoGamePlatform": "WindowsPhone",
+      "mgcbFiles": [
+        "Phone/Content/Content.mgcb"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "MG003",
+      "title": "MonoGame.Framework assembly reference (install folder or packages folder)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Ouya/Mg35Ouya.csproj",
+      "location": null,
+      "snippet": "MonoGame.Framework"
+    },
+    {
+      "ruleId": "MG003",
+      "title": "MonoGame.Framework assembly reference (install folder or packages folder)",
+      "severity": "Error",
+      "classification": "AutoFixable",
+      "project": "Phone/Mg35Phone.csproj",
+      "location": null,
+      "snippet": "MonoGame.Framework"
+    },
+    {
+      "ruleId": "MG015",
+      "title": "Windows Phone 8 project",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "project": "Phone/Mg35Phone.csproj",
+      "location": null,
+      "snippet": "MonoGamePlatform=WindowsPhone8"
+    },
+    {
+      "ruleId": "MG016",
+      "title": "OUYA, PlayStation Mobile or PS Vita project",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "project": "Ouya/Mg35Ouya.csproj",
+      "location": null,
+      "snippet": "MonoGamePlatform=Ouya"
+    },
+    {
+      "ruleId": "MG024",
+      "title": "Content.mgcb platform is not valid for the 3.8.6.1 desktop targets",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Phone/Mg35Phone.csproj",
+      "location": {
+        "file": "Phone/Content/Content.mgcb",
+        "line": 6,
+        "column": 1
+      },
+      "snippet": "platform=WindowsPhone8"
+    },
+    {
+      "ruleId": "MG004",
+      "title": "MonoGamePlatform build property",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Ouya/Mg35Ouya.csproj",
+      "location": null,
+      "snippet": "MonoGamePlatform=Ouya"
+    },
+    {
+      "ruleId": "MG004",
+      "title": "MonoGamePlatform build property",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "project": "Phone/Mg35Phone.csproj",
+      "location": null,
+      "snippet": "MonoGamePlatform=WindowsPhone8"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "MG003",
+      "title": "MonoGame.Framework assembly reference (install folder or packages folder)",
+      "explanation": "The project references MonoGame.Framework as an assembly with a HintPath into the installer folder or into a packages folder next to the solution. Neither exists on a clean machine, and the version is fixed by the path.",
+      "resolution": "The migrator replaces the reference with a PackageReference to MonoGame.Framework.DesktopGL or MonoGame.Framework.WindowsDX at 3.8.6.1, chosen from the old platform.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG004",
+      "title": "MonoGamePlatform build property",
+      "explanation": "The project sets MonoGamePlatform, which only the old MonoGame installer targets read. It also drives the OutputPath pattern bin\\$(MonoGamePlatform)\\... and the platform that Content.mgcb is built for.",
+      "resolution": "The migrator drops the property. The target platform comes from the package that the migrated project references, and Content.mgcb gets the matching /platform.",
+      "migratorTask": "monogame-upgrade:11.1"
+    },
+    {
+      "id": "MG015",
+      "title": "Windows Phone 8 project",
+      "explanation": "This is a Windows Phone 8 project. MonoGame 3.7 removed Windows Phone 8.1 support and the content builder no longer accepts the WindowsPhone8 platform.",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project.",
+      "migratorTask": null
+    },
+    {
+      "id": "MG016",
+      "title": "OUYA, PlayStation Mobile or PS Vita project",
+      "explanation": "This project targets a platform that MonoGame no longer supports: OUYA (removed in 3.6), PlayStation Mobile (removed in 3.5) or PS Vita (removed in 3.8.1).",
+      "resolution": "The project is copied unchanged and listed as manual work (monogame-upgrade task 14.1). Move the shared game code to a desktop project.",
+      "migratorTask": null
+    },
+    {
+      "id": "MG024",
+      "title": "Content.mgcb platform is not valid for the 3.8.6.1 desktop targets",
+      "explanation": "Content.mgcb is built for a platform that the 3.8.6.1 content builder does not accept or that is not a desktop target (WindowsStoreApp, WindowsPhone8, PlayStationMobile and PSVita were removed; MacOSX, NativeClient and RaspberryPi are not targets of the migrated copy).",
+      "resolution": "The migrator sets /platform to the platform of the chosen desktop target (Windows or DesktopGL).",
+      "migratorTask": "monogame-upgrade:12.1"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 2,
+    "Warning": 1,
+    "Error": 4,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 5,
+    "Manual": 0,
+    "Unsupported": 2
+  },
+  "score": 73,
+  "projectedScore": 76,
+  "diagnostics": [],
+  "noProjectReason": null
+}

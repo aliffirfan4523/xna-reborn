@@ -1,0 +1,18 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{7B1E5A10-2C3D-4E5F-8A6B-9C0D1E2F3B01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mg37Desktop", "Desktop\Mg37Desktop.csproj", "{7B1E5A10-2C3D-4E5F-8A6B-9C0D1E2F3B02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mg37Android", "Android\Mg37Android.csproj", "{7B1E5A10-2C3D-4E5F-8A6B-9C0D1E2F3B03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mg37Ios", "Ios\Mg37Ios.csproj", "{7B1E5A10-2C3D-4E5F-8A6B-9C0D1E2F3B04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mg37Uwp", "Uwp\Mg37Uwp.csproj", "{7B1E5A10-2C3D-4E5F-8A6B-9C0D1E2F3B05}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+EndGlobal

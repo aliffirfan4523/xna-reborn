@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectDefinition Name="ProtobuildGame" Path="ProtobuildGame" Type="Console">
+  <References>
+    <Reference Include="MonoGame.Framework" />
+  </References>
+  <Files>
+    <Compile Include="Game1.cs" />
+  </Files>
+</ProjectDefinition>

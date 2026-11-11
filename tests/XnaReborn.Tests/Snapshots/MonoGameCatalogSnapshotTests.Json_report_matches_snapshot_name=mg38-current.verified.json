@@ -1,0 +1,49 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-to-monogame + monogame-upgrade",
+  "projects": [
+    {
+      "path": "Mg38Current.csproj",
+      "assemblyName": "Mg38Current",
+      "isXna": false,
+      "xnaVersion": "Unknown",
+      "platform": "Unknown",
+      "profile": null,
+      "targetFramework": "net8.0",
+      "references": [],
+      "compileFiles": [
+        "Game1.cs"
+      ],
+      "defineConstants": [],
+      "contentProjects": [],
+      "contentItems": [],
+      "family": "MonoGameCurrent",
+      "monoGameVersion": {
+        "exact": "3.8.6.1",
+        "band": "V38",
+        "confidence": "High"
+      },
+      "monoGamePlatform": "DesktopGL",
+      "mgcbFiles": [
+        "Content/Content.mgcb"
+      ]
+    }
+  ],
+  "findings": [],
+  "triggeredRules": [],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 0,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 0,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 100,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": "All MonoGame projects are already current. Nothing to migrate."
+}
