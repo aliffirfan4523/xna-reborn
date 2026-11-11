@@ -25,6 +25,12 @@ public sealed partial class DiffViewer : UserControl
     public static readonly StyledProperty<DiffViewerReveal?> RevealProperty =
         AvaloniaProperty.Register<DiffViewer, DiffViewerReveal?>(nameof(Reveal));
 
+    /// <summary>Identifies <see cref="IsUnified"/>.</summary>
+    public static readonly StyledProperty<bool> IsUnifiedProperty =
+        AvaloniaProperty.Register<DiffViewer, bool>(nameof(IsUnified));
+
+    private readonly DiffViewerBackground _unifiedBackground = new() { MarksMarkers = true };
+    private readonly DiffViewerGutter _unifiedGutter = new() { MarksMarkers = true };
     private readonly DiffViewerBackground _oldBackground = new();
     private readonly DiffViewerBackground _newBackground = new() { MarksMarkers = true };
     private readonly DiffViewerGutter _oldGutter = new();
@@ -37,6 +43,7 @@ public sealed partial class DiffViewer : UserControl
         InitializeComponent();
         Attach(OldEditor, _oldBackground, _oldGutter);
         Attach(NewEditor, _newBackground, _newGutter);
+        Attach(UnifiedEditor, _unifiedBackground, _unifiedGutter);
         OldEditor.TextArea.TextView.ScrollOffsetChanged += (_, _) => SyncScroll(OldEditor, NewEditor);
         NewEditor.TextArea.TextView.ScrollOffsetChanged += (_, _) => SyncScroll(NewEditor, OldEditor);
 
@@ -49,6 +56,13 @@ public sealed partial class DiffViewer : UserControl
     {
         get => GetValue(DiffProperty);
         set => SetValue(DiffProperty, value);
+    }
+
+    /// <summary>True to show one pane with removed and added rows in order, false for two panes side by side.</summary>
+    public bool IsUnified
+    {
+        get => GetValue(IsUnifiedProperty);
+        set => SetValue(IsUnifiedProperty, value);
     }
 
     /// <summary>Scrolls to a line of the new text and outlines its row. A new object scrolls again.</summary>
@@ -64,8 +78,40 @@ public sealed partial class DiffViewer : UserControl
     /// <summary>The pane with the migrated text.</summary>
     internal TextEditor NewPane => NewEditor;
 
-    /// <summary>Zero-based row outlined as the current marker, or -1.</summary>
-    internal int ActiveRow => _newBackground.ActiveRow;
+    /// <summary>The single pane of unified mode.</summary>
+    internal TextEditor UnifiedPane => UnifiedEditor;
+
+    /// <summary>Zero-based row outlined as the current marker in the visible mode, or -1.</summary>
+    internal int ActiveRow => IsUnified ? _unifiedBackground.ActiveRow : _newBackground.ActiveRow;
+
+    /// <summary>
+    /// The rows of unified mode: unchanged and added rows from the new text, removed rows from the old text.
+    /// A modified row becomes a removed row followed by an added row. Padding rows are dropped.
+    /// </summary>
+    internal static List<DiffLine> BuildUnified(FileDiff diff)
+    {
+        var rows = new List<DiffLine>();
+        for (var i = 0; i < diff.NewLines.Count; i++)
+        {
+            var old = diff.OldLines[i];
+            var line = diff.NewLines[i];
+            switch (line.Kind)
+            {
+                case DiffLineKind.Modified:
+                    rows.Add(old with { Kind = DiffLineKind.Removed });
+                    rows.Add(line with { Kind = DiffLineKind.Added });
+                    break;
+                case DiffLineKind.Imaginary:
+                    rows.Add(old);
+                    break;
+                default:
+                    rows.Add(line);
+                    break;
+            }
+        }
+
+        return rows;
+    }
 
     /// <summary>The gutter glyph of a row kind: + added, - removed, ~ modified, a space otherwise.</summary>
     internal static string GlyphFor(DiffLineKind kind) => kind switch
@@ -78,7 +124,7 @@ public sealed partial class DiffViewer : UserControl
 
     /// <summary>True when the line is a manual-work marker line.</summary>
     internal static bool IsMarker(DiffLine line) =>
-        line.Kind != DiffLineKind.Imaginary && MarkerPrefixes.ContainsMarker(line.Text);
+        line.Kind is not (DiffLineKind.Imaginary or DiffLineKind.Removed) && MarkerPrefixes.ContainsMarker(line.Text);
 
     /// <inheritdoc />
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -87,6 +133,11 @@ public sealed partial class DiffViewer : UserControl
         if (change.Property == DiffProperty)
         {
             Rebuild();
+        }
+        else if (change.Property == IsUnifiedProperty)
+        {
+            ApplyMode();
+            ApplyReveal();
         }
         else if (change.Property == RevealProperty)
         {
@@ -99,7 +150,7 @@ public sealed partial class DiffViewer : UserControl
         if (e.Key != Key.Tab
             || (e.KeyModifiers & (KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Meta)) != 0
             || e.Source is not Visual source
-            || !(OldEditor.IsVisualAncestorOf(source) || NewEditor.IsVisualAncestorOf(source)))
+            || !(OldEditor.IsVisualAncestorOf(source) || NewEditor.IsVisualAncestorOf(source) || UnifiedEditor.IsVisualAncestorOf(source)))
         {
             return;
         }
@@ -153,6 +204,11 @@ public sealed partial class DiffViewer : UserControl
         _newBackground.Lines = newLines;
         _oldGutter.Lines = oldLines;
         _newGutter.Lines = newLines;
+        var unified = diff is null ? [] : BuildUnified(diff);
+        UnifiedEditor.Document = new TextDocument(string.Join('\n', unified.Select(l => l.Text)));
+        _unifiedBackground.Lines = unified;
+        _unifiedGutter.Lines = unified;
+        _unifiedBackground.ActiveRow = -1;
         _newBackground.ActiveRow = -1;
         Redraw();
         ApplyReveal();
@@ -164,12 +220,31 @@ public sealed partial class DiffViewer : UserControl
             ? IndexOfNewLine(diff, reveal.NewLine)
             : -1;
         _newBackground.ActiveRow = row;
+        var unifiedRow = -1;
+        if (row >= 0 && Reveal is { } r)
+        {
+            unifiedRow = _unifiedBackground.Lines.ToList().FindIndex(l => l.Kind != DiffLineKind.Removed && l.Number == r.NewLine);
+        }
+
+        _unifiedBackground.ActiveRow = unifiedRow;
         Redraw();
         if (row >= 0)
         {
             // Wait for layout: a freshly set document has no visual lines yet.
-            Dispatcher.UIThread.Post(() => NewEditor.ScrollToLine(row + 1), DispatcherPriority.Loaded);
+            var (pane, target) = IsUnified ? (UnifiedEditor, unifiedRow) : (NewEditor, row);
+            Dispatcher.UIThread.Post(() => pane.ScrollToLine(target + 1), DispatcherPriority.Loaded);
         }
+    }
+
+    private void ApplyMode()
+    {
+        var unified = IsUnified;
+        UnifiedEditor.IsVisible = unified;
+        OldEditor.IsVisible = !unified;
+        NewEditor.IsVisible = !unified;
+        PaneSplitter.IsVisible = !unified;
+        OldHeader.IsVisible = !unified;
+        NewHeader.IsVisible = !unified;
     }
 
     private static int IndexOfNewLine(FileDiff diff, int newLine)
@@ -191,6 +266,8 @@ public sealed partial class DiffViewer : UserControl
         NewEditor.TextArea.TextView.InvalidateLayer(AvaloniaEdit.Rendering.KnownLayer.Background);
         _oldGutter.InvalidateVisual();
         _newGutter.InvalidateVisual();
+        UnifiedEditor.TextArea.TextView.InvalidateLayer(AvaloniaEdit.Rendering.KnownLayer.Background);
+        _unifiedGutter.InvalidateVisual();
     }
 
     private void SyncScroll(TextEditor from, TextEditor to)

@@ -15,6 +15,19 @@ public sealed class DiffViewerTests
         "keep\nnew\n// XNAREBORN: XNA022: look here\nlast\nadded\n");
 
     [AvaloniaFact]
+    public void The_unified_rows_list_removed_before_added_and_drop_padding()
+    {
+        var rows = DiffViewer.BuildUnified(_sample);
+
+        Assert.DoesNotContain(rows, r => r.Kind == DiffLineKind.Imaginary);
+        var texts = rows.Select(r => r.Text).ToList();
+        Assert.True(texts.IndexOf("old") < texts.IndexOf("new"));
+        Assert.Equal(DiffLineKind.Removed, rows[texts.IndexOf("old")].Kind);
+        Assert.Equal(DiffLineKind.Added, rows[texts.IndexOf("new")].Kind);
+        Assert.Contains("removed", texts);
+        Assert.Contains("added", texts);
+    }
+    [AvaloniaFact]
     public void Both_panes_show_the_text_of_their_side_and_are_read_only()
     {
         var viewer = Show(_sample);
