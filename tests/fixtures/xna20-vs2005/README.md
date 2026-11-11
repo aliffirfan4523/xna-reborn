@@ -1,6 +1,6 @@
 # xna20-vs2005
 
-Original synthetic code written for this repository. It contains no third-party code or assets and is released under the repository license. The PNG file is a copy of the tiny image in `xna40-basic`.
+Original synthetic code written for this repository. It contains no third-party code or assets and is released under the repository license. The PNG file is an ASCII placeholder (a copy of the file in `xna40-basic`), not a real image.
 
 ## Purpose
 
@@ -12,3 +12,5 @@ A tiny XNA Game Studio 2.0 solution in the Visual Studio 2005 layout (solution f
 - XNA001 (the `Microsoft.Xna.GameStudio.Common.targets` and `NestedContent.targets` imports), XNA002, XNA003, XNA005, XNA007 (Xbox 360 project) and XNA100.
 - XNA022 for `SpriteBlendMode` and XNA024 for `RenderState`, plus the effect `Begin` rules.
 - No XNA101 to XNA105: the 1.0-only content methods and resource modes are not used.
+
+The `BasicEffect` is created with the one-argument constructor of later versions. The real 2.0 constructor takes an `EffectPool`, which MonoGame does not have (a gap for a later task); it is left out so the migrated copy can build.

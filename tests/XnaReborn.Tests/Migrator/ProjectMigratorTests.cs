@@ -89,7 +89,7 @@ public sealed class ProjectMigratorTests : IDisposable
     [Fact]
     public void Default_rewriters_register_the_entry_point_the_source_rules_the_device_rules_the_monogame_rules_and_the_toolkit_rules()
     {
-        Assert.Equal(["DEVICEINPUT", "ENTRYPOINT", "MG028", "MG029", "MG030", "MG031", "MG032", "SDX005", "SDX006", "SDX007", "SDX008", "SDX020", "SDX021", "SDX022", "SDX023", "SDX024", "SDX025", "SDX026", "SDX027", "SDX028", "SDX030", "SDX031", "SDX032", "SDX033", "SDX034", "SDX035", "SDX040", "SDX041", "SDX042", "SDX043", "SDX044", "SDX045", "SDX046", "SDX047", "SDX048", "SDX049", "SDX050", "SDX051", "SDX060", "SDX061", "SDX062", "SDX063", "XNA022", "XNA024", "XNA039", "XNA040", "XNA053", "XNA056", "XNA059", "XNA062", "XNA063"], DefaultRewriters.Create().RuleIds);
+        Assert.Equal(["DEVICEINPUT", "ENTRYPOINT", "MG028", "MG029", "MG030", "MG031", "MG032", "SDX005", "SDX006", "SDX007", "SDX008", "SDX020", "SDX021", "SDX022", "SDX023", "SDX024", "SDX025", "SDX026", "SDX027", "SDX028", "SDX030", "SDX031", "SDX032", "SDX033", "SDX034", "SDX035", "SDX040", "SDX041", "SDX042", "SDX043", "SDX044", "SDX045", "SDX046", "SDX047", "SDX048", "SDX049", "SDX050", "SDX051", "SDX060", "SDX061", "SDX062", "SDX063", "XNA022", "XNA024", "XNA039", "XNA040", "XNA053", "XNA056", "XNA059", "XNA062", "XNA063", "XNA102", "XNA103"], DefaultRewriters.Create().RuleIds);
     }
 
     [Fact]

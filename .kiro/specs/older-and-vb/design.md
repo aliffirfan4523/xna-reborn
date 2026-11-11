@@ -480,3 +480,12 @@ Content was paraphrased from these sources, not quoted at length.
 - Task 7.3: the default parameters of the 1.0 texture processors were not confirmed. The alias note in `rules/importer-map.json` says so ("check the result").
 - `ContentItem.InProject` is left out of report JSON when false, so existing report snapshots keep their shape.
 - `languages` on XNA102, XNA103, XNA104 and XNA105 is added in Part B (task 12.2), when the field exists.
+
+## Implementation notes (part A migrator)
+
+- In-project content (task 8): the game project is read as a content project made of its `InProject` items. When these are the only content, `Content.mgcb` goes next to the project file (not in `Content/`), so the asset names keep their `Content/` prefix and a 1.0 `Load("Content\\ship")` still finds `Content/ship.xnb` next to the exe. The csproj then has `MonoGameContentReference Include="Content.mgcb"`. XNA101 is a content rule in `ProjectMigrator`.
+- A legacy processor alias is resolved in `AssetClassifier`: the `Content.mgcb` entry uses `TextureProcessor`, and the alias note is the asset note.
+- Task 8.3 snapshot tests: the `Content.mgcb` and csproj of `xna10-express-basic` are checked with assertions in `OlderXnaMigrationTests`, not with Verify files.
+- Task 9 (`LoadGraphicsContentRewriter`): markers go in first, then the edits are worked out again on the new text. A file that has the override twice (for example both XNA102 and XNA103 methods) is handled by two rewriters, one per rule id.
+- Task 9.4 and the 2.0 build (task 10): integration tests build the migrated `xna10-express-basic` and `xna20-vs2005` (needs `XNAREBORN_INTEGRATION=1`). The fixtures hold ASCII placeholder images, so the tests overwrite the copied `.png` files with a 1x1 image before building. `xna10-express-basic` does not use `ResourceUsage` or `ResourceManagementMode` (no automatic fix), and `xna20-vs2005` uses the one-argument `BasicEffect` constructor, so that the migrated copies build.
+- Checkpoint A (task 10) was not completed: the read-only scan and migration of the four public candidate projects needs network clones and is left for the owner. The hash test for the new fixtures is covered by `AnalysisReadOnlyTests`, which runs over every fixture.
