@@ -67,7 +67,9 @@ internal static class ProjectXml
                                 metadata[meta.Name.LocalName] = meta.Value.Trim();
                             }
 
-                            items.Add(new ProjectItem(element.Name.LocalName, include, metadata));
+                            // In Visual Basic projects <Import Include="Namespace" /> in an ItemGroup is a namespace import, not an MSBuild Import.
+                            var itemType = element.Name.LocalName == "Import" ? "NamespaceImport" : element.Name.LocalName;
+                            items.Add(new ProjectItem(itemType, include, metadata));
                         }
                     }
 

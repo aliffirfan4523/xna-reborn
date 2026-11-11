@@ -80,26 +80,26 @@ Rules for every task:
 
 ## Part B: Visual Basic
 
-- [ ] 11. Fixtures for VB (`tests/fixtures`)
-  - [ ] 11.1 `vb-xna40-basic`: VB 4.0 game and content project reference, project-level `Import` items, `Program.vb` with `#If WINDOWS OrElse XBOX Then` around `Shared Sub Main`, `My Project/AssemblyInfo.vb`, comma separated `DefineConstants`
-  - [ ] 11.2 `vb-xna31-handmade`: VB 3.1, plain references, `MyType WindowsForms`, `Application.Designer.vb`, `SpriteBlendMode`, a `With device.RenderState` block, `fx.Begin` without parentheses, one `My.Application` call
-  - [ ] 11.3 `vb-monogame-already` (negative) and `mixed-cs-vb-sln` (a C# game plus a VB library)
-  - [ ] 11.4 README per fixture with expected findings
+- [x] 11. Fixtures for VB (`tests/fixtures`)
+  - [x] 11.1 `vb-xna40-basic`: VB 4.0 game and content project reference, project-level `Import` items, `Program.vb` with `#If WINDOWS OrElse XBOX Then` around `Shared Sub Main`, `My Project/AssemblyInfo.vb`, comma separated `DefineConstants`
+  - [x] 11.2 `vb-xna31-handmade`: VB 3.1, plain references, `MyType WindowsForms`, `Application.Designer.vb`, `SpriteBlendMode`, a `With device.RenderState` block, `fx.Begin` without parentheses, one `My.Application` call
+  - [x] 11.3 `vb-monogame-already` (negative) and `mixed-cs-vb-sln` (a C# game plus a VB library)
+  - [x] 11.4 README per fixture with expected findings
   - _Requirements: R6 to R8, R14_
 
-- [ ] 12. Shared language types (`Core`, `Analyzer`)
-  - [ ] 12.1 `SourceLanguage` enum with JSON converter; `ProjectLanguage.FromPath`; `ProjectInfo.Language` as a last parameter with a default
-  - [ ] 12.2 `Rule.Languages` and `Rule.AutoFixLanguages`; `RuleSchema.json`; loader error for an unknown language
-  - [ ] 12.3 `RuleEngine` skips rules by project language; `Scorer` and planner use the effective classification
-  - [ ] 12.4 Report JSON and Markdown show `language`; schema minor increment; old reports still load
-  - [ ] 12.5 Tests: default is C#; rule with `languages ["vb"]` skipped for a C# project; AutoFixable with `autoFixLanguages ["csharp"]` counts as Manual for VB in score and projected score
+- [x] 12. Shared language types (`Core`, `Analyzer`)
+  - [x] 12.1 `SourceLanguage` enum with JSON converter; `ProjectLanguage.FromPath`; `ProjectInfo.Language` as a last parameter with a default
+  - [x] 12.2 `Rule.Languages` and `Rule.AutoFixLanguages`; `RuleSchema.json`; loader error for an unknown language
+  - [x] 12.3 `RuleEngine` skips rules by project language; `Scorer` and planner use the effective classification
+  - [x] 12.4 Report JSON and Markdown show `language`; schema minor increment; old reports still load
+  - [x] 12.5 Tests: default is C#; rule with `languages ["vb"]` skipped for a C# project; AutoFixable with `autoFixLanguages ["csharp"]` counts as Manual for VB in score and projected score
   - _Requirements: R6, R8, R13_
 
-- [ ] 13. VB discovery and project reading (`Analyzer`)
-  - [ ] 13.1 `ProjectDiscovery`: `.vbproj` at the four extension checks, folder search, `.sln` filter, messages
-  - [ ] 13.2 `ProjectXml.ReadItems`: `ItemGroup` `Import` becomes `NamespaceImport`; `ProjectReadResult.ImplicitImports`
-  - [ ] 13.3 `ProjectReader`: `DefineConstants` split on `;` and `,`; strip `=value`; set `Language`
-  - [ ] 13.4 Tests on `vb-xna40-basic`, `vb-xna31-handmade`, `vb-monogame-already`, `mixed-cs-vb-sln`: language, IsXna, version, imports, defines, compile files; hash test for all four
+- [x] 13. VB discovery and project reading (`Analyzer`)
+  - [x] 13.1 `ProjectDiscovery`: `.vbproj` at the four extension checks, folder search, `.sln` filter, messages
+  - [x] 13.2 `ProjectXml.ReadItems`: `ItemGroup` `Import` becomes `NamespaceImport`; `ProjectReadResult.ImplicitImports`
+  - [x] 13.3 `ProjectReader`: `DefineConstants` split on `;` and `,`; strip `=value`; set `Language`
+  - [x] 13.4 Tests on `vb-xna40-basic`, `vb-xna31-handmade`, `vb-monogame-already`, `mixed-cs-vb-sln`: language, IsXna, version, imports, defines, compile files; hash test for all four
   - _Requirements: R6, R7, R14_
 
 - [ ] 14. Matcher refactor to a fact sink (`Analyzer`, C# only)
