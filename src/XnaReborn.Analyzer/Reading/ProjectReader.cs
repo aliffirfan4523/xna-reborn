@@ -29,15 +29,6 @@ public sealed class ProjectReader
         return Task.Run(() => Read(projectFullPath, root, cancellationToken), cancellationToken);
     }
 
-    private static XnaPlatform ParsePlatform(string? text) => text?.Trim().ToLowerInvariant() switch
-    {
-        "windows" => XnaPlatform.Windows,
-        "xbox 360" => XnaPlatform.Xbox360,
-        "zune" => XnaPlatform.Zune,
-        "windows phone" => XnaPlatform.WindowsPhone,
-        _ => XnaPlatform.Unknown,
-    };
-
     private static string? Prop(IReadOnlyDictionary<string, string> properties, string name) =>
         properties.TryGetValue(name, out var value) ? value : null;
 
@@ -139,14 +130,14 @@ public sealed class ProjectReader
             diagnostics.AddRange(content.Diagnostics);
         }
 
+        var (platform, inferred) = PlatformDetector.Detect(Prop(properties, "XnaPlatform"), references, defines, version.Version);
         var mgcbFiles = isMonoGame ? ReadMgcbFiles(items, projectDirectory, root, diagnostics, ct) : [];
-
         var info = new ProjectInfo(
             relative,
             Prop(properties, "AssemblyName") is { Length: > 0 } name ? name : Path.GetFileNameWithoutExtension(projectFullPath),
             family == ProjectFamily.Xna,
             version.Version,
-            ParsePlatform(Prop(properties, "XnaPlatform")),
+            platform,
             Prop(properties, "XnaProfile"),
             Prop(properties, "TargetFrameworkVersion") ?? Prop(properties, "TargetFramework"),
             references,
@@ -154,6 +145,8 @@ public sealed class ProjectReader
             defines,
             contentProjects,
             contentItems,
+            inferred,
+            ProjectLinkReader.ResolveSources(_fileSystem, items, projectFullPath, root, ct),
             family,
             monoGame?.Version,
             monoGame?.Platform ?? MonoGamePlatform.Unknown,
@@ -286,7 +279,7 @@ public sealed class ProjectReader
             [],
             [],
             [],
-            ProjectFamily.Other);
+            Family: ProjectFamily.Other);
         return new ProjectReadResult(
             info,
             new Dictionary<string, string>(),

@@ -36,7 +36,7 @@ public sealed class MonoGameMatcherTests
 
     private static ProjectReadResult Project(IReadOnlyList<ProjectItem>? items = null, string? mgcb = null)
     {
-        var info = new ProjectInfo("Game.csproj", "Game", false, XnaVersion.Unknown, XnaPlatform.Unknown, null, null, [], [], [], [], [], ProjectFamily.MonoGameLegacy);
+        var info = new ProjectInfo("Game.csproj", "Game", false, XnaVersion.Unknown, XnaPlatform.Unknown, null, null, [], [], [], [], [], Family: ProjectFamily.MonoGameLegacy);
         IReadOnlyList<ParsedMgcb>? files = mgcb is null ? null : [new ParsedMgcb("Content/Content.mgcb", MgcbParser.Parse(mgcb))];
         return new ProjectReadResult(info, new Dictionary<string, string>(), items ?? [], [], null, files);
     }

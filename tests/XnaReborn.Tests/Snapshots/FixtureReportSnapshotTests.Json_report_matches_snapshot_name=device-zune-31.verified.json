@@ -1,0 +1,85 @@
+﻿{
+  "schemaVersion": 1,
+  "catalogName": "xna-test-sample",
+  "projects": [
+    {
+      "path": "Zune31.csproj",
+      "assemblyName": "Zune31",
+      "isXna": true,
+      "xnaVersion": "3.1",
+      "platform": "Zune",
+      "profile": null,
+      "targetFramework": "v3.5",
+      "references": [
+        "Microsoft.Xna.Framework",
+        "Microsoft.Xna.Framework.Game",
+        "mscorlib",
+        "System",
+        "System.Core"
+      ],
+      "compileFiles": [
+        "Game1.cs",
+        "Program.cs",
+        "Properties/AssemblyInfo.cs"
+      ],
+      "defineConstants": [
+        "DEBUG",
+        "TRACE",
+        "ZUNE"
+      ],
+      "contentProjects": [],
+      "contentItems": []
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Zune31.csproj",
+      "location": null,
+      "snippet": "$(MSBuildExtensionsPath)\\Microsoft\\XNA Game Studio\\v3.1\\Microsoft.Xna.GameStudio.Common.targets"
+    },
+    {
+      "ruleId": "XNA904",
+      "title": "XNA 3.1 project",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "project": "Zune31.csproj",
+      "location": null,
+      "snippet": "XnaFrameworkVersion=v3.1"
+    }
+  ],
+  "triggeredRules": [
+    {
+      "id": "XNA903",
+      "title": "XNA Game Studio targets import",
+      "explanation": "The project imports the XNA build targets.",
+      "resolution": "The migrator writes an SDK-style project.",
+      "migratorTask": "project-migrator:4.1"
+    },
+    {
+      "id": "XNA904",
+      "title": "XNA 3.1 project",
+      "explanation": "XNA 3.1 APIs differ from 4.0.",
+      "resolution": "The migrator applies 3.1 to 4.0 rewrites.",
+      "migratorTask": "project-migrator:6.2"
+    }
+  ],
+  "countsBySeverity": {
+    "Info": 0,
+    "Warning": 2,
+    "Error": 0,
+    "Blocker": 0
+  },
+  "countsByClassification": {
+    "AutoFixable": 2,
+    "Manual": 0,
+    "Unsupported": 0
+  },
+  "score": 99,
+  "projectedScore": 100,
+  "diagnostics": [],
+  "noProjectReason": null
+}

@@ -34,7 +34,7 @@ public sealed class RuleEngine
         SourceRules = catalogs.SelectMany(c => c.Rules).Where(IsSourceRule).ToList();
     }
 
-    /// <summary>Source rules (namespace, type, or member match) of every catalog, regardless of family.</summary>
+    /// <summary>Source rules (namespace, type, member, or preprocessor symbol match) of every catalog, regardless of family.</summary>
     public IReadOnlyList<Rule> SourceRules { get; }
 
     /// <summary>Source rules of the catalogs that apply to a project family. The source scanner uses these.</summary>
@@ -42,7 +42,7 @@ public sealed class RuleEngine
     public IReadOnlyList<Rule> SourceRulesFor(ProjectFamily family) =>
         _catalogs.Where(c => c.AppliesToFamily(family)).SelectMany(c => c.Rules).Where(IsSourceRule).ToList();
 
-    private static bool IsSourceRule(Rule rule) => rule.Match is NamespaceMatch or TypeMatch or MemberMatch;
+    private static bool IsSourceRule(Rule rule) => rule.Match is NamespaceMatch or TypeMatch or MemberMatch or PreprocessorSymbolMatch;
 
     /// <summary>Evaluates the project-level rules of the catalogs that apply to the project's family. Gives at most one finding per rule, in catalog order.</summary>
     /// <param name="project">The project as read by <see cref="ProjectReader"/>.</param>
@@ -96,6 +96,7 @@ public sealed class RuleEngine
         FilePatternMatch m => FilePatternMatcher.Match(m, _fileSystem, projectDirectory, token),
         ContentItemMatch m => ContentItemMatcher.Match(m, project),
         SpriteFontFamilyMatch m => SpriteFontMatcher.Match(m, project, _fileSystem, projectDirectory, token),
+        ProjectLinksMatch m => ProjectLinksMatcher.Match(m, project),
         _ => [],
     };
 

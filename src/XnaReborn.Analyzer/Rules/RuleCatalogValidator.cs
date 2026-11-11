@@ -11,7 +11,7 @@ internal static class RuleCatalogValidator
     private static readonly Lazy<JsonSchema> _schema = new(LoadSchema);
 
     private static readonly string[] _matchTypes =
-        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "mgcbSetting"];
+        ["reference", "namespace", "type", "member", "projectProperty", "projectItem", "filePattern", "contentItem", "spriteFontFamily", "projectLinks", "preprocessorSymbol", "mgcbSetting"];
 
     /// <summary>Returns every problem found in <paramref name="root"/>, in a stable order.</summary>
     /// <param name="root">The parsed catalog.</param>

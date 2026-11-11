@@ -6,14 +6,14 @@ Rule catalog: xna-to-monogame (report format 1)
 
 | Item | Value |
 |---|---|
-| Compatibility score | 76 / 100 |
+| Compatibility score | 75 / 100 |
 | Projected score after automatic fixes | 91 / 100 |
 | Projects analyzed | 1 |
-| Findings | 13 |
+| Findings | 14 |
 
-Severity: Blocker 0, Error 10, Warning 1, Info 2
+Severity: Blocker 0, Error 10, Warning 2, Info 2
 
-Classification: AutoFixable 11, Manual 2, Unsupported 0
+Classification: AutoFixable 12, Manual 2, Unsupported 0
 
 ## Projects
 
@@ -61,6 +61,10 @@ Classification: AutoFixable 11, Manual 2, Unsupported 0
 - **[Warning] XNA004** Old .NET Framework target
   - Project: `Xna31Rewritable.csproj`
   - Code: `TargetFrameworkVersion=v3.5`
+- **[Warning] XNA053** Device conditional compilation symbols
+  - Project: `Xna31Rewritable.csproj`
+  - Location: `Program.cs:5:5`
+  - Code: `#if WINDOWS || XBOX`
 - **[Info] XNA002** XNA-specific project properties
   - Project: `Xna31Rewritable.csproj`
   - Code: `XnaFrameworkVersion=v3.1`
@@ -160,3 +164,11 @@ Properties/AssemblyInfo.cs declares assembly attributes (title, product, company
 **Resolution:** The migrator writes <GenerateAssemblyInfo>false</GenerateAssemblyInfo> in the generated project so the kept AssemblyInfo.cs does not clash.
 
 Migrator task: project-migrator:4.1
+
+### XNA053 Device conditional compilation symbols
+
+An #if or #elif directive names a platform symbol (XBOX, XBOX360, ZUNE, WINDOWS_PHONE, or WINDOWS). The migrated project defines none of them, so the wrong branch would be compiled. Inactive branches count too.
+
+**Resolution:** The migrator keeps the branch that is true for the chosen platform and removes the other branches. A condition that also depends on another symbol, such as DEBUG, is left as it is with a marker.
+
+Migrator task: device-to-desktop:6.1

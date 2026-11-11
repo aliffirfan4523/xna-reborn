@@ -4,49 +4,49 @@ Each numbered task is sized for one worker, on its own branch and PR. Every task
 
 Order: 1 → 2 → 3 → 4 (analyzer, can overlap after 2) → 5 → 6 → 7 and 8 (Compat library, can run side by side after 5) → 9 → 10 → 11 → 12.
 
-- [ ] 1. Fixtures
-  - [ ] 1.1 Add `tests/fixtures/device/wp7-xna`: XNA 4.0 Windows Phone game project (`XnaPlatform` Windows Phone, `XnaProfile` Reach, references `Microsoft.Phone` and `Microsoft.Devices.Sensors`), with a `Game1` that uses `TouchPanel` gestures, `Accelerometer` with `ReadingChanged`, `GamePad.GetState` with `Buttons.Back`, `PhoneApplicationService.Current.State`, `Guide.IsTrialMode`, a 480x800 back buffer, and `#if WINDOWS_PHONE` / `#else` blocks. Original content, one generated texture
-  - [ ] 1.2 Add `xbox360-copy-solution`: a Windows project plus an `Xbox 360 Copy of ...` project whose `Compile` items are links (`<Link>`), with `#if WINDOWS || XBOX` around `Main`
-  - [ ] 1.3 Add `zune-31`: XNA 3.1 Zune project (`XnaPlatform` Zune, `ZUNE` define) with game pad input and a `MediaLibrary` use
-  - [ ] 1.4 Add `wp-silverlight` (a phone project that sets `SilverlightApplication`) from the Microsoft documentation, and note in its README that the shape is unconfirmed against a real project
-  - [ ] 1.5 Add negatives: `windows-plain` (Windows XNA 4.0 project with `#if WINDOWS`, a user class named `GamePad` in its own namespace, and a type called `Accelerometer` without the Devices.Sensors using)
-  - [ ] 1.6 Fixture README with sources (Microsoft docs links from the design), and a statement that all code is original
+- [x] 1. Fixtures
+  - [x] 1.1 Add `tests/fixtures/device/wp7-xna`: XNA 4.0 Windows Phone game project (`XnaPlatform` Windows Phone, `XnaProfile` Reach, references `Microsoft.Phone` and `Microsoft.Devices.Sensors`), with a `Game1` that uses `TouchPanel` gestures, `Accelerometer` with `ReadingChanged`, `GamePad.GetState` with `Buttons.Back`, `PhoneApplicationService.Current.State`, `Guide.IsTrialMode`, a 480x800 back buffer, and `#if WINDOWS_PHONE` / `#else` blocks. Original content, one generated texture
+  - [x] 1.2 Add `xbox360-copy-solution`: a Windows project plus an `Xbox 360 Copy of ...` project whose `Compile` items are links (`<Link>`), with `#if WINDOWS || XBOX` around `Main`
+  - [x] 1.3 Add `zune-31`: XNA 3.1 Zune project (`XnaPlatform` Zune, `ZUNE` define) with game pad input and a `MediaLibrary` use
+  - [x] 1.4 Add `wp-silverlight` (a phone project that sets `SilverlightApplication`) from the Microsoft documentation, and note in its README that the shape is unconfirmed against a real project
+  - [x] 1.5 Add negatives: `windows-plain` (Windows XNA 4.0 project with `#if WINDOWS`, a user class named `GamePad` in its own namespace, and a type called `Accelerometer` without the Devices.Sensors using)
+  - [x] 1.6 Fixture README with sources (Microsoft docs links from the design), and a statement that all code is original
   - _Requirements: R9, R10_
 
-- [ ] 2. Analyzer: platform detection and platform copies
-  - [ ] 2.1 Add `DevicePlatform` to Core and the new `ProjectInfo` fields with defaults (`Platform`, `XnaProfile`, `PlatformInferred`, `LinkedSourceProjects`); existing snapshots must not change
-  - [ ] 2.2 Implement `PlatformDetector` (R1.1 to R1.5) and tests for each spelling, the inferred Phone and Zune cases, and Windows/Unknown
-  - [ ] 2.3 Implement `ProjectLinkReader` and the `projectLinks` match type (schema, matcher, docs in the analyzer design table)
-  - [ ] 2.4 Edit XNA007 (Warning, AutoFixable, new resolution, `migratorTask` link to task 5.1); add XNA051 (Silverlight) and the platform copy rule; reserve final IDs by taking the first free range in the catalog and updating `design.md` and `requirements.md` in the same PR
-  - [ ] 2.5 Positive and negative fixture tests per rule (`wp7-xna`, `xbox360-copy-solution`, `wp-silverlight` positive; `windows-plain` negative), snapshot update with the diff reviewed
-  - [ ] 2.6 Read-only test: file hashes unchanged after analyzing the new fixtures
+- [x] 2. Analyzer: platform detection and platform copies
+  - [x] 2.1 Add `DevicePlatform` to Core and the new `ProjectInfo` fields with defaults (`Platform`, `XnaProfile`, `PlatformInferred`, `LinkedSourceProjects`); existing snapshots must not change
+  - [x] 2.2 Implement `PlatformDetector` (R1.1 to R1.5) and tests for each spelling, the inferred Phone and Zune cases, and Windows/Unknown
+  - [x] 2.3 Implement `ProjectLinkReader` and the `projectLinks` match type (schema, matcher, docs in the analyzer design table)
+  - [x] 2.4 Edit XNA007 (Warning, AutoFixable, new resolution, `migratorTask` link to task 5.1); add XNA051 (Silverlight) and the platform copy rule; reserve final IDs by taking the first free range in the catalog and updating `design.md` and `requirements.md` in the same PR
+  - [x] 2.5 Positive and negative fixture tests per rule (`wp7-xna`, `xbox360-copy-solution`, `wp-silverlight` positive; `windows-plain` negative), snapshot update with the diff reviewed
+  - [x] 2.6 Read-only test: file hashes unchanged after analyzing the new fixtures
   - _Requirements: R1, R2, R3.1, R9_
 
-- [ ] 3. Analyzer: preprocessor symbols
-  - [ ] 3.1 Implement the `preprocessorSymbol` match type: read `#if` and `#elif` directive trivia, including inactive branches; compare whole identifiers in the condition expression
-  - [ ] 3.2 Add the XNA053 rule (`names`: XBOX, XBOX360, ZUNE, WINDOWS_PHONE, WINDOWS), `migratorTask` link to task 6.1
-  - [ ] 3.3 Tests: positive with the symbol only inside an inactive branch; negative with `WINDOWS_PHONE_7`, a symbol in a comment, and a string that looks like a directive
+- [x] 3. Analyzer: preprocessor symbols
+  - [x] 3.1 Implement the `preprocessorSymbol` match type: read `#if` and `#elif` directive trivia, including inactive branches; compare whole identifiers in the condition expression
+  - [x] 3.2 Add the XNA053 rule (`names`: XBOX, XBOX360, ZUNE, WINDOWS_PHONE, WINDOWS), `migratorTask` link to task 6.1
+  - [x] 3.3 Tests: positive with the symbol only inside an inactive branch; negative with `WINDOWS_PHONE_7`, a symbol in a comment, and a string that looks like a directive
   - _Requirements: R4.1, R9_
 
-- [ ] 4. Analyzer: device API rules
-  - [ ] 4.1 Add XNA054 to XNA058 (marketplace members, marketplace types, Zune media library, phone application service, launchers) with their existing match types
-  - [ ] 4.2 Add XNA059 to XNA063 (choosers, accelerometer, TouchPanel, GamePad.GetState, third-party device assemblies). Confirm the `member` and `reference` match fields in the schema before writing the entries
-  - [ ] 4.3 Positive and negative fixture test for each rule; the negative for the type rules is "same name, no using"; the negative for XNA062 is the user's own `GamePad` class
-  - [ ] 4.4 Scoring check: XNA009 and XNA054 on one file count once each; XNA007 counts once per project
-  - [ ] 4.5 Snapshot update
+- [x] 4. Analyzer: device API rules
+  - [x] 4.1 Add XNA054 to XNA058 (marketplace members, marketplace types, Zune media library, phone application service, launchers) with their existing match types
+  - [x] 4.2 Add XNA059 to XNA063 (choosers, accelerometer, TouchPanel, GamePad.GetState, third-party device assemblies). Confirm the `member` and `reference` match fields in the schema before writing the entries
+  - [x] 4.3 Positive and negative fixture test for each rule; the negative for the type rules is "same name, no using"; the negative for XNA062 is the user's own `GamePad` class
+  - [x] 4.4 Scoring check: XNA009 and XNA054 on one file count once each; XNA007 counts once per project
+  - [x] 4.5 Snapshot update
   - _Requirements: R2.4, R5, R9_
 
-- [ ] 5. Migrator: device project selection
-  - [ ] 5.1 `MigrationPlanner`: turn an included XNA007 finding into plan items for the device conversion (project generation as DesktopGL, device library, directive folding); choose the platform symbol set (design table)
-  - [ ] 5.2 Skip platform copies: plan item "skip copy" per copy, chosen-project order Windows, Windows Phone, Xbox 360, Zune, user can flip; `SolutionGenerator` writes only migrated projects
-  - [ ] 5.3 Manifest: Skipped entries with reason and duplicated project (R3.3, R3.4)
-  - [ ] 5.4 Tests: Windows + copy, device-only solution, link cycle, one-way link ratio edge, excluded skip item; source hash unchanged
+- [x] 5. Migrator: device project selection
+  - [x] 5.1 `MigrationPlanner`: turn an included XNA007 finding into plan items for the device conversion (project generation as DesktopGL, device library, directive folding); choose the platform symbol set (design table)
+  - [x] 5.2 Skip platform copies: plan item "skip copy" per copy, chosen-project order Windows, Windows Phone, Xbox 360, Zune, user can flip; `SolutionGenerator` writes only migrated projects
+  - [x] 5.3 Manifest: Skipped entries with reason and duplicated project (R3.3, R3.4)
+  - [x] 5.4 Tests: Windows + copy, device-only solution, link cycle, one-way link ratio edge, excluded skip item; source hash unchanged
   - _Requirements: R2, R3, R8_
 
-- [ ] 6. Migrator: device conditional compilation
-  - [ ] 6.1 Implement `PlatformDirectiveRewriter`: line scanner, condition parser (`!`, `&&`, `||`, parentheses, `true`, `false`), three-valued evaluation, group folding, markers for unresolved groups
-  - [ ] 6.2 Add an explicit rewriter order table to `SourceRewriteEngine` (XNA053 before the entry point rewriter) and register the rewriter in `DefaultRewriters`
-  - [ ] 6.3 Tests: before/after for every symbol set in the design table, `#elif` and `#else`, nested groups, `DEBUG && XBOX`, a parse failure, a file with no directives is byte-identical, `Main` inside `#if WINDOWS || XBOX` ends up compiling, determinism
+- [x] 6. Migrator: device conditional compilation
+  - [x] 6.1 Implement `PlatformDirectiveRewriter`: line scanner, condition parser (`!`, `&&`, `||`, parentheses, `true`, `false`), three-valued evaluation, group folding, markers for unresolved groups
+  - [x] 6.2 Add an explicit rewriter order table to `SourceRewriteEngine` (XNA053 before the entry point rewriter) and register the rewriter in `DefaultRewriters`
+  - [x] 6.3 Tests: before/after for every symbol set in the design table, `#elif` and `#else`, nested groups, `DEBUG && XBOX`, a parse failure, a file with no directives is byte-identical, `Main` inside `#if WINDOWS || XBOX` ends up compiling, determinism
   - _Requirements: R4, R8.5, R9.3_
 
 - [ ] 7. Compat library: device stand-ins

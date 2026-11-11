@@ -87,9 +87,9 @@ public sealed class ProjectMigratorTests : IDisposable
         Assert.Single(result.Changes, c => c.RelativePath == path);
 
     [Fact]
-    public void Default_rewriters_register_the_entry_point_and_the_four_rules()
+    public void Default_rewriters_register_the_entry_point_the_four_rules_and_the_platform_folding()
     {
-        Assert.Equal(["ENTRYPOINT", "XNA022", "XNA024", "XNA039", "XNA040"], DefaultRewriters.Create().RuleIds);
+        Assert.Equal(["ENTRYPOINT", "XNA022", "XNA024", "XNA039", "XNA040", "XNA053"], DefaultRewriters.Create().RuleIds);
     }
 
     [Fact]
@@ -152,7 +152,8 @@ public sealed class ProjectMigratorTests : IDisposable
     {
         var result = await MigrationTestSupport.MigrateAsync(Fixture("xna31-rewritable"), MigrationTestSupport.Options(Out(), dryRun: true));
 
-        Assert.Contains("ENTRYPOINT", Rules(result, "Program.cs"));
+        // XNA053 folds the #if WINDOWS || XBOX wrapper first, so the entry point rewriter has nothing left to do.
+        Assert.Contains("XNA053", Rules(result, "Program.cs"));
         var game = Rules(result, "Game1.cs");
         Assert.Contains("XNA022", game);
         Assert.Contains("XNA024", game);

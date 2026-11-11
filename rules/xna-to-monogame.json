@@ -85,12 +85,13 @@
     {
       "id": "XNA007",
       "title": "Project targets Xbox 360, Zune, or Windows Phone",
-      "severity": "Error",
-      "classification": "Unsupported",
+      "severity": "Warning",
+      "classification": "AutoFixable",
       "category": "Platform",
-      "match": { "type": "projectProperty", "name": "XnaPlatform", "matches": "^(Xbox ?360|Zune|Windows ?Phone)$" },
-      "explanation": "XnaPlatform names a device platform. Xbox 360 and Zune builds depend on device APIs, and neither platform can be a MonoGame DesktopGL target. Code in this project is likely to use platform-only APIs.",
-      "resolution": "Migrate the Windows project of the solution instead. Keep shared code files and remove the device-specific project and its #if branches by hand."
+      "match": { "type": "projectProperty", "name": "XnaPlatform", "matches": "^\\s*(Xbox ?360|Zune|Windows ?Phone)\\s*$" },
+      "explanation": "XnaPlatform names a device platform (Xbox 360, Zune, or Windows Phone). The project cannot run on a desktop as it is, because it depends on device APIs and device-only #if branches. The device rules XNA053 to XNA063 list what the code uses.",
+      "resolution": "The migrator turns the project into a Windows DesktopGL game: it skips platform copies of the same game, folds the device #if branches, and adds stand-ins that map touch, tilt, and the Back button to the mouse and keyboard. What it cannot convert is listed as manual work.",
+      "migratorTask": "device-to-desktop:5.1"
     },
     {
       "id": "XNA008",
@@ -542,6 +543,145 @@
       "match": { "type": "contentItem", "nonStandardPair": true },
       "explanation": "A content item uses an importer or processor that is not part of stock XNA 4.0. It comes from a custom content pipeline assembly, which was built against the XNA pipeline and does not load in the MonoGame content builder as it is.",
       "resolution": "Port the pipeline project to MonoGame and reference the rebuilt assembly from Content.mgcb, or replace the asset with one that a stock importer and processor can build."
+    },
+    {
+      "id": "XNA051",
+      "title": "Windows Phone Silverlight application",
+      "severity": "Error",
+      "classification": "Unsupported",
+      "category": "Platform",
+      "match": { "type": "projectProperty", "name": "SilverlightApplication", "equals": "true" },
+      "explanation": "The project is a Silverlight application (SilverlightApplication is true). Its pages, XAML and navigation have no MonoGame equivalent. This rule is provisional: the property set was written from the Microsoft documentation, not checked against a real hybrid project.",
+      "resolution": "Move the XNA game code into a plain XNA project first, then migrate that project. The Silverlight pages have to be rebuilt by hand."
+    },
+    {
+      "id": "XNA052",
+      "title": "Platform copy of another project",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Platform",
+      "match": { "type": "projectLinks", "minLinkedRatio": 0.5 },
+      "explanation": "At least half of this project's Compile items are links to files of another project. Game Studio's Create Copy of project for a platform command makes projects like this: they share the code of the original and add nothing of their own.",
+      "resolution": "The migrator migrates one project of the group (the Windows one when there is one) and skips each copy. You can change the choice in the migration plan.",
+      "migratorTask": "device-to-desktop:5.2"
+    },
+    {
+      "id": "XNA053",
+      "title": "Device conditional compilation symbols",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Platform",
+      "match": { "type": "preprocessorSymbol", "names": ["XBOX", "XBOX360", "ZUNE", "WINDOWS_PHONE", "WINDOWS"] },
+      "explanation": "An #if or #elif directive names a platform symbol (XBOX, XBOX360, ZUNE, WINDOWS_PHONE, or WINDOWS). The migrated project defines none of them, so the wrong branch would be compiled. Inactive branches count too.",
+      "resolution": "The migrator keeps the branch that is true for the chosen platform and removes the other branches. A condition that also depends on another symbol, such as DEBUG, is left as it is with a marker.",
+      "migratorTask": "device-to-desktop:6.1"
+    },
+    {
+      "id": "XNA054",
+      "title": "Marketplace trial mode",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "member", "name": "IsTrialMode", "receiver": "Guide", "namespaces": ["Microsoft.Xna.Framework.GamerServices"] },
+      "explanation": "Code reads Guide.IsTrialMode. Trial mode and the marketplace belong to the Xbox and Phone stores, which no longer exist.",
+      "resolution": "The migrator adds a stand-in Guide member that always reports a full version.",
+      "migratorTask": "device-to-desktop:7.3"
+    },
+    {
+      "id": "XNA055",
+      "title": "Marketplace launchers and license types",
+      "severity": "Warning",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "type", "name": "MarketplaceDetailTask", "alsoNames": ["MarketplaceReviewTask", "MarketplaceSearchTask", "LicenseInformation"], "namespaces": ["Microsoft.Phone.Tasks", "Microsoft.Phone.Marketplace"] },
+      "explanation": "Code uses a Windows Phone marketplace launcher or LicenseInformation. The Windows Phone marketplace is gone.",
+      "resolution": "The migrator adds stand-in types that do nothing, and LicenseInformation reports a full version.",
+      "migratorTask": "device-to-desktop:7.3"
+    },
+    {
+      "id": "XNA056",
+      "title": "Zune media library",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "type", "name": "MediaLibrary", "alsoNames": ["MediaSource"], "namespaces": ["Microsoft.Xna.Framework.Media"] },
+      "explanation": "Code browses the device media library (songs, albums, playlists). MonoGame has no media library.",
+      "resolution": "Replace the library calls with your own list of files, or remove the feature."
+    },
+    {
+      "id": "XNA057",
+      "title": "Phone application service (tombstoning)",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "type", "name": "PhoneApplicationService", "namespaces": ["Microsoft.Phone.Shell"] },
+      "explanation": "Code uses PhoneApplicationService to keep state when the phone deactivates the game.",
+      "resolution": "The migrator adds a stand-in with an in-memory State dictionary. Its events never fire.",
+      "migratorTask": "device-to-desktop:7.2"
+    },
+    {
+      "id": "XNA058",
+      "title": "Phone launchers",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "type", "name": "WebBrowserTask", "alsoNames": ["EmailComposeTask", "PhoneCallTask", "SmsComposeTask", "MarketplaceHubTask"], "namespaces": ["Microsoft.Phone.Tasks"] },
+      "explanation": "Code starts a phone launcher task (browser, e-mail, call, SMS, or marketplace hub).",
+      "resolution": "The migrator adds stand-ins whose Show() writes one log line and does nothing else.",
+      "migratorTask": "device-to-desktop:7.2"
+    },
+    {
+      "id": "XNA059",
+      "title": "Phone choosers",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Api",
+      "match": { "type": "type", "name": "PhotoChooserTask", "alsoNames": ["CameraCaptureTask", "SaveRingtoneTask"], "namespaces": ["Microsoft.Phone.Tasks"] },
+      "explanation": "Code uses a phone chooser task (photo, camera, or ringtone). Choosers return a result through a Completed event that never fires on a desktop.",
+      "resolution": "Replace the chooser with a file dialog or remove the feature."
+    },
+    {
+      "id": "XNA060",
+      "title": "Accelerometer",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "type", "name": "Accelerometer", "namespaces": ["Microsoft.Devices.Sensors"] },
+      "explanation": "Code reads the phone accelerometer. A desktop has none, and MonoGame's Accelerometer is a stub in another namespace.",
+      "resolution": "The migrator adds an Accelerometer with the same members that is driven by the keyboard (arrow keys or W, A, S, D).",
+      "migratorTask": "device-to-desktop:7.1"
+    },
+    {
+      "id": "XNA061",
+      "title": "TouchPanel and gestures",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "type", "name": "TouchPanel", "namespaces": ["Microsoft.Xna.Framework.Input.Touch"] },
+      "explanation": "Code reads touch input. MonoGame has TouchPanel, but on a desktop it only reports the mouse after two switches are turned on.",
+      "resolution": "The migrator adds a game component that turns the mouse touch point and mouse gestures on at startup.",
+      "migratorTask": "device-to-desktop:8.2"
+    },
+    {
+      "id": "XNA062",
+      "title": "GamePad.GetState (keyboard fallback and Back button)",
+      "severity": "Info",
+      "classification": "AutoFixable",
+      "category": "Api",
+      "match": { "type": "member", "name": "GetState", "receiver": "GamePad", "namespaces": ["Microsoft.Xna.Framework.Input"], "kind": "Invocation", "arguments": { "min": 1, "max": 2 } },
+      "explanation": "Code reads the game pad. A phone or Zune has no pad, only a Back button, and many desktops have no pad either. The check is by name only: a game class called GamePad in another namespace is not told apart from the XNA one.",
+      "resolution": "The migrator changes the call to a replacement that returns the real pad when one is connected, and keyboard input otherwise (Escape is Back).",
+      "migratorTask": "device-to-desktop:8.1"
+    },
+    {
+      "id": "XNA063",
+      "title": "Third-party device assembly",
+      "severity": "Warning",
+      "classification": "Manual",
+      "category": "Reference",
+      "match": { "type": "reference", "name": "Microsoft.Advertising.*" },
+      "explanation": "The project references an advertising assembly made for Windows Phone. It has no desktop version.",
+      "resolution": "Remove the reference and the code that uses it, or replace it with a desktop service."
     }
   ]
 }

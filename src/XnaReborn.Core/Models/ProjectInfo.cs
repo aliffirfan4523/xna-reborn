@@ -15,6 +15,8 @@ namespace XnaReborn.Core.Models;
 /// <param name="DefineConstants">Preprocessor symbols defined by the project.</param>
 /// <param name="ContentProjects">Relative paths of nested content projects.</param>
 /// <param name="ContentItems">Entries read from the content projects.</param>
+/// <param name="PlatformInferred">True when <paramref name="Platform"/> was not stated by XnaPlatform and was guessed from references or defines.</param>
+/// <param name="LinkedSourceProjects">Relative paths of the other projects this project links Compile items from, or null when it links none.</param>
 /// <param name="Family">Project family. Defaults to <see cref="ProjectFamily.Xna"/>. <see cref="IsXna"/> is kept for existing callers and is true only for the Xna family. Omitted from JSON when "Xna".</param>
 /// <param name="MonoGameVersion">Detected MonoGame version for MonoGame projects, or null. Omitted from JSON when null.</param>
 /// <param name="MonoGamePlatform">MonoGame platform for MonoGame projects. Omitted from JSON when unknown.</param>
@@ -32,6 +34,8 @@ public sealed record ProjectInfo(
     IReadOnlyList<string> DefineConstants,
     IReadOnlyList<string> ContentProjects,
     IReadOnlyList<ContentItem> ContentItems,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlatformInferred = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? LinkedSourceProjects = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] ProjectFamily Family = ProjectFamily.Xna,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] MonoGameVersionInfo? MonoGameVersion = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] MonoGamePlatform MonoGamePlatform = MonoGamePlatform.Unknown,

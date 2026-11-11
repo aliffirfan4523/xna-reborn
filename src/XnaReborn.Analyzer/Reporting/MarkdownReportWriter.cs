@@ -107,7 +107,7 @@ public static class MarkdownReportWriter
                 sb.Append(" | ").Append(isMonoGame ? MonoGameVersionText(p.MonoGameVersion) : "-");
             }
 
-            sb.Append(" | ").Append(isMonoGame ? p.MonoGamePlatform : p.Platform)
+            sb.Append(" | ").Append(isMonoGame ? p.MonoGamePlatform : p.Platform).Append(!isMonoGame && p.PlatformInferred ? " (inferred)" : string.Empty)
                 .Append(" | ").Append(Cell(p.Profile))
                 .Append(" | ").Append(Cell(p.TargetFramework))
                 .Append(" |");

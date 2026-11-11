@@ -1,10 +1,13 @@
 using XnaReborn.Core.Models;
+using XnaReborn.Migrator.Source;
 
 namespace XnaReborn.Migrator.Planning;
 
 /// <summary>Turns the auto-fixable findings of an analysis report into plan items. Pure: no file system, clock or randomness.</summary>
 public sealed class MigrationPlanner
 {
+    private const string _deviceProjectRuleId = "XNA007";
+
     /// <summary>Builds the plan, honoring the exclusions in the options.</summary>
     /// <param name="report">Analysis report to plan from.</param>
     /// <param name="options">Migration options carrying the excluded item ids.</param>
@@ -26,12 +29,19 @@ public sealed class MigrationPlanner
 
         var rules = report.TriggeredRules.GroupBy(r => r.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
+        // Platform copies: one "skip" item per project that is not migrated (device-to-desktop:5.2). A project whose
+        // skip item is excluded is migrated after all, so only an included skip hides the other items of its project.
+        var skips = PlatformCopies.Find(report).Skips;
+        var skipped = skips.Where(s => !excludedPlanItemIds.Contains(PlatformCopies.SkipItemId(s.Project))).Select(s => s.Project).ToHashSet(StringComparer.Ordinal);
+        var platforms = report.Projects.GroupBy(p => p.Path, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First().Platform, StringComparer.Ordinal);
+
         var items = report.Findings
-            .Where(f => f.Classification == Classification.AutoFixable)
+            .Where(f => f.Classification == Classification.AutoFixable && f.RuleId != PlatformCopies.CopyRuleId && !skipped.Contains(f.Project))
             .GroupBy(f => (f.RuleId, f.Project))
-            .OrderBy(g => g.Key.RuleId, StringComparer.Ordinal)
-            .ThenBy(g => g.Key.Project, StringComparer.Ordinal)
-            .Select(g => ToItem(g.Key.RuleId, g.Key.Project, g.ToList(), rules))
+            .Select(g => ToItem(g.Key.RuleId, g.Key.Project, g.ToList(), rules, platforms))
+            .Concat(skips.Select(s => new PlanItem(PlatformCopies.SkipItemId(s.Project), PlatformCopies.CopyRuleId, $"Skip {s.Project}: {s.Reason}. Exclude this item to migrate it too.", [s.Project])))
+            .OrderBy(i => i.RuleId, StringComparer.Ordinal)
+            .ThenBy(i => i.Id, StringComparer.Ordinal)
             .ToList();
 
         return new MigrationPlan(
@@ -39,11 +49,16 @@ public sealed class MigrationPlanner
             items.Where(i => excludedPlanItemIds.Contains(i.Id)).ToList());
     }
 
-    private static PlanItem ToItem(string ruleId, string project, List<Finding> findings, Dictionary<string, TriggeredRule> rules)
+    private static PlanItem ToItem(string ruleId, string project, List<Finding> findings, Dictionary<string, TriggeredRule> rules, Dictionary<string, XnaPlatform> platforms)
     {
         var description = rules.TryGetValue(ruleId, out var rule)
             ? $"{rule.Title}: {rule.Resolution}"
             : findings[0].Title;
+        if (ruleId == _deviceProjectRuleId && platforms.TryGetValue(project, out var platform) && PlatformSymbolSet.For(platform) is { } symbols)
+        {
+            description += $" Platform {platform}: after conversion the #if symbols {string.Join(", ", symbols.TrueSymbols)} are true and the other platform symbols are false.";
+        }
+
         if (findings.Count > 1)
         {
             description += $" ({findings.Count} places)";

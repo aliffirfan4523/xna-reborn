@@ -30,7 +30,8 @@ public sealed class RewritableFixtureTests
             .Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal);
 
-        Assert.Equal(["XNA022", "XNA023", "XNA024", "XNA039", "XNA040"], sourceRules);
+        // XNA053 is the #if WINDOWS || XBOX wrapper in Program.cs; the migrator folds it (device-to-desktop:6.1).
+        Assert.Equal(["XNA022", "XNA023", "XNA024", "XNA039", "XNA040", "XNA053"], sourceRules);
     }
 
     [Fact]
