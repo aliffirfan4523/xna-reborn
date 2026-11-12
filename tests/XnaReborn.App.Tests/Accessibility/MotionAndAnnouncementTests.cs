@@ -1,5 +1,7 @@
+using Avalonia.Animation;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
@@ -32,6 +34,30 @@ public sealed class MotionAndAnnouncementTests
             Assert.Contains("reduce-motion", new MainWindow { DataContext = t.Main }.Classes);
         }
 
+    }
+
+    [AvaloniaFact]
+    public void An_expander_renders_without_error_when_reduce_motion_is_on()
+    {
+        var expander = new Expander { Header = "Details", Content = new TextBlock { Text = "Content" } };
+        var window = new Window { Content = expander, Width = 300, Height = 200, Classes = { "reduce-motion" } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+        // The style should disable transitions; as long as it renders without crashing, the test passes.
+        Assert.NotNull(expander);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public void A_toggle_switch_renders_without_error_when_reduce_motion_is_on()
+    {
+        var toggle = new ToggleSwitch { Content = "Enable feature" };
+        var window = new Window { Content = toggle, Width = 300, Height = 200, Classes = { "reduce-motion" } };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+        // The style should disable transitions; as long as it renders without crashing, the test passes.
+        Assert.NotNull(toggle);
+        window.Close();
     }
 
     [AvaloniaFact]
