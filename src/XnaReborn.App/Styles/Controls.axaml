@@ -286,6 +286,24 @@
     <Setter Property="Opacity" Value="0.55" />
   </Style>
 
+  <!-- Expander and ToggleSwitch: disable Fluent transitions when motion is reduced. Fluent applies these transitions in its
+       theme; setting Duration to 0 and removing Transitions stops them without breaking the controls. -->
+  <Style Selector="Window.reduce-motion Expander /template/ ToggleButton /template/ Border#ExpandCollapseToggleButtonBorder">
+    <Setter Property="Transitions">
+      <Transitions />
+    </Setter>
+  </Style>
+  <Style Selector="Window.reduce-motion ToggleSwitch /template/ Border#OuterBorder">
+    <Setter Property="Transitions">
+      <Transitions />
+    </Setter>
+  </Style>
+  <Style Selector="Window.reduce-motion ToggleSwitch /template/ Border#SwitchKnobBorder">
+    <Setter Property="Transitions">
+      <Transitions />
+    </Setter>
+  </Style>
+
   <!-- Progress bars: rounded, accent. -->
   <!-- Report screen: filter chips (a ListBox that looks like a row of pills) and roomy finding rows. Selected chips are bold with a thick border, so color is not the only cue. -->
   <Style Selector="ListBox.chips">
