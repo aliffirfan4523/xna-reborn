@@ -7,14 +7,14 @@
              x:DataType="vm:ReportViewModel">
 
   <Grid RowDefinitions="Auto,Auto,*,Auto"
-        RowSpacing="{DynamicResource Space3}"
+        RowSpacing="{DynamicResource Space4}"
         Margin="{StaticResource PagePadding}">
 
     <!-- Title and export toolbar -->
-    <Grid Grid.Row="0" RowDefinitions="Auto,Auto" RowSpacing="{DynamicResource Space2}">
+    <Grid Grid.Row="0" RowDefinitions="Auto,Auto" RowSpacing="{DynamicResource Space3}">
       <TextBlock Text="{Binding Title}" Classes="headline" VerticalAlignment="Center"
                  AutomationProperties.HeadingLevel="1" />
-      <WrapPanel Grid.Row="1" ItemSpacing="8" LineSpacing="8">
+      <WrapPanel Grid.Row="1" ItemSpacing="{DynamicResource Space2}" LineSpacing="{DynamicResource Space2}">
         <Button Classes="secondary" Command="{Binding ExportMarkdownCommand}"
                 AutomationProperties.AutomationId="ExportMarkdown"
                 AutomationProperties.Name="Export report as Markdown">
@@ -89,19 +89,19 @@
 
       <!-- Dashboard: hero, tiles, guide, then the findings list and its details -->
       <ScrollViewer x:Name="DashScroll" IsVisible="{Binding HasProject}" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Spacing="{DynamicResource Space4}" Margin="0,0,12,0">
+        <StackPanel Spacing="{DynamicResource Space5}" Margin="0,0,12,0">
 
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Space4}">
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource Space5}">
             <!-- Hero: score now and after the migration -->
             <Border Classes="card" VerticalAlignment="Top">
-              <StackPanel Spacing="{DynamicResource Space3}" MinWidth="170">
+              <StackPanel Spacing="{DynamicResource Space4}" MinWidth="170">
                 <TextBlock Text="Compatibility score" Classes="section" AutomationProperties.HeadingLevel="2" />
                 <controls:ScoreGauge Score="{Binding Score}" ProjectedScore="{Binding ProjectedScore}"
                                      AutomationProperties.AutomationId="ScoreGauge" />
               </StackPanel>
             </Border>
 
-            <StackPanel Grid.Column="1" Spacing="{DynamicResource Space3}">
+            <StackPanel Grid.Column="1" Spacing="{DynamicResource Space4}">
               <!-- Severity tiles -->
               <UniformGrid Columns="4" AutomationProperties.Name="Findings per severity">
                 <controls:StatTile Kind="Error" Icon="{StaticResource IconFlag}" Label="Blockers" Value="{Binding BlockerCount}" Margin="0,0,8,0" />
@@ -112,21 +112,21 @@
 
               <!-- Who fixes what -->
               <Border Classes="card compact">
-                <StackPanel Spacing="{DynamicResource Space1}" AutomationProperties.Name="Findings per classification">
+                <StackPanel Spacing="{DynamicResource Space2}" AutomationProperties.Name="Findings per classification">
                   <TextBlock Text="Who fixes it" Classes="section" AutomationProperties.HeadingLevel="2" />
-                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space2}">
+                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space3}">
                     <PathIcon Data="{StaticResource IconCheckCircle}" Width="16" Height="16" Foreground="{DynamicResource SuccessTextBrush}" />
                     <TextBlock Grid.Column="1" Text="{Binding AutoFixableCount, StringFormat='Auto-fixable: {0}'}"
                                AutomationProperties.AutomationId="CountAutoFixable" />
                     <TextBlock Grid.Column="2" Text="the migrator does it" Classes="caption muted" TextWrapping="Wrap" VerticalAlignment="Center" />
                   </Grid>
-                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space2}">
+                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space3}">
                     <PathIcon Data="{StaticResource IconTune}" Width="16" Height="16" Foreground="{DynamicResource SeverityWarningBrush}" />
                     <TextBlock Grid.Column="1" Text="{Binding ManualCount, StringFormat='Manual: {0}'}"
                                AutomationProperties.AutomationId="CountManual" />
                     <TextBlock Grid.Column="2" Text="you fix these by hand" Classes="caption muted" TextWrapping="Wrap" VerticalAlignment="Center" />
                   </Grid>
-                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space2}">
+                  <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{DynamicResource Space3}">
                     <PathIcon Data="{StaticResource IconError}" Width="16" Height="16" Foreground="{DynamicResource SeverityErrorBrush}" />
                     <TextBlock Grid.Column="1" Text="{Binding UnsupportedCount, StringFormat='Unsupported: {0}'}"
                                AutomationProperties.AutomationId="CountUnsupported" />
@@ -139,7 +139,7 @@
 
           <!-- Start here guide. Built by the view model; this only shows it. -->
           <Expander IsExpanded="{Binding IsStartHereExpanded}" IsVisible="{Binding HasStartHere}"
-                      Background="{DynamicResource AccentSoftBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
+                      Background="{DynamicResource AccentSoftBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="12"
                       HorizontalAlignment="Stretch"
                       AutomationProperties.AutomationId="StartHerePanel"
                       AutomationProperties.Name="Start here">
@@ -182,7 +182,7 @@
             </Expander>
 
           <!-- Flash project: kind, entry class, Flixel version, and why it cannot be converted. Built from the report; this only shows it. -->
-          <Expander Header="Flash project" IsExpanded="True" IsVisible="{Binding IsFlash}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
+          <Expander Header="Flash project" IsExpanded="True" IsVisible="{Binding IsFlash}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="12"
                       HorizontalAlignment="Stretch"
                       AutomationProperties.AutomationId="FlashPanel"
                       AutomationProperties.Name="Flash project">
@@ -202,7 +202,7 @@
             </Expander>
 
           <!-- Projects of the report: family, version with confidence, platform. Display only. -->
-          <Expander Header="Projects" IsExpanded="True" IsVisible="{Binding HasProjects}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="8"
+          <Expander Header="Projects" IsExpanded="True" IsVisible="{Binding HasProjects}" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSubtle}" BorderThickness="1" CornerRadius="{DynamicResource RadiusMedium}" Padding="12"
                       HorizontalAlignment="Stretch"
                       AutomationProperties.AutomationId="ProjectsPanel"
                       AutomationProperties.Name="Projects">
@@ -227,7 +227,7 @@
           <Grid x:Name="FindingsHost" ColumnDefinitions="5*,6*" ColumnSpacing="{DynamicResource Space4}" Height="560">
             <Border Classes="card">
               <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Space2}" Margin="0,0,0,8">
+                <StackPanel DockPanel.Dock="Top" Spacing="{DynamicResource Space2}" Margin="0,0,0,12">
                   <TextBlock Text="Findings" Classes="title" AutomationProperties.HeadingLevel="2" />
                   <TextBox Text="{Binding SearchText}"
                            PlaceholderText="Search rule, title, file or code"
@@ -278,12 +278,12 @@
                     <ListBox.ItemTemplate>
                       <DataTemplate x:DataType="vm:ReportRow">
                         <StackPanel>
-                          <StackPanel IsVisible="{Binding StartsGroup}" Margin="0,8,0,6">
+                          <StackPanel IsVisible="{Binding StartsGroup}" Margin="0,12,0,8">
                             <TextBlock Text="{Binding GroupHeader}" Classes="section" TextWrapping="Wrap"
                                        AutomationProperties.HeadingLevel="3" />
                             <TextBlock Text="{Binding GroupDescription}" Classes="caption muted" TextWrapping="Wrap" />
                           </StackPanel>
-                          <StackPanel Spacing="{DynamicResource Space1}"
+                          <StackPanel Spacing="{DynamicResource Space2}"
                                       AutomationProperties.Name="{Binding Item.AutomationName}">
                             <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space2}">
                               <controls:SeverityBadge Severity="{Binding Item.Severity}" />
@@ -313,7 +313,7 @@
             <Border Grid.Column="1" Classes="card">
               <DockPanel>
                 <Button Classes="secondary" DockPanel.Dock="Bottom" Command="{Binding CopyFindingCommand}"
-                        Margin="0,8,0,0" HorizontalAlignment="Left"
+                        Margin="0,12,0,0" HorizontalAlignment="Left"
                         AutomationProperties.AutomationId="CopyFinding"
                         AutomationProperties.Name="Copy the selected finding">
                   <StackPanel Orientation="Horizontal" Spacing="{DynamicResource Space1}">
